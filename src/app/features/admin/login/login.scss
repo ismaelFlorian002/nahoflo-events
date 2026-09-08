@@ -1,0 +1,69 @@
+/* Contenedor que ocupa toda la pantalla y centra la tarjeta */
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f2f5;
+}
+
+/* Modificamos la tarjeta de PrimeNG de forma segura */
+:host ::ng-deep .login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+
+  .p-card-title {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #1a1a1a;
+  }
+
+  .p-card-subtitle {
+    text-align: center;
+    color: #6c757d;
+  }
+}
+
+/* Estructura de nuestro formulario interno */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+  }
+}
+
+.error-text {
+  color: #e24c4c;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Forzamos al botón de PrimeNG a ocupar el 100% del ancho limpiamente */
+:host ::ng-deep p-button .p-button {
+  width: 100%;
+  justify-content: center;
+  padding: 0.8rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+}
