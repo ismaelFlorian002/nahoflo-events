@@ -1,1 +1,21 @@
-<p>admin-layout works!</p>
+<div class="admin-layout-wrapper" [class.sidebar-mini]="!sidebarVisible">
+  <aside class="admin-sidebar">
+    <!-- NUEVO: Cabecera del sidebar (Botón + Logo) -->
+    <div class="sidebar-header">
+      <p-button icon="pi pi-bars" (onClick)="toggleSidebar()" styleClass="p-button-text p-button-plain sidebar-toggle"></p-button>
+      <img src="logo.png" alt="NahoFlo" class="brand-logo" />
+    </div>
+
+    <p-menu [model]="menuItems"></p-menu>
+  </aside>
+
+  <main class="admin-main-content">
+    <header class="admin-topbar">
+      <span class="topbar-title">Panel de Administración</span>
+    </header>
+
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

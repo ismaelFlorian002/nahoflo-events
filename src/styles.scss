@@ -2,11 +2,74 @@
 @import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
 
-/* Reseteo Arquitectónico Base */
+/* =========================================================
+   1. RESET GLOBAL DE LA APLICACIÓN
+   ========================================================= */
 html, body {
   margin: 0;
   padding: 0;
-  font-family: var(--font-family, sans-serif);
-  background-color: #f8f9fa;
+  width: 100%;
   min-height: 100vh;
+  background-color: #fcfbf9; /* Tu fondo cálido */
+}
+
+app-root {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* =========================================================
+   2. TAMAÑO DE BOTONES (Compactos por defecto)
+   ========================================================= */
+html body .p-button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+}
+html body .p-button .p-button-icon {
+  font-size: 0.875rem;
+}
+
+/* =========================================================
+   3. DORADO NAHOFLO PARA BOTONES PRIMARIOS
+   Excluye severidades y el botón del calendario
+   ========================================================= */
+html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger) {
+  background-color: #cca633;
+  border-color: #cca633;
+  color: #ffffff;
+}
+
+html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):hover {
+  background-color: #b8952d;
+  border-color: #b8952d;
+}
+
+/* =========================================================
+   4. ESTILO NEUTRAL PARA EL ICONO DEL CALENDARIO
+   ========================================================= */
+html body .p-datepicker-trigger {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+  color: #6b7280;
+}
+
+html body .p-datepicker-trigger:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+/* =========================================================
+   5. CALENDARIO COMPACTO (Para que quepa bien en el modal)
+   ========================================================= */
+html body .p-datepicker {
+  font-size: 0.85rem;
+}
+html body .p-datepicker table td {
+  padding: 0.2rem;
+}
+html body .p-datepicker .p-datepicker-header {
+  padding: 0.5rem;
 }

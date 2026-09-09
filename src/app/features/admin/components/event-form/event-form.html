@@ -1,0 +1,28 @@
+<!-- Formulario con espacios amplios para que los FloatLabels respiren -->
+<form [formGroup]="eventForm" (ngSubmit)="saveEvent()" style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem;">
+
+  <span class="p-float-label">
+    <input id="titulo" pInputText formControlName="titulo" style="width: 100%" autocomplete="off" />
+    <label for="titulo">Título del Evento</label>
+  </span>
+
+  <span class="p-float-label">
+    <input id="enlace" pInputText formControlName="enlace" style="width: 100%" autocomplete="off" />
+    <label for="enlace">Enlace (ej. boda-juan-maria)</label>
+  </span>
+
+  <span class="p-float-label" style="position: relative;">
+    <p-calendar id="fecha" formControlName="fecha" dateFormat="yy-mm-dd" dataType="string" appendTo="body" [style]="{'width': '100%'}"></p-calendar>
+    <label for="fecha">Fecha del Evento</label>
+
+    <!-- Icono posicionado a la fuerza por dentro -->
+    <i class="pi pi-calendar" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none;"></i>
+  </span>
+
+  <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+    <!-- Botón secundario para cancelar -->
+    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="ref.close()"></p-button>
+    <!-- Botón primario que hereda tu dorado global -->
+    <p-button label="Guardar Evento" type="submit" [disabled]="eventForm.invalid"></p-button>
+  </div>
+</form>

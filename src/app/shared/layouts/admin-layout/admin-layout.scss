@@ -1,0 +1,190 @@
+/* Paleta de Marca NahoFlo */
+$brand-gold: #cca633;
+$brand-pink: #f22c7a;
+$bg-warm: #fcfbf9;
+
+/* Obliga a la etiqueta invisible de Angular a expandirse */
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.admin-layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: $bg-warm;
+}
+
+/* Panel Lateral Base */
+.admin-sidebar {
+  width: 270px;
+  flex-shrink: 0; /* CRÍTICO: Evita que el panel se encoja */
+  background-color: #ffffff;
+  border-right: 1px solid rgba($brand-gold, 0.15);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.02);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Cabecera del Sidebar (Botón + Logo) */
+.sidebar-header {
+  padding: 1.5rem 1rem;
+  border-bottom: 1px solid rgba($brand-gold, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .sidebar-toggle {
+    color: #4b5563;
+    min-width: 45px;
+    padding: 0.5rem;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba($brand-gold, 0.1);
+      color: $brand-gold;
+    }
+  }
+
+  .brand-logo {
+    max-width: 130px;
+    height: auto;
+    max-height: 60px;
+    object-fit: contain;
+    transition: opacity 0.2s ease, transform 0.3s ease;
+  }
+}
+
+/* Estilos base del menú PrimeNG */
+:host ::ng-deep p-menu .p-menu {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 1rem 0;
+
+  .p-submenu-header {
+    background-color: transparent;
+    font-size: 0.75rem;
+    color: $brand-gold;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.5rem 1.5rem 0.5rem;
+    transition: opacity 0.2s ease;
+  }
+
+  .p-menuitem-link {
+    padding: 0.8rem 1.5rem;
+    color: #4b5563;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    border-left: 3px solid transparent;
+    display: flex;
+    align-items: center;
+
+    .p-menuitem-icon {
+      color: #9ca3af;
+      margin-right: 1rem;
+      font-size: 1.1rem;
+      transition: all 0.25s ease;
+    }
+
+    .p-menuitem-text {
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover {
+      background-color: rgba($brand-pink, 0.04);
+      color: $brand-pink;
+      border-left: 3px solid $brand-pink;
+      .p-menuitem-icon { color: $brand-pink; }
+    }
+  }
+}
+
+/* =========================================
+   ESTADO MINIMIZADO (MINI-SIDEBAR)
+   ========================================= */
+.admin-layout-wrapper.sidebar-mini {
+  .admin-sidebar {
+    width: 75px;
+  }
+
+  .sidebar-header {
+    padding: 1.5rem 0;
+    justify-content: center;
+  }
+
+  .brand-logo {
+    display: none;
+  }
+}
+
+/* CRÍTICO: Esta regla :host debe ir en la raíz, NO anidada */
+:host ::ng-deep .sidebar-mini p-menu .p-menu {
+
+  /* Ocultamos los títulos (Ej: PANEL DE CONTROL) */
+  .p-submenu-header {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+
+  /* Ocultamos el texto de los enlaces y centramos el ícono */
+  .p-menuitem-link {
+    padding: 0.8rem 0;
+    justify-content: center;
+
+    .p-menuitem-icon {
+      margin-right: 0;
+      font-size: 1.4rem;
+    }
+
+    .p-menuitem-text {
+      display: none;
+    }
+  }
+}
+
+/* =========================================
+   ÁREA DERECHA (¡LA CLASE QUE FALTABA!)
+   ========================================= */
+.admin-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Barra superior */
+.admin-topbar {
+  background-color: #ffffff;
+  height: 75px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  border-bottom: 1px solid rgba($brand-gold, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01);
+
+  .topbar-title {
+    font-weight: 700;
+    color: #1f2937;
+    font-size: 1.2rem;
+  }
+}
+
+.content-area {
+  padding: 2.5rem;
+  flex: 1;
+  overflow-y: auto;
+}

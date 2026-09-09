@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 import { PublicLayout } from './shared/layouts/public-layout/public-layout';
-import { AdminLayout } from './shared/layouts/admin-layout/admin-layout';
+import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
 import { EventLayout } from './shared/layouts/event-layout/event-layout';
 import { authGuard } from './core/guards/auth-guard';
+import { DashboardComponent } from './features/admin/dashboard/dashboard';
 
 
 export const routes: Routes = [
@@ -21,10 +22,16 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    component: AdminLayout,
-    canActivate: [authGuard], // <--- EL CANDADO DE SEGURIDAD
+    component: AdminLayoutComponent,
+    canActivate: [authGuard],
     children: [
-      // Más adelante cargaremos el dashboard protegido aquí
+      {
+        path: '', // Al entrar a /admin, cargará el Dashboard por defecto
+        loadComponent: () =>
+          import('./features/admin/dashboard/dashboard').then(
+            (m) => m.DashboardComponent,
+          ),
+      },
     ],
   },
   {

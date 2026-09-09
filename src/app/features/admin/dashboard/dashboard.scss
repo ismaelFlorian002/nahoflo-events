@@ -1,0 +1,150 @@
+/* =========================================================
+   CONTENEDORES PRINCIPALES
+   ========================================================= */
+.dashboard-container {
+  padding: 2rem;
+  width: 100%;
+  /* Eliminamos el max-width y el margin auto para que ocupe todo el ancho */
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  .dashboard-title {
+    margin: 0;
+    font-size: 1.75rem;
+    color: #0f172a; /* Casi negro para contraste elegante */
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .dashboard-subtitle {
+    margin: 0.25rem 0 0 0;
+    color: #64748b; /* Gris neutro */
+    font-size: 0.95rem;
+  }
+}
+
+.table-card {
+  background: #ffffff;
+  border-radius: 16px; /* Bordes más redondeados estilo app móvil */
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); /* Sombra súper difuminada */
+  padding: 1.5rem;
+  border: 1px solid #f1f5f9;
+}
+
+/* =========================================================
+   BÚSQUEDA Y UTILIDADES DE TABLA
+   ========================================================= */
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 1.5rem;
+
+  .search-wrapper {
+    width: 100%;
+    max-width: 320px;
+
+    input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 0.6rem 0.6rem 0.6rem 2.5rem; /* Espacio para el icono */
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+
+      &:focus {
+        border-color: #cca633;
+        box-shadow: 0 0 0 3px rgba(204, 166, 51, 0.15); /* Halo dorado al enfocar */
+      }
+    }
+  }
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.fw-medium {
+  font-weight: 600;
+  color: #334155;
+}
+
+.text-secondary {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.url-badge {
+  background-color: #f8fafc;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-family: monospace; /* Para dar estilo de código/URL */
+  font-size: 0.85rem;
+}
+
+/* =========================================================
+   ENCAPSULACIÓN PROFUNDA (Override de PrimeNG)
+   ========================================================= */
+:host ::ng-deep {
+  .modern-table {
+    /* Cabeceras minimalistas */
+    .p-datatable-thead > tr > th {
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 2px solid #f1f5f9;
+      padding: 1rem 0.5rem;
+    }
+
+    /* Filas limpias y espaciadas */
+    .p-datatable-tbody > tr > td {
+      border-bottom: 1px solid #f8fafc;
+      padding: 1rem 0.5rem;
+    }
+
+    /* Hover sutil en la fila entera */
+    .p-datatable-tbody > tr:hover {
+      background: #f8fafc;
+      transition: background 0.2s ease;
+    }
+
+    /* Limpiar el Toolbar nativo */
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    /* Paginador elegante */
+    .p-paginator {
+      background: transparent;
+      border: none;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    /* Estilos del estado vacío */
+    td.empty-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: #94a3b8;
+
+      .empty-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #cbd5e1;
+      }
+      p { margin: 0; line-height: 1.5; }
+    }
+  }
+}
