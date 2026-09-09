@@ -58,8 +58,13 @@
           <td style="text-align: right;">
             <div class="action-buttons">
               <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary" (onClick)="openDialog(evento)"></p-button>
-              <p-button icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (onClick)="deleteEvent(evento.id)"></p-button>
-            </div>
+              <p-button
+                [icon]="evento.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"
+                [rounded]="true"
+                [text]="true"
+                [severity]="evento.estaActivo ? 'danger' : 'success'"
+                (onClick)="toggleEstado(evento)">
+              </p-button>            </div>
           </td>
         </tr>
       </ng-template>

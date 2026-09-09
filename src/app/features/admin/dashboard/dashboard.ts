@@ -67,9 +67,15 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
-  async deleteEvent(id: string) {
-    if (confirm('¿Estás seguro de eliminar este evento?')) {
-      await this.eventService.deleteEvent(id);
+  async toggleEstado(evento: any) {
+    // Solo para que el mensaje de alerta tenga sentido
+    const accion = evento.estaActivo ? 'desactivar (pasar a borrador)' : 'activar';
+
+    if (confirm(`¿Estás seguro de ${accion} este evento?`)) {
+      // Magia: !evento.estaActivo invierte el valor (si es true lo hace false, y viceversa)
+      await this.eventService.updateEvent(evento.id, { estaActivo: !evento.estaActivo });
+
+      // Recargamos la tabla
       this.eventos = await this.eventService.getEvents();
       this.cdr.detectChanges();
     }
