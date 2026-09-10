@@ -1,28 +1,186 @@
-<!-- Formulario con espacios amplios para que los FloatLabels respiren -->
-<form [formGroup]="eventForm" (ngSubmit)="saveEvent()" style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem;">
+<form [formGroup]="eventForm" (ngSubmit)="saveEvent()" style="display: flex; flex-direction: column; height: 100%;">
 
-  <span class="p-float-label">
-    <input id="titulo" pInputText formControlName="titulo" style="width: 100%" autocomplete="off" />
-    <label for="titulo">Título del Evento</label>
-  </span>
+  <p-tabView styleClass="w-full">
 
-  <span class="p-float-label">
-    <input id="enlace" pInputText formControlName="enlace" style="width: 100%" autocomplete="off" />
-    <label for="enlace">Enlace (ej. boda-juan-maria)</label>
-  </span>
+    <!-- PESTAÑA 1: DATOS BÁSICOS -->
+    <!-- PESTAÑA 1: DATOS BÁSICOS -->
+    <p-tabPanel header="1. Básico">
+      <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem;">
 
-  <span class="p-float-label" style="position: relative;">
-    <p-calendar id="fecha" formControlName="fecha" dateFormat="yy-mm-dd" dataType="string" appendTo="body" [style]="{'width': '100%'}"></p-calendar>
-    <label for="fecha">Fecha del Evento</label>
+        <!-- 1. NOMBRE INTERNO (Para el panel) -->
+        <span class="p-float-label">
+          <input id="nombreEvento" pInputText formControlName="nombreEvento" style="width: 100%" autocomplete="off" />
+          <label for="nombreEvento">Nombre del Evento (Para tu control interno, ej. Boda Ale y Felipe)</label>
+        </span>
 
-    <!-- Icono posicionado a la fuerza por dentro -->
-    <i class="pi pi-calendar" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none;"></i>
-  </span>
+        <!-- 2. TEXTOS PÚBLICOS (Para el diseño de la invitación) -->
+        <div style="display: flex; gap: 1rem;">
+          <span class="p-float-label" style="flex: 1;">
+            <input id="preTitulo" pInputText formControlName="preTitulo" style="width: 100%" autocomplete="off" />
+            <label for="preTitulo">Frase (ej. Nuestra Boda, Mis XV Años)</label>
+          </span>
+          <span class="p-float-label" style="flex: 2;">
+            <input id="titulo" pInputText formControlName="titulo" style="width: 100%" autocomplete="off" />
+            <label for="titulo">Nombres de Invitación (ej. Alejandra & Felipe)</label>
+          </span>
+        </div>
 
-  <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
-    <!-- Botón secundario para cancelar -->
-    <p-button label="Cancelar" severity="secondary" [text]="true" (onClick)="ref.close()"></p-button>
-    <!-- Botón primario que hereda tu dorado global -->
+        <!-- ENLACE Y FECHA (Mitad y mitad) -->
+        <div style="display: flex; gap: 1rem;">
+
+          <!-- Mitad Izquierda: Enlace -->
+          <span class="p-float-label" style="flex: 1;">
+            <input id="enlace" pInputText formControlName="enlace" style="width: 100%" autocomplete="off" />
+            <label for="enlace">URL Pública (ej. boda-ale-felipe)</label>
+          </span>
+
+          <!-- Mitad Derecha: Fecha y Hora -->
+          <span class="p-float-label" style="flex: 1; position: relative;">
+            <p-calendar id="fecha" formControlName="fecha" [showTime]="true" hourFormat="12" dateFormat="dd/mm/yy" appendTo="body" [style]="{'width': '100%'}"></p-calendar>
+            <label for="fecha">Fecha y Hora del Evento</label>
+            <i class="pi pi-calendar" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none;"></i>
+          </span>
+
+        </div>
+
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="2. Ubicaciones">
+      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem;">
+
+        <div>
+          <h4 style="margin: 0 0 1.5rem 0; color: #cca633;">Ceremonia (Iglesia)</h4>
+          <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+            <span class="p-float-label">
+              <input pInputText formControlName="ceremoniaLugar" style="width: 100%" autocomplete="off" />
+              <label>Lugar (ej. Basílica de Guadalupe)</label>
+            </span>
+            <span class="p-float-label">
+              <input pInputText formControlName="ceremoniaUrl" style="width: 100%" autocomplete="off" />
+              <label>Link de Google Maps</label>
+            </span>
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+              <label style="color: #64748b; font-size: 0.85rem;">Foto de la Fachada</label>
+
+              <p-fileUpload *ngIf="!fotoCeremoniaFile" mode="basic" chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*" (onSelect)="onEstructuralSelected($event, 'ceremonia')"></p-fileUpload>
+
+              <div *ngIf="fotoCeremoniaFile" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 400px; background: #f8fafc;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="pi pi-image" style="color: #94a3b8; font-size: 1.2rem;"></i>
+                  <span style="color: #334155; font-weight: 500; font-size: 0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ fotoCeremoniaFile.name }}</span>
+                </div>
+                <div style="display: flex; gap: 0.25rem;">
+                  <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info" (onClick)="previewImage(fotoCeremoniaFile)"></p-button>
+                  <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" (onClick)="removeEstructuralFile('ceremonia')"></p-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 1rem 0;">
+
+        <div>
+          <h4 style="margin: 0 0 1.5rem 0; color: #cca633;">Recepción (Salón)</h4>
+          <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+            <span class="p-float-label">
+              <input pInputText formControlName="recepcionLugar" style="width: 100%" autocomplete="off" />
+              <label>Lugar (ej. Salón Los Arcángeles)</label>
+            </span>
+            <span class="p-float-label">
+              <input pInputText formControlName="recepcionUrl" style="width: 100%" autocomplete="off" />
+              <label>Link de Google Maps</label>
+            </span>
+            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+              <label style="color: #64748b; font-size: 0.85rem;">Foto de la Recepción</label>
+
+              <p-fileUpload *ngIf="!fotoRecepcionFile" mode="basic" chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*" (onSelect)="onEstructuralSelected($event, 'recepcion')"></p-fileUpload>
+
+              <div *ngIf="fotoRecepcionFile" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 400px; background: #f8fafc;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <i class="pi pi-image" style="color: #94a3b8; font-size: 1.2rem;"></i>
+                  <span style="color: #334155; font-weight: 500; font-size: 0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ fotoRecepcionFile.name }}</span>
+                </div>
+                <div style="display: flex; gap: 0.25rem;">
+                  <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info" (onClick)="previewImage(fotoRecepcionFile)"></p-button>
+                  <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" (onClick)="removeEstructuralFile('recepcion')"></p-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="3. Galería">
+      <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem;">
+
+        <span class="p-float-label">
+          <textarea pInputTextarea formControlName="mensaje" rows="3" style="width: 100%; resize: none;"></textarea>
+          <label>Frase / Mensaje</label>
+        </span>
+
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+          <label style="color: #cca633; font-weight: bold; font-size: 0.9rem;">Foto Principal (Fondo Gigante)</label>
+
+          <p-fileUpload *ngIf="!fotoPrincipalFile" mode="basic" chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*" (onSelect)="onEstructuralSelected($event, 'principal')"></p-fileUpload>
+
+          <div *ngIf="fotoPrincipalFile" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 400px; background: #f8fafc;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <i class="pi pi-image" style="color: #94a3b8; font-size: 1.2rem;"></i>
+              <span style="color: #334155; font-weight: 500; font-size: 0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ fotoPrincipalFile.name }}</span>
+            </div>
+            <div style="display: flex; gap: 0.25rem;">
+              <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info" (onClick)="previewImage(fotoPrincipalFile)"></p-button>
+              <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" (onClick)="removeEstructuralFile('principal')"></p-button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+          <label style="color: #0f172a; font-weight: bold; font-size: 0.9rem;">Galería Libre (Varias fotos)</label>
+          <p style="margin: 0 0 0.5rem 0; font-size: 0.8rem; color: #64748b;">Arrastra aquí todas las fotos de la sesión.</p>
+
+          <!-- AQUI AGREGAMOS #galeriaUploader -->
+          <p-fileUpload #galeriaUploader [multiple]="true" accept="image/*" maxFileSize="10000000" [showUploadButton]="false" [showCancelButton]="false" chooseLabel="Elegir Fotos" (onSelect)="onGaleriaSelected($event)">
+
+            <ng-template pTemplate="empty">
+              <div style="display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 3rem 0; border: 1px dashed #cbd5e1; border-radius: 8px; background: #f8fafc;">
+                <i class="pi pi-cloud-upload" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
+                <p style="margin: 0; color: #64748b; font-size: 1.1rem;">Arrastra y suelta tus fotos aquí</p>
+              </div>
+            </ng-template>
+
+            <!-- AQUI USAMOS NUESTRA FUNCIÓN ABSOLUTA -->
+            <ng-template pTemplate="file" let-file let-index="index">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                  <img [src]="file.objectURL" width="50" height="50" style="border-radius: 6px; object-fit: cover; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" />
+                  <div style="display: flex; flex-direction: column;">
+                    <span style="color: #334155; font-weight: 500; font-size: 0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ file.name }}</span>
+                    <span style="color: #94a3b8; font-size: 0.8rem;">{{ (file.size / 1024).toFixed(1) }} KB</span>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <p-button type="button" icon="pi pi-eye" [rounded]="true" [text]="true" severity="info" (onClick)="previewImage(file)"></p-button>
+                  <p-button type="button" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger" (onClick)="removeGaleriaFoto($event, file, galeriaUploader)"></p-button>
+                </div>
+              </div>
+            </ng-template>
+
+          </p-fileUpload>
+        </div>
+
+      </div>
+    </p-tabPanel>
+
+  </p-tabView>
+
+  <div style="position: sticky; bottom: -1.5rem; margin: 1rem -1.5rem -1.5rem -1.5rem; padding: 1.5rem; background: #ffffff; z-index: 100; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid #e2e8f0;">
+    <p-button type="button" label="Cancelar" severity="secondary" [text]="true" (onClick)="ref.close()"></p-button>
     <p-button label="Guardar Evento" type="submit" [disabled]="eventForm.invalid"></p-button>
   </div>
+
 </form>

@@ -49,7 +49,7 @@ export class DashboardComponent implements OnInit {
     const ref = this.dialogService.open(EventFormComponent, {
       // 1. Título dinámico: Si hay datos, dice "Editar", si no, dice "Crear"
       header: eventoAEditar ? 'Editar Evento' : 'Crear Nuevo Evento',
-      width: '600px',
+      width: '1200px',
       breakpoints: { '960px': '75vw', '640px': '90vw' },
       closable: true,
       focusOnShow: false,
