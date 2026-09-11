@@ -7,6 +7,8 @@ import { TagModule } from 'primeng/tag';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { EventService } from '../../../core/services/eventService';
 import { EventFormComponent } from '../components/event-form/event-form';
+import { AsistenciasModalComponent } from '../components/asistencias-modal/asistencias-modal.component';
+import { DockModule } from 'primeng/dock';
 
 // CORRECCIÓN 1: La ruta del servicio (3 niveles arriba)
 
@@ -22,6 +24,7 @@ import { EventFormComponent } from '../components/event-form/event-form';
     TableModule,
     TagModule,
     DynamicDialogModule,
+    DockModule,
   ],
   providers: [DialogService],
 
@@ -79,5 +82,18 @@ export class DashboardComponent implements OnInit {
       this.eventos = await this.eventService.getEvents();
       this.cdr.detectChanges();
     }
+  }
+
+  // Abre el modal desacoplado de asistencias
+  verAsistencias(evento: any) {
+    this.dialogService.open(AsistenciasModalComponent, {
+      header: `Lista de Invitados — ${evento.titulo || evento.nombreEvento}`,
+      width: '1000px',
+      breakpoints: { '960px': '85vw', '640px': '95vw' },
+      closable: true,
+      dismissableMask: true,
+      focusOnShow: false,
+      data: evento,
+    });
   }
 }

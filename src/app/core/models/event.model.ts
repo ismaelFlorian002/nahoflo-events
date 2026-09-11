@@ -1,8 +1,31 @@
 export interface Evento {
   id?: string;
-  enlace: string; // Ej: "boda-ana-luis"
-  titulo: string; // Ej: "Enlace Matrimonial Ana y Luis"
-  fecha: string; // Fecha del evento
+  estaActivo: boolean; // Interruptor para habilitar/deshabilitar la invitación
   tipo: string; // Ej: "Boda", "XV Años", "Bautizo"
-  estaActivo: boolean; // Interruptor para apagar la invitación
+
+  // Control interno del panel
+  nombreEvento: string; // Ej: "Boda Ale y Felipe - 2026"
+
+  // Textos públicos de la invitación
+  preTitulo?: string; // Ej: "Nuestra Boda", "Mis XV Años"
+  titulo: string; // Ej: "Alejandra & Felipe"
+  enlace: string; // Slug único para la URL: "boda-ale-felipe"
+  fecha: Date | string; // Fecha y hora del evento
+  mensaje?: string; // Frase / dedicatoria para los invitados
+
+  // Ubicaciones (Ceremonia y Recepción)
+  ceremoniaLugar?: string;
+  ceremoniaUrl?: string; // Enlace a Google Maps
+  recepcionLugar?: string;
+  recepcionUrl?: string; // Enlace a Google Maps
+
+  // URLs de las imágenes persistidas en Firebase Storage
+  fotoPrincipalUrl?: string;
+  fotoCeremoniaUrl?: string;
+  fotoRecepcionUrl?: string;
+  galeriaUrls?: string[];
+
+  pinAnfitrion?: string; // <-- NUEVO: PIN de 4 a 6 dígitos para los novios/anfitriones
 }
+
+

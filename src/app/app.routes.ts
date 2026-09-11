@@ -3,8 +3,6 @@ import { PublicLayout } from './shared/layouts/public-layout/public-layout';
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
 import { EventLayout } from './shared/layouts/event-layout/event-layout';
 import { authGuard } from './core/guards/auth-guard';
-import { DashboardComponent } from './features/admin/dashboard/dashboard';
-
 
 export const routes: Routes = [
   {
@@ -28,17 +26,27 @@ export const routes: Routes = [
       {
         path: '', // Al entrar a /admin, cargará el Dashboard por defecto
         loadComponent: () =>
-          import('./features/admin/dashboard/dashboard').then(
-            (m) => m.DashboardComponent,
-          ),
+          import('./features/admin/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
     ],
   },
   {
-    path: 'e/:eventId', // Ruta dinámica para los eventos (Ej. /e/mis-xv-nahomi)
+    path: 'e/:slug', // Slug amigable del evento (ej. /e/boda-ale-felipe)
     component: EventLayout,
     children: [
-      // Más adelante cargaremos la Invitación y el Álbum aquí
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/invitation/invitation.component').then((m) => m.InvitationComponent),
+      },
+      // RUTA NUEVA: Panel privado para los novios/anfitriones
+      {
+        path: 'asistencias',
+        loadComponent: () =>
+          import('./features/anfitrion-asistencias/anfitrion-asistencias.component').then(
+            (m) => m.AnfitrionAsistenciasComponent,
+          ),
+      },
     ],
   },
   {

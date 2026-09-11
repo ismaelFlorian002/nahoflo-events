@@ -1,0 +1,173 @@
+<div class="anfitrion-wrapper">
+
+  @if (cargando()) {
+    <div class="center-box">
+      <p-progressSpinner strokeWidth="4" fill="transparent" animationDuration=".8s"></p-progressSpinner>
+      <p>Cargando información...</p>
+    </div>
+  } @else if (notFound()) {
+    <div class="center-box">
+      <i class="pi pi-exclamation-circle error-icon"></i>
+      <h2>Evento no disponible</h2>
+      <p>Verifica que el enlace sea el correcto.</p>
+    </div>
+  } @else if (evento(); as ev) {
+
+    <!-- 1. PANTALLA DE BLOQUEO POR PIN -->
+    @if (!pinDesbloqueado()) {
+      <div class="pin-card">
+        <div class="pin-icon-wrap">
+          <i class="pi pi-lock"></i>
+        </div>
+
+        <h2>Panel de Anfitrión</h2>
+        <p class="pin-subtitle">
+          Ingresa el PIN de seguridad de <strong>{{ ev.titulo }}</strong> para consultar tu lista de invitados.
+        </p>
+
+        <form (ngSubmit)="verificarPin()" class="pin-form">
+          <input
+            type="password"
+            [(ngModel)]="pinIngresado"
+            name="pin"
+            maxlength="6"
+            placeholder="Introduce tu PIN"
+            class="pin-input"
+            autocomplete="off"
+            autofocus />
+
+          @if (errorPin()) {
+            <span class="pin-error-text">
+              <i class="pi pi-exclamation-triangle"></i> PIN incorrecto. Intenta de nuevo.
+            </span>
+          }
+
+          <button type="submit" class="pin-submit-btn" [disabled]="!pinIngresado">
+            Ingresar al Panel
+          </button>
+        </form>
+
+        <a [routerLink]="['/e', ev.enlace]" class="back-link">
+          ← Volver a la Invitación
+        </a>
+      </div>
+    }
+
+    <!-- 2. PANEL DESBLOQUEADO (VISTA DEL CLIENTE) -->
+    @else {
+      <div class="dashboard-container">
+
+        <header class="dash-header">
+          <div>
+            <span class="dash-badge">Control de Asistencias</span>
+            <h1 class="dash-title">{{ ev.titulo }}</h1>
+          </div>
+          <a [routerLink]="['/e', ev.enlace]" class="btn-invitacion">
+            <i class="pi pi-external-link"></i>
+            <span>Ver Invitación</span>
+          </a>
+        </header>
+
+        <!-- TARJETAS DE MÉTRICAS -->
+        <div class="kpi-grid">
+
+          <div class="kpi-card pases">
+            <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-label">Pases Totales (Platillos)</span>
+              <span class="kpi-value">{{ totalPases() }}</span>
+            </div>
+          </div>
+
+          <div class="kpi-card confirmed">
+            <div class="kpi-icon"><i class="pi pi-check"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-label">Confirmados (Sí)</span>
+              <span class="kpi-value">{{ totalConfirmados() }}</span>
+            </div>
+          </div>
+
+          <div class="kpi-card declined">
+            <div class="kpi-icon"><i class="pi pi-times"></i></div>
+            <div class="kpi-info">
+              <span class="kpi-label">No asistirán</span>
+              <span class="kpi-value">{{ totalCancelados() }}</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- TABLA DE INVITADOS -->
+        <div class="table-card">
+          <p-table
+            [value]="invitados()"
+            [paginator]="invitados().length > 10"
+            [rows]="10"
+            responsiveLayout="scroll"
+            styleClass="p-datatable-striped">
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Nombre / Familia</th>
+                <th>Respuesta</th>
+                <th style="text-align: center;">Pases</th>
+                <th>WhatsApp</th>
+                <th>Mensaje</th>
+                <th>Fecha</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-invitado>
+              <tr>
+                <td><strong style="color: #0f172a;">{{ invitado.nombre }}</strong></td>
+                <td>
+                  <p-tag
+                    [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
+                    [severity]="invitado.asistira ? 'success' : 'danger'"
+                    [rounded]="true">
+                  </p-tag>
+                </td>
+                <td style="text-align: center;">
+                  <span class="pases-count" [class.muted]="!invitado.asistira">
+                    {{ invitado.asistira ? invitado.pasesConfirmados : 0 }}
+                  </span>
+                </td>
+                <td>
+                  @if (invitado.telefono) {
+                    <a [href]="'https://wa.me/' + invitado.telefono" target="_blank" class="wa-btn">
+                      <i class="pi pi-whatsapp"></i>
+                      <span>{{ invitado.telefono }}</span>
+                    </a>
+                  } @else {
+                    <span style="color: #cbd5e1;">-</span>
+                  }
+                </td>
+                <td>
+                  <span class="msg-text" [title]="invitado.mensaje || ''">
+                    {{ invitado.mensaje || '-' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="date-text">{{ formatearFecha(invitado.fechaConfirmacion) }}</span>
+                </td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="6" style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
+                  <i class="pi pi-inbox" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;"></i>
+                  Aún no hay invitados registrados para este evento.
+                </td>
+              </tr>
+            </ng-template>
+
+          </p-table>
+        </div>
+
+      </div>
+    }
+
+  }
+
+</div>

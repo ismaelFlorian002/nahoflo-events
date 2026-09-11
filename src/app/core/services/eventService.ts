@@ -10,8 +10,11 @@ import {
   updateDoc,
   deleteDoc,
   getDocs,
+  query,
+  where,
 } from '@angular/fire/firestore';
 import { Evento } from '../models/event.model';
+import { InvitadoModel } from '../models/invitado.model';
 
 @Injectable({
   providedIn: 'root',
@@ -68,5 +71,46 @@ export class EventService {
       console.error('Error al subir la imagen:', error);
       throw error;
     }
+  }
+
+  // Convertimos a Array nativo con Array.from() para soportar FileList y evitar colisiones
+  async uploadMultipleImages(files: any, folder: string = 'eventos/galeria'): Promise<string[]> {
+    const fileList = Array.from(files || []) as File[];
+    if (fileList.length === 0) return [];
+    const uploadPromises = fileList.map((file) => this.uploadImage(file, folder));
+    return Promise.all(uploadPromises);
+  }
+
+  // Busca un evento por su URL personalizada (slug) asegurando que esté activo
+  async getEventBySlug(slug: string): Promise<Evento | null> {
+    const refColeccion = collection(this.firestore, 'eventos');
+    const q = query(refColeccion, where('enlace', '==', slug), where('estaActivo', '==', true));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      return null;
+    }
+
+    const docSnap = snapshot.docs[0];
+    return { id: docSnap.id, ...docSnap.data() } as Evento;
+  }
+
+  // Guarda la confirmación en la subcolección 'invitados' del evento
+  async confirmarAsistencia(eventoId: string, datosInvitado: InvitadoModel) {
+    // Ruta en Firestore: eventos/{eventoId}/invitados
+    const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/invitados`);
+
+    return addDoc(refSubcoleccion, {
+      ...datosInvitado,
+      fechaConfirmacion: new Date(),
+    });
+  }
+
+  // Obtiene la lista completa de confirmaciones (invitados) de un evento
+  async getInvitados(eventoId: string): Promise<InvitadoModel[]> {
+    const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/invitados`);
+    const snapshot = await getDocs(refSubcoleccion);
+
+    return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as InvitadoModel);
   }
 }

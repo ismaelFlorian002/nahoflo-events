@@ -1,0 +1,286 @@
+@if (isLoading()) {
+  <div class="state-container">
+    <p-progressSpinner strokeWidth="4" fill="transparent" animationDuration=".8s"></p-progressSpinner>
+    <p>Cargando invitación...</p>
+  </div>
+} @else if (notFound()) {
+  <div class="state-container not-found">
+    <i class="pi pi-exclamation-circle"></i>
+    <h2>Invitación no disponible</h2>
+    <p>Este evento no existe o fue deshabilitado temporalmente por el anfitrión.</p>
+  </div>
+} @else if (evento(); as ev) {
+  <main class="invitation-wrapper">
+
+    <!-- SECCIÓN HERO / PORTADA -->
+    <header class="hero-section" [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'">
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content">
+        <span class="hero-subtitle">{{ ev.preTitulo || ev.tipo }}</span>
+        <h1 class="hero-title">{{ ev.titulo }}</h1>
+
+        @if (ev.mensaje) {
+          <p class="hero-quote">"{{ ev.mensaje }}"</p>
+        }
+
+        <!-- CONTADOR REGRESIVO -->
+        <div class="countdown-card">
+          <p class="countdown-label">FALTAN</p>
+
+          @if (eventoFinalizado()) {
+            <p class="event-finished">¡Hoy es el gran día!</p>
+          } @else {
+            <div class="countdown-grid">
+              <div class="countdown-box">
+                <span class="countdown-number">{{ dias() }}</span>
+                <span class="countdown-text">Días</span>
+              </div>
+              <span class="countdown-separator">:</span>
+              <div class="countdown-box">
+                <span class="countdown-number">{{ horas() }}</span>
+                <span class="countdown-text">Hs</span>
+              </div>
+              <span class="countdown-separator">:</span>
+              <div class="countdown-box">
+                <span class="countdown-number">{{ minutos() }}</span>
+                <span class="countdown-text">Min</span>
+              </div>
+              <span class="countdown-separator">:</span>
+              <div class="countdown-box">
+                <span class="countdown-number">{{ segundos() }}</span>
+                <span class="countdown-text">Seg</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+    <!-- SECCIÓN DE UBICACIONES -->
+    <section class="locations-section">
+      <div class="section-header">
+        <span class="section-subtitle">¿DÓNDE & CUÁNDO?</span>
+        <h2 class="section-title">Ubicaciones</h2>
+        <div class="golden-divider"></div>
+      </div>
+
+      <div class="locations-grid">
+
+        <!-- TARJETA: CEREMONIA -->
+        @if (ev.ceremoniaLugar || ev.fotoCeremoniaUrl) {
+          <article class="location-card">
+            @if (ev.fotoCeremoniaUrl) {
+              <div class="location-image-wrapper">
+                <img [src]="ev.fotoCeremoniaUrl" alt="Lugar de la Ceremonia" class="location-image" />
+              </div>
+            }
+
+            <div class="location-body">
+              <div class="location-badge">
+                <i class="pi pi-heart"></i>
+                <span>Ceremonia</span>
+              </div>
+
+              <h3 class="location-name">{{ ev.ceremoniaLugar || 'Lugar por confirmar' }}</h3>
+
+              @if (ev.ceremoniaUrl) {
+                <a [href]="ev.ceremoniaUrl" target="_blank" rel="noopener noreferrer" class="location-btn">
+                  <i class="pi pi-map-marker"></i>
+                  <span>Ver en Google Maps</span>
+                </a>
+              }
+            </div>
+          </article>
+        }
+
+        <!-- TARJETA: RECEPCIÓN -->
+        @if (ev.recepcionLugar || ev.fotoRecepcionUrl) {
+          <article class="location-card">
+            @if (ev.fotoRecepcionUrl) {
+              <div class="location-image-wrapper">
+                <img [src]="ev.fotoRecepcionUrl" alt="Lugar de la Recepción" class="location-image" />
+              </div>
+            }
+
+            <div class="location-body">
+              <div class="location-badge">
+                <i class="pi pi-sparkles"></i>
+                <span>Recepción</span>
+              </div>
+
+              <h3 class="location-name">{{ ev.recepcionLugar || 'Lugar por confirmar' }}</h3>
+
+              @if (ev.recepcionUrl) {
+                <a [href]="ev.recepcionUrl" target="_blank" rel="noopener noreferrer" class="location-btn">
+                  <i class="pi pi-map-marker"></i>
+                  <span>Ver en Google Maps</span>
+                </a>
+              }
+            </div>
+          </article>
+        }
+
+      </div>
+    </section>
+
+
+
+
+    <!-- SECCIÓN DE GALERÍA DE FOTOS -->
+    @if (ev.galeriaUrls && ev.galeriaUrls.length > 0) {
+      <section class="gallery-section">
+        <div class="section-header">
+          <span class="section-subtitle">MOMENTOS</span>
+          <h2 class="section-title">Nuestra Galería</h2>
+          <div class="golden-divider"></div>
+        </div>
+
+        <div class="gallery-grid">
+          @for (foto of ev.galeriaUrls; track $index) {
+            <div class="gallery-item">
+              <img [src]="foto" alt="Foto de la sesión" loading="lazy" class="gallery-thumb" />
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- SECCIÓN RSVP (CONFIRMACIÓN DE ASISTENCIA) -->
+    <section class="rsvp-section">
+      <div class="section-header">
+        <span class="section-subtitle">¿NOS ACOMPAÑAS?</span>
+        <h2 class="section-title">Confirma tu Asistencia</h2>
+        <div class="golden-divider"></div>
+      </div>
+
+      <div class="rsvp-card">
+        @if (rsvpEnviado()) {
+          <!-- PANTALLA DE ÉXITO TRAS CONFIRMAR -->
+          <div class="rsvp-success">
+            <i class="pi pi-check-circle success-icon"></i>
+            <h3>¡Muchas Gracias!</h3>
+            <p>Tu confirmación ha sido enviada con éxito. Nos entusiasma mucho compartir este día contigo.</p>
+          </div>
+        } @else {
+          <!-- FORMULARIO INTERACTIVO -->
+          <form [formGroup]="formRsvp" (ngSubmit)="enviarRsvp()" class="rsvp-form">
+
+            <!-- 1. Nombre completo -->
+            <div class="form-group">
+              <label for="nombre">Nombre completo o Familia *</label>
+              <input
+                id="nombre"
+                type="text"
+                formControlName="nombre"
+                placeholder="Ej. Familia Martínez o Juan Pérez"
+                class="form-control" />
+            </div>
+
+            <!-- 2. ¿Asistes? (Botones visuales de opción) -->
+            <div class="form-group">
+              <label>¿Podrás acompañarnos? *</label>
+              <div class="attendance-options">
+                <label class="attendance-btn" [class.selected]="formRsvp.get('asistira')?.value === true">
+                  <input type="radio" [value]="true" formControlName="asistira" class="sr-only" />
+                  <i class="pi pi-check"></i>
+                  <span>¡Sí, ahí estaré!</span>
+                </label>
+
+                <label class="attendance-btn" [class.selected]="formRsvp.get('asistira')?.value === false">
+                  <input type="radio" [value]="false" formControlName="asistira" class="sr-only" />
+                  <i class="pi pi-times"></i>
+                  <span>No podré asistir</span>
+                </label>
+              </div>
+            </div>
+
+          <!-- 3. Contador de Pases con PrimeNG (+ / -) -->
+          @if (formRsvp.get('asistira')?.value === true) {
+            <div class="form-group">
+              <label for="pases">Número de personas confirmadas</label>
+              <div class="pases-counter-wrapper">
+                <!-- 3. Contador de Pases Editorial -->
+                @if (formRsvp.get('asistira')?.value === true) {
+                  <div class="form-group">
+                    <label>Número de personas confirmadas</label>
+                    <div class="stepper-card">
+
+                      <button
+                        type="button"
+                        class="stepper-action-btn"
+                        (click)="decrementarPases()"
+                        [disabled]="(formRsvp.get('pasesConfirmados')?.value ?? 1) <= 1">
+                        <i class="pi pi-minus"></i>
+                      </button>
+
+                      <div class="stepper-display">
+                        <span class="stepper-count">{{ formRsvp.get('pasesConfirmados')?.value }}</span>
+                        <span class="stepper-unit">
+                      {{ formRsvp.get('pasesConfirmados')?.value === 1 ? 'Pase' : 'Pases' }}
+                    </span>
+                      </div>
+
+                      <button
+                        type="button"
+                        class="stepper-action-btn"
+                        (click)="incrementarPases()"
+                        [disabled]="(formRsvp.get('pasesConfirmados')?.value ?? 1) >= 20">
+                        <i class="pi pi-plus"></i>
+                      </button>
+
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+            <!-- 4. Teléfono (Opcional) -->
+            <div class="form-group">
+              <label for="telefono">Teléfono (WhatsApp)</label>
+              <input
+                id="telefono"
+                type="tel"
+                formControlName="telefono"
+                placeholder="Ej. 55 1234 5678"
+                class="form-control" />
+            </div>
+
+            <!-- 5. Mensaje / Dedicatoria -->
+            <div class="form-group">
+              <label for="mensaje">Dedicatoria o mensaje para los anfitriones</label>
+              <textarea
+                id="mensaje"
+                rows="3"
+                formControlName="mensaje"
+                placeholder="Escribe un mensaje cariñoso..."
+                class="form-control"></textarea>
+            </div>
+
+            <!-- Botón de Envío -->
+            <button
+              type="submit"
+              class="rsvp-submit-btn"
+              [disabled]="formRsvp.invalid || enviandoRsvp()">
+              @if (enviandoRsvp()) {
+                <span>Enviando confirmación...</span>
+              } @else {
+                <span>Confirmar Asistencia</span>
+              }
+            </button>
+
+          </form>
+        }
+      </div>
+    </section>
+
+    <!-- PIE DE PÁGINA CON ACCESO ANFITRIÓN DISCRETO -->
+    <footer class="invitation-footer">
+      <p class="studio-credit">Diseñado por <strong>NahoFlo Creative Studio</strong></p>
+      <a [routerLink]="['/e', ev.enlace, 'asistencias']" class="host-access-link">
+        <i class="pi pi-lock"></i>
+        <span>Acceso Anfitrión</span>
+      </a>
+    </footer>
+  </main>
+}
