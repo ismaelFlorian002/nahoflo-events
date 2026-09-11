@@ -1,0 +1,90 @@
+@if (recuerdo) {
+  <div class="preview-modal-contenedor">
+
+    <!-- FOTO EN ALTA DEFINICIÓN -->
+    <div class="imagen-wrapper">
+      <img [src]="recuerdo.fotoUrl" [alt]="'Foto de ' + recuerdo.nombreAutor" />
+    </div>
+
+    <!-- INFORMACIÓN DEL AUTOR ORIGINAL -->
+    <div class="info-original">
+      <div class="autor-fila">
+        <span class="autor-nombre">
+          <i class="pi pi-user"></i>
+          {{ recuerdo.nombreAutor }}
+        </span>
+        <span class="likes-badge">
+          <i class="pi pi-heart-fill"></i>
+          {{ recuerdo.meGusta || 0 }}
+        </span>
+      </div>
+
+      @if (recuerdo.mensaje) {
+        <p class="dedicatoria">"{{ recuerdo.mensaje }}"</p>
+      }
+    </div>
+
+    <!-- SECCIÓN DE COMENTARIOS TIPO INSTAGRAM -->
+    <div class="seccion-comentarios">
+      <div class="cabecera-comentarios">
+        <span class="titulo-comentarios">Comentarios</span>
+        <span class="conteo-badge">{{ comentarios().length }}</span>
+      </div>
+
+      <!-- LISTA DE COMENTARIOS CON SCROLL -->
+      <div class="lista-comentarios">
+        @if (comentarios().length === 0) {
+          <div class="sin-comentarios">
+            <i class="pi pi-comments"></i>
+            <p>Aún no hay comentarios. ¡Sé el primero en felicitar!</p>
+          </div>
+        } @else {
+          @for (c of comentarios(); track c.id || $index) {
+            <div class="burbuja-comentario">
+              <div class="avatar-inicial">
+                {{ c.autor.charAt(0).toUpperCase() }}
+              </div>
+              <div class="cuerpo-comentario">
+                <div class="autor-y-tiempo">
+                  <span class="comentario-autor">{{ c.autor }}</span>
+                  <span class="comentario-tiempo">{{ c.creadoEn | date: 'shortTime' }}</span>
+                </div>
+                <p class="comentario-texto">{{ c.texto }}</p>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- FORMULARIO PARA COMENTAR -->
+      <form [formGroup]="formComentario" (ngSubmit)="enviarComentario()" class="form-nuevo-comentario">
+        <div class="fila-nombre">
+          <input
+            pInputText
+            formControlName="autor"
+            placeholder="Tu nombre *"
+            class="input-nombre"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="fila-mensaje">
+          <input
+            pInputText
+            formControlName="texto"
+            placeholder="Escribe un comentario..."
+            class="input-texto"
+            autocomplete="off"
+          />
+          <p-button
+            type="submit"
+            icon="pi pi-send"
+            [loading]="enviando()"
+            [disabled]="formComentario.invalid || enviando()">
+          </p-button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+}

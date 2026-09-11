@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { EventService } from '../../../../core/services/eventService';
+import { EventService } from '../../../../core/services/event.service';
 import { CalendarModule } from 'primeng/calendar';
 import { TabViewModule } from 'primeng/tabview';
 import { InputTextareaModule } from 'primeng/inputtextarea';
@@ -12,6 +12,8 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
 import { ImagePreviewComponent } from './image-preview.component';
 import { PrimeNGConfig } from 'primeng/api';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 @Component({
   selector: 'app-event-form',
@@ -26,8 +28,11 @@ import { PrimeNGConfig } from 'primeng/api';
     InputTextareaModule,
     FileUploadModule,
     DialogModule,
+    InputSwitchModule,
+    SelectButtonModule,
   ],
   templateUrl: './event-form.html',
+  styleUrl: './event-form.scss',
 })
 export class EventFormComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -49,12 +54,28 @@ export class EventFormComponent implements OnInit {
   existingFotoRecepcionUrl?: string;
   existingGaleriaUrls: string[] = [];
 
+  existingMusicaFondoUrl?: string;
+  musicaFondoFile: File | null = null;
+
   fotoPrincipalFile: File | null = null;
   fotoCeremoniaFile: File | null = null;
   fotoRecepcionFile: File | null = null;
   galeriaFiles: File[] = [];
 
+  opcionesControlInvitados = [
+    { label: 'Inactivo', value: 'inactivo' },
+    { label: 'Básico (RSVP)', value: 'basico' },
+    { label: 'Total VIP (Pases QR)', value: 'total' },
+  ];
+
   eventForm = this.fb.group({
+    // Paquetes y servicios activos para este evento
+    modulos: this.fb.group({
+      tieneInvitacion: [true],
+      tipoControlInvitados: ['basico'],
+      tieneAlbum: [false],
+    }),
+
     nombreEvento: ['', Validators.required], // <-- NUEVO: Para uso interno del panel
     pinAnfitrion: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(6)]], // <-- NUEVO
 
@@ -114,7 +135,19 @@ export class EventFormComponent implements OnInit {
       this.existingFotoCeremoniaUrl = this.config.data.fotoCeremoniaUrl;
       this.existingFotoRecepcionUrl = this.config.data.fotoRecepcionUrl;
       this.existingGaleriaUrls = this.config.data.galeriaUrls || [];
+      this.existingMusicaFondoUrl = this.config.data.musicaFondoUrl;
       this.eventForm.patchValue({ ...this.config.data });
+
+      // Si es un evento anterior que no tenía el campo modulos, asignamos valores por defecto
+      if (!this.config.data.modulos) {
+        this.eventForm.patchValue({
+          modulos: {
+            tieneInvitacion: true,
+            tipoControlInvitados: 'basico',
+            tieneAlbum: false,
+          },
+        });
+      }
     }
   }
 
@@ -159,6 +192,15 @@ export class EventFormComponent implements OnInit {
         galeriaUrls = [...galeriaUrls, ...nuevasUrls];
       }
 
+      // 3. Subir música de fondo si se seleccionó una pista nueva
+      let musicaFondoUrl = this.existingMusicaFondoUrl;
+      if (this.musicaFondoFile) {
+        musicaFondoUrl = await this.eventService.uploadImage(
+          this.musicaFondoFile,
+          'eventos/musica',
+        );
+      }
+
       // 3. Empaquetar datos completos
       const eventData = {
         ...this.eventForm.value,
@@ -166,6 +208,7 @@ export class EventFormComponent implements OnInit {
         fotoCeremoniaUrl: fotoCeremoniaUrl || null,
         fotoRecepcionUrl: fotoRecepcionUrl || null,
         galeriaUrls: galeriaUrls,
+        musicaFondoUrl: musicaFondoUrl || null,
       };
 
       // 4. Guardar en Firestore
@@ -263,5 +306,25 @@ export class EventFormComponent implements OnInit {
   // Eliminar una foto específica de la galería guardada
   removeExistingGaleriaFoto(url: string) {
     this.existingGaleriaUrls = this.existingGaleriaUrls.filter((u) => u !== url);
+  }
+
+  onMusicaSelected(event: any) {
+    const file = event.files[0];
+    if (file) {
+      this.musicaFondoFile = file;
+    }
+  }
+
+  removeMusicaFile() {
+    this.musicaFondoFile = null;
+  }
+
+  removeExistingMusica() {
+    this.existingMusicaFondoUrl = undefined;
+  }
+
+  // Permite saber en el HTML si debemos mostrar las pestañas de la invitación
+  get tieneInvitacionActiva(): boolean {
+    return this.eventForm.get('modulos.tieneInvitacion')?.value ?? true;
   }
 }

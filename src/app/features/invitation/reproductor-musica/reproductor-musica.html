@@ -1,0 +1,31 @@
+<aside class="contenedor-flotante" aria-label="Reproductor de música de fondo">
+  <button
+    type="button"
+    class="boton-musica"
+    [class.reproduciendo]="servicioAudio.estaReproduciendo()"
+    [class.cargando]="servicioAudio.estaCargando()"
+    (click)="alternarMusica()"
+    [title]="servicioAudio.estaReproduciendo() ? 'Pausar música de fondo' : 'Reproducir música de fondo'"
+  >
+    <!-- Vinilo giratorio decorativo -->
+    <div class="aro-vinilo">
+      @if (servicioAudio.estaCargando()) {
+        <i class="pi pi-spin pi-spinner icono"></i>
+      } @else if (servicioAudio.estaReproduciendo()) {
+        <!-- Ecualizador dinámico en vivo -->
+        <span class="ondas-audio">
+          <span class="barra"></span>
+          <span class="barra"></span>
+          <span class="barra"></span>
+        </span>
+      } @else {
+        <i class="pi pi-volume-off icono silenciado"></i>
+      }
+    </div>
+
+    <!-- Etiqueta editorial -->
+    <span class="etiqueta-estado">
+      {{ servicioAudio.estaReproduciendo() ? 'Música' : 'Pausada' }}
+    </span>
+  </button>
+</aside>

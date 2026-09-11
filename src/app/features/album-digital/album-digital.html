@@ -1,0 +1,129 @@
+@if (cargando()) {
+  <div class="estado-contenedor">
+    <p-progressSpinner strokeWidth="4" fill="transparent" animationDuration=".8s"></p-progressSpinner>
+    <p>Cargando álbum de recuerdos...</p>
+  </div>
+} @else if (noDisponible()) {
+  <div class="estado-contenedor no-encontrado">
+    <i class="pi pi-exclamation-circle"></i>
+    <h2>Evento no encontrado</h2>
+    <p>Este evento no existe o no está disponible actualmente.</p>
+  </div>
+} @else if (albumDesactivado()) {
+  <div class="estado-contenedor no-encontrado">
+    <i class="pi pi-images"></i>
+    <h2>Álbum no disponible</h2>
+    <p>El álbum colaborativo no está habilitado para este evento.</p>
+    <a [routerLink]="['/e', evento()?.enlace]" class="boton-volver">Ver Invitación</a>
+  </div>
+} @else if (evento(); as ev) {
+  <main class="album-wrapper">
+
+    <!-- CABECERA EDITORIAL DE LA FIESTA -->
+    <header class="album-header">
+      <span class="estudio-credito">NahoFlo Creative Studio</span>
+      <span class="evento-tipo">{{ ev.preTitulo || ev.tipo }}</span>
+      <h1 class="evento-titulo">{{ ev.titulo }}</h1>
+      <p class="album-subtitulo">¡Captura los mejores momentos de la fiesta y compártelos con nosotros!</p>
+    </header>
+
+    <!-- BARRA DE ACCIÓN PRINCIPAL (BOTÓN PARA TOMAR / SUBIR FOTO) -->
+    <!-- BARRA DE ACCIÓN PRINCIPAL (BOTÓN PARA TOMAR / SUBIR FOTO) -->
+    <section class="seccion-accion">
+      <button type="button" class="boton-capturar" (click)="abrirModalSubirFoto()">
+        <i class="pi pi-camera"></i>
+        <span>Tomar / Subir Foto</span>
+      </button>
+    </section>
+
+    <!-- MURO DE RECUERDOS EN VIVO (GRID FOTOGRÁFICO) -->
+    <section class="seccion-muro">
+      <div class="muro-cabecera">
+        <h2 class="muro-titulo">Muro de Recuerdos</h2>
+        <span class="conteo-fotos">{{ recuerdos().length }} {{ recuerdos().length === 1 ? 'foto' : 'fotos' }}</span>
+      </div>
+
+      @if (recuerdos().length === 0) {
+        <div class="muro-vacio">
+          <i class="pi pi-camera icono-vacio"></i>
+          <p class="vacio-titulo">Aún no hay fotos en el álbum</p>
+          <p class="vacio-desc">¡Sé el primero en capturar un momento de esta noche!</p>
+        </div>
+      } @else {
+        <div class="grid-fotos">
+          @for (recuerdo of recuerdos(); track recuerdo.id) {
+            <article class="tarjeta-foto">
+              <!-- CONTENEDOR DE LA FOTO CON DOBLE TOQUE (PC Y MÓVIL) -->
+              <div
+                class="foto-contenedor"
+                (dblclick)="alHacerDobleTap(recuerdo, $event)"
+                (touchend)="alHacerDobleTap(recuerdo, $event)">
+                <img [src]="recuerdo.fotoUrl" [alt]="'Foto de ' + recuerdo.nombreAutor" loading="lazy" />
+
+                <!-- CORAZÓN GIGANTE FLOTANTE INSTAGRAM -->
+                @if (corazonAnimandoId() === recuerdo.id) {
+                  <div class="corazon-pop-instagram">
+                    <i class="pi pi-heart-fill"></i>
+                  </div>
+                }
+
+                <!-- BOTÓN DEL OJO PARA PANTALLA COMPLETA -->
+                <button
+                  type="button"
+                  class="boton-ojo"
+                  title="Ver en pantalla completa"
+                  (click)="$event.stopPropagation(); verFoto(recuerdo)">
+                  <i class="pi pi-eye"></i>
+                </button>
+              </div>
+
+              <!-- INFORMACIÓN DE LA FOTO -->
+              <div class="foto-info" (click)="verFoto(recuerdo)">
+                <div class="info-cabecera">
+                  <span class="autor-nombre">
+                    <i class="pi pi-user"></i>
+                    {{ recuerdo.nombreAutor }}
+                  </span>
+
+                  <!-- MÉTRICAS SOCIALES (COMENTARIOS + LIKES) -->
+                  <div class="metricas-sociales">
+                    <!-- CONTADOR DE COMENTARIOS -->
+                    <span class="indicador-comentarios" title="Comentarios">
+                      <i class="pi pi-comment"></i>
+                      <span>{{ recuerdo.comentarios?.length || 0 }}</span>
+                    </span>
+
+                    <!-- BOTÓN DE CORAZÓN / LIKE -->
+                    <button
+                      type="button"
+                      class="boton-corazon"
+                      [class.activo]="tieneLike(recuerdo.id)"
+                      (click)="alternarLike(recuerdo, $event)"
+                      [title]="tieneLike(recuerdo.id) ? 'Ya no me gusta' : 'Me gusta'">
+                      <i [class]="tieneLike(recuerdo.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
+                      <span class="contador-me-gusta">{{ recuerdo.meGusta || 0 }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                @if (recuerdo.mensaje) {
+                  <p class="autor-mensaje">"{{ recuerdo.mensaje }}"</p>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- PIE DE PÁGINA CON ACCESO ANFITRIÓN DISCRETO -->
+    <footer class="album-footer">
+      <p>NahoFlo Creative Studio • Álbum Colaborativo</p>
+      <a [routerLink]="['/e', ev.enlace, 'asistencias']" class="link-anfitrion">
+        <i class="pi pi-lock"></i>
+        <span>Acceso Anfitrión</span>
+      </a>
+    </footer>
+
+  </main>
+}

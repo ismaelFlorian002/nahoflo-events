@@ -5,7 +5,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
-import { EventService } from '../../../core/services/eventService';
+import { EventService } from '../../../core/services/event.service';
 import { EventFormComponent } from '../components/event-form/event-form';
 import { AsistenciasModalComponent } from '../components/asistencias-modal/asistencias-modal.component';
 import { DockModule } from 'primeng/dock';

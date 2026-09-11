@@ -11,7 +11,43 @@
   </div>
 } @else if (evento(); as ev) {
   <main class="invitation-wrapper">
+    <!-- PANTALLA EDITORIAL DE BIENVENIDA / ABRIR INVITACIÓN -->
 
+    <!-- PORTADA EDITORIAL DE CINE / BIENVENIDA -->
+    @if (!invitacionAbierta()) {
+      <section class="portada-editorial" [class.desvanecer]="animandoSalida()">
+        <!-- Fotografía nítida a pantalla completa -->
+        <div
+          class="fondo-foto"
+          [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'">
+        </div>
+
+        <!-- Iluminación cinematográfica de contraste -->
+        <div class="degradado-cine"></div>
+
+        <!-- Contenido editorial de la portada -->
+        <div class="contenido-portada">
+          <!-- Emblema nupcial dorado -->
+          <div class="emblema-dorado">
+            <i class="pi pi-envelope"></i>
+          </div>
+
+          <span class="subtitulo-portada">{{ ev.preTitulo || ev.tipo }}</span>
+          <h1 class="titulo-portada">{{ ev.titulo }}</h1>
+          <p class="frase-portada">Estás cordialmente invitado a celebrar con nosotros</p>
+
+          <div class="contenedor-accion">
+            <p-button
+              label="Abrir Invitación"
+              icon="pi pi-heart"
+              [rounded]="true"
+              (onClick)="abrirInvitacion()"
+              styleClass="boton-abrir-dorado">
+            </p-button>
+          </div>
+        </div>
+      </section>
+    }
     <!-- SECCIÓN HERO / PORTADA -->
     <header class="hero-section" [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'">
       <div class="hero-overlay"></div>
@@ -282,5 +318,10 @@
         <span>Acceso Anfitrión</span>
       </a>
     </footer>
+
+    <!-- REPRODUCTOR FLOTANTE DE MÚSICA DE FONDO -->
+    @if (ev.musicaFondoUrl) {
+      <app-reproductor-musica [urlMusica]="ev.musicaFondoUrl"></app-reproductor-musica>
+    }
   </main>
 }

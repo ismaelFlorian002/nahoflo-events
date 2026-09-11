@@ -6,7 +6,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { EventService } from '../../core/services/eventService';
+import { EventService } from '../../core/services/event.service';
 import { Evento } from '../../core/models/event.model';
 import { InvitadoModel } from '../../core/models/invitado.model';
 

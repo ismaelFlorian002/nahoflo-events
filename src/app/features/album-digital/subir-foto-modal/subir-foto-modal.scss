@@ -1,0 +1,112 @@
+$dorado-principal: #cca633;
+$texto-oscuro: #1c1917;
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding-top: 0.5rem;
+}
+
+.zona-foto {
+  width: 100%;
+}
+
+.caja-subida {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  border: 2px dashed #cbd5e1;
+  border-radius: 14px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  &:hover {
+    border-color: $dorado-principal;
+    background: #fefce8;
+  }
+
+  .icono-camara {
+    font-size: 2.5rem;
+    color: $dorado-principal;
+    margin-bottom: 0.75rem;
+  }
+
+  .texto-principal {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: $texto-oscuro;
+    margin-bottom: 0.25rem;
+  }
+
+  .texto-secundario {
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+}
+
+.preview-contenedor {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+
+  .foto-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .boton-cambiar-foto {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    border: none;
+    border-radius: 9999px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.9);
+    }
+  }
+}
+
+.alerta-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+.campos-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+  padding-top: 0.5rem;
+}
+
+.acciones-modal {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 1rem;
+}

@@ -3,9 +3,50 @@
   <p-tabView styleClass="w-full">
 
     <!-- PESTAÑA 1: DATOS BÁSICOS -->
-    <!-- PESTAÑA 1: DATOS BÁSICOS -->
+
     <p-tabPanel header="1. Básico">
       <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem;">
+
+        <!-- SECCIÓN: MÓDULOS Y SERVICIOS CONTRATADOS (NAHOFLO SUITE) -->
+        <div formGroupName="modulos" style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #cca633; border-radius: 10px; padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+          <div>
+            <span style="color: #0f172a; font-weight: 700; font-size: 0.95rem;">Servicios Activos para este Evento</span>
+            <p style="margin: 0.2rem 0 0 0; color: #64748b; font-size: 0.8rem;">Define qué módulos tendrá habilitados el cliente según el paquete contratado.</p>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; justify-content: space-between;">
+
+            <!-- 1. Interruptor: Invitación Web -->
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <p-inputSwitch formControlName="tieneInvitacion" inputId="switchInvitacion"></p-inputSwitch>
+              <label for="switchInvitacion" style="cursor: pointer; display: flex; flex-direction: column;">
+                <span style="font-weight: 600; color: #1e293b; font-size: 0.88rem;">Invitación Web</span>
+                <span style="font-size: 0.75rem; color: #64748b;">Página pública (/e/:slug)</span>
+              </label>
+            </div>
+
+            <!-- 2. Interruptor: Álbum Digital en Mesas -->
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <p-inputSwitch formControlName="tieneAlbum" inputId="switchAlbum"></p-inputSwitch>
+              <label for="switchAlbum" style="cursor: pointer; display: flex; flex-direction: column;">
+                <span style="font-weight: 600; color: #1e293b; font-size: 0.88rem;">Álbum Digital en Mesas</span>
+                <span style="font-size: 0.75rem; color: #64748b;">Subida de fotos por QR (/album)</span>
+              </label>
+            </div>
+
+            <!-- 3. Selector: Tipo de Control de Asistentes -->
+            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+              <span style="font-weight: 600; color: #1e293b; font-size: 0.82rem;">Control de Invitados:</span>
+              <p-selectButton
+                [options]="opcionesControlInvitados"
+                formControlName="tipoControlInvitados"
+                optionLabel="label"
+                optionValue="value">
+              </p-selectButton>
+            </div>
+
+          </div>
+        </div>
 
         <!-- 1. NOMBRE INTERNO Y PIN DE ANFITRIÓN -->
         <div style="display: flex; gap: 1rem; align-items: center;">
@@ -68,8 +109,7 @@
       </div>
     </p-tabPanel>
 
-    <p-tabPanel header="2. Ubicaciones">
-      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem;">
+    <p-tabPanel header="2. Ubicaciones" *ngIf="tieneInvitacionActiva">      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem;">
 
         <div>
           <h4 style="margin: 0 0 1.5rem 0; color: #cca633;">Ceremonia (Iglesia)</h4>
@@ -191,6 +231,50 @@
           <textarea pInputTextarea formControlName="mensaje" rows="3" style="width: 100%; resize: none;"></textarea>
           <label>Frase / Mensaje</label>
         </span>
+
+
+        <!-- SECCIÓN: MÚSICA DE FONDO -->
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+          <label style="color: #cca633; font-weight: bold; font-size: 0.9rem;">Música de Fondo (Audio MP3)</label>
+          <p style="margin: 0 0 0.25rem 0; font-size: 0.8rem; color: #64748b;">Pista musical que sonará en bucle de forma sutil en la invitación.</p>
+
+          <!-- 1. Si ya hay una canción guardada en la nube -->
+          <div *ngIf="existingMusicaFondoUrl && !musicaFondoFile"
+               style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; max-width: 420px; background: #f1f5f9;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 40px; height: 40px; border-radius: 6px; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                <i class="pi pi-volume-up" style="font-size: 1.3rem; color: #cca633;"></i>
+              </div>
+              <div style="display: flex; flex-direction: column;">
+                <span style="color: #334155; font-size: 0.85rem; font-weight: 600;">Pista musical activa</span>
+                <span style="color: #64748b; font-size: 0.75rem;">Guardada en Firebase Storage</span>
+              </div>
+            </div>
+            <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
+                      (onClick)="removeExistingMusica()" pTooltip="Eliminar música"></p-button>
+          </div>
+
+          <!-- 2. Si se seleccionó un nuevo archivo de audio -->
+          <div *ngIf="musicaFondoFile"
+               style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 420px; background: #f8fafc;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="width: 40px; height: 40px; border-radius: 6px; background: #fef08a; display: flex; align-items: center; justify-content: center;">
+                <i class="pi pi-volume-up" style="font-size: 1.3rem; color: #854d0e;"></i>
+              </div>
+              <div style="display: flex; flex-direction: column;">
+                <span style="color: #334155; font-weight: 500; font-size: 0.85rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ musicaFondoFile.name }}</span>
+                <span style="color: #94a3b8; font-size: 0.75rem;">{{ (musicaFondoFile.size / 1024 / 1024).toFixed(2) }} MB</span>
+              </div>
+            </div>
+            <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
+                      (onClick)="removeMusicaFile()"></p-button>
+          </div>
+
+          <!-- 3. Botón para subir si no hay música seleccionada ni guardada -->
+          <p-fileUpload *ngIf="!existingMusicaFondoUrl && !musicaFondoFile" mode="basic"
+                        chooseLabel="Seleccionar Canción (MP3)" chooseIcon="pi pi-volume-up" accept="audio/*"
+                        (onSelect)="onMusicaSelected($event)"></p-fileUpload>
+        </div>
 
         <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
           <label style="color: #cca633; font-weight: bold; font-size: 0.9rem;">Foto Principal (Fondo Gigante)</label>

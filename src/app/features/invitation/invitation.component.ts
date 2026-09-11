@@ -1,11 +1,14 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { EventService } from '../../core/services/eventService';
+import { EventService } from '../../core/services/event.service';
 import { Evento } from '../../core/models/event.model';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
+import { ReproductorMusicaComponent } from './reproductor-musica/reproductor-musica';
+import { AudioService } from '../../core/services/audio.service';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-invitation',
@@ -16,6 +19,8 @@ import { PaginatorModule } from 'primeng/paginator';
     ProgressSpinnerModule,
     ReactiveFormsModule,
     PaginatorModule,
+    ReproductorMusicaComponent,
+    Button,
   ],
   templateUrl: './invitation.component.html',
   styleUrl: './invitation.component.scss',
@@ -25,11 +30,28 @@ export class InvitationComponent implements OnInit, OnDestroy {
   private eventService = inject(EventService);
   private fb = inject(FormBuilder); // Inyección para el formulario
   private countdownInterval: any;
-
+  protected readonly audioService = inject(AudioService);
   // Estados del evento
   evento = signal<Evento | null>(null);
   isLoading = signal<boolean>(true);
   notFound = signal<boolean>(false);
+
+  // Control de la portada de bienvenida
+  invitacionAbierta = signal<boolean>(false);
+  animandoSalida = signal<boolean>(false);
+
+  abrirInvitacion(): void {
+    // 1. Desbloquea la música de inmediato con el clic humano
+    this.audioService.reproducir();
+
+    // 2. Inicia la transición cinematográfica de salida (fade-out)
+    this.animandoSalida.set(true);
+
+    // 3. Remueve la pantalla suavemente después de 600ms
+    setTimeout(() => {
+      this.invitacionAbierta.set(true);
+    }, 600);
+  }
 
   // Estados de la cuenta regresiva
   dias = signal<number>(0);
@@ -141,3 +163,5 @@ export class InvitationComponent implements OnInit, OnDestroy {
     }
   }
 }
+
+

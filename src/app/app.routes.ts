@@ -39,13 +39,19 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/invitation/invitation.component').then((m) => m.InvitationComponent),
       },
-      // RUTA NUEVA: Panel privado para los novios/anfitriones
+      // Panel privado para los novios/anfitriones
       {
         path: 'asistencias',
         loadComponent: () =>
           import('./features/anfitrion-asistencias/anfitrion-asistencias.component').then(
             (m) => m.AnfitrionAsistenciasComponent,
           ),
+      },
+      // <--- AGREGAR AQUÍ LA RUTA DEL ÁLBUM DIGITAL
+      {
+        path: 'album',
+        loadComponent: () =>
+          import('./features/album-digital/album-digital').then((m) => m.AlbumDigitalComponent),
       },
     ],
   },

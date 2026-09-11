@@ -35,13 +35,15 @@ html body .p-button .p-button-icon {
    3. DORADO NAHOFLO PARA BOTONES PRIMARIOS
    Excluye severidades y el botón del calendario
    ========================================================= */
-html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger) {
+/* Línea 38 */
+html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):not(.p-selectbutton *) {
   background-color: #cca633;
   border-color: #cca633;
   color: #ffffff;
 }
 
-html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):hover {
+/* Línea 44 (hover) */
+html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):not(.p-selectbutton *):hover {
   background-color: #b8952d;
   border-color: #b8952d;
 }

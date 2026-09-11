@@ -12,9 +12,12 @@ import {
   getDocs,
   query,
   where,
+  increment,
+  arrayUnion,
 } from '@angular/fire/firestore';
 import { Evento } from '../models/event.model';
 import { InvitadoModel } from '../models/invitado.model';
+import { ComentarioModel, RecuerdoModel } from '../models/RecuerdoModel';
 
 @Injectable({
   providedIn: 'root',
@@ -112,5 +115,68 @@ export class EventService {
     const snapshot = await getDocs(refSubcoleccion);
 
     return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as InvitadoModel);
+  }
+
+  // Sube la foto del invitado a Storage y guarda su dedicatoria en la subcolección 'recuerdos'
+  async guardarRecuerdo(
+    eventoId: string,
+    archivoFoto: File,
+    nombreAutor: string,
+    mensaje?: string,
+  ): Promise<void> {
+    // 1. Sube la foto a la carpeta del álbum en Firebase Storage
+    const fotoUrl = await this.uploadImage(archivoFoto, 'eventos/album');
+
+    // 2. Registra el recuerdo en Firestore: eventos/{eventoId}/recuerdos
+    const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/recuerdos`);
+    await addDoc(refSubcoleccion, {
+      nombreAutor: nombreAutor.trim(),
+      mensaje: mensaje?.trim() || '',
+      fotoUrl: fotoUrl,
+      creadoEn: new Date(),
+      estaAprobado: true,
+      meGusta: 0,
+    });
+  }
+
+  // Obtiene todos los recuerdos de los invitados ordenados por los más recientes
+  async getRecuerdos(eventoId: string): Promise<RecuerdoModel[]> {
+    const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/recuerdos`);
+    const snapshot = await getDocs(refSubcoleccion);
+
+    return snapshot.docs
+      .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as RecuerdoModel)
+      .sort((a, b) => new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime());
+  }
+
+  // Suma (+1) o resta (-1) un like de forma atómica en Firestore
+  async alternarMeGusta(eventoId: string, recuerdoId: string, sumar: boolean): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
+    await updateDoc(docRef, {
+      meGusta: increment(sumar ? 1 : -1),
+    });
+  }
+
+  // Agrega un comentario a la foto en Firebase usando arrayUnion (1 sola escritura, 0 lecturas)
+  async agregarComentario(
+    eventoId: string,
+    recuerdoId: string,
+    autor: string,
+    texto: string,
+  ): Promise<ComentarioModel> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
+
+    const nuevoComentario: ComentarioModel = {
+      id: Date.now().toString(),
+      autor: autor.trim(),
+      texto: texto.trim(),
+      creadoEn: new Date(),
+    };
+
+    await updateDoc(docRef, {
+      comentarios: arrayUnion(nuevoComentario),
+    });
+
+    return nuevoComentario;
   }
 }

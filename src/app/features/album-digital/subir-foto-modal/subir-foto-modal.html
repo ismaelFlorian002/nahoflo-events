@@ -1,0 +1,69 @@
+<form [formGroup]="formRecuerdo" (ngSubmit)="publicarFoto()" class="modal-form">
+
+  <!-- ZONA DE SELECCIÓN / PREVIEW DE LA FOTO -->
+  <div class="zona-foto">
+    @if (previewUrl()) {
+      <div class="preview-contenedor">
+        <img [src]="previewUrl()" alt="Previsualización" class="foto-preview" />
+        <button type="button" class="boton-cambiar-foto" (click)="removerFoto()" title="Cambiar foto">
+          <i class="pi pi-refresh"></i>
+          <span>Cambiar Foto</span>
+        </button>
+      </div>
+    } @else {
+      <!-- Al tocar abre nativamente la cámara o galería en el celular -->
+      <label class="caja-subida" for="inputCamara">
+        <i class="pi pi-camera icono-camara"></i>
+        <span class="texto-principal">Toca para Tomar o Elegir Foto</span>
+        <span class="texto-secundario">Desde tu cámara o galería</span>
+      </label>
+      <input
+        id="inputCamara"
+        type="file"
+        accept="image/*"
+        (change)="onFotoSeleccionada($event)"
+        style="display: none;"
+      />
+    }
+  </div>
+
+  @if (errorSubida()) {
+    <div class="alerta-error">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span>{{ errorSubida() }}</span>
+    </div>
+  }
+
+  <!-- CAMPOS CON FLOATLABEL UNIFORMES -->
+  <div class="campos-contenedor">
+    <span class="p-float-label">
+      <input id="nombreAutor" pInputText formControlName="nombreAutor" style="width: 100%" autocomplete="off" />
+      <label for="nombreAutor">Tu Nombre *</label>
+    </span>
+
+    <span class="p-float-label">
+      <textarea id="mensaje" pInputTextarea formControlName="mensaje" rows="3" style="width: 100%; resize: none;"></textarea>
+      <label for="mensaje">Dedicatoria para los novios (opcional)</label>
+    </span>
+  </div>
+
+  <!-- BOTONES DE ACCIÓN -->
+  <div class="acciones-modal">
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      (onClick)="ref.close(false)">
+    </p-button>
+
+    <p-button
+      type="submit"
+      label="Publicar en el Muro"
+      icon="pi pi-send"
+      [loading]="subiendo()"
+      [disabled]="formRecuerdo.invalid || !archivoFoto || subiendo()">
+    </p-button>
+  </div>
+
+</form>

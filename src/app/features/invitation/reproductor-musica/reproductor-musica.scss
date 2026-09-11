@@ -1,0 +1,119 @@
+$dorado-principal: #cca633;
+$dorado-oscuro: #b8952d;
+$texto-oscuro: #1c1917;
+
+.contenedor-flotante {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 1.75rem;
+  z-index: 1000;
+}
+
+.boton-musica {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.85rem 0.4rem 0.4rem;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba($dorado-principal, 0.35);
+  border-radius: 9999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: $dorado-principal;
+    box-shadow: 0 12px 28px rgba($dorado-principal, 0.18);
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.reproduciendo {
+    border-color: rgba($dorado-principal, 0.6);
+
+    .aro-vinilo {
+      animation: rotacion-continua 8s linear infinite;
+    }
+  }
+}
+
+.aro-vinilo {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: #1c1917;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 2px rgba($dorado-principal, 0.4);
+  transition: transform 0.3s ease;
+
+  .icono {
+    font-size: 0.95rem;
+    color: #ffffff;
+
+    &.silenciado {
+      color: #94a3b8;
+    }
+  }
+}
+
+.etiqueta-estado {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: $texto-oscuro;
+}
+
+.ondas-audio {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 14px;
+
+  .barra {
+    width: 2.5px;
+    height: 100%;
+    background-color: $dorado-principal;
+    border-radius: 2px;
+    animation: animacion-onda 1.2s ease-in-out infinite;
+
+    &:nth-child(1) {
+      animation-delay: 0s;
+    }
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    &:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+@keyframes animacion-onda {
+  0%, 100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes rotacion-continua {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
