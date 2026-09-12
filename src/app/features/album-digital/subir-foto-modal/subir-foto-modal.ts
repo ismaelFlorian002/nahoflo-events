@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { EventService } from '../../../core/services/event.service';
+import { comprimirImagen } from '../../../core/utils/image-compresor';
 
 @Component({
   selector: 'app-subir-foto-modal',
@@ -43,33 +44,30 @@ export class SubirFotoModalComponent implements OnInit {
     }
   }
 
-  onFotosSeleccionadas(event: Event): void {
+  async onFotosSeleccionadas(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
 
-    const nuevosArchivos: File[] = [];
-    const nuevasUrls: string[] = [];
+    const archivosCrudos = Array.from(input.files).filter((a) => a.type.startsWith('image/'));
 
-    Array.from(input.files).forEach((archivo) => {
-      if (archivo.type.startsWith('image/')) {
-        nuevosArchivos.push(archivo);
-        nuevasUrls.push(URL.createObjectURL(archivo));
-      }
-    });
-
-    if (nuevosArchivos.length === 0) {
+    if (archivosCrudos.length === 0) {
       this.errorSubida.set('Selecciona únicamente archivos de imagen válidos.');
       return;
     }
 
     this.errorSubida.set(null);
-    this.archivosFotos.update((prev) => [...prev, ...nuevosArchivos]);
+
+    // Comprime las fotos en paralelo en el celular antes de agregarlas
+    const promesasCompresion = archivosCrudos.map((archivo) => comprimirImagen(archivo));
+    const archivosOptimizados = await Promise.all(promesasCompresion);
+
+    const nuevasUrls = archivosOptimizados.map((archivo) => URL.createObjectURL(archivo));
+
+    this.archivosFotos.update((prev) => [...prev, ...archivosOptimizados]);
     this.previewsUrls.update((prev) => [...prev, ...nuevasUrls]);
 
-    // Limpia el input para permitir volver a seleccionar los mismos archivos si se desea
     input.value = '';
   }
-
   removerFoto(index: number): void {
     this.archivosFotos.update((lista) => lista.filter((_, i) => i !== index));
     this.previewsUrls.update((lista) => lista.filter((_, i) => i !== index));

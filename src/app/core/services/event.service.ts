@@ -203,4 +203,10 @@ export class EventService {
     const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
     await updateDoc(docRef, { comentarios });
   }
+
+  // Elimina una publicación/recuerdo del álbum colaborativo
+  async eliminarRecuerdo(eventoId: string, recuerdoId: string): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
+    await deleteDoc(docRef);
+  }
 }
