@@ -1,0 +1,126 @@
+<form [formGroup]="form" (ngSubmit)="guardar()" class="form-editar-invitado">
+  <!-- MENSAJE DE ERROR -->
+  @if (errorMensaje()) {
+    <div class="alerta-error">
+      <i class="pi pi-exclamation-triangle"></i>
+      <span>{{ errorMensaje() }}</span>
+    </div>
+  }
+
+  <!-- CAMPO: NOMBRE -->
+  <div class="campo-grupo">
+    <label for="nombre" class="campo-label">
+      Nombre Completo o Familia <span class="requerido">*</span>
+    </label>
+    <input
+      pInputText
+      id="nombre"
+      type="text"
+      formControlName="nombre"
+      placeholder="Ej. Familia Rodríguez o Carlos Méndez"
+      class="input-control" />
+    @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
+      <span class="error-texto">El nombre es requerido (mínimo 2 caracteres).</span>
+    }
+  </div>
+
+  <!-- CAMPO: ESTADO DE ASISTENCIA -->
+  <div class="campo-grupo">
+    <label class="campo-label">Respuesta de Asistencia</label>
+    <div class="selector-asistencia">
+      <button
+        type="button"
+        class="btn-opcion-asistencia si"
+        [class.seleccionado]="form.get('asistira')?.value === true"
+        (click)="cambiarAsistencia(true)">
+        <i class="pi pi-check"></i>
+        <span>Sí Asistirá</span>
+      </button>
+
+      <button
+        type="button"
+        class="btn-opcion-asistencia no"
+        [class.seleccionado]="form.get('asistira')?.value === false"
+        (click)="cambiarAsistencia(false)">
+        <i class="pi pi-times"></i>
+        <span>No Asiste</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- CAMPO: NÚMERO DE PASES ASIGNADOS -->
+  <div class="campo-grupo">
+    <label class="campo-label">Pases Autorizados</label>
+    <div class="pases-selector-wrap">
+      <button
+        type="button"
+        class="btn-pases-stepper"
+        [disabled]="form.get('pasesConfirmados')?.value <= (form.get('asistira')?.value ? 1 : 0)"
+        (click)="cambiarPases(-1)">
+        <i class="pi pi-minus"></i>
+      </button>
+      <span class="pases-valor-display">{{ form.get('pasesConfirmados')?.value }}</span>
+      <button
+        type="button"
+        class="btn-pases-stepper"
+        (click)="cambiarPases(1)">
+        <i class="pi pi-plus"></i>
+      </button>
+      <span class="pases-ayuda-texto">
+        {{ form.get('pasesConfirmados')?.value === 1 ? 'persona autorizada' : 'personas autorizadas' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- CAMPO: TELÉFONO -->
+  <div class="campo-grupo">
+    <label for="telefono" class="campo-label">
+      Teléfono (WhatsApp)
+    </label>
+    <div class="input-con-icono">
+      <i class="pi pi-whatsapp icono-input"></i>
+      <input
+        pInputText
+        id="telefono"
+        type="text"
+        formControlName="telefono"
+        placeholder="10 dígitos (ej. 5512345678)"
+        class="input-control con-padding" />
+    </div>
+  </div>
+
+  <!-- CAMPO: MENSAJE / NOTAS -->
+  <div class="campo-grupo">
+    <label for="mensaje" class="campo-label">
+      Mensaje o Notas del Anfitrión
+    </label>
+    <textarea
+      pInputTextarea
+      id="mensaje"
+      rows="3"
+      formControlName="mensaje"
+      placeholder="Dedicatoria o comentarios especiales sobre este invitado..."
+      class="input-control textarea-control">
+    </textarea>
+  </div>
+
+  <!-- BOTONES DE ACCIÓN -->
+  <div class="modal-footer-acciones">
+    <p-button
+      label="Cancelar"
+      [outlined]="true"
+      severity="secondary"
+      [disabled]="guardando()"
+      (onClick)="cancelar()"
+      styleClass="btn-modal-cancelar">
+    </p-button>
+
+    <p-button
+      label="Guardar Cambios"
+      icon="pi pi-check"
+      type="submit"
+      [loading]="guardando()"
+      styleClass="btn-modal-guardar">
+    </p-button>
+  </div>
+</form>

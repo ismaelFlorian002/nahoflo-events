@@ -1,0 +1,120 @@
+<div class="detalle-invitado-modal">
+  <!-- ENCABEZADO DE PERFIL -->
+  <div class="perfil-cabecera">
+    <div class="avatar-iniciales">
+      <i class="pi pi-user"></i>
+    </div>
+    <div class="perfil-info">
+      <h3>{{ invitado.nombre }}</h3>
+      <div class="badges-fila">
+        <p-tag
+          [value]="invitado.asistira ? 'Asistencia Confirmada' : 'Declinó Asistencia'"
+          [severity]="invitado.asistira ? 'success' : 'danger'"
+          [rounded]="true">
+        </p-tag>
+        @if (invitado.asistira) {
+          <span class="badge-pases-info">
+            <i class="pi pi-ticket"></i>
+            <strong>{{ invitado.pasesConfirmados || 1 }}</strong>
+            {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase asignado' : 'pases asignados' }}
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- GRILLA DE DETALLES PRINCIPALES -->
+  <div class="detalle-grid">
+    <!-- TELÉFONO / WHATSAPP -->
+    <div class="detalle-item">
+      <span class="item-label"><i class="pi pi-phone"></i> Teléfono / WhatsApp</span>
+      @if (invitado.telefono) {
+        <a [href]="'https://wa.me/' + invitado.telefono" target="_blank" class="link-wa" title="Chatear por WhatsApp">
+          <i class="pi pi-whatsapp"></i>
+          <span>{{ invitado.telefono }}</span>
+          <i class="pi pi-external-link icono-externo"></i>
+        </a>
+      } @else {
+        <span class="item-valor sin-dato">No registrado</span>
+      }
+    </div>
+
+    <!-- FECHA Y HORA DE CONFIRMACIÓN -->
+    <div class="detalle-item">
+      <span class="item-label"><i class="pi pi-calendar"></i> Fecha de Registro</span>
+      <span class="item-valor">{{ formatearFecha(invitado.fechaConfirmacion) }}</span>
+    </div>
+  </div>
+
+  <!-- MENSAJE O DEDICATORIA COMPLETA -->
+  <div class="seccion-mensaje">
+    <span class="item-label"><i class="pi pi-comment"></i> Mensaje o Dedicatoria</span>
+    <div class="caja-mensaje" [class.vacio]="!invitado.mensaje">
+      @if (invitado.mensaje) {
+        <p>“{{ invitado.mensaje }}”</p>
+      } @else {
+        <span class="sin-mensaje">Sin mensaje adicional.</span>
+      }
+    </div>
+  </div>
+
+  <!-- CONTROL TOTAL VIP (SI APLICA) -->
+  @if (evento?.modulos?.tipoControlInvitados === 'total') {
+    <div class="seccion-vip">
+      <div class="vip-titulo">
+        <i class="pi pi-shield"></i>
+        <span>Control de Acceso VIP</span>
+      </div>
+      <div class="vip-grid">
+        <div class="vip-item">
+          <span class="vip-label">Estado en Puerta</span>
+          @if (invitado.haIngresado) {
+            <span class="vip-status ingresado">
+              <i class="pi pi-check-circle"></i> Ingresó a sala
+            </span>
+          } @else {
+            <span class="vip-status pendiente">
+              <i class="pi pi-clock"></i> Pendiente de llegada
+            </span>
+          }
+        </div>
+
+        @if (invitado.haIngresado && invitado.horaIngreso) {
+          <div class="vip-item">
+            <span class="vip-label">Hora de Llegada</span>
+            <span class="vip-valor">{{ formatearFecha(invitado.horaIngreso) }}</span>
+          </div>
+          <div class="vip-item">
+            <span class="vip-label">Pases Ingresados</span>
+            <span class="vip-valor">{{ invitado.pasesIngresados ?? invitado.pasesConfirmados ?? 1 }} personas</span>
+          </div>
+        }
+
+        @if (invitado.codigoAcceso) {
+          <div class="vip-item">
+            <span class="vip-label">Token de Pase</span>
+            <span class="vip-valor token-code">{{ invitado.codigoAcceso }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ACCIONES DE PIE DE MODAL -->
+  <div class="modal-footer-acciones">
+    <p-button
+      label="Cerrar"
+      [outlined]="true"
+      severity="secondary"
+      (onClick)="cerrar()"
+      styleClass="btn-modal-cerrar">
+    </p-button>
+
+    <p-button
+      label="Editar Invitado"
+      icon="pi pi-pencil"
+      (onClick)="editar()"
+      styleClass="btn-modal-editar">
+    </p-button>
+  </div>
+</div>
