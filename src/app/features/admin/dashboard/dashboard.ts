@@ -9,6 +9,8 @@ import { EventService } from '../../../core/services/event.service';
 import { EventFormComponent } from '../components/event-form/event-form';
 import { AsistenciasModalComponent } from '../components/asistencias-modal/asistencias-modal.component';
 import { DockModule } from 'primeng/dock';
+import { TooltipModule } from 'primeng/tooltip';
+import { QrMesaModalComponent } from '../../album-digital/qr-mesa-modal/qr-mesa-modal';
 
 // CORRECCIÓN 1: La ruta del servicio (3 niveles arriba)
 
@@ -25,6 +27,7 @@ import { DockModule } from 'primeng/dock';
     TagModule,
     DynamicDialogModule,
     DockModule,
+    TooltipModule,
   ],
   providers: [DialogService],
 
@@ -94,6 +97,17 @@ export class DashboardComponent implements OnInit {
       dismissableMask: true,
       focusOnShow: false,
       data: evento,
+    });
+  }
+
+  abrirQrMesas(evento: any) {
+    this.dialogService.open(QrMesaModalComponent, {
+      header: `Código QR para Mesas — ${evento.titulo || evento.nombreEvento}`,
+      width: '560px',
+      breakpoints: { '640px': '95vw' },
+      dismissableMask: true,
+      focusOnShow: false,
+      data: { evento },
     });
   }
 }

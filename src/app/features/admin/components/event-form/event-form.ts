@@ -136,7 +136,35 @@ export class EventFormComponent implements OnInit {
       this.existingFotoRecepcionUrl = this.config.data.fotoRecepcionUrl;
       this.existingGaleriaUrls = this.config.data.galeriaUrls || [];
       this.existingMusicaFondoUrl = this.config.data.musicaFondoUrl;
-      this.eventForm.patchValue({ ...this.config.data });
+
+      // 1. Convertir fecha a Date nativo de JavaScript para que PrimeNG Calendar funcione
+      let fechaDate: Date | null = null;
+      if (this.config.data.fecha) {
+        const f = this.config.data.fecha;
+        if (typeof f.toDate === 'function') {
+          fechaDate = f.toDate();
+        } else if (f.seconds) {
+          fechaDate = new Date(f.seconds * 1000);
+        } else if (f instanceof Date) {
+          fechaDate = f;
+        } else {
+          const d = new Date(f);
+          fechaDate = isNaN(d.getTime()) ? null : d;
+        }
+      }
+
+      // 2. Retrocompatibilidad para eventos existentes sin PIN o nombreEvento
+      const pinRecuperado =
+        this.config.data.pinAnfitrion || Math.floor(1000 + Math.random() * 9000).toString();
+      const nombreRecuperado =
+        this.config.data.nombreEvento || this.config.data.titulo || 'Evento';
+
+      this.eventForm.patchValue({
+        ...this.config.data,
+        nombreEvento: nombreRecuperado,
+        pinAnfitrion: pinRecuperado,
+        fecha: fechaDate,
+      });
 
       // Si es un evento anterior que no tenía el campo modulos, asignamos valores por defecto
       if (!this.config.data.modulos) {
@@ -148,12 +176,48 @@ export class EventFormComponent implements OnInit {
           },
         });
       }
+    } else {
+      // Para un evento nuevo, asignamos un PIN aleatorio por defecto
+      this.generarPinAleatorio();
     }
   }
 
   async saveEvent() {
-    if (this.eventForm.invalid || this.isSaving) return;
+    // Si falta PIN, lo generamos de inmediato
+    if (!this.eventForm.get('pinAnfitrion')?.value) {
+      this.generarPinAleatorio();
+    }
+    // Si falta nombreEvento pero hay título, lo completamos
+    const titulo = this.eventForm.get('titulo')?.value;
+    if (!this.eventForm.get('nombreEvento')?.value && titulo) {
+      this.eventForm.patchValue({ nombreEvento: titulo });
+    }
+    // Si falta enlace pero hay título, generamos el slug
+    if (!this.eventForm.get('enlace')?.value && titulo) {
+      const slug = titulo
+        .toLowerCase()
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      this.eventForm.patchValue({ enlace: slug });
+    }
 
+    // Si el formulario es inválido, marcamos los campos en rojo y mostramos en consola
+    if (this.eventForm.invalid) {
+      this.eventForm.markAllAsTouched();
+      console.warn('Formulario inválido. Errores detectados:');
+      Object.keys(this.eventForm.controls).forEach((key) => {
+        const control = this.eventForm.get(key);
+        if (control?.invalid) {
+          console.warn(`Campo '${key}':`, control.errors);
+        }
+      });
+      return;
+    }
+
+    if (this.isSaving) return;
     this.isSaving = true;
 
     try {
@@ -201,24 +265,41 @@ export class EventFormComponent implements OnInit {
         );
       }
 
-      // 3. Empaquetar datos completos
-      const eventData = {
-        ...this.eventForm.value,
+      // 4. Empaquetar datos limpios (0 valores undefined para evitar errores de Firestore)
+      const formVal = this.eventForm.value;
+      const eventData: any = {
+        nombreEvento: formVal.nombreEvento || '',
+        pinAnfitrion: formVal.pinAnfitrion || '',
+        preTitulo: formVal.preTitulo || '',
+        titulo: formVal.titulo || '',
+        enlace: formVal.enlace || '',
+        fecha: formVal.fecha || new Date(),
+        tipo: formVal.tipo || 'Boda',
+        mensaje: formVal.mensaje || '',
+        ceremoniaLugar: formVal.ceremoniaLugar || '',
+        ceremoniaUrl: formVal.ceremoniaUrl || '',
+        recepcionLugar: formVal.recepcionLugar || '',
+        recepcionUrl: formVal.recepcionUrl || '',
+        modulos: formVal.modulos || {
+          tieneInvitacion: true,
+          tipoControlInvitados: 'basico',
+          tieneAlbum: false,
+        },
         fotoPrincipalUrl: fotoPrincipalUrl || null,
         fotoCeremoniaUrl: fotoCeremoniaUrl || null,
         fotoRecepcionUrl: fotoRecepcionUrl || null,
-        galeriaUrls: galeriaUrls,
+        galeriaUrls: galeriaUrls || [],
         musicaFondoUrl: musicaFondoUrl || null,
       };
 
-      // 4. Guardar en Firestore
+      // 5. Guardar en Firestore
       if (this.isEditMode && this.eventId) {
         await this.eventService.updateEvent(this.eventId, eventData);
       } else {
         await this.eventService.createEvent({
           ...eventData,
           estaActivo: true,
-        } as any);
+        });
       }
 
       this.ref.close(true);

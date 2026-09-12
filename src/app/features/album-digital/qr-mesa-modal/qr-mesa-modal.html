@@ -1,0 +1,76 @@
+@if (evento(); as ev) {
+  <div class="qr-modal-wrapper">
+
+    <!-- DESCRIPCIÓN SUPERIOR PARA EL ANFITRIÓN -->
+    <div class="instrucciones-anfitrion no-imprimir">
+      <p>
+        Coloca este código en cada centro de mesa de la recepción para que tus invitados escaneen y suban sus fotos directamente al álbum durante la fiesta.
+      </p>
+    </div>
+
+    <!-- TARJETA EDITORIAL DE MESA (ESTA SECCIÓN SE IMPRIME FÍSICAMENTE) -->
+    <div class="tarjeta-mesa-imprimible" id="tarjetaMesaImprimible">
+      <div class="marco-dorado">
+        <div class="adorno-superior">
+          <i class="pi pi-camera icono-adorno"></i>
+        </div>
+
+        <span class="subtitulo-evento">{{ ev.preTitulo || ev.tipo }}</span>
+        <h2 class="titulo-evento">{{ ev.titulo }}</h2>
+        <div class="separador-dorado"></div>
+
+        <!-- CÓDIGO QR GENERADO EN ALTA DEFINICIÓN -->
+        <div class="contenedor-qr">
+          @if (qrDataUrl()) {
+            <img [src]="qrDataUrl()" alt="Código QR del Álbum" class="qr-imagen" />
+          } @else {
+            <div class="qr-cargando">
+              <i class="pi pi-spin pi-spinner"></i>
+              <span>Generando QR...</span>
+            </div>
+          }
+        </div>
+
+        <!-- LLAMADO A LA ACCIÓN PARA LOS INVITADOS EN LA MESA -->
+        <h3 class="frase-invitacion">¡Comparte tus fotos con nosotros!</h3>
+        <p class="instrucciones-invitado">
+          Escanea este código con la cámara de tu celular y sube tus fotos de esta noche a nuestro álbum en vivo.
+        </p>
+
+        <span class="enlace-texto">{{ urlAlbum() }}</span>
+      </div>
+    </div>
+
+    <!-- BARRA DE ACCIONES (NO SE IMPRIME) -->
+    <footer class="acciones-modal no-imprimir">
+      <div class="acciones-izquierda">
+        <button
+          type="button"
+          class="btn-accion-secundario"
+          (click)="copiarEnlace()">
+          <i [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
+          <span>{{ copiado() ? '¡Copiado!' : 'Copiar Link' }}</span>
+        </button>
+
+        @if (qrDataUrl()) {
+          <a
+            [href]="qrDataUrl()"
+            [download]="'QR-Mesas-' + ev.enlace + '.png'"
+            class="btn-accion-secundario">
+            <i class="pi pi-download"></i>
+            <span>Descargar PNG</span>
+          </a>
+        }
+      </div>
+
+      <button
+        type="button"
+        class="btn-imprimir-principal"
+        (click)="imprimir()">
+        <i class="pi pi-print"></i>
+        <span>Imprimir Tarjeta</span>
+      </button>
+    </footer>
+
+  </div>
+}

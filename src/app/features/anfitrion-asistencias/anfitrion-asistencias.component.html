@@ -63,36 +63,56 @@
             <h1 class="dash-title">{{ ev.titulo }}</h1>
           </div>
           <div class="dash-acciones-header">
-            <a [routerLink]="['/e', ev.enlace]" class="btn-invitacion">
-              <i class="pi pi-external-link"></i>
-              <span>Ver Invitación</span>
-            </a>
-            <a [routerLink]="['/e', ev.enlace, 'album']" class="btn-invitacion">
-              <i class="pi pi-images"></i>
-              <span>Ver Álbum</span>
-            </a>
+            @if (!ev.modulos || ev.modulos.tieneInvitacion) {
+              <a [routerLink]="['/e', ev.enlace]" class="btn-invitacion">
+                <i class="pi pi-external-link"></i>
+                <span>Ver Invitación</span>
+              </a>
+            }
+            @if (!ev.modulos || ev.modulos.tieneAlbum) {
+              <a [routerLink]="['/e', ev.enlace, 'album']" class="btn-invitacion">
+                <i class="pi pi-images"></i>
+                <span>Ver Álbum</span>
+              </a>
+            }
           </div>
         </header>
 
         <!-- SELECTOR DE PESTAÑAS (INVITADOS VS ÁLBUM) -->
+        <!-- SELECTOR DE PESTAÑAS (INVITADOS VS RECEPCIÓN VS ÁLBUM) -->
         <nav class="pestanas-nav">
-          <button
-            type="button"
-            class="btn-tab"
-            [class.activo]="pestanaActiva() === 'invitados'"
-            (click)="pestanaActiva.set('invitados')">
-            <i class="pi pi-users"></i>
-            <span>Confirmaciones ({{ totalConfirmados() }})</span>
-          </button>
+          @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
+            <button
+              type="button"
+              class="btn-tab"
+              [class.activo]="pestanaActiva() === 'invitados'"
+              (click)="pestanaActiva.set('invitados'); detenerEscaner()">
+              <i class="pi pi-users"></i>
+              <span>Confirmaciones ({{ totalConfirmados() }})</span>
+            </button>
+          }
 
-          <button
-            type="button"
-            class="btn-tab"
-            [class.activo]="pestanaActiva() === 'album'"
-            (click)="pestanaActiva.set('album')">
-            <i class="pi pi-camera"></i>
-            <span>Álbum de Recuerdos ({{ recuerdos().length }})</span>
-          </button>
+          @if (ev.modulos?.tipoControlInvitados === 'total') {
+            <button
+              type="button"
+              class="btn-tab tab-recepcion"
+              [class.activo]="pestanaActiva() === 'recepcion'"
+              (click)="pestanaActiva.set('recepcion')">
+              <i class="pi pi-qrcode"></i>
+              <span>Recepción & Escáner ({{ totalIngresados() }}/{{ totalPases() }})</span>
+            </button>
+          }
+
+          @if (!ev.modulos || ev.modulos.tieneAlbum) {
+            <button
+              type="button"
+              class="btn-tab"
+              [class.activo]="pestanaActiva() === 'album'"
+              (click)="pestanaActiva.set('album'); detenerEscaner()">
+              <i class="pi pi-camera"></i>
+              <span>Álbum de Recuerdos ({{ recuerdos().length }})</span>
+            </button>
+          }
         </nav>
 
         <!-- 1. PESTAÑA: CONFIRMACIONES DE INVITADOS (RSVP) -->
@@ -127,26 +147,110 @@
           <!-- TABLA DE INVITADOS -->
           <div class="table-card">
             <p-table
-              [value]="invitados()"
-              [paginator]="invitados().length > 10"
+              #dt1
+              [value]="invitadosFiltrados()"
+              dataKey="id"
               [rows]="10"
+              [rowsPerPageOptions]="[10, 25, 50]"
+              [loading]="cargando()"
+              [paginator]="true"
+              [globalFilterFields]="['nombre', 'telefono', 'mensaje']"
               responsiveLayout="scroll"
-              styleClass="p-datatable-striped">
+              styleClass="p-datatable-borderless modern-table">
 
+              <!-- TOOLBAR DE LA TABLA: FILTROS + EXPORTAR A LA IZQUIERDA, BUSCADOR ADMIN A LA DERECHA -->
+              <ng-template pTemplate="caption">
+                <div class="table-toolbar">
+
+                  <!-- IZQUIERDA: FILTROS POR ESTADO + EXPORTAR -->
+                  <div class="toolbar-izquierda">
+                    <!-- FILTROS POR ESTADO -->
+                    <div class="filtros-chips">
+                      <button
+                        type="button"
+                        class="chip-filtro"
+                        [class.activo]="filtroRespuesta() === 'todos'"
+                        (click)="filtroRespuesta.set('todos'); dt1.reset()">
+                        Todos ({{ invitados().length }})
+                      </button>
+
+                      <button
+                        type="button"
+                        class="chip-filtro asistira"
+                        [class.activo]="filtroRespuesta() === 'asistira'"
+                        (click)="filtroRespuesta.set('asistira'); dt1.reset()">
+                        <i class="pi pi-check"></i>
+                        Confirmados ({{ totalConfirmados() }})
+                      </button>
+
+                      <button
+                        type="button"
+                        class="chip-filtro declinado"
+                        [class.activo]="filtroRespuesta() === 'no_asiste'"
+                        (click)="filtroRespuesta.set('no_asiste'); dt1.reset()">
+                        <i class="pi pi-times"></i>
+                        Declinados ({{ totalCancelados() }})
+                      </button>
+                    </div>
+
+                    <span class="toolbar-divider"></span>
+
+                    <!-- BOTONES DE EXPORTAR -->
+                    <div class="exportar-grupo">
+                      <button
+                        type="button"
+                        class="btn-exportar-excel"
+                        (click)="exportarExcel()"
+                        [disabled]="invitadosFiltrados().length === 0"
+                        title="Descargar lista filtrada en Excel">
+                        <i class="pi pi-file-excel"></i>
+                        <span>Excel</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn-exportar-pdf"
+                        (click)="exportarPdf()"
+                        [disabled]="invitadosFiltrados().length === 0"
+                        title="Descargar reporte filtrado en PDF">
+                        <i class="pi pi-file-pdf"></i>
+                        <span>PDF</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- DERECHA: BUSCADOR EXACTAMENTE IGUAL AL PANEL ADMIN -->
+                  <span class="p-input-icon-left search-wrapper">
+                    <i class="pi pi-search"></i>
+                    <input
+                      pInputText
+                      type="text"
+                      [ngModel]="terminoBusqueda()"
+                      (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
+                      placeholder="Buscar por nombre, teléfono o dedicatoria..." />
+                  </span>
+
+                </div>
+              </ng-template>
+
+              <!-- CABECERAS MINIMALISTAS (IDÉNTICAS AL PANEL ADMIN) -->
               <ng-template pTemplate="header">
                 <tr>
-                  <th>Nombre / Familia</th>
-                  <th>Respuesta</th>
-                  <th style="text-align: center;">Pases</th>
+                  <th pSortableColumn="nombre">Nombre / Familia <p-sortIcon field="nombre"></p-sortIcon></th>
+                  <th pSortableColumn="asistira">Respuesta <p-sortIcon field="asistira"></p-sortIcon></th>
+                  <th pSortableColumn="pasesConfirmados" style="text-align: center;">Pases <p-sortIcon field="pasesConfirmados"></p-sortIcon></th>
                   <th>WhatsApp</th>
-                  <th>Mensaje</th>
-                  <th>Fecha</th>
+                  @if (ev.modulos?.tipoControlInvitados === 'total') {
+                    <th style="text-align: center;">Pase VIP</th>
+                  }
+                  <th style="text-align: right;">Acciones</th>
                 </tr>
               </ng-template>
 
+              <!-- FILAS DE LA TABLA -->
               <ng-template pTemplate="body" let-invitado>
                 <tr>
-                  <td><strong style="color: #0f172a;">{{ invitado.nombre }}</strong></td>
+                  <td class="fw-medium">{{ invitado.nombre }}</td>
                   <td>
                     <p-tag
                       [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
@@ -155,11 +259,30 @@
                     </p-tag>
                   </td>
                   <td style="text-align: center;">
-                    <span class="pases-count" [class.muted]="!invitado.asistira">
-                      {{ invitado.asistira ? invitado.pasesConfirmados : 0 }}
-                    </span>
+                    @if (invitado.asistira) {
+                      <div class="pases-editor-inline">
+                        <button
+                          type="button"
+                          class="btn-pases-mini"
+                          [disabled]="(invitado.pasesConfirmados || 1) <= 1"
+                          (click)="cambiarPasesInvitado(invitado, -1)"
+                          title="Restar pase">
+                          <i class="pi pi-minus"></i>
+                        </button>
+                        <span class="pases-count">{{ invitado.pasesConfirmados || 1 }}</span>
+                        <button
+                          type="button"
+                          class="btn-pases-mini"
+                          (click)="cambiarPasesInvitado(invitado, 1)"
+                          title="Sumar pase">
+                          <i class="pi pi-plus"></i>
+                        </button>
+                      </div>
+                    } @else {
+                      <span class="pases-count muted">0</span>
+                    }
                   </td>
-                  <td>
+                  <td class="text-secondary">
                     @if (invitado.telefono) {
                       <a [href]="'https://wa.me/' + invitado.telefono" target="_blank" class="wa-btn">
                         <i class="pi pi-whatsapp"></i>
@@ -169,29 +292,229 @@
                       <span style="color: #cbd5e1;">-</span>
                     }
                   </td>
-                  <td>
-                    <span class="msg-text" [title]="invitado.mensaje || ''">
-                      {{ invitado.mensaje || '-' }}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="date-text">{{ formatearFecha(invitado.fechaConfirmacion) }}</span>
+
+                  <!-- COLUMNA PASE VIP (BOTÓN PRIMENG REDONDEADO) -->
+                  @if (ev.modulos?.tipoControlInvitados === 'total') {
+                    <td style="text-align: center;">
+                      @if (invitado.asistira) {
+                        <p-button
+                          icon="pi pi-qrcode"
+                          [rounded]="true"
+                          [text]="true"
+                          severity="warning"
+                          pTooltip="Ver Pase QR VIP"
+                          tooltipPosition="top"
+                          (onClick)="abrirModalQr(invitado)">
+                        </p-button>
+                      } @else {
+                        <span style="color: #cbd5e1;">-</span>
+                      }
+                    </td>
+                  }
+
+                  <!-- ACCIONES: VER DETALLE Y EDITAR (BOTONES PRIMENG ESTILO ADMIN) -->
+                  <td style="text-align: right;">
+                    <div class="action-buttons">
+                      <!-- BOTÓN VER DETALLE -->
+                      <p-button
+                        icon="pi pi-eye"
+                        [rounded]="true"
+                        [text]="true"
+                        severity="info"
+                        pTooltip="Ver Detalle"
+                        tooltipPosition="top"
+                        (onClick)="abrirModalDetalle(invitado)">
+                      </p-button>
+
+                      <!-- BOTÓN EDITAR INVITADO -->
+                      <p-button
+                        icon="pi pi-pencil"
+                        [rounded]="true"
+                        [text]="true"
+                        severity="secondary"
+                        pTooltip="Editar Invitado"
+                        tooltipPosition="top"
+                        (onClick)="abrirModalEditar(invitado)">
+                      </p-button>
+                    </div>
                   </td>
                 </tr>
               </ng-template>
 
+              <!-- ESTADO VACÍO ELEGANTE -->
               <ng-template pTemplate="emptymessage">
                 <tr>
-                  <td colspan="6" style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
-                    <i class="pi pi-inbox" style="font-size: 2.5rem; display: block; margin-bottom: 0.5rem;"></i>
-                    Aún no hay invitados registrados para este evento.
+                  <td [attr.colspan]="ev.modulos?.tipoControlInvitados === 'total' ? 6 : 5" class="empty-state">
+                    <i class="pi pi-folder-open empty-icon"></i>
+                    <p>No se encontraron invitados que coincidan con la búsqueda o filtros.</p>
                   </td>
                 </tr>
               </ng-template>
             </p-table>
+        </div>
+        }
+        <!-- PESTAÑA: CENTRO DE RECEPCIÓN Y CONTROL TOTAL VIP -->
+        @if (pestanaActiva() === 'recepcion') {
+          <div class="seccion-recepcion">
+
+            <!-- 1. MÉTRICAS DE AFORO EN VIVO -->
+            <div class="kpi-grid-recepcion">
+              <div class="kpi-card-recepcion ingresados">
+                <div class="kpi-circulo-progreso">
+                  <span>{{ porcentajeAsistencia() }}%</span>
+                </div>
+                <div class="kpi-info-recepcion">
+                  <span class="label">Pases en Sala</span>
+                  <span class="valor">{{ totalIngresados() }}</span>
+                </div>
+              </div>
+
+              <div class="kpi-card-recepcion pendientes">
+                <div class="kpi-icon-wrap"><i class="pi pi-clock"></i></div>
+                <div class="kpi-info-recepcion">
+                  <span class="label">Pases Pendientes</span>
+                  <span class="valor">{{ totalPendientes() }}</span>
+                </div>
+              </div>
+
+              <div class="kpi-card-recepcion totales">
+                <div class="kpi-icon-wrap"><i class="pi pi-ticket"></i></div>
+                <div class="kpi-info-recepcion">
+                  <span class="label">Pases Totales</span>
+                  <span class="valor">{{ totalPases() }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. PANEL DUAL: ESCÁNER DE CÁMARA (IZQ) Y BÚSQUEDA MANUAL (DER) -->
+            <div class="grid-puerta">
+
+              <!-- COLUMNA A: ESCÁNER DE CÁMARA QR -->
+              <div class="col-escaner">
+                <div class="card-escaner">
+                  <div class="cabecera-card-puerta">
+                    <h3><i class="pi pi-camera"></i> Escáner en Puerta</h3>
+                    <button
+                      type="button"
+                      class="btn-toggle-camara"
+                      [class.activo]="escanerActivo()"
+                      (click)="toggleEscaner()">
+                      <i [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
+                      <span>{{ escanerActivo() ? 'Detener Cámara' : 'Activar Cámara' }}</span>
+                    </button>
+                  </div>
+
+                  <!-- VISOR DE CÁMARA -->
+                  <div class="contenedor-visor">
+                    <div id="qr-reader" class="visor-camara"></div>
+
+                    @if (!escanerActivo()) {
+                      <div class="camara-placeholder" (click)="iniciarEscaner()">
+                        <i class="pi pi-qrcode"></i>
+                        <p>Haz clic para encender la cámara y escanear pases VIP</p>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- TARJETA DINÁMICA DE RESULTADO DE ESCANEO -->
+                  @if (resultadoEscaneo(); as res) {
+                    <div class="alerta-escaneo" [class]="res.tipo">
+                      <div class="alerta-icono">
+                        @if (res.tipo === 'exito') {
+                          <i class="pi pi-check-circle"></i>
+                        } @else if (res.tipo === 'duplicado') {
+                          <i class="pi pi-exclamation-triangle"></i>
+                        } @else {
+                          <i class="pi pi-times-circle"></i>
+                        }
+                      </div>
+                      <div class="alerta-contenido">
+                        <h4>{{ res.mensaje }}</h4>
+                        @if (res.invitado; as inv) {
+                          <p class="alerta-detalles">
+                            <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }} pases
+                            @if (res.hora) {
+                              <span>({{ res.hora }})</span>
+                            }
+                          </p>
+                          @if (res.tipo === 'exito') {
+                            <button type="button" class="btn-deshacer" (click)="revertirCheckIn(inv)">
+                              Deshacer ingreso
+                            </button>
+                          }
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- COLUMNA B: BÚSQUEDA Y CHECK-IN MANUAL -->
+              <div class="col-manual">
+                <div class="card-manual">
+                  <div class="cabecera-card-puerta">
+                    <h3><i class="pi pi-list"></i> Búsqueda Nominal de Respaldo</h3>
+                    <span class="subtexto-puerta">Por si el invitado no tiene celular</span>
+                  </div>
+
+                  <!-- BUSCADOR RÁPIDO EN PUERTA -->
+                  <div class="buscador-recepcion">
+                    <i class="pi pi-search"></i>
+                    <input
+                      type="text"
+                      [ngModel]="busquedaRecepcion()"
+                      (ngModelChange)="busquedaRecepcion.set($event)"
+                      placeholder="Buscar por nombre o familia..."
+                      class="input-busqueda-recepcion" />
+                  </div>
+
+                  <!-- LISTADO DE INVITADOS CON CHECK-IN RÁPIDO -->
+                  <div class="lista-invitados-recepcion">
+                    @for (inv of invitadosRecepcionFiltrados(); track inv.id) {
+                      <div class="item-recepcion" [class.ingresado]="inv.haIngresado">
+                        <div class="info-invitado-puerta">
+                          <span class="nombre-puerta">{{ inv.nombre }}</span>
+                          <span class="pases-puerta">
+                            <i class="pi pi-ticket"></i> {{ inv.pasesConfirmados || 1 }} pases confirmados
+                          </span>
+                        </div>
+
+                        <div class="accion-invitado-puerta">
+                          @if (inv.haIngresado) {
+                            <span class="badge-ingresado">
+                              <i class="pi pi-check"></i> Ingresó {{ formatearFecha(inv.horaIngreso) }}
+                            </span>
+                            <button
+                              type="button"
+                              class="btn-revertir-mini"
+                              (click)="revertirCheckIn(inv)"
+                              title="Revertir ingreso">
+                              <i class="pi pi-undo"></i>
+                            </button>
+                          } @else {
+                            <button
+                              type="button"
+                              class="btn-checkin-manual"
+                              (click)="hacerCheckIn(inv)">
+                              <i class="pi pi-sign-in"></i>
+                              <span>Dar Acceso</span>
+                            </button>
+                          }
+                        </div>
+                      </div>
+                    } @empty {
+                      <div class="vacio-recepcion">
+                        <p>No se encontraron invitados confirmados con ese nombre.</p>
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         }
-
         <!-- 2. PESTAÑA: MODERACIÓN DEL ÁLBUM DE FOTOS -->
         @if (pestanaActiva() === 'album') {
           <div class="seccion-moderacion-album">
@@ -204,6 +527,14 @@
 
               <!-- BOTONES DE ACCIÓN PARA EL ANFITRIÓN -->
               <div class="acciones-cabecera-album">
+                <!-- BOTÓN QR PARA CENTROS DE MESA -->
+                <button
+                  type="button"
+                  class="btn-qr-mesas"
+                  (click)="abrirModalQrMesas()">
+                  <i class="pi pi-qrcode"></i>
+                  <span>QR para Mesas</span>
+                </button>
                 @if (recuerdos().length > 0) {
                   <button
                     type="button"
@@ -295,6 +626,69 @@
           </div>
         }
 
+      </div>
+    }
+
+    <!-- MODAL EDITORIAL: VER Y COMPARTIR EL PASE VIP -->
+    @if (invitadoModalQr(); as modal) {
+      <div class="modal-backdrop-qr" (click)="cerrarModalQr()">
+        <div class="modal-card-qr" (click)="$event.stopPropagation()">
+          <button type="button" class="btn-cerrar-modal" (click)="cerrarModalQr()">
+            <i class="pi pi-times"></i>
+          </button>
+
+          <div class="modal-qr-header">
+            <span class="badge-vip-modal"><i class="pi pi-shield"></i> PASE DIGITAL VIP</span>
+            <h3>{{ ev.titulo }}</h3>
+            <p>{{ ev.preTitulo || ev.tipo || 'Invitación Oficial' }}</p>
+          </div>
+
+          <div class="modal-qr-body">
+            <div class="modal-guest-details">
+              <span class="sub">Invitado de Honor</span>
+              <h4>{{ modal.invitado.nombre }}</h4>
+              <div class="badge-pases-modal">
+                <button
+                  type="button"
+                  class="btn-pases-mini"
+                  [disabled]="(modal.invitado.pasesConfirmados || 1) <= 1"
+                  (click)="cambiarPasesInvitado(modal.invitado, -1)"
+                  title="Restar pase">
+                  <i class="pi pi-minus"></i>
+                </button>
+                <i class="pi pi-ticket"></i>
+                <span class="label-pases">Acceso para</span>
+                <strong class="num-pases">{{ modal.invitado.pasesConfirmados || 1 }} {{ (modal.invitado.pasesConfirmados || 1) === 1 ? 'persona' : 'personas' }}</strong>
+                <button
+                  type="button"
+                  class="btn-pases-mini"
+                  (click)="cambiarPasesInvitado(modal.invitado, 1)"
+                  title="Sumar pase">
+                  <i class="pi pi-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="modal-qr-canvas">
+              <img [src]="modal.qrDataUrl" alt="Código QR VIP" class="img-qr-modal" />
+              <p class="modal-qr-instruccion">
+                <i class="pi pi-info-circle"></i>
+                Presenta este código en la entrada del salón
+              </p>
+            </div>
+          </div>
+
+          <div class="modal-qr-actions">
+            <button type="button" class="btn-action-qr btn-descargar" (click)="descargarQrInvitado()">
+              <i class="pi pi-download"></i>
+              <span>Descargar Pase (PNG)</span>
+            </button>
+            <button type="button" class="btn-action-qr btn-whatsapp" (click)="compartirQrWhatsApp()">
+              <i class="pi pi-whatsapp"></i>
+              <span>Enviar por WhatsApp</span>
+            </button>
+          </div>
+        </div>
       </div>
     }
 

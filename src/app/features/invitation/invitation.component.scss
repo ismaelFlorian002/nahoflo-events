@@ -382,6 +382,13 @@
     font-weight: 600;
     color: #475569;
     letter-spacing: 0.5px;
+
+    .label-hint {
+      color: #b45309;
+      font-weight: 500;
+      font-size: 0.78rem;
+      margin-left: 0.35rem;
+    }
   }
 }
 
@@ -473,105 +480,303 @@ textarea.form-control {
 }
 
 /* Pantalla de Éxito */
+/* --- TARJETA DE PASE DIGITAL VIP --- */
+.vip-pass-card {
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafaf9 100%);
+  border: 2px solid #cca633;
+  padding: 1.75rem 1.35rem;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  box-shadow: 0 10px 25px -5px rgba(204, 166, 51, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+
+  .vip-pass-header {
+    border-bottom: 1px dashed #cbd5e1;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.85rem;
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #cca633;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      margin-bottom: 0.65rem;
+    }
+
+    .vip-event-title {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.55rem;
+      color: #0f172a;
+      margin: 0 0 0.2rem;
+      line-height: 1.2;
+    }
+
+    .vip-event-type {
+      font-size: 0.8rem;
+      color: #a16207;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin: 0;
+      font-weight: 600;
+    }
+  }
+
+  .vip-pass-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+
+    .vip-guest-info {
+      .vip-guest-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .vip-guest-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0.2rem 0 0.5rem;
+        line-height: 1.25;
+      }
+
+      .vip-pases-badge {
+        display: inline-block;
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 0.35rem 0.95rem;
+        font-size: 0.82rem;
+        color: #334155;
+        text-align: center;
+        white-space: nowrap;
+
+        i {
+          color: #cca633;
+          font-size: 0.85rem;
+          margin-right: 0.35rem;
+          vertical-align: -1px;
+        }
+
+        .label-pases {
+          color: #475569;
+          font-weight: 500;
+          margin-right: 0.25rem;
+          vertical-align: middle;
+        }
+
+        .num-pases {
+          color: #0f172a;
+          font-weight: 700;
+          vertical-align: middle;
+        }
+      }
+    }
+
+    .vip-qr-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+      .vip-qr-img {
+        width: 190px;
+        height: 190px;
+        display: block;
+        border-radius: 6px;
+      }
+
+      .vip-qr-hint {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.75rem;
+        color: #64748b;
+        margin: 0.75rem 0 0;
+
+        i {
+          color: #cca633;
+        }
+      }
+    }
+  }
+
+  .vip-pass-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+
+    .btn-guardar-pase {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: #0f172a;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      max-width: 280px;
+
+      &:hover {
+        background: #cca633;
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    .btn-ver-invitacion-completa {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      background: transparent;
+      color: #64748b;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      max-width: 280px;
+
+      &:hover {
+        background: #f8fafc;
+        color: #0f172a;
+        border-color: #cbd5e1;
+      }
+    }
+  }
+}
+/* --- PANTALLAS DE CONFIRMACIÓN EXITOSA --- */
 .rsvp-success {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
 
   .success-icon {
-    font-size: 3.5rem;
+    font-size: 3rem;
     color: #10b981;
-    margin-bottom: 1rem;
+    margin-bottom: 0.25rem;
   }
 
   h3 {
-    color: #0f172a;
-    font-size: 1.8rem;
     font-family: Georgia, 'Times New Roman', serif;
-    margin: 0 0 0.5rem;
+    font-size: 1.75rem;
+    color: #0f172a;
+    margin: 0;
   }
 
   p {
     color: #64748b;
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.6;
-    max-width: 440px;
-    margin: 0 auto;
-  }
-}
-
-/* --- CONTADOR DE PASES EDITORIAL --- */
-.stepper-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 0.75rem 1.25rem;
-  max-width: 320px;
-  margin: 0.25rem auto 0;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
-}
-
-.stepper-action-btn {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 1px solid #e2e8f0;
-  background-color: #ffffff;
-  color: #1e293b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s ease;
-
-  i {
-    font-size: 0.9rem;
-    font-weight: bold;
+    max-width: 460px;
+    margin: 0;
   }
 
-  &:hover:not(:disabled) {
-    background-color: #cca633;
-    border-color: #cca633;
-    color: #ffffff;
-    transform: scale(1.05);
+  /* Variante VIP: Aviso de pase enviado por WhatsApp */
+  &.rsvp-success-vip {
+    .vip-confirm-icon-wrap {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #fefce8 0%, #fef9c3 100%);
+      border: 2px solid #cca633;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(204, 166, 51, 0.18);
+      margin-bottom: 0.25rem;
+
+      i {
+        font-size: 1.6rem;
+        color: #cca633;
+      }
+    }
+
+    .vip-confirm-badge {
+      display: inline-block;
+      background: #cca633;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+    }
+
+    .vip-confirm-lead {
+      color: #1e293b;
+      font-size: 1rem;
+    }
+
+    .vip-confirm-notice {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      max-width: 440px;
+      margin-top: 0.5rem;
+      text-align: left;
+
+      i {
+        font-size: 1.75rem;
+        color: #16a34a;
+        flex-shrink: 0;
+      }
+
+      p {
+        color: #166534;
+        font-size: 0.88rem;
+        line-height: 1.5;
+        margin: 0;
+
+        strong {
+          color: #14532d;
+        }
+      }
+    }
   }
-
-  &:active:not(:disabled) {
-    transform: scale(0.95);
-  }
-
-  &:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-    box-shadow: none;
-  }
-}
-
-.stepper-display {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-
-.stepper-count {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1;
-}
-
-.stepper-unit {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: #a16207;
-  font-weight: 600;
-  margin-top: 0.2rem;
 }
 /* --- PIE DE PÁGINA --- */
 .invitation-footer {
@@ -757,3 +962,135 @@ $dorado-claro: #e2c275;
     filter: drop-shadow(0 10px 28px rgba(204, 166, 51, 0.75));
   }
 }
+/* ===================================================
+   BANNER EDITORIAL: ÁLBUM DIGITAL COLABORATIVO
+   =================================================== */
+.album-invite-section {
+  padding: 4.5rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  background-color: #fafaf9;
+
+  .album-invite-card {
+    max-width: 660px;
+    width: 100%;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 1px solid rgba(204, 166, 51, 0.28);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #b89228, #cca633, #e2c275, #cca633, #b89228);
+    }
+  }
+
+  .album-invite-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 50px;
+    background: rgba(204, 166, 51, 0.12);
+    color: #cca633;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+    i {
+      font-size: 0.85rem;
+    }
+  }
+
+  .album-invite-title {
+    font-size: 1.85rem;
+    color: #1c1917;
+    margin: 0.25rem 0 0;
+    font-weight: 600;
+  }
+
+  .album-invite-desc {
+    color: #57534e;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 500px;
+    margin: 0;
+  }
+
+  .album-invite-btn {
+    margin-top: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: linear-gradient(135deg, #cca633 0%, #b89228 100%);
+    color: #ffffff;
+    padding: 0.85rem 1.8rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.92rem;
+    box-shadow: 0 4px 14px rgba(204, 166, 51, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(204, 166, 51, 0.5);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    i {
+      font-size: 1.1rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    padding: 3.5rem 1rem;
+
+    .album-invite-card {
+      padding: 2.25rem 1.25rem;
+    }
+
+    .album-invite-title {
+      font-size: 1.5rem;
+    }
+  }
+}
+
+/* --- VISTA ESTÁTICA EXCLUSIVA DEL PASE DIGITAL VIP (?pase=ID) --- */
+.vista-solo-pase-wrapper {
+  min-height: 100vh;
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+
+  .vip-pass-card {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 25px rgba(204, 166, 51, 0.2);
+    animation: fadeInPase 0.4s ease-out;
+  }
+}
+
+@keyframes fadeInPase {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+

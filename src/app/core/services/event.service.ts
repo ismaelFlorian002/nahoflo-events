@@ -99,7 +99,6 @@ export class EventService {
     const docSnap = snapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() } as Evento;
   }
-
   // Guarda la confirmación en la subcolección 'invitados' del evento
   async confirmarAsistencia(eventoId: string, datosInvitado: InvitadoModel) {
     // Ruta en Firestore: eventos/{eventoId}/invitados
@@ -107,6 +106,8 @@ export class EventService {
 
     return addDoc(refSubcoleccion, {
       ...datosInvitado,
+      haIngresado: false,
+      pasesIngresados: 0,
       fechaConfirmacion: new Date(),
     });
   }
@@ -119,6 +120,55 @@ export class EventService {
     return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as InvitadoModel);
   }
 
+  // Registra el acceso presencial (Check-in) del invitado en la puerta
+  async registrarCheckIn(
+    eventoId: string,
+    invitadoId: string,
+    pasesIngresados: number
+  ): Promise<void> {
+    const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
+    await updateDoc(refDoc, {
+      haIngresado: true,
+      horaIngreso: new Date(),
+      pasesIngresados,
+    });
+  }
+
+  // Permite revertir el check-in en caso de error del personal de recepción
+  async revertirCheckIn(eventoId: string, invitadoId: string): Promise<void> {
+    const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
+    await updateDoc(refDoc, {
+      haIngresado: false,
+      horaIngreso: null,
+      pasesIngresados: 0,
+    });
+  }
+
+  // Permite al anfitrión ajustar el número de pases asignados a un invitado
+  async actualizarPasesInvitado(
+    eventoId: string,
+    invitadoId: string,
+    pasesConfirmados: number,
+  ): Promise<void> {
+    const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
+    await updateDoc(refDoc, { pasesConfirmados });
+  }
+
+  // Permite al anfitrión actualizar datos completos del invitado (nombre, teléfono, asistencia, pases, mensaje)
+  async actualizarInvitado(
+    eventoId: string,
+    invitadoId: string,
+    datos: Partial<InvitadoModel>,
+  ): Promise<void> {
+    const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
+    await updateDoc(refDoc, { ...datos });
+  }
+
+  // Permite al anfitrión eliminar un registro de invitado
+  async eliminarInvitado(eventoId: string, invitadoId: string): Promise<void> {
+    const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
+    await deleteDoc(refDoc);
+  }
   // Sube N fotos del invitado a Storage en paralelo y guarda la publicación del carrusel en Firestore
   // Sube N fotos del invitado a Storage de forma secuencial y guarda el carrusel en Firestore
   async guardarRecuerdo(

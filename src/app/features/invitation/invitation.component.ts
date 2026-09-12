@@ -9,6 +9,8 @@ import { PaginatorModule } from 'primeng/paginator';
 import { ReproductorMusicaComponent } from './reproductor-musica/reproductor-musica';
 import { AudioService } from '../../core/services/audio.service';
 import { Button } from 'primeng/button';
+import QRCode from 'qrcode';
+import { capturarYDescargarTarjetaPaseWeb } from '../../core/utils/image-compresor';
 
 @Component({
   selector: 'app-invitation',
@@ -66,18 +68,33 @@ export class InvitationComponent implements OnInit, OnDestroy {
   formRsvp = this.fb.group({
     nombre: ['', [Validators.required, Validators.minLength(3)]],
     asistira: [true, Validators.required],
-    pasesConfirmados: [1, [Validators.required, Validators.min(1), Validators.max(10)]],
+    pasesConfirmados: [1],
     telefono: [''],
     mensaje: [''],
   });
+  // Pase VIP generado en tiempo real
+  paseGenerado = signal<{
+    id: string;
+    nombre: string;
+    pases: number;
+    qrDataUrl: string;
+  } | null>(null);
 
-  // Envío a la subcolección de Firestore
+  // Cuando se abre con ?pase=ID, muestra únicamente el pase sin el resto de la invitación
+  modoSoloPase = signal<boolean>(false);
+
+  // Envío a la subcolección de Firestore (el anfitrión asigna los pases oficiales desde su portal)
   async enviarRsvp() {
     const ev = this.evento();
     if (!ev?.id || this.formRsvp.invalid || this.enviandoRsvp()) return;
     this.enviandoRsvp.set(true);
     try {
-      await this.eventService.confirmarAsistencia(ev.id, this.formRsvp.value as any);
+      const formVal = this.formRsvp.value;
+      await this.eventService.confirmarAsistencia(ev.id, {
+        ...formVal,
+        pasesConfirmados: 1,
+      } as any);
+
       this.rsvpEnviado.set(true);
     } catch (error) {
       console.error('Error al confirmar asistencia:', error);
@@ -86,8 +103,22 @@ export class InvitationComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Permite al invitado guardar la imagen exacta de su Pase VIP (tal cual se ve en la web) en su celular
+  async descargarPase(): Promise<void> {
+    const pase = this.paseGenerado();
+    if (!pase) return;
+
+    const cardEl = document.querySelector('.vip-pass-card') as HTMLElement;
+
+    if (cardEl) {
+      await capturarYDescargarTarjetaPaseWeb(cardEl, pase.nombre);
+    }
+  }
+
+
   async ngOnInit() {
     const slug = this.route.snapshot.paramMap.get('slug');
+    const paseId = this.route.snapshot.queryParamMap.get('pase');
 
     if (!slug) {
       this.notFound.set(true);
@@ -100,6 +131,44 @@ export class InvitationComponent implements OnInit, OnDestroy {
       if (data) {
         this.evento.set(data);
         this.iniciarCuentaRegresiva(data.fecha);
+
+        // Si el invitado abrió su enlace personal de Pase VIP (?pase=ID)
+        if (paseId && data.id && data.modulos?.tipoControlInvitados === 'total') {
+          try {
+            const listaInvitados = await this.eventService.getInvitados(data.id);
+            const invitado = listaInvitados.find((i) => i.id === paseId);
+
+            if (invitado && invitado.asistira) {
+              const payloadQr = JSON.stringify({
+                evId: data.id,
+                invId: invitado.id,
+                slug: data.enlace,
+              });
+
+              const qrUrl = await QRCode.toDataURL(payloadQr, {
+                width: 320,
+                margin: 2,
+                color: {
+                  dark: '#1e293b',
+                  light: '#ffffff',
+                },
+              });
+
+              this.paseGenerado.set({
+                id: invitado.id!,
+                nombre: invitado.nombre,
+                pases: invitado.pasesConfirmados || 1,
+                qrDataUrl: qrUrl,
+              });
+
+              this.rsvpEnviado.set(true);
+              this.modoSoloPase.set(true);
+              this.invitacionAbierta.set(true);
+            }
+          } catch (errPase) {
+            console.error('Error al cargar pase individual:', errPase);
+          }
+        }
       } else {
         this.notFound.set(true);
       }
@@ -147,20 +216,6 @@ export class InvitationComponent implements OnInit, OnDestroy {
 
     actualizar();
     this.countdownInterval = setInterval(actualizar, 1000);
-  }
-
-  incrementarPases() {
-    const actual = this.formRsvp.get('pasesConfirmados')?.value || 1;
-    if (actual < 20) {
-      this.formRsvp.patchValue({ pasesConfirmados: actual + 1 });
-    }
-  }
-
-  decrementarPases() {
-    const actual = this.formRsvp.get('pasesConfirmados')?.value || 1;
-    if (actual > 1) {
-      this.formRsvp.patchValue({ pasesConfirmados: actual - 1 });
-    }
   }
 }
 

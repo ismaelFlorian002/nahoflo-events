@@ -59,6 +59,19 @@
 
             <div class="action-buttons">
 
+              <!-- BOTÓN QR PARA MESAS (Solo si tiene Álbum contratado) -->
+              <p-button
+                *ngIf="!evento.modulos || evento.modulos.tieneAlbum"
+                icon="pi pi-qrcode"
+                [rounded]="true"
+                [text]="true"
+                severity="warning"
+                pTooltip="Código QR para Mesas (Álbum)"
+                tooltipPosition="top"
+                (onClick)="abrirQrMesas(evento)">
+              </p-button>
+
+
               <p-button
                 icon="pi pi-users"
                 [rounded]="true"

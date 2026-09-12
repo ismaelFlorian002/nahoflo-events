@@ -10,6 +10,59 @@
     <p>Este evento no existe o fue deshabilitado temporalmente por el anfitrión.</p>
   </div>
 } @else if (evento(); as ev) {
+  <!-- PLANTILLA ÚNICA EDITORIAL: PASE DIGITAL VIP -->
+  <ng-template #plantillaPaseVip let-esSoloPase="esSoloPase">
+    @if (paseGenerado(); as pase) {
+      <div class="vip-pass-card">
+        <div class="vip-pass-header">
+          <span class="vip-badge"><i class="pi pi-shield"></i> PASE DIGITAL VIP</span>
+          <h3 class="vip-event-title">{{ ev.titulo }}</h3>
+          <p class="vip-event-type">{{ ev.preTitulo || ev.tipo || 'Invitación de Honor' }}</p>
+        </div>
+
+        <div class="vip-pass-body">
+          <div class="vip-guest-info">
+            <span class="vip-guest-label">Invitado(s) de Honor</span>
+            <h4 class="vip-guest-name">{{ pase.nombre }}</h4>
+            <div class="vip-pases-badge">
+              <i class="pi pi-ticket"></i>
+              <span class="label-pases">Acceso para</span>
+              <strong class="num-pases">{{ pase.pases }} {{ pase.pases === 1 ? 'persona' : 'personas' }}</strong>
+            </div>
+          </div>
+
+          <div class="vip-qr-box">
+            <img [src]="pase.qrDataUrl" alt="Código QR de Acceso VIP" class="vip-qr-img" />
+            <p class="vip-qr-hint">
+              <i class="pi pi-info-circle"></i>
+              Presenta este código en la entrada del salón
+            </p>
+          </div>
+        </div>
+
+        <div class="vip-pass-actions">
+          <button type="button" class="btn-guardar-pase" (click)="descargarPase()">
+            <i class="pi pi-download"></i>
+            <span>Guardar Pase en el Celular</span>
+          </button>
+
+          @if (esSoloPase) {
+            <button type="button" class="btn-ver-invitacion-completa" (click)="modoSoloPase.set(false)">
+              <i class="pi pi-eye"></i>
+              <span>Ver Invitación Completa (Música, Mapa, Itinerario)</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </ng-template>
+
+  @if (modoSoloPase() && paseGenerado()) {
+    <!-- VISTA EXCLUSIVA ESTÁTICA: PASE DIGITAL VIP (?pase=ID) -->
+    <div class="vista-solo-pase-wrapper">
+      <ng-container *ngTemplateOutlet="plantillaPaseVip; context: { esSoloPase: true }"></ng-container>
+    </div>
+  } @else {
   <main class="invitation-wrapper">
     <!-- PANTALLA EDITORIAL DE BIENVENIDA / ABRIR INVITACIÓN -->
 
@@ -180,9 +233,32 @@
         </div>
       </section>
     }
+    <!-- BANNER EDITORIAL: ÁLBUM DIGITAL COLABORATIVO (Solo si contrataron Álbum) -->
+    @if (ev.modulos?.tieneAlbum) {
+      <section class="album-invite-section">
+        <div class="album-invite-card">
+          <div class="album-invite-badge">
+            <i class="pi pi-camera"></i>
+            <span>DURANTE EL EVENTO</span>
+          </div>
 
+          <h2 class="album-invite-title">Álbum de Recuerdos en Vivo</h2>
+          <div class="golden-divider"></div>
+
+          <p class="album-invite-desc">
+            ¡Queremos ver la fiesta a través de tus ojos! Durante la recepción, toma fotos de cada instante y compártelas en nuestro muro digital colaborativo.
+          </p>
+
+          <a [routerLink]="['/e', ev.enlace, 'album']" class="album-invite-btn">
+            <i class="pi pi-images"></i>
+            <span>Entrar al Álbum de Fotos</span>
+          </a>
+        </div>
+      </section>
+    }
     <!-- SECCIÓN RSVP (CONFIRMACIÓN DE ASISTENCIA) -->
-    <section class="rsvp-section">
+    @if (ev.modulos?.tipoControlInvitados !== 'inactivo') {
+      <section class="rsvp-section">
       <div class="section-header">
         <span class="section-subtitle">¿NOS ACOMPAÑAS?</span>
         <h2 class="section-title">Confirma tu Asistencia</h2>
@@ -191,12 +267,40 @@
 
       <div class="rsvp-card">
         @if (rsvpEnviado()) {
-          <!-- PANTALLA DE ÉXITO TRAS CONFIRMAR -->
-          <div class="rsvp-success">
-            <i class="pi pi-check-circle success-icon"></i>
-            <h3>¡Muchas Gracias!</h3>
-            <p>Tu confirmación ha sido enviada con éxito. Nos entusiasma mucho compartir este día contigo.</p>
-          </div>
+          <!-- PANTALLA TRAS CONFIRMAR -->
+          @if (formRsvp.get('asistira')?.value === false) {
+            <!-- DECLINÓ ASISTENCIA -->
+            <div class="rsvp-success">
+              <i class="pi pi-heart success-icon" style="color: #94a3b8;"></i>
+              <h3>Gracias por avisarnos</h3>
+              <p>Lamentamos que no puedas acompañarnos físicamente, pero sabemos que celebrarás con nosotros en corazón.</p>
+            </div>
+          } @else if (ev.modulos?.tipoControlInvitados === 'total') {
+            <!-- CONFIRMACIÓN CONTROL TOTAL VIP: AVISO DE PASE POR WHATSAPP -->
+            <div class="rsvp-success rsvp-success-vip">
+              <div class="vip-confirm-icon-wrap">
+                <i class="pi pi-shield"></i>
+              </div>
+              <span class="vip-confirm-badge">ACCESO CONTROLADO VIP</span>
+              <h3>¡Confirmación Recibida!</h3>
+              <p class="vip-confirm-lead">
+                Muchas gracias por confirmar tu asistencia, <strong>{{ formRsvp.get('nombre')?.value }}</strong>.
+              </p>
+              <div class="vip-confirm-notice">
+                <i class="pi pi-whatsapp"></i>
+                <p>
+                  Tus anfitriones validarán tus lugares asignados y te harán llegar tu <strong>Pase Digital VIP con Código QR</strong> directamente a tu WhatsApp.
+                </p>
+              </div>
+            </div>
+          } @else {
+            <!-- CONFIRMACIÓN PAQUETE BÁSICO -->
+            <div class="rsvp-success">
+              <i class="pi pi-check-circle success-icon"></i>
+              <h3>¡Muchas Gracias!</h3>
+              <p>Tu confirmación ha sido enviada con éxito. Nos entusiasma mucho compartir este día contigo.</p>
+            </div>
+          }
         } @else {
           <!-- FORMULARIO INTERACTIVO -->
           <form [formGroup]="formRsvp" (ngSubmit)="enviarRsvp()" class="rsvp-form">
@@ -230,50 +334,14 @@
               </div>
             </div>
 
-          <!-- 3. Contador de Pases con PrimeNG (+ / -) -->
-          @if (formRsvp.get('asistira')?.value === true) {
+            <!-- 3. Teléfono (WhatsApp) -->
             <div class="form-group">
-              <label for="pases">Número de personas confirmadas</label>
-              <div class="pases-counter-wrapper">
-                <!-- 3. Contador de Pases Editorial -->
-                @if (formRsvp.get('asistira')?.value === true) {
-                  <div class="form-group">
-                    <label>Número de personas confirmadas</label>
-                    <div class="stepper-card">
-
-                      <button
-                        type="button"
-                        class="stepper-action-btn"
-                        (click)="decrementarPases()"
-                        [disabled]="(formRsvp.get('pasesConfirmados')?.value ?? 1) <= 1">
-                        <i class="pi pi-minus"></i>
-                      </button>
-
-                      <div class="stepper-display">
-                        <span class="stepper-count">{{ formRsvp.get('pasesConfirmados')?.value }}</span>
-                        <span class="stepper-unit">
-                      {{ formRsvp.get('pasesConfirmados')?.value === 1 ? 'Pase' : 'Pases' }}
-                    </span>
-                      </div>
-
-                      <button
-                        type="button"
-                        class="stepper-action-btn"
-                        (click)="incrementarPases()"
-                        [disabled]="(formRsvp.get('pasesConfirmados')?.value ?? 1) >= 20">
-                        <i class="pi pi-plus"></i>
-                      </button>
-
-                    </div>
-                  </div>
+              <label for="telefono">
+                Teléfono (WhatsApp)
+                @if (ev.modulos?.tipoControlInvitados === 'total') {
+                  <span class="label-hint">(Para recibir tu Pase Digital VIP)</span>
                 }
-              </div>
-            </div>
-          }
-
-            <!-- 4. Teléfono (Opcional) -->
-            <div class="form-group">
-              <label for="telefono">Teléfono (WhatsApp)</label>
+              </label>
               <input
                 id="telefono"
                 type="tel"
@@ -309,6 +377,7 @@
         }
       </div>
     </section>
+    }
 
     <!-- PIE DE PÁGINA CON ACCESO ANFITRIÓN DISCRETO -->
     <footer class="invitation-footer">
@@ -324,4 +393,6 @@
       <app-reproductor-musica [urlMusica]="ev.musicaFondoUrl"></app-reproductor-musica>
     }
   </main>
+  }
 }
+

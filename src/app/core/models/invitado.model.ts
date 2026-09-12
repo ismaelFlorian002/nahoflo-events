@@ -6,4 +6,10 @@ export interface InvitadoModel {
   telefono?: string; // Opcional para contacto
   mensaje?: string; // Mensaje o buenos deseos para los anfitriones
   fechaConfirmacion?: any; // Fecha y hora en que se envió la confirmación
+
+  // Control Total VIP:
+  haIngresado?: boolean; // true si ya cruzó la recepción
+  horaIngreso?: any; // Timestamp de llegada
+  pasesIngresados?: number; // Personas que ingresaron efectivamente
+  codigoAcceso?: string; // Token único del pase para el QR
 }
