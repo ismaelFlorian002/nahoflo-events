@@ -20,33 +20,16 @@
   <main class="album-wrapper">
 
     <!-- 1. CABECERA HERO A PANTALLA COMPLETA (EDGE TO EDGE) -->
-    <header class="album-hero-portada">
-      <!-- FOTO PRINCIPAL DE FONDO -->
-      <div
-        class="hero-fondo-imagen"
-        [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'">
-      </div>
+    <!-- CABECERA HERO IDÉNTICA A LA INVITACIÓN -->
+    <header class="hero-section" [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'">
+      <div class="hero-overlay"></div>
 
-      <!-- CAPA DE DEGRADADO CINEMATOGRÁFICO DE CONTRASTE -->
-      <div class="hero-degradado"></div>
-
-      <!-- CONTENIDO EDITORIAL DE LA PORTADA -->
-      <div class="hero-contenido">
-        <span class="estudio-credito">NahoFlo Creative Studio</span>
-        <span class="evento-tipo">{{ ev.preTitulo || ev.tipo }}</span>
-        <h1 class="evento-titulo">{{ ev.titulo }}</h1>
-        <p class="album-subtitulo">¡Captura los mejores momentos de la fiesta y compártelos con nosotros!</p>
-
-        <!-- BOTÓN PRINCIPAL PARA SUBIR FOTO -->
-        <div class="hero-accion">
-          <button type="button" class="boton-capturar" (click)="abrirModalSubirFoto()">
-            <i class="pi pi-camera"></i>
-            <span>Tomar / Subir Foto</span>
-          </button>
-        </div>
+      <div class="hero-content">
+        <span class="hero-subtitle">{{ ev.preTitulo || ev.tipo }}</span>
+        <h1 class="hero-title">{{ ev.titulo }}</h1>
+        <p class="hero-quote">¡Captura los mejores momentos de la fiesta y compártelos con nosotros!</p>
       </div>
     </header>
-
     <!-- 2. CONTENEDOR CENTRADO DEL FEED DE INSTAGRAM -->
     <div class="album-feed-contenedor">
 
@@ -223,6 +206,14 @@
       </footer>
 
     </div> <!-- FIN .album-feed-contenedor -->
+
+    <!-- BOTÓN FLOTANTE FIJO (FAB) EN PANTALLA -->
+    <div class="fab-subir-contenedor">
+      <button type="button" class="boton-fab-capturar" (click)="abrirModalSubirFoto()">
+        <i class="pi pi-camera"></i>
+        <span>Tomar / Subir Foto</span>
+      </button>
+    </div>
 
   </main>
 }

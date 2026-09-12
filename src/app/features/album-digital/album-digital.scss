@@ -173,6 +173,172 @@ $fondo-calido: #fcfbf9;
   }
 }
 /* CONTENEDOR CENTRADO DEL FEED DE RECUERDOS */
+$dorado-principal: #cca633;
+$dorado-hover: #b8952d;
+$dorado-claro: #e2c275;
+$texto-oscuro: #1c1917;
+$fondo-calido: #fafaf9; /* Tono idéntico a la invitación */
+
+.estado-contenedor {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 2rem;
+
+  &.no-encontrado {
+    i {
+      font-size: 3rem;
+      color: #94a3b8;
+    }
+    h2 {
+      margin: 0;
+      color: $texto-oscuro;
+    }
+    p {
+      color: #64748b;
+      margin: 0;
+    }
+  }
+
+  .boton-volver {
+    margin-top: 1rem;
+    color: $dorado-principal;
+    text-decoration: none;
+    font-weight: 600;
+  }
+}
+
+/* CONTENEDOR PRINCIPAL: 100% ANCHO DE PANTALLA */
+.album-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background-color: $fondo-calido;
+  color: $texto-oscuro;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* SECCIÓN HERO (RÉPLICA EXACTA DE LA INVITACIÓN) */
+.hero-section {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #1c1917;
+  padding: 4rem 1.5rem 7rem;
+  text-align: center;
+
+  /* DEGRADADO INFERIOR: Se desvanece suavemente hacia el fondo del feed (#fafaf9) */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: linear-gradient(to bottom, transparent, $fondo-calido);
+    z-index: 2;
+    pointer-events: none;
+  }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.35) 0%,
+      rgba(15, 23, 42, 0.6) 65%,
+      rgba(15, 23, 42, 0.8) 100%
+  );
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 750px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+
+  .hero-subtitle {
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    color: $dorado-claro;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .hero-title {
+    color: #ffffff;
+    font-size: clamp(2.5rem, 6vw, 4.2rem);
+    font-weight: 300;
+    letter-spacing: 1px;
+    line-height: 1.15;
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+  }
+
+  .hero-quote {
+    color: #e2e8f0;
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 550px;
+    margin: 0 auto;
+    font-weight: 300;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  .contenedor-accion-album {
+    margin-top: 1.25rem;
+
+    .boton-capturar {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.95rem 2.25rem;
+      background: linear-gradient(135deg, $dorado-principal, #e2c05e);
+      color: #ffffff;
+      border: none;
+      border-radius: 9999px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(204, 166, 51, 0.5);
+      transition: all 0.25s ease;
+
+      i {
+        font-size: 1.2rem;
+      }
+
+      &:hover {
+        background: linear-gradient(135deg, $dorado-hover, $dorado-principal);
+        transform: translateY(-2px);
+        box-shadow: 0 14px 34px rgba(204, 166, 51, 0.65);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+/* CONTENEDOR CENTRADO DEL FEED DE RECUERDOS */
 .album-feed-contenedor {
   max-width: 500px;
   margin: 0 auto;
@@ -686,5 +852,51 @@ $fondo-calido: #fcfbf9;
   100% {
     opacity: 0;
     transform: scale(1.35);
+  }
+}
+
+/* BOTÓN FLOTANTE FIJO (FAB) EN LA PARTE INFERIOR */
+.fab-subir-contenedor {
+  position: fixed;
+  bottom: 1.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99;
+  display: flex;
+  justify-content: center;
+  pointer-events: none; /* Permite clicks a través del espacio vacío */
+
+  .boton-fab-capturar {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.85rem 1.85rem;
+    background: linear-gradient(135deg, $dorado-principal, #e2c05e);
+    color: #ffffff;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    border-radius: 9999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 4px 15px rgba(204, 166, 51, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    white-space: nowrap;
+
+    i {
+      font-size: 1.2rem;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, $dorado-hover, $dorado-principal);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(204, 166, 51, 0.6);
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.97);
+    }
   }
 }
