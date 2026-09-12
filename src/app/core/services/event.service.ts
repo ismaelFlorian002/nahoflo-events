@@ -1,19 +1,19 @@
-import { Injectable, inject } from '@angular/core';
-import { Storage, ref, uploadBytes, getDownloadURL } from '@angular/fire/storage';
+import { inject, Injectable } from '@angular/core';
+import { getDownloadURL, ref, Storage, uploadBytes } from '@angular/fire/storage';
 
 // Importamos getDocs (el comando nativo de Firebase)
 import {
-  Firestore,
-  collection,
-  doc,
   addDoc,
-  updateDoc,
-  deleteDoc,
-  getDocs,
-  query,
-  where,
-  increment,
   arrayUnion,
+  collection,
+  deleteDoc,
+  doc,
+  Firestore,
+  getDocs,
+  increment,
+  query,
+  updateDoc,
+  where,
 } from '@angular/fire/firestore';
 import { Evento } from '../models/event.model';
 import { InvitadoModel } from '../models/invitado.model';
@@ -55,10 +55,13 @@ export class EventService {
   }
 
   // NUEVA FUNCIÓN: Sube una foto a Firebase y nos devuelve la URL
+  // Sube una foto a Firebase Storage con identificador único a prueba de colisiones
   async uploadImage(file: File, folder: string = 'eventos'): Promise<string> {
     try {
-      // 1. Creamos un nombre único usando la fecha actual para que no se sobrescriban
-      const fileName = `${Date.now()}_${file.name}`;
+      // 1. Generamos un sufijo aleatorio y limpiamos caracteres especiales del nombre
+      const aleatorio = Math.random().toString(36).substring(2, 8);
+      const nombreLimpio = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const fileName = `${Date.now()}_${aleatorio}_${nombreLimpio}`;
       const filePath = `${folder}/${fileName}`;
 
       // 2. Apuntamos a ese espacio en la nube
@@ -75,7 +78,6 @@ export class EventService {
       throw error;
     }
   }
-
   // Convertimos a Array nativo con Array.from() para soportar FileList y evitar colisiones
   async uploadMultipleImages(files: any, folder: string = 'eventos/galeria'): Promise<string[]> {
     const fileList = Array.from(files || []) as File[];
@@ -117,35 +119,47 @@ export class EventService {
     return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as InvitadoModel);
   }
 
-  // Sube la foto del invitado a Storage y guarda su dedicatoria en la subcolección 'recuerdos'
+  // Sube N fotos del invitado a Storage en paralelo y guarda la publicación del carrusel en Firestore
+  // Sube N fotos del invitado a Storage de forma secuencial y guarda el carrusel en Firestore
   async guardarRecuerdo(
     eventoId: string,
-    archivoFoto: File,
+    archivosFotos: File[],
     nombreAutor: string,
     mensaje?: string,
   ): Promise<void> {
-    // 1. Sube la foto a la carpeta del álbum en Firebase Storage
-    const fotoUrl = await this.uploadImage(archivoFoto, 'eventos/album');
+    // 1. Subir fotos una a una para evitar colisiones y no saturar el ancho de banda del celular
+    const urls: string[] = [];
+    for (const foto of archivosFotos) {
+      const url = await this.uploadImage(foto, 'eventos/album');
+      urls.push(url);
+    }
 
-    // 2. Registra el recuerdo en Firestore: eventos/{eventoId}/recuerdos
+    // 2. Registra la publicación con su arreglo de fotos en Firestore
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/recuerdos`);
     await addDoc(refSubcoleccion, {
       nombreAutor: nombreAutor.trim(),
       mensaje: mensaje?.trim() || '',
-      fotoUrl: fotoUrl,
+      fotoUrl: urls[0] || '', // Foto de portada (retrocompatibilidad)
+      fotosUrls: urls, // Carrusel completo
       creadoEn: new Date(),
       estaAprobado: true,
       meGusta: 0,
+      comentarios: [],
     });
   }
 
-  // Obtiene todos los recuerdos de los invitados ordenados por los más recientes
+  // Obtiene los recuerdos asegurando que fotosUrls siempre exista para el carrusel
   async getRecuerdos(eventoId: string): Promise<RecuerdoModel[]> {
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/recuerdos`);
     const snapshot = await getDocs(refSubcoleccion);
 
     return snapshot.docs
-      .map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as RecuerdoModel)
+      .map((docSnap) => {
+        const data = docSnap.data() as RecuerdoModel;
+        // Retrocompatibilidad: si es un recuerdo previo con fotoUrl única, lo convertimos a arreglo
+        const fotosUrls = data.fotosUrls || (data.fotoUrl ? [data.fotoUrl] : []);
+        return { id: docSnap.id, ...data, fotosUrls } as RecuerdoModel;
+      })
       .sort((a, b) => new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime());
   }
 
@@ -178,5 +192,15 @@ export class EventService {
     });
 
     return nuevoComentario;
+  }
+
+  // Actualiza la lista completa de comentarios (incluyendo respuestas anidadas y likes de comentarios)
+  async actualizarComentariosRecuerdo(
+    eventoId: string,
+    recuerdoId: string,
+    comentarios: ComentarioModel[],
+  ): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
+    await updateDoc(docRef, { comentarios });
   }
 }

@@ -1,30 +1,56 @@
-<form [formGroup]="formRecuerdo" (ngSubmit)="publicarFoto()" class="modal-form">
+<form [formGroup]="formRecuerdo" (ngSubmit)="publicarCarrusel()" class="modal-form">
 
-  <!-- ZONA DE SELECCIÓN / PREVIEW DE LA FOTO -->
-  <div class="zona-foto">
-    @if (previewUrl()) {
-      <div class="preview-contenedor">
-        <img [src]="previewUrl()" alt="Previsualización" class="foto-preview" />
-        <button type="button" class="boton-cambiar-foto" (click)="removerFoto()" title="Cambiar foto">
-          <i class="pi pi-refresh"></i>
-          <span>Cambiar Foto</span>
-        </button>
-      </div>
-    } @else {
-      <!-- Al tocar abre nativamente la cámara o galería en el celular -->
-      <label class="caja-subida" for="inputCamara">
-        <i class="pi pi-camera icono-camara"></i>
-        <span class="texto-principal">Toca para Tomar o Elegir Foto</span>
-        <span class="texto-secundario">Desde tu cámara o galería</span>
+  <!-- ZONA DE SELECCIÓN / TIRA DE PREVIEW DEL CARRUSEL -->
+  <div class="zona-carrusel-subida">
+    @if (previewsUrls().length === 0) {
+      <!-- BOTÓN PRINCIPAL DE SELECCIÓN -->
+      <label class="caja-subida" for="inputFotosMultiple">
+        <i class="pi pi-images icono-camara"></i>
+        <span class="texto-principal">Seleccionar Fotos para el Carrusel</span>
+        <span class="texto-secundario">Puedes elegir varias fotos de tu galería</span>
       </label>
-      <input
-        id="inputCamara"
-        type="file"
-        accept="image/*"
-        (change)="onFotoSeleccionada($event)"
-        style="display: none;"
-      />
+    } @else {
+      <!-- TIRA DE FOTOS SELECCIONADAS -->
+      <div class="panel-previews">
+        <div class="cabecera-previews">
+          <span class="conteo-carrusel">
+            <i class="pi pi-clone"></i>
+            {{ previewsUrls().length }} {{ previewsUrls().length === 1 ? 'foto' : 'fotos' }} en el carrusel
+          </span>
+
+          <label for="inputFotosMultiple" class="btn-agregar-mas">
+            <i class="pi pi-plus"></i>
+            <span>Añadir más</span>
+          </label>
+        </div>
+
+        <div class="tira-horizontal-fotos">
+          @for (url of previewsUrls(); track $index) {
+            <div class="item-preview">
+              <img [src]="url" alt="Foto seleccionada" />
+              <button
+                type="button"
+                class="btn-quitar-foto"
+                (click)="removerFoto($index)"
+                title="Quitar foto">
+                <i class="pi pi-times"></i>
+              </button>
+              <span class="badge-posicion">{{ $index + 1 }}</span>
+            </div>
+          }
+        </div>
+      </div>
     }
+
+    <!-- INPUT OCULTO QUE PERMITE MULTIPLE -->
+    <input
+      id="inputFotosMultiple"
+      type="file"
+      multiple
+      accept="image/*"
+      (change)="onFotosSeleccionadas($event)"
+      style="display: none;"
+    />
   </div>
 
   @if (errorSubida()) {
@@ -34,7 +60,7 @@
     </div>
   }
 
-  <!-- CAMPOS CON FLOATLABEL UNIFORMES -->
+  <!-- CAMPOS UNIFORMES -->
   <div class="campos-contenedor">
     <span class="p-float-label">
       <input id="nombreAutor" pInputText formControlName="nombreAutor" style="width: 100%" autocomplete="off" />
@@ -42,7 +68,7 @@
     </span>
 
     <span class="p-float-label">
-      <textarea id="mensaje" pInputTextarea formControlName="mensaje" rows="3" style="width: 100%; resize: none;"></textarea>
+      <textarea id="mensaje" pInputTextarea formControlName="mensaje" rows="2" style="width: 100%; resize: none;"></textarea>
       <label for="mensaje">Dedicatoria para los novios (opcional)</label>
     </span>
   </div>
@@ -59,10 +85,10 @@
 
     <p-button
       type="submit"
-      label="Publicar en el Muro"
+      [label]="previewsUrls().length > 1 ? 'Publicar Carrusel (' + previewsUrls().length + ')' : 'Publicar Foto'"
       icon="pi pi-send"
       [loading]="subiendo()"
-      [disabled]="formRecuerdo.invalid || !archivoFoto || subiendo()">
+      [disabled]="formRecuerdo.invalid || archivosFotos().length === 0 || subiendo()">
     </p-button>
   </div>
 

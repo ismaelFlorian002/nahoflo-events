@@ -21,8 +21,10 @@ export class SubirFotoModalComponent implements OnInit {
   public ref = inject(DynamicDialogRef);
 
   eventoId = '';
-  archivoFoto: File | null = null;
-  previewUrl = signal<string | null>(null);
+
+  // Arreglo de archivos y sus previsualizaciones para el carrusel
+  archivosFotos = signal<File[]>([]);
+  previewsUrls = signal<string[]>([]);
   subiendo = signal<boolean>(false);
   errorSubida = signal<string | null>(null);
 
@@ -33,38 +35,53 @@ export class SubirFotoModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.eventoId = this.config.data?.eventoId || '';
-  }
 
-  onFotoSeleccionada(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const archivo = input.files[0];
-
-      // Validación simple de tipo imagen
-      if (!archivo.type.startsWith('image/')) {
-        this.errorSubida.set('Por favor selecciona un archivo de imagen válido.');
-        return;
-      }
-
-      this.archivoFoto = archivo;
-      this.errorSubida.set(null);
-
-      // Crear URL local para previsualizar al instante
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.previewUrl.set(reader.result as string);
-      };
-      reader.readAsDataURL(archivo);
+    // Auto-recordar el nombre del invitado
+    const nombreGuardado = localStorage.getItem('nahoflo_invitado_nombre');
+    if (nombreGuardado) {
+      this.formRecuerdo.patchValue({ nombreAutor: nombreGuardado });
     }
   }
 
-  removerFoto(): void {
-    this.archivoFoto = null;
-    this.previewUrl.set(null);
+  onFotosSeleccionadas(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const nuevosArchivos: File[] = [];
+    const nuevasUrls: string[] = [];
+
+    Array.from(input.files).forEach((archivo) => {
+      if (archivo.type.startsWith('image/')) {
+        nuevosArchivos.push(archivo);
+        nuevasUrls.push(URL.createObjectURL(archivo));
+      }
+    });
+
+    if (nuevosArchivos.length === 0) {
+      this.errorSubida.set('Selecciona únicamente archivos de imagen válidos.');
+      return;
+    }
+
+    this.errorSubida.set(null);
+    this.archivosFotos.update((prev) => [...prev, ...nuevosArchivos]);
+    this.previewsUrls.update((prev) => [...prev, ...nuevasUrls]);
+
+    // Limpia el input para permitir volver a seleccionar los mismos archivos si se desea
+    input.value = '';
   }
 
-  async publicarFoto(): Promise<void> {
-    if (this.formRecuerdo.invalid || !this.archivoFoto || !this.eventoId || this.subiendo()) {
+  removerFoto(index: number): void {
+    this.archivosFotos.update((lista) => lista.filter((_, i) => i !== index));
+    this.previewsUrls.update((lista) => lista.filter((_, i) => i !== index));
+  }
+
+  async publicarCarrusel(): Promise<void> {
+    if (
+      this.formRecuerdo.invalid ||
+      this.archivosFotos().length === 0 ||
+      !this.eventoId ||
+      this.subiendo()
+    ) {
       return;
     }
 
@@ -73,18 +90,24 @@ export class SubirFotoModalComponent implements OnInit {
 
     try {
       const { nombreAutor, mensaje } = this.formRecuerdo.value;
+
+      // Guardar nombre en el teléfono
+      localStorage.setItem('nahoflo_invitado_nombre', nombreAutor!.trim());
+
+      // Guardar todas las fotos en Firebase
       await this.eventService.guardarRecuerdo(
         this.eventoId,
-        this.archivoFoto,
+        this.archivosFotos(),
         nombreAutor!,
         mensaje || '',
       );
 
-      // Cerrar modal devolviendo 'true' para refrescar el muro
       this.ref.close(true);
-    } catch (error) {
-      console.error('Error al subir recuerdo:', error);
-      this.errorSubida.set('Ocurrió un error al subir la foto. Intenta de nuevo.');
+    } catch (error: any) {
+      console.error('Error al subir carrusel de recuerdos:', error);
+      this.errorSubida.set(
+        error?.message || 'Ocurrió un error al subir las fotos. Intenta de nuevo.',
+      );
     } finally {
       this.subiendo.set(false);
     }

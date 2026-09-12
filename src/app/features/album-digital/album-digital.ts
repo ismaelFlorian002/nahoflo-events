@@ -9,6 +9,7 @@ import { Evento } from '../../core/models/event.model';
 import { RecuerdoModel } from '../../core/models/RecuerdoModel';
 import { SubirFotoModalComponent } from './subir-foto-modal/subir-foto-modal';
 import { RecuerdoPreviewComponent } from './recuerdo-preview/recuerdo-preview';
+import { ComentariosModalComponent } from './comentarios-modal/comentarios-modal';
 
 @Component({
   selector: 'app-album-digital',
@@ -29,6 +30,9 @@ export class AlbumDigitalComponent implements OnInit {
   cargando = signal<boolean>(true);
   noDisponible = signal<boolean>(false);
   albumDesactivado = signal<boolean>(false);
+
+  // Rastrea el índice de la foto activa en el carrusel de cada recuerdo
+  indicesCarrusel = signal<Record<string, number>>({});
 
   // Almacena los IDs de las fotos a las que este invitado ya les dio like
   fotosConLike = signal<Set<string>>(new Set());
@@ -113,12 +117,42 @@ export class AlbumDigitalComponent implements OnInit {
   verFoto(recuerdo: RecuerdoModel): void {
     this.dialogService.open(RecuerdoPreviewComponent, {
       header: 'Recuerdo de la Fiesta ✨',
-      data: { recuerdo, eventoId: this.evento()?.id },
-      width: '94%',
-      style: { 'max-width': '520px' },
+      data: { recuerdo },
+      width: '100%',
+      style: { 'max-width': '620px' },
+      styleClass: 'modal-preview-dialog',
       dismissableMask: true,
       modal: true,
     });
+  }
+
+  obtenerFotos(recuerdo: RecuerdoModel): string[] {
+    if (recuerdo.fotosUrls && recuerdo.fotosUrls.length > 0) {
+      return recuerdo.fotosUrls;
+    }
+    return recuerdo.fotoUrl ? [recuerdo.fotoUrl] : [];
+  }
+
+  alDesplazarCarrusel(recuerdoId: string, event: Event): void {
+    const elemento = event.target as HTMLElement;
+    if (!elemento || !recuerdoId) return;
+    const ancho = elemento.clientWidth;
+    if (ancho > 0) {
+      const nuevoIndice = Math.round(elemento.scrollLeft / ancho);
+      if (this.indicesCarrusel()[recuerdoId] !== nuevoIndice) {
+        this.indicesCarrusel.update((mapa) => ({ ...mapa, [recuerdoId]: nuevoIndice }));
+      }
+    }
+  }
+
+  navegarCarrusel(recuerdoId: string, contenedor: HTMLElement, delta: number, event: Event): void {
+    event.stopPropagation();
+    const recuerdo = this.recuerdos().find((r) => r.id === recuerdoId);
+    const total = recuerdo ? this.obtenerFotos(recuerdo).length : 1;
+    const actual = this.indicesCarrusel()[recuerdoId] || 0;
+    const nuevo = Math.max(0, Math.min(actual + delta, total - 1));
+    contenedor.scrollTo({ left: nuevo * contenedor.clientWidth, behavior: 'smooth' });
+    this.indicesCarrusel.update((mapa) => ({ ...mapa, [recuerdoId]: nuevo }));
   }
 
   tieneLike(recuerdoId?: string): boolean {
@@ -195,5 +229,19 @@ export class AlbumDigitalComponent implements OnInit {
       }, 800);
     }
   }
+  abrirModalComentarios(recuerdo: RecuerdoModel, event: Event): void {
+    event.stopPropagation();
+    const ev = this.evento();
+    if (!ev?.id) return;
 
+    this.dialogService.open(ComentariosModalComponent, {
+      data: { recuerdo, eventoId: ev.id },
+      width: '100%',
+      styleClass: 'cajon-comentarios-dialog', // <-- AGREGAR ESTA CLASE
+      position: 'bottom',
+      showHeader: false,
+      dismissableMask: true,
+      modal: true,
+    });
+  }
 }

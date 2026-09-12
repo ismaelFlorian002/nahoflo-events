@@ -1,0 +1,164 @@
+<div class="cajon-comentarios-instagram">
+
+  <!-- MANIJA SUPERIOR TIPO APP NATIVA -->
+  <div class="manija-contenedor">
+    <div class="manija"></div>
+  </div>
+
+  <h3 class="titulo-cajon">Comentarios</h3>
+
+
+
+  <!-- ZONA SCROLLEABLE DE COMENTARIOS Y RESPUESTAS -->
+  <div class="zona-scroll-comentarios">
+    @if (comentarios().length === 0) {
+      <div class="vacio-instagram">
+        <h4>Todavía no hay comentarios</h4>
+        <p>Inicia la conversación para esta foto.</p>
+      </div>
+    } @else {
+      <div class="lista-comentarios">
+        @for (c of comentarios(); track c.id) {
+          <div class="bloque-comentario-con-respuestas">
+
+            <!-- COMENTARIO PRINCIPAL -->
+            <div class="item-comentario">
+              <div class="avatar-inicial">
+                {{ c.autor.charAt(0).toUpperCase() }}
+              </div>
+
+              <div class="contenido-comentario">
+                <div class="cabecera-comentario">
+                  <span class="nombre-autor">{{ c.autor }}</span>
+                  <span class="tiempo">{{ c.creadoEn | date: 'shortTime' }}</span>
+                </div>
+                <p class="texto-mensaje">{{ c.texto }}</p>
+
+                <!-- BOTÓN RESPONDER -->
+                <button type="button" class="btn-responder" (click)="prepararRespuesta(c, $event)">
+                  Responder
+                </button>
+              </div>
+
+              <!-- LIKE DEL COMENTARIO (EXTREMO DERECHO) -->
+              <div class="columna-like-comentario">
+                <button
+                  type="button"
+                  class="btn-like-comentario"
+                  [class.activo]="tieneLikeComentario(c.id)"
+                  (click)="alternarLikeComentario(c.id, undefined, $event)"
+                  title="Me gusta">
+                  <i [class]="tieneLikeComentario(c.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
+                </button>
+                @if (c.meGusta && c.meGusta > 0) {
+                  <span class="contador-likes-comentario">{{ c.meGusta }}</span>
+                }
+              </div>
+            </div>
+
+            <!-- RESPUESTAS ANIDADAS (TIPO HILO INSTAGRAM) -->
+            @if (c.respuestas && c.respuestas.length > 0) {
+              <div class="sublista-respuestas">
+                @for (r of c.respuestas; track r.id) {
+                  <div class="item-comentario respuesta">
+                    <div class="avatar-inicial sub-avatar">
+                      {{ r.autor.charAt(0).toUpperCase() }}
+                    </div>
+
+                    <div class="contenido-comentario">
+                      <div class="cabecera-comentario">
+                        <span class="nombre-autor">{{ r.autor }}</span>
+                        <span class="tiempo">{{ r.creadoEn | date: 'shortTime' }}</span>
+                      </div>
+                      <p class="texto-mensaje">
+                        <span class="tag-mencion">@{{ r.respondiendoA || c.autor }}</span>
+                        {{ r.texto }}
+                      </p>
+
+                      <!-- BOTÓN RESPONDER AL HILO -->
+                      <button type="button" class="btn-responder" (click)="prepararRespuesta(c, $event)">
+                        Responder
+                      </button>
+                    </div>
+
+                    <!-- LIKE DE LA RESPUESTA -->
+                    <div class="columna-like-comentario">
+                      <button
+                        type="button"
+                        class="btn-like-comentario"
+                        [class.activo]="tieneLikeComentario(r.id)"
+                        (click)="alternarLikeComentario(r.id, c.id, $event)"
+                        title="Me gusta">
+                        <i [class]="tieneLikeComentario(r.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
+                      </button>
+                      @if (r.meGusta && r.meGusta > 0) {
+                        <span class="contador-likes-comentario">{{ r.meGusta }}</span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- BARRA DE EMOJIS RÁPIDOS -->
+  <div class="barra-emojis">
+    @for (emoji of emojisRapidos; track emoji) {
+      <button type="button" class="btn-emoji" (click)="insertarEmoji(emoji)" [title]="emoji">
+        {{ emoji }}
+      </button>
+    }
+  </div>
+
+  <!-- BARRA INFORMATIVA DE RESPUESTA ACTIVA -->
+  @if (respondiendoA(); as resp) {
+    <div class="barra-respondiendo">
+      <span>Respondiendo a <strong>@{{ resp.autor }}</strong></span>
+      <button type="button" class="btn-cancelar-respuesta" (click)="cancelarRespuesta()" title="Cancelar respuesta">
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  }
+
+  <!-- FORMULARIO INFERIOR PARA COMENTAR -->
+  <form [formGroup]="formComentario" (ngSubmit)="enviarComentario()" class="formulario-comentar">
+    <div class="fila-autor">
+      <input
+        pInputText
+        formControlName="autor"
+        placeholder="Tu nombre *"
+        class="input-unificado"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="contenedor-input-adentro">
+      <input
+        id="inputComentarioTexto"
+        pInputText
+        formControlName="texto"
+        [placeholder]="respondiendoA() ? 'Responde a @' + respondiendoA()?.autor + '...' : 'Agrega un comentario...'"
+        class="input-unificado input-con-icono"
+        autocomplete="off"
+      />
+
+      <button
+        type="submit"
+        class="btn-adentro"
+        [disabled]="formComentario.invalid || enviando()"
+        title="Publicar">
+        @if (enviando()) {
+          <i class="pi pi-spin pi-spinner icono-enviar"></i>
+        } @else {
+          <i class="pi pi-send icono-enviar"></i>
+        }
+      </button>
+    </div>
+  </form>
+
+</div>

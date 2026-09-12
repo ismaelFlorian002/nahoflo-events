@@ -1,18 +1,29 @@
 export interface RecuerdoModel {
   id?: string;
-  nombreAutor: string; // Nombre del invitado que tomó la foto
-  mensaje?: string; // Frase o dedicatoria para los anfitriones
-  fotoUrl: string; // URL en Firebase Storage
-  creadoEn: Date | string; // Fecha y hora en que se tomó la foto
-  estaAprobado?: boolean; // Para moderación del anfitrión (por defecto true)
-  meGusta?: number; // <-- NUEVO: Contador de likes de la foto
-  comentarios?: ComentarioModel[];
+  nombreAutor: string;
+  mensaje?: string;
 
+  // Retrocompatibilidad con publicaciones previas de 1 foto
+  fotoUrl?: string;
+
+  // Arreglo de URLs para el carrusel tipo Instagram (N fotos)
+  fotosUrls: string[];
+
+  creadoEn: Date | string;
+  estaAprobado?: boolean;
+  meGusta?: number;
+  comentarios?: ComentarioModel[];
 }
-// Modelo para los comentarios de los invitados en cada foto
+
+// Modelo para los comentarios y respuestas anidadas estilo Instagram
 export interface ComentarioModel {
-  id?: string;
-  autor: string; // Nombre del invitado (ej. "Tía Carmen")
+  id: string;
+  autor: string; // Nombre del invitado (ej: "Victor")
   texto: string; // El comentario o felicitación
   creadoEn: Date | string;
+  meGusta?: number; // Likes individuales en el comentario
+
+  // Datos para respuestas anidadas
+  respondiendoA?: string; // Nombre de la persona a quien le responde (ej: "Victor")
+  respuestas?: ComentarioModel[]; // Hilo de respuestas hijas
 }

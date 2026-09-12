@@ -19,111 +19,210 @@
 } @else if (evento(); as ev) {
   <main class="album-wrapper">
 
-    <!-- CABECERA EDITORIAL DE LA FIESTA -->
-    <header class="album-header">
-      <span class="estudio-credito">NahoFlo Creative Studio</span>
-      <span class="evento-tipo">{{ ev.preTitulo || ev.tipo }}</span>
-      <h1 class="evento-titulo">{{ ev.titulo }}</h1>
-      <p class="album-subtitulo">¡Captura los mejores momentos de la fiesta y compártelos con nosotros!</p>
-    </header>
-
-    <!-- BARRA DE ACCIÓN PRINCIPAL (BOTÓN PARA TOMAR / SUBIR FOTO) -->
-    <!-- BARRA DE ACCIÓN PRINCIPAL (BOTÓN PARA TOMAR / SUBIR FOTO) -->
-    <section class="seccion-accion">
-      <button type="button" class="boton-capturar" (click)="abrirModalSubirFoto()">
-        <i class="pi pi-camera"></i>
-        <span>Tomar / Subir Foto</span>
-      </button>
-    </section>
-
-    <!-- MURO DE RECUERDOS EN VIVO (GRID FOTOGRÁFICO) -->
-    <section class="seccion-muro">
-      <div class="muro-cabecera">
-        <h2 class="muro-titulo">Muro de Recuerdos</h2>
-        <span class="conteo-fotos">{{ recuerdos().length }} {{ recuerdos().length === 1 ? 'foto' : 'fotos' }}</span>
+    <!-- 1. CABECERA HERO A PANTALLA COMPLETA (EDGE TO EDGE) -->
+    <header class="album-hero-portada">
+      <!-- FOTO PRINCIPAL DE FONDO -->
+      <div
+        class="hero-fondo-imagen"
+        [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'">
       </div>
 
-      @if (recuerdos().length === 0) {
-        <div class="muro-vacio">
-          <i class="pi pi-camera icono-vacio"></i>
-          <p class="vacio-titulo">Aún no hay fotos en el álbum</p>
-          <p class="vacio-desc">¡Sé el primero en capturar un momento de esta noche!</p>
+      <!-- CAPA DE DEGRADADO CINEMATOGRÁFICO DE CONTRASTE -->
+      <div class="hero-degradado"></div>
+
+      <!-- CONTENIDO EDITORIAL DE LA PORTADA -->
+      <div class="hero-contenido">
+        <span class="estudio-credito">NahoFlo Creative Studio</span>
+        <span class="evento-tipo">{{ ev.preTitulo || ev.tipo }}</span>
+        <h1 class="evento-titulo">{{ ev.titulo }}</h1>
+        <p class="album-subtitulo">¡Captura los mejores momentos de la fiesta y compártelos con nosotros!</p>
+
+        <!-- BOTÓN PRINCIPAL PARA SUBIR FOTO -->
+        <div class="hero-accion">
+          <button type="button" class="boton-capturar" (click)="abrirModalSubirFoto()">
+            <i class="pi pi-camera"></i>
+            <span>Tomar / Subir Foto</span>
+          </button>
         </div>
-      } @else {
-        <div class="grid-fotos">
-          @for (recuerdo of recuerdos(); track recuerdo.id) {
-            <article class="tarjeta-foto">
-              <!-- CONTENEDOR DE LA FOTO CON DOBLE TOQUE (PC Y MÓVIL) -->
-              <div
-                class="foto-contenedor"
-                (dblclick)="alHacerDobleTap(recuerdo, $event)"
-                (touchend)="alHacerDobleTap(recuerdo, $event)">
-                <img [src]="recuerdo.fotoUrl" [alt]="'Foto de ' + recuerdo.nombreAutor" loading="lazy" />
+      </div>
+    </header>
 
-                <!-- CORAZÓN GIGANTE FLOTANTE INSTAGRAM -->
-                @if (corazonAnimandoId() === recuerdo.id) {
-                  <div class="corazon-pop-instagram">
-                    <i class="pi pi-heart-fill"></i>
+    <!-- 2. CONTENEDOR CENTRADO DEL FEED DE INSTAGRAM -->
+    <div class="album-feed-contenedor">
+
+      <section class="seccion-muro">
+        <div class="muro-cabecera">
+          <h2 class="muro-titulo">Muro de Recuerdos</h2>
+          <span class="conteo-fotos">{{ recuerdos().length }} {{ recuerdos().length === 1 ? 'publicación' : 'publicaciones' }}</span>
+        </div>
+
+        @if (recuerdos().length === 0) {
+          <div class="muro-vacio">
+            <i class="pi pi-camera icono-vacio"></i>
+            <p class="vacio-titulo">Aún no hay fotos en el álbum</p>
+            <p class="vacio-desc">¡Sé el primero en capturar un momento de esta noche!</p>
+          </div>
+        } @else {
+          <div class="feed-instagram">
+            @for (recuerdo of recuerdos(); track recuerdo.id) {
+              <article class="post-instagram">
+
+                <!-- CABECERA DEL POST -->
+                <header class="post-cabecera">
+                  <div class="autor-info">
+                    <div class="avatar-inicial">
+                      {{ recuerdo.nombreAutor.charAt(0).toUpperCase() }}
+                    </div>
+                    <div class="autor-texto">
+                      <span class="autor-nombre">{{ recuerdo.nombreAutor }}</span>
+                      <span class="post-tiempo">{{ recuerdo.creadoEn | date: 'shortTime' }}</span>
+                    </div>
                   </div>
-                }
 
-                <!-- BOTÓN DEL OJO PARA PANTALLA COMPLETA -->
-                <button
-                  type="button"
-                  class="boton-ojo"
-                  title="Ver en pantalla completa"
-                  (click)="$event.stopPropagation(); verFoto(recuerdo)">
-                  <i class="pi pi-eye"></i>
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    class="btn-menu-post"
+                    title="Ver en pantalla completa"
+                    (click)="verFoto(recuerdo)">
+                    <i class="pi pi-ellipsis-h"></i>
+                  </button>
+                </header>
 
-              <!-- INFORMACIÓN DE LA FOTO -->
-              <div class="foto-info" (click)="verFoto(recuerdo)">
-                <div class="info-cabecera">
-                  <span class="autor-nombre">
-                    <i class="pi pi-user"></i>
-                    {{ recuerdo.nombreAutor }}
-                  </span>
+                <!-- CONTENEDOR FOTO / CARRUSEL -->
+                <div
+                  class="foto-contenedor"
+                  (dblclick)="alHacerDobleTap(recuerdo, $event)"
+                  (touchend)="alHacerDobleTap(recuerdo, $event)">
 
-                  <!-- MÉTRICAS SOCIALES (COMENTARIOS + LIKES) -->
-                  <div class="metricas-sociales">
-                    <!-- CONTADOR DE COMENTARIOS -->
-                    <span class="indicador-comentarios" title="Comentarios">
-                      <i class="pi pi-comment"></i>
-                      <span>{{ recuerdo.comentarios?.length || 0 }}</span>
-                    </span>
+                  <div
+                    #carruselRef
+                    class="carrusel-fotos"
+                    (scroll)="recuerdo.id && alDesplazarCarrusel(recuerdo.id, $event)">
+                    @for (foto of obtenerFotos(recuerdo); track $index) {
+                      <div class="slide-foto">
+                        <img [src]="foto" [alt]="'Foto ' + ($index + 1) + ' de ' + recuerdo.nombreAutor" loading="lazy" />
+                      </div>
+                    }
+                  </div>
 
-                    <!-- BOTÓN DE CORAZÓN / LIKE -->
+                  @if (corazonAnimandoId() === recuerdo.id) {
+                    <div class="corazon-pop-instagram">
+                      <i class="pi pi-heart-fill"></i>
+                    </div>
+                  }
+
+                  @if (obtenerFotos(recuerdo).length > 1) {
+                    <div class="badge-carrusel-conteo">
+                      {{ (indicesCarrusel()[recuerdo.id!] || 0) + 1 }}/{{ obtenerFotos(recuerdo).length }}
+                    </div>
+
+                    @if ((indicesCarrusel()[recuerdo.id!] || 0) > 0) {
+                      <button
+                        type="button"
+                        class="flecha-carrusel prev"
+                        title="Foto anterior"
+                        (click)="navegarCarrusel(recuerdo.id!, carruselRef, -1, $event)">
+                        <i class="pi pi-chevron-left"></i>
+                      </button>
+                    }
+                    @if ((indicesCarrusel()[recuerdo.id!] || 0) < obtenerFotos(recuerdo).length - 1) {
+                      <button
+                        type="button"
+                        class="flecha-carrusel next"
+                        title="Siguiente foto"
+                        (click)="navegarCarrusel(recuerdo.id!, carruselRef, 1, $event)">
+                        <i class="pi pi-chevron-right"></i>
+                      </button>
+                    }
+                  }
+                </div>
+
+                <!-- BARRA DE ACCIONES -->
+                <div class="post-acciones-barra">
+                  <div class="acciones-izquierda">
                     <button
                       type="button"
-                      class="boton-corazon"
+                      class="btn-accion-icono btn-corazon"
                       [class.activo]="tieneLike(recuerdo.id)"
                       (click)="alternarLike(recuerdo, $event)"
                       [title]="tieneLike(recuerdo.id) ? 'Ya no me gusta' : 'Me gusta'">
                       <i [class]="tieneLike(recuerdo.id) ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-                      <span class="contador-me-gusta">{{ recuerdo.meGusta || 0 }}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-accion-icono btn-comentario"
+                      title="Ver y escribir comentarios"
+                      (click)="abrirModalComentarios(recuerdo, $event)">
+                      <i class="pi pi-comment"></i>
+                    </button>
+                  </div>
+
+                  @if (obtenerFotos(recuerdo).length > 1) {
+                    <div class="indicadores-puntos-centro">
+                      @for (foto of obtenerFotos(recuerdo); track $index) {
+                        <span
+                          class="punto"
+                          [class.activo]="(indicesCarrusel()[recuerdo.id!] || 0) === $index">
+                        </span>
+                      }
+                    </div>
+                  }
+
+                  <div class="acciones-derecha">
+                    <button
+                      type="button"
+                      class="btn-accion-icono"
+                      title="Ver en pantalla completa"
+                      (click)="verFoto(recuerdo)">
+                      <i class="pi pi-eye"></i>
                     </button>
                   </div>
                 </div>
 
-                @if (recuerdo.mensaje) {
-                  <p class="autor-mensaje">"{{ recuerdo.mensaje }}"</p>
-                }
-              </div>
-            </article>
-          }
-        </div>
-      }
-    </section>
+                <!-- PIE DE PUBLICACIÓN -->
+                <div class="post-pie">
+                  @if ((recuerdo.meGusta || 0) > 0) {
+                    <div class="conteo-likes">
+                      <strong>{{ recuerdo.meGusta }}</strong> {{ recuerdo.meGusta === 1 ? 'Me gusta' : 'Me gusta' }}
+                    </div>
+                  }
 
-    <!-- PIE DE PÁGINA CON ACCESO ANFITRIÓN DISCRETO -->
-    <footer class="album-footer">
-      <p>NahoFlo Creative Studio • Álbum Colaborativo</p>
-      <a [routerLink]="['/e', ev.enlace, 'asistencias']" class="link-anfitrion">
-        <i class="pi pi-lock"></i>
-        <span>Acceso Anfitrión</span>
-      </a>
-    </footer>
+                  @if (recuerdo.mensaje) {
+                    <div class="pie-mensaje">
+                      <span class="autor-etiqueta">{{ recuerdo.nombreAutor }}</span>
+                      <span class="texto-mensaje">"{{ recuerdo.mensaje }}"</span>
+                    </div>
+                  }
+
+                  <button
+                    type="button"
+                    class="link-abrir-comentarios"
+                    (click)="abrirModalComentarios(recuerdo, $event)">
+                    @if (recuerdo.comentarios && recuerdo.comentarios.length > 0) {
+                      Ver los {{ recuerdo.comentarios.length }} comentarios
+                    } @else {
+                      Agregar un comentario...
+                    }
+                  </button>
+                </div>
+
+              </article>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- PIE DE PÁGINA -->
+      <footer class="album-footer">
+        <p>NahoFlo Creative Studio • Álbum Colaborativo</p>
+        <a [routerLink]="['/e', ev.enlace, 'asistencias']" class="link-anfitrion">
+          <i class="pi pi-lock"></i>
+          <span>Acceso Anfitrión</span>
+        </a>
+      </footer>
+
+    </div> <!-- FIN .album-feed-contenedor -->
 
   </main>
 }
