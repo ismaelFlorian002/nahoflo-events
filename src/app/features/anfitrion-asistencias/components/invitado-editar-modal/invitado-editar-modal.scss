@@ -1,7 +1,9 @@
 .form-editar-invitado {
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
+  gap: 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 0.25rem;
   color: #1e293b;
   font-family: inherit;
 }
@@ -19,47 +21,65 @@
   font-weight: 600;
 }
 
-.campo-grupo {
+.fila-dos-columnas {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+
+  .wrap-nombre {
+    flex: 1.6;
+  }
+
+  .wrap-telefono {
+    flex: 1.1;
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: 2rem;
+
+    .wrap-nombre,
+    .wrap-telefono {
+      width: 100%;
+      flex: none;
+    }
+  }
+}
+
+.campo-float-wrap {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-
-  .campo-label {
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: #334155;
-
-    .requerido {
-      color: #ef4444;
-    }
-  }
-
-  .input-control {
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
-    padding: 0.6rem 0.85rem;
-    font-size: 0.9rem;
-    color: #0f172a;
-    transition: border-color 0.2s, box-shadow 0.2s;
-
-    &:focus {
-      border-color: #cca633;
-      box-shadow: 0 0 0 3px rgba(204, 166, 51, 0.15);
-      outline: none;
-    }
-  }
-
-  .textarea-control {
-    resize: vertical;
-    min-height: 80px;
-    line-height: 1.4;
-  }
+  gap: 0.35rem;
 
   .error-texto {
     font-size: 0.75rem;
     color: #ef4444;
     font-weight: 600;
+    padding-left: 0.25rem;
+  }
+}
+
+/* TARJETA DE OPCIONES (ASISTENCIA Y PASES AL ESTILO DEL PANEL ADMIN) */
+.seccion-opciones-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #cca633;
+  border-radius: 10px;
+  padding: 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .opcion-bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .opcion-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e293b;
   }
 }
 
@@ -75,7 +95,7 @@
     gap: 0.5rem;
     padding: 0.65rem 1rem;
     border: 1.5px solid #e2e8f0;
-    background: #f8fafc;
+    background: #ffffff;
     border-radius: 10px;
     font-size: 0.88rem;
     font-weight: 700;
@@ -112,7 +132,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 0.5rem 0.85rem;
@@ -158,22 +178,41 @@
   }
 }
 
-.input-con-icono {
-  position: relative;
-  width: 100%;
+/* TARJETA DE DEDICATORIA / MENSAJE DEL INVITADO (SOLO LECTURA) */
+.dedicatoria-card {
+  background: #fdfbf7;
+  border: 1px solid #fef08a;
+  border-left: 4px solid #cca633;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 
-  .icono-input {
-    position: absolute;
-    left: 0.85rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #16a34a;
-    font-size: 1rem;
-    pointer-events: none;
+  .dedicatoria-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #b8952d;
+
+    i {
+      font-size: 0.85rem;
+      color: #e11d48;
+    }
   }
 
-  .con-padding {
-    padding-left: 2.3rem;
+  .dedicatoria-texto {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #334155;
+    font-style: italic;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }
 
@@ -184,20 +223,68 @@
   padding-top: 1.25rem;
   margin-top: 0.5rem;
   border-top: 1px solid #e2e8f0;
+}
 
-  :host ::ng-deep {
-    .btn-modal-guardar {
-      background: linear-gradient(135deg, #cca633, #b8952d);
-      border-color: #cca633;
-      color: #ffffff;
-      font-weight: 700;
-      box-shadow: 0 2px 8px rgba(204, 166, 51, 0.25);
+:host ::ng-deep {
+  .p-float-label {
+    display: block;
+    position: relative;
+    width: 100%;
 
-      &:hover:not(:disabled) {
-        background: linear-gradient(135deg, #b8952d, #a18124);
-        border-color: #b8952d;
-        transform: translateY(-1px);
+    input.p-inputtext,
+    textarea.p-inputtextarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      padding: 0.75rem 0.85rem;
+      font-size: 0.95rem;
+      color: #0f172a;
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:focus {
+        border-color: #cca633;
+        box-shadow: 0 0 0 3px rgba(204, 166, 51, 0.15);
+        outline: none;
       }
+    }
+
+    textarea.p-inputtextarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.4;
+    }
+
+    label {
+      color: #64748b;
+      font-size: 0.88rem;
+      background: #ffffff;
+      padding: 0 0.35rem;
+      transition: all 0.2s ease;
+    }
+
+    input:focus ~ label,
+    textarea:focus ~ label {
+      color: #cca633;
+    }
+  }
+
+  .btn-modal-cancelar {
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .btn-modal-guardar {
+    background: linear-gradient(135deg, #cca633, #b8952d);
+    border-color: #cca633;
+    border-radius: 8px;
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(204, 166, 51, 0.25);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #b8952d, #a18124);
+      border-color: #b8952d;
+      transform: translateY(-1px);
     }
   }
 }

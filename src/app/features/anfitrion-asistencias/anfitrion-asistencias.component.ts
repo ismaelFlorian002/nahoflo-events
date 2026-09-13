@@ -443,7 +443,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   abrirModalDetalle(invitado: InvitadoModel): void {
     const ref = this.dialogService.open(InvitadoDetalleModalComponent, {
       header: 'Detalle del Invitado',
-      width: '540px',
+      width: '680px',
       breakpoints: { '960px': '75vw', '640px': '92vw' },
       closable: true,
       dismissableMask: true,
@@ -467,8 +467,8 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
     const ref = this.dialogService.open(InvitadoEditarModalComponent, {
       header: 'Editar Invitado',
-      width: '520px',
-      breakpoints: { '960px': '75vw', '640px': '92vw' },
+      width: '680px',
+      breakpoints: { '960px': '80vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: {

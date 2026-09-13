@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { EventService } from '../../../../core/services/event.service';
 import { InvitadoModel } from '../../../../core/models/invitado.model';
@@ -16,7 +15,6 @@ import { InvitadoModel } from '../../../../core/models/invitado.model';
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
-    InputTextareaModule,
   ],
   templateUrl: './invitado-editar-modal.html',
   styleUrl: './invitado-editar-modal.scss',
@@ -51,7 +49,6 @@ export class InvitadoEditarModalComponent implements OnInit {
         [Validators.required, Validators.min(0)],
       ],
       telefono: [this.invitado.telefono || ''],
-      mensaje: [this.invitado.mensaje || ''],
     });
   }
 
@@ -92,7 +89,7 @@ export class InvitadoEditarModalComponent implements OnInit {
         asistira: Boolean(valores.asistira),
         pasesConfirmados: Number(valores.pasesConfirmados),
         telefono: valores.telefono?.trim() || '',
-        mensaje: valores.mensaje?.trim() || '',
+        mensaje: this.invitado.mensaje || '',
       };
 
       await this.eventService.actualizarInvitado(this.eventoId, this.invitado.id, datosActualizados);
