@@ -927,7 +927,8 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     // Enlace directo al Pase Digital del invitado
     const urlPase = `${window.location.origin}/e/${ev.enlace}?pase=${modal.invitado.id}`;
 
-    const mensaje = `¡Hola ${nombre}! 🎉\n\nAquí tienes tu Pase Digital VIP para *${ev.titulo}*.\n🎟️ Acceso autorizado para: *${pasesTexto}*.\n\n📲 Abre tu Pase con Código QR aquí:\n${urlPase}\n\nPresenta tu código en la recepción al llegar.\n¡Nos dará muchísimo gusto celebrar contigo! ✨`;
+    const nombreEventoCompleto = ev.preTitulo ? `${ev.preTitulo} · ${ev.titulo}` : ev.titulo;
+    const mensaje = `¡Hola ${nombre}! 🎉\n\nAquí tienes tu Pase Digital VIP para *${nombreEventoCompleto}*.\n🎟️ Acceso autorizado para: *${pasesTexto}*.\n\n📲 Abre tu Pase con Código QR aquí:\n${urlPase}\n\nPresenta tu código en la recepción al llegar.\n¡Nos dará muchísimo gusto celebrar contigo! ✨`;
 
     const urlWa = telefono
       ? `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`

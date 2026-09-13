@@ -22,7 +22,7 @@
 
         <h2>Panel de Anfitrión</h2>
         <p class="pin-subtitle">
-          Ingresa el PIN de seguridad de <strong>{{ ev.titulo }}</strong> para consultar tu lista de invitados.
+          Ingresa el PIN de seguridad de <strong>{{ ev.preTitulo ? ev.preTitulo + ' - ' + ev.titulo : ev.titulo }}</strong> para consultar tu lista de invitados.
         </p>
 
         <form (ngSubmit)="verificarPin()" class="pin-form">
@@ -58,89 +58,94 @@
       <div class="dashboard-container">
 
         <header class="dash-header">
-          <div>
-            <span class="dash-badge">Portal de Anfitrión</span>
+          <div class="dash-header-info">
+            <div class="dash-meta-badge">
+              <span class="dash-portal-pill">
+                <i class="pi pi-shield"></i> Portal de Anfitrión
+              </span>
+            </div>
+            @if (ev.preTitulo || ev.tipo) {
+              <span class="dash-evento-subtitulo">{{ ev.preTitulo || ev.tipo }}</span>
+            }
             <h1 class="dash-title">{{ ev.titulo }}</h1>
           </div>
           <div class="dash-acciones-header">
             @if (!ev.modulos || ev.modulos.tieneInvitacion) {
-              <a [routerLink]="['/e', ev.enlace]" class="btn-invitacion">
+              <a [routerLink]="['/e', ev.enlace]" target="_blank" class="btn-invitacion">
                 <i class="pi pi-external-link"></i>
                 <span>Ver Invitación</span>
-              </a>
-            }
-            @if (!ev.modulos || ev.modulos.tieneAlbum) {
-              <a [routerLink]="['/e', ev.enlace, 'album']" class="btn-invitacion">
-                <i class="pi pi-images"></i>
-                <span>Ver Álbum</span>
               </a>
             }
           </div>
         </header>
 
-        <!-- SELECTOR DE PESTAÑAS (INVITADOS VS ÁLBUM) -->
-        <!-- SELECTOR DE PESTAÑAS (INVITADOS VS RECEPCIÓN VS ÁLBUM) -->
-        <nav class="pestanas-nav">
-          @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
-            <button
-              type="button"
-              class="btn-tab"
-              [class.activo]="pestanaActiva() === 'invitados'"
-              (click)="pestanaActiva.set('invitados'); detenerEscaner()">
-              <i class="pi pi-users"></i>
-              <span>Confirmaciones ({{ totalConfirmados() }})</span>
-            </button>
-          }
+        <!-- NAVEGACIÓN MODERNA POR PESTAÑAS (SEGMENTED CONTROL UX) -->
+        <div class="pestanas-nav-container">
+          <nav class="pestanas-nav" aria-label="Navegación de secciones del anfitrión">
+            @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
+              <button
+                type="button"
+                class="btn-tab"
+                [class.activo]="pestanaActiva() === 'invitados'"
+                (click)="pestanaActiva.set('invitados'); detenerEscaner()">
+                <i class="pi pi-users"></i>
+                <span class="tab-label">Confirmaciones</span>
+                <span class="tab-badge">{{ totalConfirmados() }}</span>
+              </button>
+            }
 
-          @if (ev.modulos?.tipoControlInvitados === 'total') {
-            <button
-              type="button"
-              class="btn-tab tab-recepcion"
-              [class.activo]="pestanaActiva() === 'recepcion'"
-              (click)="pestanaActiva.set('recepcion')">
-              <i class="pi pi-qrcode"></i>
-              <span>Recepción & Escáner ({{ totalIngresados() }}/{{ totalPases() }})</span>
-            </button>
-          }
+            @if (ev.modulos?.tipoControlInvitados === 'total') {
+              <button
+                type="button"
+                class="btn-tab tab-recepcion"
+                [class.activo]="pestanaActiva() === 'recepcion'"
+                (click)="pestanaActiva.set('recepcion')">
+                <i class="pi pi-qrcode"></i>
+                <span class="tab-label">Recepción & Escáner</span>
+                <span class="tab-badge tab-badge-recepcion">{{ totalIngresados() }}/{{ totalPases() }}</span>
+              </button>
+            }
 
-          @if (!ev.modulos || ev.modulos.tieneAlbum) {
-            <button
-              type="button"
-              class="btn-tab"
-              [class.activo]="pestanaActiva() === 'album'"
-              (click)="pestanaActiva.set('album'); detenerEscaner()">
-              <i class="pi pi-camera"></i>
-              <span>Álbum de Recuerdos ({{ recuerdos().length }})</span>
-            </button>
-          }
-        </nav>
+            @if (!ev.modulos || ev.modulos.tieneAlbum) {
+              <button
+                type="button"
+                class="btn-tab"
+                [class.activo]="pestanaActiva() === 'album'"
+                (click)="pestanaActiva.set('album'); detenerEscaner()">
+                <i class="pi pi-camera"></i>
+                <span class="tab-label">Álbum de Recuerdos</span>
+                <span class="tab-badge">{{ recuerdos().length }}</span>
+              </button>
+            }
+          </nav>
+        </div>
 
         <!-- 1. PESTAÑA: CONFIRMACIONES DE INVITADOS (RSVP) -->
         @if (pestanaActiva() === 'invitados') {
-          <!-- TARJETAS DE MÉTRICAS -->
+          <!-- TARJETAS DE MÉTRICAS (KPIS SLIM / RESUMEN EJECUTIVO) -->
           <div class="kpi-grid">
             <div class="kpi-card pases">
-              <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
-              <div class="kpi-info">
+              <div class="kpi-left">
+                <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
                 <span class="kpi-label">Pases Totales</span>
-                <span class="kpi-value">{{ totalPases() }}</span>
               </div>
+              <span class="kpi-value">{{ totalPases() }}</span>
             </div>
 
             <div class="kpi-card confirmed">
-              <div class="kpi-icon"><i class="pi pi-check"></i></div>
-              <div class="kpi-info">
+              <div class="kpi-left">
+                <div class="kpi-icon"><i class="pi pi-check"></i></div>
                 <span class="kpi-label">Confirmados (Sí)</span>
-                <span class="kpi-value">{{ totalConfirmados() }}</span>
               </div>
+              <span class="kpi-value">{{ totalConfirmados() }}</span>
             </div>
 
             <div class="kpi-card declined">
-              <div class="kpi-icon"><i class="pi pi-times"></i></div>
-              <div class="kpi-info">
+              <div class="kpi-left">
+                <div class="kpi-icon"><i class="pi pi-times"></i></div>
                 <span class="kpi-label">No asistirán</span>
-                <span class="kpi-value">{{ totalCancelados() }}</span>
               </div>
+              <span class="kpi-value">{{ totalCancelados() }}</span>
             </div>
           </div>
 
@@ -357,32 +362,32 @@
         @if (pestanaActiva() === 'recepcion') {
           <div class="seccion-recepcion">
 
-            <!-- 1. MÉTRICAS DE AFORO EN VIVO -->
+            <!-- 1. MÉTRICAS DE AFORO EN VIVO (SLIM HORIZONTAL) -->
             <div class="kpi-grid-recepcion">
               <div class="kpi-card-recepcion ingresados">
-                <div class="kpi-circulo-progreso">
-                  <span>{{ porcentajeAsistencia() }}%</span>
+                <div class="kpi-left">
+                  <div class="kpi-badge-porcentaje">
+                    {{ porcentajeAsistencia() }}%
+                  </div>
+                  <span class="kpi-label">Pases en Sala</span>
                 </div>
-                <div class="kpi-info-recepcion">
-                  <span class="label">Pases en Sala</span>
-                  <span class="valor">{{ totalIngresados() }}</span>
-                </div>
+                <span class="kpi-value">{{ totalIngresados() }}</span>
               </div>
 
               <div class="kpi-card-recepcion pendientes">
-                <div class="kpi-icon-wrap"><i class="pi pi-clock"></i></div>
-                <div class="kpi-info-recepcion">
-                  <span class="label">Pases Pendientes</span>
-                  <span class="valor">{{ totalPendientes() }}</span>
+                <div class="kpi-left">
+                  <div class="kpi-icon"><i class="pi pi-clock"></i></div>
+                  <span class="kpi-label">Pases Pendientes</span>
                 </div>
+                <span class="kpi-value">{{ totalPendientes() }}</span>
               </div>
 
               <div class="kpi-card-recepcion totales">
-                <div class="kpi-icon-wrap"><i class="pi pi-ticket"></i></div>
-                <div class="kpi-info-recepcion">
-                  <span class="label">Pases Totales</span>
-                  <span class="valor">{{ totalPases() }}</span>
+                <div class="kpi-left">
+                  <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
+                  <span class="kpi-label">Pases Totales</span>
                 </div>
+                <span class="kpi-value">{{ totalPases() }}</span>
               </div>
             </div>
 
