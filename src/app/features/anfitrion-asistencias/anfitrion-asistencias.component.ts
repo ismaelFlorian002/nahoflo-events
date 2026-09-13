@@ -15,6 +15,7 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { QrMesaModalComponent } from '../album-digital/qr-mesa-modal/qr-mesa-modal';
 import { InvitadoDetalleModalComponent } from './components/invitado-detalle-modal/invitado-detalle-modal';
 import { InvitadoEditarModalComponent } from './components/invitado-editar-modal/invitado-editar-modal';
+import { InvitadoCrearModalComponent } from './components/invitado-crear-modal/invitado-crear-modal';
 import { InputTextModule } from 'primeng/inputtext';
 
 import { TooltipModule } from 'primeng/tooltip';
@@ -92,7 +93,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   // Búsqueda manual de respaldo en recepción
   busquedaRecepcion = signal<string>('');
   invitadosRecepcionFiltrados = computed(() => {
-    const lista = this.invitados().filter((i) => i.asistira);
+    const lista = this.invitados().filter((i) => (i.estado ? i.estado === 'confirmado' : i.asistira));
     const q = this.busquedaRecepcion().trim().toLowerCase();
     if (!q) return lista;
     return lista.filter(
@@ -107,22 +108,25 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   // Métricas
   totalPases = signal<number>(0);
   totalConfirmados = signal<number>(0);
+  totalPendientesConfirmacion = signal<number>(0);
   totalCancelados = signal<number>(0);
 
   // Búsqueda en tiempo real por texto
   terminoBusqueda = signal<string>('');
 
   // Filtros de asistencia
-  filtroRespuesta = signal<'todos' | 'asistira' | 'no_asiste'>('todos');
+  filtroRespuesta = signal<'todos' | 'asistira' | 'pendiente' | 'no_asiste'>('todos');
 
   // Lista reactiva filtrada según estado y texto de búsqueda
   invitadosFiltrados = computed(() => {
     let lista = this.invitados();
     const filtro = this.filtroRespuesta();
     if (filtro === 'asistira') {
-      lista = lista.filter((i) => i.asistira);
+      lista = lista.filter((i) => (i.estado ? i.estado === 'confirmado' : i.asistira));
+    } else if (filtro === 'pendiente') {
+      lista = lista.filter((i) => i.estado === 'pendiente');
     } else if (filtro === 'no_asiste') {
-      lista = lista.filter((i) => !i.asistira);
+      lista = lista.filter((i) => (i.estado ? i.estado === 'declinado' : !i.asistira));
     }
 
     const query = this.terminoBusqueda().trim().toLowerCase();
@@ -417,13 +421,15 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
       // Calcular KPIs
       const pases = normalizada
-        .filter((i) => i.asistira)
+        .filter((i) => (i.estado ? i.estado === 'confirmado' : i.asistira))
         .reduce((sum, i) => sum + (Number(i.pasesConfirmados) || 0), 0);
-      const confirmados = normalizada.filter((i) => i.asistira).length;
-      const cancelados = normalizada.filter((i) => !i.asistira).length;
+      const confirmados = normalizada.filter((i) => (i.estado ? i.estado === 'confirmado' : i.asistira)).length;
+      const pendientes = normalizada.filter((i) => i.estado === 'pendiente').length;
+      const cancelados = normalizada.filter((i) => (i.estado ? i.estado === 'declinado' : !i.asistira)).length;
 
       this.totalPases.set(pases);
       this.totalConfirmados.set(confirmados);
+      this.totalPendientesConfirmacion.set(pendientes);
       this.totalCancelados.set(cancelados);
     } catch (error) {
       console.error('Error cargando invitados:', error);
@@ -473,6 +479,29 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       dismissableMask: true,
       data: {
         invitado,
+        eventoId: ev.id,
+      },
+    });
+
+    ref?.onClose.subscribe((resultado: any) => {
+      if (resultado?.guardado) {
+        this.cargarInvitados(ev.id!);
+      }
+    });
+  }
+
+  // Abre modal para registrar un nuevo invitado manualmente
+  abrirModalCrearInvitado(): void {
+    const ev = this.evento();
+    if (!ev?.id) return;
+
+    const ref = this.dialogService.open(InvitadoCrearModalComponent, {
+      header: 'Registrar Nuevo Invitado',
+      width: '680px',
+      breakpoints: { '960px': '80vw', '640px': '94vw' },
+      closable: true,
+      dismissableMask: true,
+      data: {
         eventoId: ev.id,
       },
     });

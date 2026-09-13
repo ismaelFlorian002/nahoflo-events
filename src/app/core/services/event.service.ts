@@ -112,6 +112,18 @@ export class EventService {
     });
   }
 
+  // Registra un nuevo invitado manualmente desde el portal del anfitrión
+  async agregarInvitado(eventoId: string, datosInvitado: Omit<InvitadoModel, 'id'>) {
+    const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/invitados`);
+
+    return addDoc(refSubcoleccion, {
+      ...datosInvitado,
+      haIngresado: false,
+      pasesIngresados: 0,
+      fechaConfirmacion: new Date(),
+    });
+  }
+
   // Obtiene la lista completa de confirmaciones (invitados) de un evento
   async getInvitados(eventoId: string): Promise<InvitadoModel[]> {
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/invitados`);

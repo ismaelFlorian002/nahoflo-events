@@ -5,7 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { EventService } from '../../../../core/services/event.service';
-import { InvitadoModel } from '../../../../core/models/invitado.model';
+import { EstadoInvitado, InvitadoModel } from '../../../../core/models/invitado.model';
 
 @Component({
   selector: 'app-invitado-editar-modal',
@@ -41,8 +41,12 @@ export class InvitadoEditarModalComponent implements OnInit {
       return;
     }
 
+    const estadoInicial: EstadoInvitado =
+      this.invitado.estado || (this.invitado.asistira ? 'confirmado' : 'declinado');
+
     this.form = this.fb.group({
       nombre: [this.invitado.nombre || '', [Validators.required, Validators.minLength(2)]],
+      estado: [estadoInicial, Validators.required],
       asistira: [this.invitado.asistira ?? true],
       pasesConfirmados: [
         this.invitado.pasesConfirmados ?? 1,
@@ -52,9 +56,10 @@ export class InvitadoEditarModalComponent implements OnInit {
     });
   }
 
-  cambiarAsistencia(asiste: boolean): void {
-    this.form.patchValue({ asistira: asiste });
-    if (!asiste) {
+  cambiarEstado(nuevoEstado: EstadoInvitado): void {
+    const asiste = nuevoEstado === 'confirmado';
+    this.form.patchValue({ estado: nuevoEstado, asistira: asiste });
+    if (nuevoEstado === 'declinado') {
       this.form.patchValue({ pasesConfirmados: 0 });
     } else if (this.form.get('pasesConfirmados')?.value < 1) {
       this.form.patchValue({ pasesConfirmados: 1 });
@@ -63,7 +68,7 @@ export class InvitadoEditarModalComponent implements OnInit {
 
   cambiarPases(delta: number): void {
     const actual = Number(this.form.get('pasesConfirmados')?.value) || 0;
-    const min = this.form.get('asistira')?.value ? 1 : 0;
+    const min = this.form.get('estado')?.value === 'declinado' ? 0 : 1;
     const nuevo = Math.max(min, actual + delta);
     this.form.patchValue({ pasesConfirmados: nuevo });
   }
@@ -84,10 +89,14 @@ export class InvitadoEditarModalComponent implements OnInit {
 
     try {
       const valores = this.form.value;
+      const estado: EstadoInvitado = valores.estado;
+      const asistira = estado === 'confirmado';
+
       const datosActualizados: Partial<InvitadoModel> = {
         nombre: valores.nombre.trim(),
-        asistira: Boolean(valores.asistira),
-        pasesConfirmados: Number(valores.pasesConfirmados),
+        asistira,
+        estado,
+        pasesConfirmados: Number(valores.pasesConfirmados) || (asistira ? 1 : 0),
         telefono: valores.telefono?.trim() || '',
         mensaje: this.invitado.mensaje || '',
       };

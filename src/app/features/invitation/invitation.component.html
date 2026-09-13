@@ -320,19 +320,43 @@
             <div class="form-group">
               <label>¿Podrás acompañarnos? *</label>
               <div class="attendance-options">
-                <label class="attendance-btn" [class.selected]="formRsvp.get('asistira')?.value === true">
+                <label
+                  class="attendance-btn"
+                  [class.selected]="formRsvp.get('asistira')?.value === true"
+                  (click)="formRsvp.patchValue({ asistira: true, pasesConfirmados: formRsvp.get('pasesConfirmados')?.value || 1 })">
                   <input type="radio" [value]="true" formControlName="asistira" class="sr-only" />
                   <i class="pi pi-check"></i>
                   <span>¡Sí, ahí estaré!</span>
                 </label>
 
-                <label class="attendance-btn" [class.selected]="formRsvp.get('asistira')?.value === false">
+                <label
+                  class="attendance-btn"
+                  [class.selected]="formRsvp.get('asistira')?.value === false"
+                  (click)="formRsvp.patchValue({ asistira: false, pasesConfirmados: 0 })">
                   <input type="radio" [value]="false" formControlName="asistira" class="sr-only" />
                   <i class="pi pi-times"></i>
                   <span>No podré asistir</span>
                 </label>
               </div>
             </div>
+
+            <!-- 2.1 Selector amigable de número de personas (solo si asiste) -->
+            @if (formRsvp.get('asistira')?.value === true) {
+              <div class="form-group animar-fade-in">
+                <label>¿Cuántas personas asistirán en total (incluyéndote)? *</label>
+                <div class="selector-pases-rsvp">
+                  @for (n of [1, 2, 3, 4, 5, 6, 7, 8]; track n) {
+                    <button
+                      type="button"
+                      class="btn-num-pase"
+                      [class.seleccionado]="formRsvp.get('pasesConfirmados')?.value === n"
+                      (click)="formRsvp.patchValue({ pasesConfirmados: n })">
+                      {{ n }}
+                    </button>
+                  }
+                </div>
+              </div>
+            }
 
             <!-- 3. Teléfono (WhatsApp) -->
             <div class="form-group">

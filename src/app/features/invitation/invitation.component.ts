@@ -90,10 +90,16 @@ export class InvitationComponent implements OnInit, OnDestroy {
     this.enviandoRsvp.set(true);
     try {
       const formVal = this.formRsvp.value;
+      const asistira = Boolean(formVal.asistira);
+      const pases = asistira ? Math.max(1, Number(formVal.pasesConfirmados) || 1) : 0;
       await this.eventService.confirmarAsistencia(ev.id, {
-        ...formVal,
-        pasesConfirmados: 1,
-      } as any);
+        nombre: formVal.nombre!.trim(),
+        asistira,
+        estado: asistira ? 'confirmado' : 'declinado',
+        pasesConfirmados: pases,
+        telefono: formVal.telefono?.trim() || '',
+        mensaje: formVal.mensaje?.trim() || '',
+      });
 
       this.rsvpEnviado.set(true);
     } catch (error) {

@@ -45,22 +45,31 @@
   <div class="seccion-opciones-card">
     <!-- RESPUESTA DE ASISTENCIA -->
     <div class="opcion-bloque">
-      <span class="opcion-label">Respuesta de Asistencia</span>
-      <div class="selector-asistencia">
+      <span class="opcion-label">Estado de Asistencia</span>
+      <div class="selector-estado-tres">
         <button
           type="button"
-          class="btn-opcion-asistencia si"
-          [class.seleccionado]="form.get('asistira')?.value === true"
-          (click)="cambiarAsistencia(true)">
-          <i class="pi pi-check"></i>
-          <span>Sí Asistirá</span>
+          class="btn-opcion-estado pendiente"
+          [class.seleccionado]="form.get('estado')?.value === 'pendiente'"
+          (click)="cambiarEstado('pendiente')">
+          <i class="pi pi-clock"></i>
+          <span>Pendiente</span>
         </button>
 
         <button
           type="button"
-          class="btn-opcion-asistencia no"
-          [class.seleccionado]="form.get('asistira')?.value === false"
-          (click)="cambiarAsistencia(false)">
+          class="btn-opcion-estado confirmado"
+          [class.seleccionado]="form.get('estado')?.value === 'confirmado'"
+          (click)="cambiarEstado('confirmado')">
+          <i class="pi pi-check"></i>
+          <span>Confirmado</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn-opcion-estado declinado"
+          [class.seleccionado]="form.get('estado')?.value === 'declinado'"
+          (click)="cambiarEstado('declinado')">
           <i class="pi pi-times"></i>
           <span>No Asiste</span>
         </button>

@@ -83,28 +83,32 @@
   }
 }
 
-.selector-asistencia {
+.selector-estado-tres {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
 
-  .btn-opcion-asistencia {
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-opcion-estado {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1rem;
+    gap: 0.4rem;
+    padding: 0.65rem 0.75rem;
     border: 1.5px solid #e2e8f0;
     background: #ffffff;
     border-radius: 10px;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #64748b;
     cursor: pointer;
     transition: all 0.2s ease;
 
     i {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     &:hover {
@@ -112,14 +116,21 @@
       color: #1e293b;
     }
 
-    &.si.seleccionado {
+    &.pendiente.seleccionado {
+      background: #fffbeb;
+      border-color: #f59e0b;
+      color: #b45309;
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);
+    }
+
+    &.confirmado.seleccionado {
       background: #f0fdf4;
       border-color: #22c55e;
       color: #15803d;
       box-shadow: 0 2px 6px rgba(34, 197, 94, 0.15);
     }
 
-    &.no.seleccionado {
+    &.declinado.seleccionado {
       background: #fef2f2;
       border-color: #ef4444;
       color: #dc2626;

@@ -89,8 +89,8 @@
                 [class.activo]="pestanaActiva() === 'invitados'"
                 (click)="pestanaActiva.set('invitados'); detenerEscaner()">
                 <i class="pi pi-users"></i>
-                <span class="tab-label">Confirmaciones</span>
-                <span class="tab-badge">{{ totalConfirmados() }}</span>
+                <span class="tab-label">Lista de Invitados</span>
+                <span class="tab-badge">{{ invitados().length }}</span>
               </button>
             }
 
@@ -120,7 +120,7 @@
           </nav>
         </div>
 
-        <!-- 1. PESTAÑA: CONFIRMACIONES DE INVITADOS (RSVP) -->
+        <!-- 1. PESTAÑA: LISTA DE INVITADOS (RSVP + CONTROL DE PASES) -->
         @if (pestanaActiva() === 'invitados') {
           <!-- TARJETAS DE MÉTRICAS (KPIS SLIM / RESUMEN EJECUTIVO) -->
           <div class="kpi-grid">
@@ -138,6 +138,14 @@
                 <span class="kpi-label">Confirmados (Sí)</span>
               </div>
               <span class="kpi-value">{{ totalConfirmados() }}</span>
+            </div>
+
+            <div class="kpi-card pending">
+              <div class="kpi-left">
+                <div class="kpi-icon"><i class="pi pi-clock"></i></div>
+                <span class="kpi-label">Pendientes</span>
+              </div>
+              <span class="kpi-value">{{ totalPendientesConfirmacion() }}</span>
             </div>
 
             <div class="kpi-card declined">
@@ -163,7 +171,7 @@
               responsiveLayout="scroll"
               styleClass="p-datatable-borderless modern-table">
 
-              <!-- TOOLBAR DE LA TABLA: FILTROS + EXPORTAR A LA IZQUIERDA, BUSCADOR ADMIN A LA DERECHA -->
+              <!-- TOOLBAR DE LA TABLA: FILTROS + EXPORTAR A LA IZQUIERDA, BUSCADOR Y REGISTRAR A LA DERECHA -->
               <ng-template pTemplate="caption">
                 <div class="table-toolbar">
 
@@ -186,6 +194,15 @@
                         (click)="filtroRespuesta.set('asistira'); dt1.reset()">
                         <i class="pi pi-check"></i>
                         Confirmados ({{ totalConfirmados() }})
+                      </button>
+
+                      <button
+                        type="button"
+                        class="chip-filtro pendiente"
+                        [class.activo]="filtroRespuesta() === 'pendiente'"
+                        (click)="filtroRespuesta.set('pendiente'); dt1.reset()">
+                        <i class="pi pi-clock"></i>
+                        Pendientes ({{ totalPendientesConfirmacion() }})
                       </button>
 
                       <button
@@ -224,16 +241,27 @@
                     </div>
                   </div>
 
-                  <!-- DERECHA: BUSCADOR EXACTAMENTE IGUAL AL PANEL ADMIN -->
-                  <span class="p-input-icon-left search-wrapper">
-                    <i class="pi pi-search"></i>
-                    <input
-                      pInputText
-                      type="text"
-                      [ngModel]="terminoBusqueda()"
-                      (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
-                      placeholder="Buscar por nombre, teléfono o dedicatoria..." />
-                  </span>
+                  <!-- DERECHA: BUSCADOR ADMIN + BOTÓN REGISTRAR INVITADO -->
+                  <div class="toolbar-derecha">
+                    <span class="p-input-icon-left search-wrapper">
+                      <i class="pi pi-search"></i>
+                      <input
+                        pInputText
+                        type="text"
+                        [ngModel]="terminoBusqueda()"
+                        (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
+                        placeholder="Buscar por nombre, teléfono o dedicatoria..." />
+                    </span>
+
+                    <button
+                      type="button"
+                      class="btn-nuevo-invitado"
+                      (click)="abrirModalCrearInvitado()"
+                      title="Registrar nuevo invitado manualmente">
+                      <i class="pi pi-user-plus"></i>
+                      <span>Registrar Invitado</span>
+                    </button>
+                  </div>
 
                 </div>
               </ng-template>
@@ -257,14 +285,23 @@
                 <tr>
                   <td class="fw-medium">{{ invitado.nombre }}</td>
                   <td>
-                    <p-tag
-                      [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
-                      [severity]="invitado.asistira ? 'success' : 'danger'"
-                      [rounded]="true">
-                    </p-tag>
+                    @if (invitado.estado === 'pendiente') {
+                      <p-tag
+                        value="Pendiente"
+                        severity="warning"
+                        icon="pi pi-clock"
+                        [rounded]="true">
+                      </p-tag>
+                    } @else {
+                      <p-tag
+                        [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
+                        [severity]="invitado.asistira ? 'success' : 'danger'"
+                        [rounded]="true">
+                      </p-tag>
+                    }
                   </td>
                   <td style="text-align: center;">
-                    @if (invitado.asistira) {
+                    @if (invitado.asistira || invitado.estado === 'pendiente') {
                       <div class="pases-editor-inline">
                         <button
                           type="button"
@@ -274,7 +311,9 @@
                           title="Restar pase">
                           <i class="pi pi-minus"></i>
                         </button>
-                        <span class="pases-count">{{ invitado.pasesConfirmados || 1 }}</span>
+                        <span class="pases-count" [class.pendiente-pases]="invitado.estado === 'pendiente'">
+                          {{ invitado.pasesConfirmados || 1 }}
+                        </span>
                         <button
                           type="button"
                           class="btn-pases-mini"
@@ -301,7 +340,7 @@
                   <!-- COLUMNA PASE VIP (BOTÓN PRIMENG REDONDEADO) -->
                   @if (ev.modulos?.tipoControlInvitados === 'total') {
                     <td style="text-align: center;">
-                      @if (invitado.asistira) {
+                      @if (invitado.asistira || invitado.estado === 'pendiente') {
                         <p-button
                           icon="pi pi-qrcode"
                           [rounded]="true"
