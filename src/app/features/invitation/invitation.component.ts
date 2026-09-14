@@ -82,6 +82,7 @@ export class InvitationComponent implements OnInit, OnDestroy {
 
   // Cuando se abre con ?pase=ID, muestra únicamente el pase sin el resto de la invitación
   modoSoloPase = signal<boolean>(false);
+  invitadoIdUrl = signal<string | null>(null);
 
   // Envío a la subcolección de Firestore (el anfitrión asigna los pases oficiales desde su portal)
   async enviarRsvp() {
@@ -92,14 +93,46 @@ export class InvitationComponent implements OnInit, OnDestroy {
       const formVal = this.formRsvp.value;
       const asistira = Boolean(formVal.asistira);
       const pases = asistira ? Math.max(1, Number(formVal.pasesConfirmados) || 1) : 0;
-      await this.eventService.confirmarAsistencia(ev.id, {
-        nombre: formVal.nombre!.trim(),
-        asistira,
-        estado: asistira ? 'confirmado' : 'declinado',
-        pasesConfirmados: pases,
-        telefono: formVal.telefono?.trim() || '',
-        mensaje: formVal.mensaje?.trim() || '',
-      });
+      const res = await this.eventService.confirmarAsistencia(
+        ev.id,
+        {
+          nombre: formVal.nombre!.trim(),
+          asistira,
+          estado: asistira ? 'confirmado' : 'declinado',
+          pasesConfirmados: pases,
+          telefono: formVal.telefono?.trim() || '',
+          mensaje: formVal.mensaje?.trim() || '',
+        },
+        this.invitadoIdUrl() || undefined
+      );
+
+      if (ev.modulos?.tipoControlInvitados === 'total' && asistira && res?.id) {
+        try {
+          const payloadQr = JSON.stringify({
+            evId: ev.id,
+            invId: res.id,
+            slug: ev.enlace,
+          });
+
+          const qrUrl = await QRCode.toDataURL(payloadQr, {
+            width: 320,
+            margin: 2,
+            color: {
+              dark: '#1e293b',
+              light: '#ffffff',
+            },
+          });
+
+          this.paseGenerado.set({
+            id: res.id,
+            nombre: formVal.nombre!.trim(),
+            pases,
+            qrDataUrl: qrUrl,
+          });
+        } catch (errQr) {
+          console.error('Error generando QR tras confirmación:', errQr);
+        }
+      }
 
       this.rsvpEnviado.set(true);
     } catch (error) {
@@ -139,37 +172,47 @@ export class InvitationComponent implements OnInit, OnDestroy {
         this.iniciarCuentaRegresiva(data.fecha);
 
         // Si el invitado abrió su enlace personal de Pase VIP (?pase=ID)
-        if (paseId && data.id && data.modulos?.tipoControlInvitados === 'total') {
+        if (paseId && data.id) {
+          this.invitadoIdUrl.set(paseId);
           try {
             const listaInvitados = await this.eventService.getInvitados(data.id);
             const invitado = listaInvitados.find((i) => i.id === paseId);
 
-            if (invitado && invitado.asistira) {
-              const payloadQr = JSON.stringify({
-                evId: data.id,
-                invId: invitado.id,
-                slug: data.enlace,
-              });
+            if (invitado) {
+              if (invitado.asistira && invitado.estado !== 'pendiente') {
+                const payloadQr = JSON.stringify({
+                  evId: data.id,
+                  invId: invitado.id,
+                  slug: data.enlace,
+                });
 
-              const qrUrl = await QRCode.toDataURL(payloadQr, {
-                width: 320,
-                margin: 2,
-                color: {
-                  dark: '#1e293b',
-                  light: '#ffffff',
-                },
-              });
+                const qrUrl = await QRCode.toDataURL(payloadQr, {
+                  width: 320,
+                  margin: 2,
+                  color: {
+                    dark: '#1e293b',
+                    light: '#ffffff',
+                  },
+                });
 
-              this.paseGenerado.set({
-                id: invitado.id!,
-                nombre: invitado.nombre,
-                pases: invitado.pasesConfirmados || 1,
-                qrDataUrl: qrUrl,
-              });
+                this.paseGenerado.set({
+                  id: invitado.id!,
+                  nombre: invitado.nombre,
+                  pases: invitado.pasesConfirmados || 1,
+                  qrDataUrl: qrUrl,
+                });
 
-              this.rsvpEnviado.set(true);
-              this.modoSoloPase.set(true);
-              this.invitacionAbierta.set(true);
+                this.rsvpEnviado.set(true);
+                this.modoSoloPase.set(true);
+                this.invitacionAbierta.set(true);
+              } else {
+                // Si aún está pendiente o por confirmar, pre-llenamos sus datos
+                this.formRsvp.patchValue({
+                  nombre: invitado.nombre,
+                  telefono: invitado.telefono || '',
+                  pasesConfirmados: invitado.pasesConfirmados || 1,
+                });
+              }
             }
           } catch (errPase) {
             console.error('Error al cargar pase individual:', errPase);

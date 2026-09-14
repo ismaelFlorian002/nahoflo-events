@@ -257,7 +257,7 @@
       </section>
     }
     <!-- SECCIÓN RSVP (CONFIRMACIÓN DE ASISTENCIA) -->
-    @if (ev.modulos?.tipoControlInvitados !== 'inactivo') {
+    @if (ev.modulos?.tipoControlInvitados === 'basico' || ev.modulos?.tipoControlInvitados === 'total') {
       <section class="rsvp-section">
       <div class="section-header">
         <span class="section-subtitle">¿NOS ACOMPAÑAS?</span>
@@ -276,25 +276,31 @@
               <p>Lamentamos que no puedas acompañarnos físicamente, pero sabemos que celebrarás con nosotros en corazón.</p>
             </div>
           } @else if (ev.modulos?.tipoControlInvitados === 'total') {
-            <!-- CONFIRMACIÓN CONTROL TOTAL VIP: AVISO DE PASE POR WHATSAPP -->
-            <div class="rsvp-success rsvp-success-vip">
-              <div class="vip-confirm-icon-wrap">
-                <i class="pi pi-shield"></i>
+            <!-- CONFIRMACIÓN CONTROL TOTAL VIP: PASE QR DIGITAL O AVISO DE PASE -->
+            @if (paseGenerado()) {
+              <div class="vista-confirmacion-vip">
+                <ng-container *ngTemplateOutlet="plantillaPaseVip; context: { esSoloPase: false }"></ng-container>
               </div>
-              <span class="vip-confirm-badge">ACCESO CONTROLADO VIP</span>
-              <h3>¡Confirmación Recibida!</h3>
-              <p class="vip-confirm-lead">
-                Muchas gracias por confirmar tu asistencia, <strong>{{ formRsvp.get('nombre')?.value }}</strong>.
-              </p>
-              <div class="vip-confirm-notice">
-                <i class="pi pi-whatsapp"></i>
-                <p>
-                  Tus anfitriones validarán tus lugares asignados y te harán llegar tu <strong>Pase Digital VIP con Código QR</strong> directamente a tu WhatsApp.
+            } @else {
+              <div class="rsvp-success rsvp-success-vip">
+                <div class="vip-confirm-icon-wrap">
+                  <i class="pi pi-shield"></i>
+                </div>
+                <span class="vip-confirm-badge">ACCESO CONTROLADO VIP</span>
+                <h3>¡Confirmación Recibida!</h3>
+                <p class="vip-confirm-lead">
+                  Muchas gracias por confirmar tu asistencia, <strong>{{ formRsvp.get('nombre')?.value }}</strong>.
                 </p>
+                <div class="vip-confirm-notice">
+                  <i class="pi pi-whatsapp"></i>
+                  <p>
+                    Tus anfitriones validarán tus lugares asignados y te harán llegar tu <strong>Pase Digital VIP con Código QR</strong> directamente a tu WhatsApp.
+                  </p>
+                </div>
               </div>
-            </div>
+            }
           } @else {
-            <!-- CONFIRMACIÓN PAQUETE BÁSICO -->
+            <!-- CONFIRMACIÓN PAQUETE BÁSICO (SIN QR) -->
             <div class="rsvp-success">
               <i class="pi pi-check-circle success-icon"></i>
               <h3>¡Muchas Gracias!</h3>

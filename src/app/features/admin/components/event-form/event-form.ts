@@ -64,8 +64,9 @@ export class EventFormComponent implements OnInit {
 
   opcionesControlInvitados = [
     { label: 'Inactivo', value: 'inactivo' },
-    { label: 'Básico (RSVP)', value: 'basico' },
-    { label: 'Total VIP (Pases QR)', value: 'total' },
+    { label: 'Solo Lista (Puerta)', value: 'lista_puerta' },
+    { label: 'Confirmación (RSVP)', value: 'basico' },
+    { label: 'Control Total VIP (QR)', value: 'total' },
   ];
 
   eventForm = this.fb.group({

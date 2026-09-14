@@ -16,9 +16,11 @@ import { QrMesaModalComponent } from '../album-digital/qr-mesa-modal/qr-mesa-mod
 import { InvitadoDetalleModalComponent } from './components/invitado-detalle-modal/invitado-detalle-modal';
 import { InvitadoEditarModalComponent } from './components/invitado-editar-modal/invitado-editar-modal';
 import { InvitadoCrearModalComponent } from './components/invitado-crear-modal/invitado-crear-modal';
+import { ComoCompartirModalComponent } from './components/como-compartir-modal/como-compartir-modal';
 import { InputTextModule } from 'primeng/inputtext';
 
 import { TooltipModule } from 'primeng/tooltip';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 import QRCode from 'qrcode';
 import { capturarYDescargarTarjetaPaseWeb } from '../../core/utils/image-compresor';
 @Component({
@@ -35,6 +37,7 @@ import { capturarYDescargarTarjetaPaseWeb } from '../../core/utils/image-compres
     InputTextModule,
     DynamicDialogModule,
     TooltipModule,
+    OverlayPanelModule,
   ],
   providers: [DialogService],
   templateUrl: './anfitrion-asistencias.component.html',
@@ -60,8 +63,11 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   errorPin = signal<boolean>(false);
 
   // Pestañas del portal anfitrión
-  // Pestañas del portal anfitrión
-  pestanaActiva = signal<'invitados' | 'recepcion' | 'album'>('invitados');
+  pestanaActiva = signal<'resumen' | 'invitados' | 'recepcion' | 'album'>('resumen');
+
+  // Control de copiado de enlaces
+  copiadoGeneral = signal<boolean>(false);
+  copiadoInvitadoId = signal<string | null>(null);
 
   // Métricas de Aforo y Recepción en Vivo
   totalIngresados = computed(() =>
@@ -73,6 +79,16 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   porcentajeAsistencia = computed(() => {
     const tot = this.totalPases();
     return tot > 0 ? Math.min(100, Math.round((this.totalIngresados() / tot) * 100)) : 0;
+  });
+
+  // Métricas de confirmación para la pestaña de Resumen
+  totalPasesReservados = computed(() =>
+    this.invitados().reduce((acc, i) => acc + (Number(i.pasesConfirmados) || 1), 0),
+  );
+  porcentajeConfirmacion = computed(() => {
+    const total = this.invitados().length;
+    if (total === 0) return 0;
+    return Math.round((this.totalConfirmados() / total) * 100);
   });
   // Modal de visualización de QR individual para el anfitrión
   invitadoModalQr = signal<{
@@ -116,6 +132,43 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   // Filtros de asistencia
   filtroRespuesta = signal<'todos' | 'asistira' | 'pendiente' | 'no_asiste'>('todos');
+
+  // Métricas y etiquetas para el botón con icono de filtro PrimeNG
+  labelFiltroActivo = computed(() => {
+    switch (this.filtroRespuesta()) {
+      case 'asistira':
+        return 'Confirmados';
+      case 'pendiente':
+        return 'Pendientes';
+      case 'no_asiste':
+        return 'Declinados';
+      default:
+        return 'Todos';
+    }
+  });
+
+  conteoFiltroActivo = computed(() => {
+    switch (this.filtroRespuesta()) {
+      case 'asistira':
+        return this.totalConfirmados();
+      case 'pendiente':
+        return this.totalPendientesConfirmacion();
+      case 'no_asiste':
+        return this.totalCancelados();
+      default:
+        return this.invitados().length;
+    }
+  });
+
+  seleccionarFiltro(
+    filtro: 'todos' | 'asistira' | 'pendiente' | 'no_asiste',
+    table: Table,
+    op?: any,
+  ): void {
+    this.filtroRespuesta.set(filtro);
+    table.reset();
+    op?.hide();
+  }
 
   // Lista reactiva filtrada según estado y texto de búsqueda
   invitadosFiltrados = computed(() => {
@@ -503,6 +556,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       dismissableMask: true,
       data: {
         eventoId: ev.id,
+        invitadosExistentes: this.invitados(),
       },
     });
 
@@ -510,6 +564,23 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       if (resultado?.guardado) {
         this.cargarInvitados(ev.id!);
       }
+    });
+  }
+
+  // Abre el modal explicativo con el enlace general y las 2 opciones de envío
+  abrirModalCompartir(): void {
+    const ev = this.evento();
+    if (!ev) return;
+
+    this.dialogService.open(ComoCompartirModalComponent, {
+      header: '¿Cómo compartir tus invitaciones?',
+      width: '620px',
+      breakpoints: { '960px': '85vw', '640px': '95vw' },
+      closable: true,
+      dismissableMask: true,
+      data: {
+        evento: ev,
+      },
     });
   }
 
@@ -957,7 +1028,10 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     const urlPase = `${window.location.origin}/e/${ev.enlace}?pase=${modal.invitado.id}`;
 
     const nombreEventoCompleto = ev.preTitulo ? `${ev.preTitulo} · ${ev.titulo}` : ev.titulo;
-    const mensaje = `¡Hola ${nombre}! 🎉\n\nAquí tienes tu Pase Digital VIP para *${nombreEventoCompleto}*.\n🎟️ Acceso autorizado para: *${pasesTexto}*.\n\n📲 Abre tu Pase con Código QR aquí:\n${urlPase}\n\nPresenta tu código en la recepción al llegar.\n¡Nos dará muchísimo gusto celebrar contigo! ✨`;
+    const esPendiente = modal.invitado.estado === 'pendiente';
+    const mensaje = esPendiente
+      ? `¡Hola ${nombre}! 🎉\n\nTe invitamos con mucho cariño a *${nombreEventoCompleto}*.\n🎟️ Tienes asignados: *${pasesTexto}*.\n\n📲 Confirma tu asistencia y accede a tu pase aquí:\n${urlPase}\n\n¡Esperamos de corazón contar con tu presencia! ✨`
+      : `¡Hola ${nombre}! 🎉\n\nAquí tienes tu Pase Digital VIP para *${nombreEventoCompleto}*.\n🎟️ Acceso autorizado para: *${pasesTexto}*.\n\n📲 Abre tu Pase con Código QR aquí:\n${urlPase}\n\nPresenta tu código en la recepción al llegar.\n¡Nos dará muchísimo gusto celebrar contigo! ✨`;
 
     const urlWa = telefono
       ? `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`
@@ -1012,5 +1086,64 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
         .reduce((sum, i) => sum + (Number(i.pasesConfirmados) || 0), 0);
       this.totalPases.set(pasesTotalesRev);
     }
+  }
+
+  // Cambia la pestaña activa y detiene el escáner si estaba encendido
+  cambiarPestana(pestana: 'resumen' | 'invitados' | 'recepcion' | 'album'): void {
+    this.pestanaActiva.set(pestana);
+    this.detenerEscaner();
+  }
+
+  // Copia el enlace general público del evento al portapapeles
+  copiarEnlaceGeneral(): void {
+    const ev = this.evento();
+    if (!ev?.enlace) return;
+    const url = `${window.location.origin}/e/${ev.enlace}`;
+    navigator.clipboard.writeText(url);
+    this.copiadoGeneral.set(true);
+    setTimeout(() => this.copiadoGeneral.set(false), 2500);
+  }
+
+  // Copia el enlace personalizado de un invitado con su parámetro ?pase=ID
+  copiarEnlaceInvitado(invitado: InvitadoModel): void {
+    const ev = this.evento();
+    if (!ev?.enlace || !invitado?.id) return;
+    const url = `${window.location.origin}/e/${ev.enlace}?pase=${invitado.id}`;
+    navigator.clipboard.writeText(url);
+    this.copiadoInvitadoId.set(invitado.id);
+    setTimeout(() => {
+      if (this.copiadoInvitadoId() === invitado.id) {
+        this.copiadoInvitadoId.set(null);
+      }
+    }, 2500);
+  }
+
+  // Envía un mensaje cálido y personalizado por WhatsApp con el enlace directo del pase
+  enviarInvitacionWhatsApp(invitado: InvitadoModel): void {
+    const ev = this.evento();
+    if (!ev?.enlace || !invitado) return;
+
+    const nombre = invitado.nombre || 'Invitado(a)';
+    const pases = invitado.pasesConfirmados || 1;
+    const pasesTexto = pases === 1 ? '1 pase reservado' : `${pases} pases reservados`;
+    const urlPase = `${window.location.origin}/e/${ev.enlace}?pase=${invitado.id}`;
+    const nombreEvento = ev.preTitulo ? `${ev.preTitulo} · ${ev.titulo}` : ev.titulo;
+
+    let mensaje = '';
+    if (invitado.estado === 'pendiente') {
+      mensaje = `¡Hola ${nombre}! 🎉\n\nTe invitamos con mucho cariño a *${nombreEvento}*.\n🎟️ Tienes asignados: *${pasesTexto}*.\n\n📲 Confirma tu asistencia y accede a tu invitación aquí:\n${urlPase}\n\n¡Esperamos de corazón contar con tu presencia! ✨`;
+    } else if (invitado.estado === 'confirmado' || invitado.asistira) {
+      mensaje = `¡Hola ${nombre}! 🎉\n\nTe recordamos tu pase para *${nombreEvento}*.\n🎟️ Acceso autorizado para: *${pasesTexto}*.\n\n📲 Abre tu pase digital y ubicación aquí:\n${urlPase}\n\n¡Nos vemos muy pronto! ✨`;
+    } else {
+      mensaje = `¡Hola ${nombre}! 🎉\n\nTe compartimos los detalles de *${nombreEvento}* por si surge algún cambio en tus planes:\n${urlPase}\n\n¡Un fuerte abrazo! ✨`;
+    }
+
+    const telefono = (invitado.telefono || '').replace(/\D/g, '');
+    const urlWa =
+      telefono && telefono.length >= 10
+        ? `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
+
+    window.open(urlWa, '_blank');
   }
 }

@@ -19,6 +19,65 @@ import { Evento } from '../models/event.model';
 import { InvitadoModel } from '../models/invitado.model';
 import { ComentarioModel, RecuerdoModel } from '../models/RecuerdoModel';
 
+// --- UTILIDADES DE DEDUPLICACIÓN INTELIGENTE (TOKEN MATCHING) ---
+export function normalizarTextoInvitado(texto: string): string {
+  return (texto || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function normalizarTelefonoInvitado(telefono: string): string {
+  const digitos = (telefono || '').replace(/\D/g, '');
+  return digitos.length >= 10 ? digitos.slice(-10) : digitos;
+}
+
+const STOPWORDS_NOMBRES = new Set([
+  'de', 'del', 'la', 'las', 'el', 'los', 'y', 'e', 'o', 'u',
+  'familia', 'fam', 'sr', 'sra', 'sres', 'srta', 'lic', 'ing', 'dr', 'dra',
+  'tio', 'tia', 'primo', 'prima', 'sobrino', 'sobrina', 'amigo', 'amiga'
+]);
+
+/**
+ * Determina si dos nombres representan a la misma persona o familia.
+ * Utiliza Token Subset Matching: si las palabras clave del nombre corto
+ * (ej. "yesenia mota") están presentes en el nombre largo (ej. "yesenia mota martinez").
+ */
+export function coincidenNombresInvitados(nombreA: string, nombreB: string): boolean {
+  const normA = normalizarTextoInvitado(nombreA);
+  const normB = normalizarTextoInvitado(nombreB);
+
+  if (!normA || !normB) return false;
+  if (normA === normB) return true;
+
+  const tokensA = normA.split(' ').filter((w) => w.length >= 2 && !STOPWORDS_NOMBRES.has(w));
+  const tokensB = normB.split(' ').filter((w) => w.length >= 2 && !STOPWORDS_NOMBRES.has(w));
+
+  if (tokensA.length === 0 || tokensB.length === 0) {
+    return normA === normB;
+  }
+
+  const [corto, largo] = tokensA.length <= tokensB.length ? [tokensA, tokensB] : [tokensB, tokensA];
+
+  // Caso 1: Al menos 2 palabras clave significativas coincidentes (ej. Nombre + Apellido)
+  if (corto.length >= 2) {
+    const todosEnLargo = corto.every((token) => largo.includes(token));
+    if (todosEnLargo) return true;
+  }
+
+  // Caso 2: Familias (ej. "Familia Mota" vs "Familia Mota Martinez")
+  const esFamA = normA.includes('familia') || normA.includes('fam');
+  const esFamB = normB.includes('familia') || normB.includes('fam');
+  if (esFamA && esFamB && corto.length >= 1) {
+    const todosEnLargo = corto.every((token) => largo.includes(token));
+    if (todosEnLargo) return true;
+  }
+
+  return false;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -99,17 +158,89 @@ export class EventService {
     const docSnap = snapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() } as Evento;
   }
-  // Guarda la confirmación en la subcolección 'invitados' del evento
-  async confirmarAsistencia(eventoId: string, datosInvitado: InvitadoModel) {
-    // Ruta en Firestore: eventos/{eventoId}/invitados
+  // Guarda o actualiza la confirmación en la subcolección 'invitados' del evento
+  // Incluye deduplicación inteligente: si ya existe por ID, teléfono o nombre,
+  // actualiza el registro existente en vez de duplicarlo.
+  async confirmarAsistencia(
+    eventoId: string,
+    datosInvitado: InvitadoModel,
+    invitadoId?: string
+  ): Promise<{ id: string } & Partial<InvitadoModel>> {
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/invitados`);
 
-    return addDoc(refSubcoleccion, {
+    // 1. Si se provee un ID explícito (ej. enlace con ?pase=ID)
+    if (invitadoId) {
+      const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
+      const payload: Partial<InvitadoModel> = {
+        asistira: datosInvitado.asistira,
+        estado: datosInvitado.estado || (datosInvitado.asistira ? 'confirmado' : 'declinado'),
+        pasesConfirmados: datosInvitado.pasesConfirmados,
+        telefono: datosInvitado.telefono?.trim() || '',
+        mensaje: datosInvitado.mensaje?.trim() || '',
+        fechaConfirmacion: new Date(),
+      };
+      await updateDoc(refDoc, payload);
+      return { id: invitadoId, ...datosInvitado, ...payload };
+    }
+
+    // 2. Si no viene ID, consultamos los invitados existentes para evitar duplicidad
+    const snapshot = await getDocs(refSubcoleccion);
+    const listaExistente = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as InvitadoModel[];
+
+    const telInput = normalizarTelefonoInvitado(datosInvitado.telefono || '');
+    const nomInput = (datosInvitado.nombre || '').trim();
+
+    // Buscar coincidencia:
+    // A) Primero por teléfono (si tiene al menos 7 dígitos válidos)
+    let encontrado: InvitadoModel | undefined = undefined;
+    if (telInput.length >= 7) {
+      encontrado = listaExistente.find((inv) => {
+        const telExistente = normalizarTelefonoInvitado(inv.telefono || '');
+        return telExistente.length >= 7 && telExistente === telInput;
+      });
+    }
+
+    // B) Si no hubo coincidencia por teléfono, buscar por Token Matching Inteligente (nombre + apellidos)
+    if (!encontrado && nomInput.length >= 2) {
+      encontrado = listaExistente.find((inv) => {
+        return coincidenNombresInvitados(inv.nombre || '', nomInput);
+      });
+    }
+
+    // 3. Si encontramos el registro previo (ej. anfitrión lo precargó en 'pendiente')
+    if (encontrado && encontrado.id) {
+      const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${encontrado.id}`);
+
+      // Preservamos el nombre más completo y detallado entre ambos
+      const nombreFinal = nomInput.length > (encontrado.nombre?.trim().length || 0)
+        ? nomInput
+        : encontrado.nombre;
+
+      const payload: Partial<InvitadoModel> = {
+        nombre: nombreFinal,
+        asistira: datosInvitado.asistira,
+        estado: datosInvitado.estado || (datosInvitado.asistira ? 'confirmado' : 'declinado'),
+        pasesConfirmados: datosInvitado.pasesConfirmados || encontrado.pasesConfirmados || 1,
+        telefono: datosInvitado.telefono?.trim() || encontrado.telefono || '',
+        mensaje: datosInvitado.mensaje?.trim() || encontrado.mensaje || '',
+        fechaConfirmacion: new Date(),
+      };
+      await updateDoc(refDoc, payload);
+      return { id: encontrado.id, ...encontrado, ...payload };
+    }
+
+    // 4. Si no existía coincidencia previa, creamos un nuevo registro en Firestore
+    const nuevoDocRef = await addDoc(refSubcoleccion, {
       ...datosInvitado,
       haIngresado: false,
       pasesIngresados: 0,
       fechaConfirmacion: new Date(),
     });
+
+    return { id: nuevoDocRef.id, ...datosInvitado };
   }
 
   // Registra un nuevo invitado manualmente desde el portal del anfitrión
@@ -180,6 +311,22 @@ export class EventService {
   async eliminarInvitado(eventoId: string, invitadoId: string): Promise<void> {
     const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
     await deleteDoc(refDoc);
+  }
+
+  // Permite fusionar dos registros de invitados (ej. si uno se registró con apodo y otro con nombre formal)
+  async fusionarInvitados(
+    eventoId: string,
+    invitadoConservarId: string,
+    invitadoEliminarId: string,
+    datosFusionados?: Partial<InvitadoModel>
+  ): Promise<void> {
+    const refDocConservar = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoConservarId}`);
+    const refDocEliminar = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoEliminarId}`);
+
+    if (datosFusionados) {
+      await updateDoc(refDocConservar, datosFusionados);
+    }
+    await deleteDoc(refDocEliminar);
   }
   // Sube N fotos del invitado a Storage en paralelo y guarda la publicación del carrusel en Firestore
   // Sube N fotos del invitado a Storage de forma secuencial y guarda el carrusel en Firestore

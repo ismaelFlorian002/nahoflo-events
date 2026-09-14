@@ -82,26 +82,35 @@
         <!-- NAVEGACIÓN MODERNA POR PESTAÑAS (SEGMENTED CONTROL UX) -->
         <div class="pestanas-nav-container">
           <nav class="pestanas-nav" aria-label="Navegación de secciones del anfitrión">
+            <button
+              type="button"
+              class="btn-tab"
+              [class.activo]="pestanaActiva() === 'resumen'"
+              (click)="cambiarPestana('resumen')">
+              <i class="pi pi-chart-pie"></i>
+              <span class="tab-label">Resumen</span>
+            </button>
+
             @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
               <button
                 type="button"
                 class="btn-tab"
                 [class.activo]="pestanaActiva() === 'invitados'"
-                (click)="pestanaActiva.set('invitados'); detenerEscaner()">
+                (click)="cambiarPestana('invitados')">
                 <i class="pi pi-users"></i>
                 <span class="tab-label">Lista de Invitados</span>
                 <span class="tab-badge">{{ invitados().length }}</span>
               </button>
             }
 
-            @if (ev.modulos?.tipoControlInvitados === 'total') {
+            @if (ev.modulos?.tipoControlInvitados === 'total' || ev.modulos?.tipoControlInvitados === 'lista_puerta') {
               <button
                 type="button"
                 class="btn-tab tab-recepcion"
                 [class.activo]="pestanaActiva() === 'recepcion'"
-                (click)="pestanaActiva.set('recepcion')">
-                <i class="pi pi-qrcode"></i>
-                <span class="tab-label">Recepción & Escáner</span>
+                (click)="cambiarPestana('recepcion')">
+                <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-id-card'"></i>
+                <span class="tab-label">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner' : 'Recepción en Puerta' }}</span>
                 <span class="tab-badge tab-badge-recepcion">{{ totalIngresados() }}/{{ totalPases() }}</span>
               </button>
             }
@@ -111,7 +120,7 @@
                 type="button"
                 class="btn-tab"
                 [class.activo]="pestanaActiva() === 'album'"
-                (click)="pestanaActiva.set('album'); detenerEscaner()">
+                (click)="cambiarPestana('album')">
                 <i class="pi pi-camera"></i>
                 <span class="tab-label">Álbum de Recuerdos</span>
                 <span class="tab-badge">{{ recuerdos().length }}</span>
@@ -120,43 +129,276 @@
           </nav>
         </div>
 
+        <!-- 0. PESTAÑA: RESUMEN GENERAL Y EJECUTIVO POR PAQUETE -->
+        @if (pestanaActiva() === 'resumen') {
+          <div class="seccion-resumen">
+
+            <!-- 1. TARJETA DE ESTADO DEL PAQUETE Y SERVICIOS CONTRATADOS -->
+            <div class="card-paquete-resumen">
+              <div class="paquete-info-principal">
+                <div class="paquete-badge-tipo">
+                  <i class="pi pi-briefcase"></i>
+                  <span>Servicios Contratados</span>
+                </div>
+                <h2>{{ ev.titulo }}</h2>
+                <p class="paquete-subtitulo">
+                  {{ ev.preTitulo || ev.tipo }} · Enlace: nahoflo.com/e/{{ ev.enlace }}
+                </p>
+              </div>
+
+              <div class="servicios-chips-grid">
+                <!-- MÓDULO INVITACIÓN WEB -->
+                <div class="chip-servicio activo">
+                  <div class="chip-icon"><i class="pi pi-globe"></i></div>
+                  <div class="chip-texto">
+                    <span class="chip-titulo">Invitación Web</span>
+                    <span class="chip-estado">Página Activa</span>
+                  </div>
+                </div>
+
+                <!-- MÓDULO CONTROL DE INVITADOS -->
+                <div class="chip-servicio" [class.activo]="ev.modulos?.tipoControlInvitados !== 'inactivo'">
+                  <div class="chip-icon">
+                    <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : (ev.modulos?.tipoControlInvitados === 'lista_puerta' ? 'pi pi-id-card' : 'pi pi-users')"></i>
+                  </div>
+                  <div class="chip-texto">
+                    <span class="chip-titulo">
+                      @if (ev.modulos?.tipoControlInvitados === 'total') {
+                        Control Total VIP
+                      } @else if (ev.modulos?.tipoControlInvitados === 'lista_puerta') {
+                        Control de Puerta
+                      } @else if (ev.modulos?.tipoControlInvitados === 'basico') {
+                        Confirmación RSVP
+                      } @else {
+                        Control de Invitados
+                      }
+                    </span>
+                    <span class="chip-estado">
+                      @if (ev.modulos?.tipoControlInvitados === 'total') {
+                        Pases QR & Escáner
+                      } @else if (ev.modulos?.tipoControlInvitados === 'lista_puerta') {
+                        Lista de Acceso
+                      } @else if (ev.modulos?.tipoControlInvitados === 'basico') {
+                        Registro Digital
+                      } @else {
+                        No contratado
+                      }
+                    </span>
+                  </div>
+                </div>
+
+                <!-- MÓDULO ÁLBUM DIGITAL -->
+                <div class="chip-servicio" [class.activo]="ev.modulos?.tieneAlbum">
+                  <div class="chip-icon"><i class="pi pi-camera"></i></div>
+                  <div class="chip-texto">
+                    <span class="chip-titulo">Álbum de Recuerdos</span>
+                    <span class="chip-estado">
+                      {{ ev.modulos?.tieneAlbum ? 'Muro Digital Activo' : 'No contratado' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ACCIONES RÁPIDAS DEL RESUMEN -->
+              <div class="paquete-acciones-rapidas">
+                <button
+                  type="button"
+                  class="btn-resumen-accion btn-copiar-general-resumen"
+                  (click)="copiarEnlaceGeneral()">
+                  <i [class]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"></i>
+                  <span>{{ copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace General' }}</span>
+                </button>
+
+                <a [routerLink]="['/e', ev.enlace]" target="_blank" class="btn-resumen-accion btn-ver-inv-resumen">
+                  <i class="pi pi-external-link"></i>
+                  <span>Ver Invitación Pública</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- 2. RESUMEN DE ASISTENCIA Y PASES (SI EL CONTROL DE INVITADOS ESTÁ ACTIVO) -->
+            @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
+              <div class="bloque-resumen-asistencia">
+                <div class="cabecera-bloque-resumen">
+                  <div>
+                    <h3>Métricas de Confirmación & Asistencia</h3>
+                    <p>Balance general de pases reservados y respuestas registradas.</p>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn-ir-seccion"
+                    (click)="cambiarPestana('invitados')">
+                    <i class="pi pi-users"></i>
+                    <span>Ver Lista de Invitados</span>
+                  </button>
+                </div>
+
+                <!-- TARJETAS DE KPIS PRINCIPALES -->
+                <div class="kpi-grid">
+                  <div class="kpi-card pases">
+                    <div class="kpi-left">
+                      <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
+                      <span class="kpi-label">Pases Totales</span>
+                    </div>
+                    <span class="kpi-value">{{ totalPases() }}</span>
+                  </div>
+
+                  <div class="kpi-card confirmed">
+                    <div class="kpi-left">
+                      <div class="kpi-icon"><i class="pi pi-check"></i></div>
+                      <span class="kpi-label">Confirmados (Sí)</span>
+                    </div>
+                    <span class="kpi-value">{{ totalConfirmados() }}</span>
+                  </div>
+
+                  <div class="kpi-card pending">
+                    <div class="kpi-left">
+                      <div class="kpi-icon"><i class="pi pi-clock"></i></div>
+                      <span class="kpi-label">Pendientes</span>
+                    </div>
+                    <span class="kpi-value">{{ totalPendientesConfirmacion() }}</span>
+                  </div>
+
+                  <div class="kpi-card declined">
+                    <div class="kpi-left">
+                      <div class="kpi-icon"><i class="pi pi-times"></i></div>
+                      <span class="kpi-label">No asistirán</span>
+                    </div>
+                    <span class="kpi-value">{{ totalCancelados() }}</span>
+                  </div>
+                </div>
+
+                <!-- BARRA DE CONFIRMACIÓN Y DESGLOSE -->
+                <div class="card-progreso-confirmacion">
+                  <div class="progreso-header">
+                    <div class="progreso-label-wrap">
+                      <span class="progreso-titulo">Tasa de Confirmación</span>
+                      <span class="progreso-subtitulo">
+                        {{ totalConfirmados() }} de {{ invitados().length }} invitados han confirmado su asistencia
+                      </span>
+                    </div>
+                    <span class="progreso-porcentaje">{{ porcentajeConfirmacion() }}%</span>
+                  </div>
+
+                  <div class="barra-progreso-track">
+                    <div class="barra-progreso-fill" [style.width.%]="porcentajeConfirmacion()"></div>
+                  </div>
+
+                  <div class="desglose-resumen-grid">
+                    <div class="desglose-item">
+                      <span class="desglose-num">{{ invitados().length }}</span>
+                      <span class="desglose-text">Familias / Registros</span>
+                    </div>
+                    <div class="desglose-item">
+                      <span class="desglose-num">{{ totalPases() }}</span>
+                      <span class="desglose-text">Pases Confirmados</span>
+                    </div>
+                    <div class="desglose-item">
+                      <span class="desglose-num">{{ totalPendientesConfirmacion() }}</span>
+                      <span class="desglose-text">Por Responder</span>
+                    </div>
+                    <div class="desglose-item">
+                      <span class="desglose-num">{{ totalCancelados() }}</span>
+                      <span class="desglose-text">Declinados</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- 3. RESUMEN DE RECEPCIÓN EN PUERTA (SI ES TOTAL VIP O LISTA PUERTA) -->
+            @if (ev.modulos?.tipoControlInvitados === 'total' || ev.modulos?.tipoControlInvitados === 'lista_puerta') {
+              <div class="card-resumen-recepcion">
+                <div class="recepcion-resumen-cabecera">
+                  <div class="recepcion-info">
+                    <div class="badge-puerta-tipo">
+                      <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-id-card'"></i>
+                      <span>{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner VIP' : 'Recepción en Puerta' }}</span>
+                    </div>
+                    <h3>Control de Aforo en el Salón</h3>
+                    <p>Monitorea la llegada de tus invitados y valida sus accesos en tiempo real.</p>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="btn-ir-seccion"
+                    (click)="cambiarPestana('recepcion')">
+                    <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"></i>
+                    <span>{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción' }}</span>
+                  </button>
+                </div>
+
+                <div class="grid-metricas-puerta-resumen">
+                  <div class="item-metrica-puerta">
+                    <span class="num">{{ totalIngresados() }}</span>
+                    <span class="lbl">Pases en Sala</span>
+                  </div>
+                  <div class="item-metrica-puerta">
+                    <span class="num">{{ totalPendientes() }}</span>
+                    <span class="lbl">Pases por Llegar</span>
+                  </div>
+                  <div class="item-metrica-puerta">
+                    <span class="num">{{ porcentajeAsistencia() }}%</span>
+                    <span class="lbl">Aforo Ocupado</span>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- 4. RESUMEN DEL ÁLBUM DE FOTOS COLABORATIVO (SI TIENE ÁLBUM) -->
+            @if (!ev.modulos || ev.modulos.tieneAlbum) {
+              <div class="card-resumen-album">
+                <div class="album-resumen-cabecera">
+                  <div class="album-info">
+                    <div class="badge-album-tipo">
+                      <i class="pi pi-camera"></i>
+                      <span>Álbum Digital de Recuerdos</span>
+                    </div>
+                    <h3>Muro de Fotos en Vivo</h3>
+                    <p>Espacio colaborativo donde tus invitados capturan y comparten recuerdos de tu evento.</p>
+                  </div>
+
+                  <div class="album-botones-resumen">
+                    <button
+                      type="button"
+                      class="btn-qr-mesas-resumen"
+                      (click)="abrirModalQrMesas()">
+                      <i class="pi pi-qrcode"></i>
+                      <span>QR para Mesas</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="btn-ir-seccion"
+                      (click)="cambiarPestana('album')">
+                      <i class="pi pi-images"></i>
+                      <span>Moderar Álbum</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-metricas-album-resumen">
+                  <div class="item-metrica-album">
+                    <span class="num">{{ contarFotosTotales() }}</span>
+                    <span class="lbl">Fotos Subidas</span>
+                  </div>
+                  <div class="item-metrica-album">
+                    <span class="num">{{ recuerdos().length }}</span>
+                    <span class="lbl">Publicaciones</span>
+                  </div>
+                  <div class="item-metrica-album">
+                    <span class="num">Ilimitado</span>
+                    <span class="lbl">Almacenamiento</span>
+                  </div>
+                </div>
+              </div>
+            }
+
+          </div>
+        }
+
         <!-- 1. PESTAÑA: LISTA DE INVITADOS (RSVP + CONTROL DE PASES) -->
         @if (pestanaActiva() === 'invitados') {
-          <!-- TARJETAS DE MÉTRICAS (KPIS SLIM / RESUMEN EJECUTIVO) -->
-          <div class="kpi-grid">
-            <div class="kpi-card pases">
-              <div class="kpi-left">
-                <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
-                <span class="kpi-label">Pases Totales</span>
-              </div>
-              <span class="kpi-value">{{ totalPases() }}</span>
-            </div>
-
-            <div class="kpi-card confirmed">
-              <div class="kpi-left">
-                <div class="kpi-icon"><i class="pi pi-check"></i></div>
-                <span class="kpi-label">Confirmados (Sí)</span>
-              </div>
-              <span class="kpi-value">{{ totalConfirmados() }}</span>
-            </div>
-
-            <div class="kpi-card pending">
-              <div class="kpi-left">
-                <div class="kpi-icon"><i class="pi pi-clock"></i></div>
-                <span class="kpi-label">Pendientes</span>
-              </div>
-              <span class="kpi-value">{{ totalPendientesConfirmacion() }}</span>
-            </div>
-
-            <div class="kpi-card declined">
-              <div class="kpi-left">
-                <div class="kpi-icon"><i class="pi pi-times"></i></div>
-                <span class="kpi-label">No asistirán</span>
-              </div>
-              <span class="kpi-value">{{ totalCancelados() }}</span>
-            </div>
-          </div>
-
           <!-- TABLA DE INVITADOS -->
           <div class="table-card">
             <p-table
@@ -177,42 +419,78 @@
 
                   <!-- IZQUIERDA: FILTROS POR ESTADO + EXPORTAR -->
                   <div class="toolbar-izquierda">
-                    <!-- FILTROS POR ESTADO -->
-                    <div class="filtros-chips">
+                    <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL -->
+                    <div class="filtro-dropdown-wrap">
                       <button
                         type="button"
-                        class="chip-filtro"
-                        [class.activo]="filtroRespuesta() === 'todos'"
-                        (click)="filtroRespuesta.set('todos'); dt1.reset()">
-                        Todos ({{ invitados().length }})
+                        class="btn-filtro-trigger"
+                        [class.filtro-activo]="filtroRespuesta() !== 'todos'"
+                        (click)="opFiltros.toggle($event)"
+                        title="Filtrar por estado de respuesta">
+                        <i class="pi pi-filter"></i>
+                        <span class="label-filtro">{{ labelFiltroActivo() }}</span>
+                        <span class="badge-filtro-conteo">{{ conteoFiltroActivo() }}</span>
+                        <i class="pi pi-chevron-down flecha-filtro"></i>
                       </button>
 
-                      <button
-                        type="button"
-                        class="chip-filtro asistira"
-                        [class.activo]="filtroRespuesta() === 'asistira'"
-                        (click)="filtroRespuesta.set('asistira'); dt1.reset()">
-                        <i class="pi pi-check"></i>
-                        Confirmados ({{ totalConfirmados() }})
-                      </button>
+                      <p-overlayPanel #opFiltros styleClass="popover-filtros-invitados">
+                        <div class="menu-filtros-popover">
+                          <div class="popover-filtros-header">
+                            <i class="pi pi-filter"></i>
+                            <span>Filtrar por respuesta</span>
+                          </div>
 
-                      <button
-                        type="button"
-                        class="chip-filtro pendiente"
-                        [class.activo]="filtroRespuesta() === 'pendiente'"
-                        (click)="filtroRespuesta.set('pendiente'); dt1.reset()">
-                        <i class="pi pi-clock"></i>
-                        Pendientes ({{ totalPendientesConfirmacion() }})
-                      </button>
+                          <div class="popover-filtros-lista">
+                            <button
+                              type="button"
+                              class="item-filtro-btn"
+                              [class.activo]="filtroRespuesta() === 'todos'"
+                              (click)="seleccionarFiltro('todos', dt1, opFiltros)">
+                              <span class="filtro-item-left">
+                                <i class="pi pi-users icono-todos"></i>
+                                <span>Todos los invitados</span>
+                              </span>
+                              <span class="badge-filtro-cant cant-todos">{{ invitados().length }}</span>
+                            </button>
 
-                      <button
-                        type="button"
-                        class="chip-filtro declinado"
-                        [class.activo]="filtroRespuesta() === 'no_asiste'"
-                        (click)="filtroRespuesta.set('no_asiste'); dt1.reset()">
-                        <i class="pi pi-times"></i>
-                        Declinados ({{ totalCancelados() }})
-                      </button>
+                            <button
+                              type="button"
+                              class="item-filtro-btn asistira"
+                              [class.activo]="filtroRespuesta() === 'asistira'"
+                              (click)="seleccionarFiltro('asistira', dt1, opFiltros)">
+                              <span class="filtro-item-left">
+                                <i class="pi pi-check icono-asistira"></i>
+                                <span>Confirmados (Sí)</span>
+                              </span>
+                              <span class="badge-filtro-cant cant-asistira">{{ totalConfirmados() }}</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              class="item-filtro-btn pendiente"
+                              [class.activo]="filtroRespuesta() === 'pendiente'"
+                              (click)="seleccionarFiltro('pendiente', dt1, opFiltros)">
+                              <span class="filtro-item-left">
+                                <i class="pi pi-clock icono-pendiente"></i>
+                                <span>Pendientes</span>
+                              </span>
+                              <span class="badge-filtro-cant cant-pendiente">{{ totalPendientesConfirmacion() }}</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              class="item-filtro-btn declinado"
+                              [class.activo]="filtroRespuesta() === 'no_asiste'"
+                              (click)="seleccionarFiltro('no_asiste', dt1, opFiltros)">
+                              <span class="filtro-item-left">
+                                <i class="pi pi-times icono-declinado"></i>
+                                <span>No asistirán</span>
+                              </span>
+                              <span class="badge-filtro-cant cant-declinado">{{ totalCancelados() }}</span>
+                            </button>
+                          </div>
+                        </div>
+                      </p-overlayPanel>
                     </div>
 
                     <span class="toolbar-divider"></span>
@@ -241,8 +519,9 @@
                     </div>
                   </div>
 
-                  <!-- DERECHA: BUSCADOR ADMIN + BOTÓN REGISTRAR INVITADO -->
+                  <!-- DERECHA: BUSCADOR + COMPARTIR INVITACIONES + BOTÓN AGREGAR -->
                   <div class="toolbar-derecha">
+
                     <span class="p-input-icon-left search-wrapper">
                       <i class="pi pi-search"></i>
                       <input
@@ -250,8 +529,17 @@
                         type="text"
                         [ngModel]="terminoBusqueda()"
                         (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
-                        placeholder="Buscar por nombre, teléfono o dedicatoria..." />
+                        placeholder="Buscar por nombre o teléfono..." />
                     </span>
+
+                    <button
+                      type="button"
+                      class="btn-compartir-toolbar"
+                      (click)="abrirModalCompartir()"
+                      title="Cómo compartir invitación">
+                      <i class="pi pi-info-circle"></i>
+                      <span>Cómo compartir invitación</span>
+                    </button>
 
                     <button
                       type="button"
@@ -259,8 +547,9 @@
                       (click)="abrirModalCrearInvitado()"
                       title="Registrar nuevo invitado manualmente">
                       <i class="pi pi-user-plus"></i>
-                      <span>Registrar Invitado</span>
+                      <span>Agregar</span>
                     </button>
+
                   </div>
 
                 </div>
@@ -356,9 +645,31 @@
                     </td>
                   }
 
-                  <!-- ACCIONES: VER DETALLE Y EDITAR (BOTONES PRIMENG ESTILO ADMIN) -->
+                  <!-- ACCIONES: ENVIAR WHATSAPP, COPIAR LINK, VER DETALLE Y EDITAR (BOTONES PRIMENG) -->
                   <td style="text-align: right;">
                     <div class="action-buttons">
+                      <!-- BOTÓN WHATSAPP INVITACIÓN PERSONALIZADA -->
+                      <p-button
+                        icon="pi pi-whatsapp"
+                        [rounded]="true"
+                        [text]="true"
+                        severity="success"
+                        [pTooltip]="'Enviar invitación personalizada a ' + invitado.nombre"
+                        tooltipPosition="top"
+                        (onClick)="enviarInvitacionWhatsApp(invitado)">
+                      </p-button>
+
+                      <!-- BOTÓN COPIAR ENLACE DIRECTO DEL INVITADO -->
+                      <p-button
+                        [icon]="copiadoInvitadoId() === invitado.id ? 'pi pi-check' : 'pi pi-link'"
+                        [rounded]="true"
+                        [text]="true"
+                        [severity]="copiadoInvitadoId() === invitado.id ? 'success' : 'secondary'"
+                        [pTooltip]="copiadoInvitadoId() === invitado.id ? '¡Enlace copiado!' : 'Copiar enlace con pase directo'"
+                        tooltipPosition="top"
+                        (onClick)="copiarEnlaceInvitado(invitado)">
+                      </p-button>
+
                       <!-- BOTÓN VER DETALLE -->
                       <p-button
                         icon="pi pi-eye"
@@ -431,74 +742,76 @@
             </div>
 
             <!-- 2. PANEL DUAL: ESCÁNER DE CÁMARA (IZQ) Y BÚSQUEDA MANUAL (DER) -->
-            <div class="grid-puerta">
+            <div class="grid-puerta" [class.solo-manual]="ev.modulos?.tipoControlInvitados === 'lista_puerta'">
 
-              <!-- COLUMNA A: ESCÁNER DE CÁMARA QR -->
-              <div class="col-escaner">
-                <div class="card-escaner">
-                  <div class="cabecera-card-puerta">
-                    <h3><i class="pi pi-camera"></i> Escáner en Puerta</h3>
-                    <button
-                      type="button"
-                      class="btn-toggle-camara"
-                      [class.activo]="escanerActivo()"
-                      (click)="toggleEscaner()">
-                      <i [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
-                      <span>{{ escanerActivo() ? 'Detener Cámara' : 'Activar Cámara' }}</span>
-                    </button>
-                  </div>
+              <!-- COLUMNA A: ESCÁNER DE CÁMARA QR (SOLO EN MODO CONTROL TOTAL VIP) -->
+              @if (ev.modulos?.tipoControlInvitados === 'total') {
+                <div class="col-escaner">
+                  <div class="card-escaner">
+                    <div class="cabecera-card-puerta">
+                      <h3><i class="pi pi-camera"></i> Escáner en Puerta</h3>
+                      <button
+                        type="button"
+                        class="btn-toggle-camara"
+                        [class.activo]="escanerActivo()"
+                        (click)="toggleEscaner()">
+                        <i [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
+                        <span>{{ escanerActivo() ? 'Detener Cámara' : 'Activar Cámara' }}</span>
+                      </button>
+                    </div>
 
-                  <!-- VISOR DE CÁMARA -->
-                  <div class="contenedor-visor">
-                    <div id="qr-reader" class="visor-camara"></div>
+                    <!-- VISOR DE CÁMARA -->
+                    <div class="contenedor-visor">
+                      <div id="qr-reader" class="visor-camara"></div>
 
-                    @if (!escanerActivo()) {
-                      <div class="camara-placeholder" (click)="iniciarEscaner()">
-                        <i class="pi pi-qrcode"></i>
-                        <p>Haz clic para encender la cámara y escanear pases VIP</p>
+                      @if (!escanerActivo()) {
+                        <div class="camara-placeholder" (click)="iniciarEscaner()">
+                          <i class="pi pi-qrcode"></i>
+                          <p>Haz clic para encender la cámara y escanear pases VIP</p>
+                        </div>
+                      }
+                    </div>
+
+                    <!-- TARJETA DINÁMICA DE RESULTADO DE ESCANEO -->
+                    @if (resultadoEscaneo(); as res) {
+                      <div class="alerta-escaneo" [class]="res.tipo">
+                        <div class="alerta-icono">
+                          @if (res.tipo === 'exito') {
+                            <i class="pi pi-check-circle"></i>
+                          } @else if (res.tipo === 'duplicado') {
+                            <i class="pi pi-exclamation-triangle"></i>
+                          } @else {
+                            <i class="pi pi-times-circle"></i>
+                          }
+                        </div>
+                        <div class="alerta-contenido">
+                          <h4>{{ res.mensaje }}</h4>
+                          @if (res.invitado; as inv) {
+                            <p class="alerta-detalles">
+                              <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }} pases
+                              @if (res.hora) {
+                                <span>({{ res.hora }})</span>
+                              }
+                            </p>
+                            @if (res.tipo === 'exito') {
+                              <button type="button" class="btn-deshacer" (click)="revertirCheckIn(inv)">
+                                Deshacer ingreso
+                              </button>
+                            }
+                          }
+                        </div>
                       </div>
                     }
                   </div>
-
-                  <!-- TARJETA DINÁMICA DE RESULTADO DE ESCANEO -->
-                  @if (resultadoEscaneo(); as res) {
-                    <div class="alerta-escaneo" [class]="res.tipo">
-                      <div class="alerta-icono">
-                        @if (res.tipo === 'exito') {
-                          <i class="pi pi-check-circle"></i>
-                        } @else if (res.tipo === 'duplicado') {
-                          <i class="pi pi-exclamation-triangle"></i>
-                        } @else {
-                          <i class="pi pi-times-circle"></i>
-                        }
-                      </div>
-                      <div class="alerta-contenido">
-                        <h4>{{ res.mensaje }}</h4>
-                        @if (res.invitado; as inv) {
-                          <p class="alerta-detalles">
-                            <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }} pases
-                            @if (res.hora) {
-                              <span>({{ res.hora }})</span>
-                            }
-                          </p>
-                          @if (res.tipo === 'exito') {
-                            <button type="button" class="btn-deshacer" (click)="revertirCheckIn(inv)">
-                              Deshacer ingreso
-                            </button>
-                          }
-                        }
-                      </div>
-                    </div>
-                  }
                 </div>
-              </div>
+              }
 
               <!-- COLUMNA B: BÚSQUEDA Y CHECK-IN MANUAL -->
               <div class="col-manual">
                 <div class="card-manual">
                   <div class="cabecera-card-puerta">
-                    <h3><i class="pi pi-list"></i> Búsqueda Nominal de Respaldo</h3>
-                    <span class="subtexto-puerta">Por si el invitado no tiene celular</span>
+                    <h3><i class="pi pi-list"></i> {{ ev.modulos?.tipoControlInvitados === 'total' ? 'Búsqueda Nominal de Respaldo' : 'Lista de Recepción en Puerta' }}</h3>
+                    <span class="subtexto-puerta">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Por si el invitado no tiene celular' : 'Busca por nombre o apellido para registrar el acceso' }}</span>
                   </div>
 
                   <!-- BUSCADOR RÁPIDO EN PUERTA -->

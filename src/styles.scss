@@ -113,3 +113,162 @@ html body .modal-preview-dialog.p-dialog {
     padding: 0 1.25rem 1.25rem;
   }
 }
+
+/* =========================================================
+   8. POPOVER DE FILTROS DE INVITADOS (PORTAL ANFITRIÓN)
+   ========================================================= */
+html body .popover-filtros-invitados.p-overlaypanel,
+html body .p-overlaypanel.popover-filtros-invitados {
+  background: #ffffff !important;
+  border-radius: 14px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.15), 0 4px 12px -2px rgba(15, 23, 42, 0.08) !important;
+  overflow: hidden;
+
+  &::before,
+  &::after {
+    border-bottom-color: #ffffff !important;
+  }
+
+  .p-overlaypanel-content {
+    padding: 0.5rem !important;
+  }
+
+  .menu-filtros-popover {
+    min-width: 230px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .popover-filtros-header {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.65rem 0.6rem;
+    font-size: 0.73rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 0.35rem;
+
+    i {
+      font-size: 0.8rem;
+      color: #cca633;
+    }
+  }
+
+  .popover-filtros-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .item-filtro-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+    padding: 0.62rem 0.75rem !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 9px !important;
+    cursor: pointer !important;
+    font-family: inherit !important;
+    font-size: 0.84rem !important;
+    font-weight: 500 !important;
+    color: #334155 !important;
+    text-align: left !important;
+    outline: none !important;
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+    .filtro-item-left {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+
+      i {
+        font-size: 0.85rem;
+        width: 18px;
+        text-align: center;
+      }
+
+      .icono-todos { color: #64748b; }
+      .icono-asistira { color: #16a34a; }
+      .icono-pendiente { color: #d97706; }
+      .icono-declinado { color: #dc2626; }
+    }
+
+    .badge-filtro-cant {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 1.4rem;
+      height: 1.3rem;
+      padding: 0 0.4rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: #f1f5f9;
+      color: #475569;
+      transition: all 0.15s ease;
+    }
+
+    &:hover {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+
+      .badge-filtro-cant {
+        background: #e2e8f0;
+        color: #1e293b;
+      }
+    }
+
+    &.activo {
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
+      font-weight: 700 !important;
+      border-color: #e2e8f0 !important;
+
+      &.asistira {
+        background: #f0fdf4 !important;
+        color: #15803d !important;
+        border-color: #bbf7d0 !important;
+
+        .badge-filtro-cant {
+          background: #dcfce7;
+          color: #15803d;
+        }
+      }
+
+      &.pendiente {
+        background: #fffbeb !important;
+        color: #b45309 !important;
+        border-color: #fde68a !important;
+
+        .badge-filtro-cant {
+          background: #fef3c7;
+          color: #b45309;
+        }
+      }
+
+      &.declinado {
+        background: #fef2f2 !important;
+        color: #b91c1c !important;
+        border-color: #fecaca !important;
+
+        .badge-filtro-cant {
+          background: #fee2e2;
+          color: #b91c1c;
+        }
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+

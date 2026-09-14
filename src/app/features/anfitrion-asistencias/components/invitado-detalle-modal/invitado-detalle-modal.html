@@ -7,16 +7,25 @@
     <div class="perfil-info">
       <h3>{{ invitado.nombre }}</h3>
       <div class="badges-fila">
-        <p-tag
-          [value]="invitado.asistira ? 'Asistencia Confirmada' : 'Declinó Asistencia'"
-          [severity]="invitado.asistira ? 'success' : 'danger'"
-          [rounded]="true">
-        </p-tag>
-        @if (invitado.asistira) {
+        @if (invitado.estado === 'pendiente') {
+          <p-tag
+            value="Pendiente de Confirmar"
+            severity="warning"
+            icon="pi pi-clock"
+            [rounded]="true">
+          </p-tag>
+        } @else {
+          <p-tag
+            [value]="invitado.asistira ? 'Asistencia Confirmada' : 'Declinó Asistencia'"
+            [severity]="invitado.asistira ? 'success' : 'danger'"
+            [rounded]="true">
+          </p-tag>
+        }
+        @if (invitado.asistira || invitado.estado === 'pendiente') {
           <span class="badge-pases-info">
             <i class="pi pi-ticket"></i>
             <strong>{{ invitado.pasesConfirmados || 1 }}</strong>
-            {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase asignado' : 'pases asignados' }}
+            {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase reservado' : 'pases reservados' }}
           </span>
         }
       </div>
@@ -46,17 +55,15 @@
     </div>
   </div>
 
-  <!-- MENSAJE O DEDICATORIA COMPLETA -->
-  <div class="seccion-mensaje">
-    <span class="item-label"><i class="pi pi-comment"></i> Mensaje o Dedicatoria</span>
-    <div class="caja-mensaje" [class.vacio]="!invitado.mensaje">
-      @if (invitado.mensaje) {
+  <!-- DEDICATORIA DEL INVITADO (SOLO SI EL INVITADO LA ESCRIBIÓ EN LA WEB) -->
+  @if (invitado.mensaje) {
+    <div class="seccion-mensaje">
+      <span class="item-label"><i class="pi pi-heart-fill"></i> Dedicatoria del Invitado</span>
+      <div class="caja-mensaje">
         <p>“{{ invitado.mensaje }}”</p>
-      } @else {
-        <span class="sin-mensaje">Sin mensaje adicional.</span>
-      }
+      </div>
     </div>
-  </div>
+  }
 
   <!-- CONTROL TOTAL VIP (SI APLICA) -->
   @if (evento?.modulos?.tipoControlInvitados === 'total') {
@@ -105,6 +112,7 @@
     <p-button
       label="Cerrar"
       text
+      size="small"
       severity="danger"
       (onClick)="cerrar()"
       styleClass="btn-modal-cerrar">
