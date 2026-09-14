@@ -110,4 +110,10 @@ export class DashboardComponent implements OnInit {
       data: { evento },
     });
   }
+
+  getWhatsappUrl(telefono?: string): string {
+    if (!telefono) return '';
+    const cleanNumber = telefono.replace(/[^0-9]/g, '');
+    return `https://wa.me/${cleanNumber}`;
+  }
 }

@@ -1,0 +1,148 @@
+<div class="clientes-container">
+
+  <!-- HEADER PRINCIPAL -->
+  <div class="clientes-header">
+    <div class="title-group">
+      <h1 class="clientes-title">Catálogo de Clientes</h1>
+      <p class="clientes-subtitle">Gestiona tu cartera de clientes, datos de contacto e historial de eventos</p>
+    </div>
+    <p-button label="Nuevo Cliente" icon="pi pi-user-plus" (onClick)="openDialog()" [rounded]="true"></p-button>
+  </div>
+
+  <!-- TARJETA CONTENEDORA DE LA TABLA -->
+  <div class="table-card">
+    <p-table
+      #dt
+      [value]="clientes"
+      [loading]="cargando"
+      [paginator]="true"
+      [rows]="10"
+      [rowsPerPageOptions]="[5, 10, 25]"
+      [globalFilterFields]="['nombreCompleto', 'telefono', 'email', 'notas']"
+      styleClass="p-datatable-borderless modern-table"
+    >
+      <!-- TOOLBAR DE LA TABLA -->
+      <ng-template pTemplate="caption">
+        <div class="table-toolbar">
+          <span class="p-input-icon-left search-wrapper">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Buscar por cliente, teléfono o correo..." />
+          </span>
+        </div>
+      </ng-template>
+
+      <!-- CABECERAS -->
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="nombreCompleto">Cliente <p-sortIcon field="nombreCompleto"></p-sortIcon></th>
+          <th>Contacto</th>
+          <th pSortableColumn="totalEventos" style="text-align: center;">Eventos <p-sortIcon field="totalEventos"></p-sortIcon></th>
+          <th>Notas</th>
+          <th pSortableColumn="creadoEn">Registrado <p-sortIcon field="creadoEn"></p-sortIcon></th>
+          <th style="text-align: right;">Acciones</th>
+        </tr>
+      </ng-template>
+
+      <!-- CUERPO DE LA TABLA -->
+      <ng-template pTemplate="body" let-cliente>
+        <tr>
+          <!-- NOMBRE Y AVATAR -->
+          <td class="fw-medium">
+            <div class="client-name-row">
+              <div class="client-avatar">
+                <i class="pi pi-user"></i>
+              </div>
+              <div class="client-info">
+                <span class="client-fullname">{{ cliente.nombreCompleto }}</span>
+                <span class="client-subid" *ngIf="cliente.id">ID: {{ cliente.id.substring(0, 8) }}</span>
+              </div>
+            </div>
+          </td>
+
+          <!-- CONTACTO (TEL / WHATSAPP / CORREO) -->
+          <td>
+            <div class="contact-info-col">
+              <div class="phone-link" *ngIf="cliente.telefono">
+                <i class="pi pi-phone text-gold"></i>
+                <span>{{ cliente.telefono }}</span>
+                <a
+                  [href]="getWhatsappUrl(cliente.telefono)"
+                  target="_blank"
+                  class="whatsapp-btn"
+                  pTooltip="Enviar WhatsApp"
+                  tooltipPosition="top">
+                  <i class="pi pi-whatsapp"></i>
+                </a>
+              </div>
+              <div class="email-row" *ngIf="cliente.email">
+                <i class="pi pi-envelope text-muted"></i>
+                <a [href]="'mailto:' + cliente.email" class="email-link">{{ cliente.email }}</a>
+              </div>
+              <span *ngIf="!cliente.telefono && !cliente.email" class="text-secondary">Sin contacto</span>
+            </div>
+          </td>
+
+          <!-- TOTAL DE EVENTOS -->
+          <td style="text-align: center;">
+            <p-tag
+              [value]="(cliente.totalEventos || 0) + (cliente.totalEventos === 1 ? ' evento' : ' eventos')"
+              [severity]="(cliente.totalEventos || 0) > 0 ? 'success' : 'info'"
+              [rounded]="true">
+            </p-tag>
+          </td>
+
+          <!-- NOTAS -->
+          <td class="text-secondary notes-cell">
+            <span *ngIf="cliente.notas" class="notes-text" [pTooltip]="cliente.notas" tooltipPosition="top">
+              {{ cliente.notas }}
+            </span>
+            <span *ngIf="!cliente.notas" class="text-muted">-</span>
+          </td>
+
+          <!-- FECHA DE REGISTRO -->
+          <td class="text-secondary">
+            {{ formatFecha(cliente.creadoEn) }}
+          </td>
+
+          <!-- ACCIONES -->
+          <td style="text-align: right;">
+            <div class="action-buttons">
+              <p-button
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                severity="secondary"
+                pTooltip="Editar Cliente"
+                tooltipPosition="top"
+                (onClick)="openDialog(cliente)">
+              </p-button>
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                pTooltip="Eliminar Cliente"
+                tooltipPosition="top"
+                (onClick)="eliminarCliente(cliente)">
+              </p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- ESTADO VACÍO -->
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="6" class="empty-state">
+            <i class="pi pi-users empty-icon"></i>
+            <p class="empty-title">Aún no hay clientes registrados</p>
+            <p class="empty-desc">Registra a tus clientes aquí o se guardarán automáticamente al crear tus eventos.</p>
+            <p-button label="Crear Primer Cliente" icon="pi pi-plus" [rounded]="true" (onClick)="openDialog()"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+</div>
+

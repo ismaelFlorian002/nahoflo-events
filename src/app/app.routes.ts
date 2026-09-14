@@ -28,6 +28,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
+      {
+        path: 'eventos',
+        redirectTo: '',
+        pathMatch: 'full',
+      },
+      {
+        path: 'clientes',
+        loadComponent: () =>
+          import('./features/admin/clientes/clientes.component').then((m) => m.ClientesComponent),
+      },
     ],
   },
   {

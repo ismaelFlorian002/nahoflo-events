@@ -34,8 +34,8 @@ export class AdminLayoutComponent implements OnInit {
       {
         label: 'Panel de Control',
         items: [
-          { label: 'Resumen', icon: 'pi pi-home', routerLink: '/admin' },
-          { label: 'Mis Eventos', icon: 'pi pi-calendar', routerLink: '/admin/eventos' },
+          { label: 'Eventos', icon: 'pi pi-calendar', routerLink: '/admin' },
+          { label: 'Clientes', icon: 'pi pi-users', routerLink: '/admin/clientes' },
         ],
       },
       {

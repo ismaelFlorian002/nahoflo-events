@@ -40,6 +40,13 @@ export interface Evento {
   musicaFondoUrl?: string;
 
   pinAnfitrion?: string; // <-- NUEVO: PIN de 4 a 6 dígitos para los novios/anfitriones
+
+  // Datos del Cliente / Contacto responsable del evento
+  clienteId?: string; // Referencia al documento en la colección 'clientes'
+  contactoNombre?: string; // Nombre del cliente (denormalizado para vista rápida)
+  contactoTelefono?: string; // Teléfono/WhatsApp del cliente
+  contactoEmail?: string; // Correo de contacto
+  contactoNotas?: string; // Notas de atención o preferencias
 }
 
 

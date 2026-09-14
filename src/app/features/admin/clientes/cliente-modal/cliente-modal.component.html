@@ -1,0 +1,33 @@
+<form [formGroup]="clienteForm" (ngSubmit)="guardarCliente()" class="cliente-form-wrapper">
+
+  <!-- Nombre Completo -->
+  <span class="p-float-label">
+    <input id="modalNombre" pInputText formControlName="nombreCompleto" style="width: 100%;" autocomplete="off" />
+    <label for="modalNombre">Nombre Completo *</label>
+  </span>
+
+  <!-- Teléfono -->
+  <span class="p-float-label">
+    <input id="modalTelefono" pInputText formControlName="telefono" style="width: 100%;" autocomplete="off" placeholder="Ej. 6671234567" />
+    <label for="modalTelefono">Teléfono / WhatsApp *</label>
+  </span>
+
+  <!-- Correo Electrónico -->
+  <span class="p-float-label">
+    <input id="modalEmail" pInputText formControlName="email" type="email" style="width: 100%;" autocomplete="off" placeholder="correo@ejemplo.com" />
+    <label for="modalEmail">Correo Electrónico (Opcional)</label>
+  </span>
+
+  <!-- Notas internas -->
+  <span class="p-float-label">
+    <textarea id="modalNotas" pInputTextarea formControlName="notas" rows="3" style="width: 100%; resize: none;"></textarea>
+    <label for="modalNotas">Notas o preferencias de atención</label>
+  </span>
+
+  <!-- Acciones del Modal -->
+  <div class="modal-actions">
+    <p-button type="button" label="Cancelar" severity="secondary" [text]="true" (onClick)="cancelar()"></p-button>
+    <p-button type="submit" [label]="clienteEnEdicion ? 'Actualizar Cliente' : 'Guardar Cliente'" [loading]="guardando"></p-button>
+  </div>
+
+</form>

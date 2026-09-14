@@ -18,11 +18,193 @@
       background-color: #cca633;
       border-color: #cca633;
       color: #ffffff;
-
-
       font-weight: 600;
     }
   }
+}
 
+/* Tarjeta y Dropdown de Catálogo de Clientes */
+.cliente-selector-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #cca633;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .card-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .card-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      i {
+        color: #cca633;
+      }
+    }
+
+    .card-subtitle {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+  }
+
+  .dropdown-action-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+
+    .dropdown-container {
+      flex: 1;
+    }
+
+    .btn-nuevo-cliente {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.65rem 1rem;
+      background-color: #ffffff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+
+      &:hover {
+        background-color: #f1f5f9;
+        border-color: #94a3b8;
+        color: #0f172a;
+      }
+
+      i {
+        font-size: 0.85rem;
+        color: #cca633;
+      }
+    }
+  }
+}
+
+/* Estilo del dropdown de clientes */
+:host ::ng-deep .client-dropdown {
+  width: 100%;
+  border-radius: 8px;
+  border-color: #cbd5e1;
+
+  &:not(.p-disabled):hover {
+    border-color: #cca633;
+  }
+
+  &.p-focus {
+    border-color: #cca633;
+    box-shadow: 0 0 0 2px rgba(204, 166, 51, 0.2);
+  }
+
+  .p-dropdown-label {
+    font-size: 0.88rem;
+    color: #1e293b;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .p-dropdown-clear-icon {
+    right: 2.5rem;
+    color: #94a3b8;
+
+    &:hover {
+      color: #ef4444;
+    }
+  }
+}
+
+/* Badge contador de eventos */
+.badge-eventos {
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Banner de cliente vinculado */
+.cliente-vinculado-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1.15rem;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  color: #166534;
+
+  i {
+    font-size: 1.25rem;
+    color: #22c55e;
+    margin-top: 0.15rem;
+    flex-shrink: 0;
+  }
+
+  .banner-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    .banner-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    .banner-text {
+      font-size: 0.8rem;
+      color: #15803d;
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+}
+
+/* Banner del interruptor para guardar en catálogo */
+.guardar-catalogo-banner {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+
+  .switch-container {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+
+    .switch-label {
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+
+      .switch-title {
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: #1e293b;
+      }
+
+      .switch-description {
+        font-size: 0.78rem;
+        color: #64748b;
+        line-height: 1.35;
+      }
+    }
+  }
 }
 

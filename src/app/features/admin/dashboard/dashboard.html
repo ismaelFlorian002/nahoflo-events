@@ -17,7 +17,7 @@
       [paginator]="true"
       [rows]="5"
       [rowsPerPageOptions]="[5, 10, 20]"
-      [globalFilterFields]="['titulo', 'fecha', 'enlace']"
+      [globalFilterFields]="['titulo', 'fecha', 'enlace', 'contactoNombre', 'contactoTelefono']"
       styleClass="p-datatable-borderless modern-table"
     >
       <!-- TOOLBAR DE LA TABLA (Solo el buscador, alineado a la derecha) -->
@@ -25,7 +25,7 @@
         <div class="table-toolbar">
           <span class="p-input-icon-left search-wrapper">
             <i class="pi pi-search"></i>
-            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Buscar por nombre, URL o fecha..." />
+            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Buscar por nombre, cliente, URL o fecha..." />
           </span>
         </div>
       </ng-template>
@@ -44,7 +44,22 @@
       <!-- CUERPO DE LA TABLA -->
       <ng-template pTemplate="body" let-evento>
         <tr>
-          <td class="fw-medium">{{ evento.titulo }}</td>
+          <td class="fw-medium">
+            <div>{{ evento.titulo }}</div>
+            <div *ngIf="evento.contactoNombre" style="display: flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem; font-size: 0.78rem; color: #64748b; font-weight: normal;">
+              <i class="pi pi-user" style="color: #cca633; font-size: 0.72rem;"></i>
+              <span>{{ evento.contactoNombre }}</span>
+              <a
+                *ngIf="evento.contactoTelefono"
+                [href]="getWhatsappUrl(evento.contactoTelefono)"
+                target="_blank"
+                style="display: inline-flex; align-items: center; color: #16a34a; text-decoration: none; margin-left: 0.2rem;"
+                pTooltip="Escribir por WhatsApp"
+                tooltipPosition="top">
+                <i class="pi pi-whatsapp" style="font-size: 0.82rem;"></i>
+              </a>
+            </div>
+          </td>
           <td class="text-secondary">{{ evento.fecha }}</td>
           <td class="text-secondary">
             <span class="url-badge">/e/{{ evento.enlace }}</span>

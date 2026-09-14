@@ -14,6 +14,10 @@ import { ImagePreviewComponent } from './image-preview.component';
 import { PrimeNGConfig } from 'primeng/api';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { DropdownModule } from 'primeng/dropdown';
+import { TooltipModule } from 'primeng/tooltip';
+import { ClienteService } from '../../../../core/services/cliente.service';
+import { ClienteModel } from '../../../../core/models/cliente.model';
 
 @Component({
   selector: 'app-event-form',
@@ -30,6 +34,8 @@ import { SelectButtonModule } from 'primeng/selectbutton';
     DialogModule,
     InputSwitchModule,
     SelectButtonModule,
+    DropdownModule,
+    TooltipModule,
   ],
   templateUrl: './event-form.html',
   styleUrl: './event-form.scss',
@@ -37,6 +43,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 export class EventFormComponent implements OnInit {
   private fb = inject(FormBuilder);
   private eventService = inject(EventService);
+  private clienteService = inject(ClienteService);
   public ref = inject(DynamicDialogRef);
   public config = inject(DynamicDialogConfig);
   private dialogService = inject(DialogService);
@@ -47,6 +54,11 @@ export class EventFormComponent implements OnInit {
   eventId?: string;
 
   isSaving = false; // Bandera para bloquear el botón y mostrar spinner
+
+  // Estado del catálogo de clientes
+  clientes: ClienteModel[] = [];
+  cargandoClientes = false;
+  clienteSeleccionado: ClienteModel | null = null;
 
   // Guardar referencias a URLs existentes (en caso de edición)
   existingFotoPrincipalUrl?: string;
@@ -79,6 +91,14 @@ export class EventFormComponent implements OnInit {
 
     nombreEvento: ['', Validators.required], // <-- NUEVO: Para uso interno del panel
     pinAnfitrion: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(6)]], // <-- NUEVO
+
+    // Datos del Cliente / Contacto responsable
+    clienteId: [null as string | null],
+    contactoNombre: [''],
+    contactoTelefono: [''],
+    contactoEmail: [''],
+    contactoNotas: [''],
+    guardarEnCatalogo: [true],
 
     preTitulo: [''],
     titulo: ['', Validators.required],
@@ -160,11 +180,23 @@ export class EventFormComponent implements OnInit {
       const nombreRecuperado =
         this.config.data.nombreEvento || this.config.data.titulo || 'Evento';
 
+      const clienteIdExistente = this.config.data.clienteId || null;
+      const contactoNombre = this.config.data.contactoNombre || '';
+      const contactoTelefono = this.config.data.contactoTelefono || '';
+      const contactoEmail = this.config.data.contactoEmail || '';
+      const contactoNotas = this.config.data.contactoNotas || '';
+
       this.eventForm.patchValue({
         ...this.config.data,
         nombreEvento: nombreRecuperado,
         pinAnfitrion: pinRecuperado,
         fecha: fechaDate,
+        clienteId: clienteIdExistente,
+        contactoNombre: contactoNombre,
+        contactoTelefono: contactoTelefono,
+        contactoEmail: contactoEmail,
+        contactoNotas: contactoNotas,
+        guardarEnCatalogo: false,
       });
 
       // Si es un evento anterior que no tenía el campo modulos, asignamos valores por defecto
@@ -181,6 +213,9 @@ export class EventFormComponent implements OnInit {
       // Para un evento nuevo, asignamos un PIN aleatorio por defecto
       this.generarPinAleatorio();
     }
+
+    // Cargar clientes existentes del catálogo
+    this.cargarClientes();
   }
 
   async saveEvent() {
@@ -268,9 +303,39 @@ export class EventFormComponent implements OnInit {
 
       // 4. Empaquetar datos limpios (0 valores undefined para evitar errores de Firestore)
       const formVal = this.eventForm.value;
+      let clienteIdFinal = formVal.clienteId || null;
+
+      // Si el usuario activó guardar en catálogo y no hay cliente seleccionado aún, pero escribió un nombre
+      if (formVal.guardarEnCatalogo && !clienteIdFinal && formVal.contactoNombre?.trim()) {
+        try {
+          clienteIdFinal = await this.clienteService.createCliente({
+            nombreCompleto: formVal.contactoNombre.trim(),
+            telefono: formVal.contactoTelefono?.trim() || '',
+            email: formVal.contactoEmail?.trim() || '',
+            notas: formVal.contactoNotas?.trim() || '',
+            totalEventos: 1,
+            creadoEn: new Date(),
+          });
+        } catch (err) {
+          console.error('Error al registrar nuevo cliente en catálogo:', err);
+        }
+      } else if (clienteIdFinal && !this.isEditMode) {
+        // Si se seleccionó un cliente existente para un nuevo evento, incrementamos su contador
+        try {
+          await this.clienteService.incrementarTotalEventos(clienteIdFinal);
+        } catch (err) {
+          console.error('Error al actualizar contador del cliente:', err);
+        }
+      }
+
       const eventData: any = {
         nombreEvento: formVal.nombreEvento || '',
         pinAnfitrion: formVal.pinAnfitrion || '',
+        clienteId: clienteIdFinal || null,
+        contactoNombre: formVal.contactoNombre?.trim() || '',
+        contactoTelefono: formVal.contactoTelefono?.trim() || '',
+        contactoEmail: formVal.contactoEmail?.trim() || '',
+        contactoNotas: formVal.contactoNotas?.trim() || '',
         preTitulo: formVal.preTitulo || '',
         titulo: formVal.titulo || '',
         enlace: formVal.enlace || '',
@@ -408,5 +473,64 @@ export class EventFormComponent implements OnInit {
   // Permite saber en el HTML si debemos mostrar las pestañas de la invitación
   get tieneInvitacionActiva(): boolean {
     return this.eventForm.get('modulos.tieneInvitacion')?.value ?? true;
+  }
+
+  /**
+   * Carga el catálogo de clientes desde Firestore
+   */
+  async cargarClientes() {
+    this.cargandoClientes = true;
+    try {
+      this.clientes = await this.clienteService.getClientes();
+      const clienteIdActual = this.eventForm.get('clienteId')?.value;
+      if (clienteIdActual) {
+        this.clienteSeleccionado = this.clientes.find((c) => c.id === clienteIdActual) || null;
+      }
+    } catch (error) {
+      console.error('Error al cargar catálogo de clientes:', error);
+    } finally {
+      this.cargandoClientes = false;
+    }
+  }
+
+  /**
+   * Se ejecuta al seleccionar un cliente del dropdown
+   */
+  onClienteChange(clienteId: string | null) {
+    if (!clienteId) {
+      this.clienteSeleccionado = null;
+      this.eventForm.patchValue({
+        clienteId: null,
+      });
+      return;
+    }
+
+    const cliente = this.clientes.find((c) => c.id === clienteId);
+    if (cliente) {
+      this.clienteSeleccionado = cliente;
+      this.eventForm.patchValue({
+        clienteId: cliente.id,
+        contactoNombre: cliente.nombreCompleto,
+        contactoTelefono: cliente.telefono || '',
+        contactoEmail: cliente.email || '',
+        contactoNotas: cliente.notas || '',
+        guardarEnCatalogo: false,
+      });
+    }
+  }
+
+  /**
+   * Desvincula el cliente seleccionado para capturar uno nuevo libremente
+   */
+  limpiarClienteSeleccionado() {
+    this.clienteSeleccionado = null;
+    this.eventForm.patchValue({
+      clienteId: null,
+      contactoNombre: '',
+      contactoTelefono: '',
+      contactoEmail: '',
+      contactoNotas: '',
+      guardarEnCatalogo: true,
+    });
   }
 }

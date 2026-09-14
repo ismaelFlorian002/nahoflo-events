@@ -1,0 +1,258 @@
+/* =========================================================
+   CONTENEDORES PRINCIPALES DE CLIENTES
+   ========================================================= */
+.clientes-container {
+  padding: 2rem;
+  width: 100%;
+}
+
+.clientes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  .clientes-title {
+    margin: 0;
+    font-size: 1.75rem;
+    color: #0f172a;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .clientes-subtitle {
+    margin: 0.25rem 0 0 0;
+    color: #64748b;
+    font-size: 0.95rem;
+  }
+}
+
+.table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  padding: 1.5rem;
+  border: 1px solid #f1f5f9;
+}
+
+/* =========================================================
+   TOOLBAR Y BÚSQUEDA
+   ========================================================= */
+.table-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 1.5rem;
+
+  .search-wrapper {
+    width: 100%;
+    max-width: 320px;
+
+    input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 0.6rem 0.6rem 0.6rem 2.5rem;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+
+      &:focus {
+        border-color: #cca633;
+        box-shadow: 0 0 0 3px rgba(204, 166, 51, 0.15);
+      }
+    }
+  }
+}
+
+/* =========================================================
+   ELEMENTOS DE FILA
+   ========================================================= */
+.client-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  .client-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #fef9c3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ca8a04;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+
+  .client-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    .client-fullname {
+      font-weight: 600;
+      color: #1e293b;
+      font-size: 0.95rem;
+    }
+
+    .client-subid {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+  }
+}
+
+.contact-info-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  .phone-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.88rem;
+    color: #334155;
+
+    .text-gold {
+      color: #cca633;
+      font-size: 0.8rem;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #16a34a;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: transform 0.15s ease;
+
+      &:hover {
+        transform: scale(1.15);
+      }
+    }
+  }
+
+  .email-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+
+    .text-muted {
+      color: #94a3b8;
+      font-size: 0.75rem;
+    }
+
+    .email-link {
+      color: #64748b;
+      text-decoration: none;
+
+      &:hover {
+        color: #cca633;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.notes-cell {
+  max-width: 250px;
+
+  .notes-text {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #475569;
+    font-size: 0.85rem;
+  }
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.fw-medium {
+  font-weight: 600;
+  color: #334155;
+}
+
+.text-secondary {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.text-muted {
+  color: #94a3b8;
+}
+
+/* =========================================================
+   ENCAPSULACIÓN PROFUNDA (PrimeNG Overrides)
+   ========================================================= */
+:host ::ng-deep {
+  .modern-table {
+    .p-datatable-thead > tr > th {
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 2px solid #f1f5f9;
+      padding: 1rem 0.5rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      border-bottom: 1px solid #f8fafc;
+      padding: 1rem 0.5rem;
+    }
+
+    .p-datatable-tbody > tr:hover {
+      background: #f8fafc;
+      transition: background 0.2s ease;
+    }
+
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .p-paginator {
+      background: transparent;
+      border: none;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    td.empty-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: #94a3b8;
+
+      .empty-icon {
+        font-size: 2.8rem;
+        margin-bottom: 1rem;
+        color: #cbd5e1;
+      }
+
+      .empty-title {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #334155;
+      }
+
+      .empty-desc {
+        margin: 0 0 1.25rem 0;
+        font-size: 0.88rem;
+        color: #64748b;
+      }
+    }
+  }
+}

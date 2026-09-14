@@ -109,7 +109,132 @@
       </div>
     </p-tabPanel>
 
-    <p-tabPanel header="2. Ubicaciones" *ngIf="tieneInvitacionActiva">      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem;">
+    <!-- PESTAÑA 2: CONTACTO / CLIENTE -->
+    <p-tabPanel header="2. Contacto / Cliente">
+      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem;">
+
+        <!-- TARJETA: BUSCADOR EN EL CATÁLOGO DE CLIENTES -->
+        <div class="cliente-selector-card">
+          <div class="card-header-info">
+            <span class="card-title">
+              <i class="pi pi-users"></i>
+              Catálogo de Clientes
+            </span>
+            <p class="card-subtitle">
+              Selecciona un cliente ya registrado para autocompletar sus datos o captura uno nuevo en el formulario.
+            </p>
+          </div>
+
+          <div class="dropdown-action-row">
+            <div class="dropdown-container">
+              <p-dropdown
+                [options]="clientes"
+                optionLabel="nombreCompleto"
+                optionValue="id"
+                [filter]="true"
+                filterBy="nombreCompleto,telefono,email"
+                placeholder="Buscar cliente registrado por nombre o teléfono..."
+                [showClear]="true"
+                [loading]="cargandoClientes"
+                formControlName="clienteId"
+                (onChange)="onClienteChange($event.value)"
+                styleClass="w-full client-dropdown">
+
+                <ng-template pTemplate="selectedItem" let-selected>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;" *ngIf="selected">
+                    <i class="pi pi-user" style="color: #cca633;"></i>
+                    <span style="font-weight: 600; color: #1e293b;">{{ selected.nombreCompleto }}</span>
+                    <span style="color: #64748b; font-size: 0.85rem;" *ngIf="selected.telefono">({{ selected.telefono }})</span>
+                  </div>
+                </ng-template>
+
+                <ng-template pTemplate="item" let-cliente>
+                  <div style="display: flex; flex-direction: column; gap: 0.2rem; padding: 0.3rem 0;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span style="font-weight: 600; color: #0f172a;">{{ cliente.nombreCompleto }}</span>
+                      <span class="badge-eventos" *ngIf="cliente.totalEventos">
+                        {{ cliente.totalEventos }} {{ cliente.totalEventos === 1 ? 'evento' : 'eventos' }}
+                      </span>
+                    </div>
+                    <div style="display: flex; gap: 1rem; color: #64748b; font-size: 0.8rem;">
+                      <span *ngIf="cliente.telefono"><i class="pi pi-phone" style="font-size: 0.75rem; margin-right: 0.25rem;"></i>{{ cliente.telefono }}</span>
+                      <span *ngIf="cliente.email"><i class="pi pi-envelope" style="font-size: 0.75rem; margin-right: 0.25rem;"></i>{{ cliente.email }}</span>
+                    </div>
+                  </div>
+                </ng-template>
+
+              </p-dropdown>
+            </div>
+
+            <button
+              *ngIf="clienteSeleccionado"
+              type="button"
+              class="btn-nuevo-cliente"
+              (click)="limpiarClienteSeleccionado()"
+              title="Desvincular cliente para capturar uno nuevo">
+              <i class="pi pi-user-plus"></i> Capturar Nuevo
+            </button>
+          </div>
+        </div>
+
+        <!-- BANNER: CLIENTE VINCULADO DEL CATÁLOGO -->
+        <div class="cliente-vinculado-banner" *ngIf="clienteSeleccionado">
+          <i class="pi pi-check-circle"></i>
+          <div class="banner-content">
+            <span class="banner-title">Cliente Vinculado: {{ clienteSeleccionado.nombreCompleto }}</span>
+            <p class="banner-text">
+              Los datos de contacto se cargaron automáticamente del catálogo. Cualquier ajuste que realices aquí se guardará exclusivamente para este evento.
+            </p>
+          </div>
+        </div>
+
+        <!-- FORMULARIO DE DATOS DE CONTACTO -->
+        <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+
+          <!-- NOMBRE COMPLETO -->
+          <span class="p-float-label">
+            <input id="contactoNombre" pInputText formControlName="contactoNombre" style="width: 100%" autocomplete="off" />
+            <label for="contactoNombre">Nombre Completo del Cliente / Anfitrión Responsable</label>
+          </span>
+
+          <!-- TELÉFONO Y CORREO -->
+          <div style="display: flex; gap: 1rem;">
+            <span class="p-float-label" style="flex: 1;">
+              <input id="contactoTelefono" pInputText formControlName="contactoTelefono" style="width: 100%" autocomplete="off" placeholder="Ej. 6671234567" />
+              <label for="contactoTelefono">Teléfono / WhatsApp (10 dígitos)</label>
+            </span>
+
+            <span class="p-float-label" style="flex: 1;">
+              <input id="contactoEmail" pInputText formControlName="contactoEmail" type="email" style="width: 100%" autocomplete="off" placeholder="correo@ejemplo.com" />
+              <label for="contactoEmail">Correo Electrónico (Opcional)</label>
+            </span>
+          </div>
+
+          <!-- NOTAS Y PREFERENCIAS -->
+          <span class="p-float-label">
+            <textarea id="contactoNotas" pInputTextarea formControlName="contactoNotas" rows="3" style="width: 100%; resize: none;"></textarea>
+            <label for="contactoNotas">Notas internas de atención al cliente (ej. horario preferido para llamadas, canal de contacto, requerimientos especiales)</label>
+          </span>
+
+        </div>
+
+        <!-- BANNER / SWITCH: GUARDAR EN CATÁLOGO (Solo si no hay cliente seleccionado) -->
+        <div class="guardar-catalogo-banner" *ngIf="!clienteSeleccionado">
+          <div class="switch-container">
+            <p-inputSwitch formControlName="guardarEnCatalogo" inputId="switchGuardarCatalogo"></p-inputSwitch>
+            <label for="switchGuardarCatalogo" class="switch-label">
+              <span class="switch-title">Guardar automáticamente en el Catálogo de Clientes</span>
+              <span class="switch-description">
+                Crea una ficha para este cliente en el catálogo para que puedas seleccionarlo con 1 clic en futuros eventos.
+              </span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="3. Ubicaciones" *ngIf="tieneInvitacionActiva">      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem;">
 
         <div>
           <h4 style="margin: 0 0 1.5rem 0; color: #cca633;">Ceremonia (Iglesia)</h4>
@@ -224,7 +349,7 @@
       </div>
     </p-tabPanel>
 
-    <p-tabPanel header="3. Galería">
+    <p-tabPanel header="4. Galería">
       <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem;">
 
         <span class="p-float-label">
