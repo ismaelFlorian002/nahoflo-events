@@ -70,12 +70,16 @@
             <h1 class="dash-title">{{ ev.titulo }}</h1>
           </div>
           <div class="dash-acciones-header">
-            @if (!ev.modulos || ev.modulos.tieneInvitacion) {
-              <a [routerLink]="['/e', ev.enlace]" target="_blank" class="btn-invitacion">
-                <i class="pi pi-external-link"></i>
-                <span>Ver Invitación</span>
-              </a>
-            }
+            <p-button
+              label="Salir"
+              icon="pi pi-sign-out"
+              size="small"
+              text
+              [outlined]="true"
+              severity="danger"
+              (onClick)="salir()"
+              title="Cerrar sesión de anfitrión">
+            </p-button>
           </div>
         </header>
 
@@ -140,9 +144,8 @@
                   <i class="pi pi-briefcase"></i>
                   <span>Servicios Contratados</span>
                 </div>
-                <h2>{{ ev.titulo }}</h2>
                 <p class="paquete-subtitulo">
-                  {{ ev.preTitulo || ev.tipo }} · Enlace: nahoflo.com/e/{{ ev.enlace }}
+                 · Enlace: nahoflo.com/e/{{ ev.enlace }}
                 </p>
               </div>
 
@@ -208,10 +211,14 @@
                   (onClick)="copiarEnlaceGeneral()">
                 </p-button>
 
-                <a [routerLink]="['/e', ev.enlace]" target="_blank" class="btn-resumen-accion btn-ver-inv-resumen">
-                  <i class="pi pi-external-link"></i>
-                  <span>Ver Invitación Pública</span>
-                </a>
+                <p-button
+                  label="Ver Invitación"
+                  icon="pi pi-external-link"
+                  size="small"
+                  [outlined]="true"
+                  severity="secondary"
+                  (onClick)="abrirInvitacion()">
+                </p-button>
               </div>
             </div>
 
@@ -420,6 +427,16 @@
 
                   <!-- IZQUIERDA: FILTROS POR ESTADO + EXPORTAR -->
                   <div class="toolbar-izquierda">
+
+                     <span class="p-input-icon-left search-wrapper">
+                      <i class="pi pi-search"></i>
+                      <input
+                        pInputText
+                        type="text"
+                        [ngModel]="terminoBusqueda()"
+                        (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
+                        placeholder="Buscar por nombre o teléfono..." />
+                    </span>
                     <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL -->
                     <div class="filtro-dropdown-wrap">
                       <p-button
@@ -525,15 +542,7 @@
                   <!-- DERECHA: BUSCADOR + COMPARTIR INVITACIONES + BOTÓN AGREGAR -->
                   <div class="toolbar-derecha">
 
-                    <span class="p-input-icon-left search-wrapper">
-                      <i class="pi pi-search"></i>
-                      <input
-                        pInputText
-                        type="text"
-                        [ngModel]="terminoBusqueda()"
-                        (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
-                        placeholder="Buscar por nombre o teléfono..." />
-                    </span>
+
 
                     <p-button
                       label="Cómo compartir invitación"
@@ -663,15 +672,14 @@
                         (onClick)="enviarInvitacionWhatsApp(invitado)">
                       </p-button>
 
-                      <!-- BOTÓN COPIAR ENLACE DIRECTO DEL INVITADO -->
+                      <!-- BOTÓN ENVIAR PASE VIP -->
                       <p-button
-                        [icon]="copiadoInvitadoId() === invitado.id ? 'pi pi-check' : 'pi pi-link'"
+                        icon="pi pi-ticket"
                         [rounded]="true"
                         [text]="true"
-                        [severity]="copiadoInvitadoId() === invitado.id ? 'success' : 'secondary'"
-                        [pTooltip]="copiadoInvitadoId() === invitado.id ? '¡Enlace copiado!' : 'Copiar enlace con pase directo'"
+                        [pTooltip]="(ev.modulos?.tipoControlInvitados === 'total' ? 'Enviar Pase VIP a ' : 'Enviar Pase a ') + invitado.nombre"
                         tooltipPosition="top"
-                        (onClick)="copiarEnlaceInvitado(invitado)">
+                        (onClick)="enviarPaseVipWhatsApp(invitado)">
                       </p-button>
 
                       <!-- BOTÓN VER DETALLE -->
@@ -913,10 +921,14 @@
                   </p-button>
                 }
 
-                <a [routerLink]="['/e', ev.enlace, 'album']" target="_blank" class="btn-invitacion">
-                  <i class="pi pi-external-link"></i>
-                  <span>Ver Muro en Vivo</span>
-                </a>
+                <p-button
+                  label="Ver Muro en Vivo"
+                  icon="pi pi-external-link"
+                  size="small"
+                  [outlined]="true"
+                  severity="secondary"
+                  (onClick)="abrirAlbumEnVivo()">
+                </p-button>
               </div>
             </div>
 
@@ -988,84 +1000,6 @@
           </div>
         }
 
-      </div>
-    }
-
-    <!-- MODAL EDITORIAL: VER Y COMPARTIR EL PASE VIP -->
-    @if (invitadoModalQr(); as modal) {
-      <div class="modal-backdrop-qr" (click)="cerrarModalQr()">
-        <div class="modal-card-qr" (click)="$event.stopPropagation()">
-          <p-button
-            icon="pi pi-times"
-            [rounded]="true"
-            [text]="true"
-            severity="secondary"
-            size="small"
-            styleClass="btn-cerrar-modal-p"
-            (onClick)="cerrarModalQr()">
-          </p-button>
-
-          <div class="modal-qr-header">
-            <span class="badge-vip-modal"><i class="pi pi-shield"></i> PASE DIGITAL VIP</span>
-            <h3>{{ ev.titulo }}</h3>
-            <p>{{ ev.preTitulo || ev.tipo || 'Invitación Oficial' }}</p>
-          </div>
-
-          <div class="modal-qr-body">
-            <div class="modal-guest-details">
-              <span class="sub">Invitado de Honor</span>
-              <h4>{{ modal.invitado.nombre }}</h4>
-              <div class="badge-pases-modal">
-                <button
-                  type="button"
-                  class="btn-pases-mini"
-                  [disabled]="(modal.invitado.pasesConfirmados || 1) <= 1"
-                  (click)="cambiarPasesInvitado(modal.invitado, -1)"
-                  title="Restar pase">
-                  <i class="pi pi-minus"></i>
-                </button>
-                <i class="pi pi-ticket"></i>
-                <span class="label-pases">Acceso para</span>
-                <strong class="num-pases">{{ modal.invitado.pasesConfirmados || 1 }} {{ (modal.invitado.pasesConfirmados || 1) === 1 ? 'persona' : 'personas' }}</strong>
-                <button
-                  type="button"
-                  class="btn-pases-mini"
-                  (click)="cambiarPasesInvitado(modal.invitado, 1)"
-                  title="Sumar pase">
-                  <i class="pi pi-plus"></i>
-                </button>
-              </div>
-            </div>
-
-            <div class="modal-qr-canvas">
-              <img [src]="modal.qrDataUrl" alt="Código QR VIP" class="img-qr-modal" />
-              <p class="modal-qr-instruccion">
-                <i class="pi pi-info-circle"></i>
-                Presenta este código en la entrada del salón
-              </p>
-            </div>
-          </div>
-
-          <div class="modal-qr-actions">
-            <p-button
-              label="Descargar Pase (PNG)"
-              icon="pi pi-download"
-              size="small"
-              severity="secondary"
-              [outlined]="true"
-              styleClass="w-full"
-              (onClick)="descargarQrInvitado()">
-            </p-button>
-            <p-button
-              label="Enviar por WhatsApp"
-              icon="pi pi-whatsapp"
-              size="small"
-              severity="success"
-              styleClass="w-full"
-              (onClick)="compartirQrWhatsApp()">
-            </p-button>
-          </div>
-        </div>
       </div>
     }
 

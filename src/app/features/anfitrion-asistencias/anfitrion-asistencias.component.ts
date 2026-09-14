@@ -17,12 +17,11 @@ import { InvitadoDetalleModalComponent } from './components/invitado-detalle-mod
 import { InvitadoEditarModalComponent } from './components/invitado-editar-modal/invitado-editar-modal';
 import { InvitadoCrearModalComponent } from './components/invitado-crear-modal/invitado-crear-modal';
 import { ComoCompartirModalComponent } from './components/como-compartir-modal/como-compartir-modal';
+import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitado-qr-modal';
 import { InputTextModule } from 'primeng/inputtext';
 
 import { TooltipModule } from 'primeng/tooltip';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
-import QRCode from 'qrcode';
-import { capturarYDescargarTarjetaPaseWeb } from '../../core/utils/image-compresor';
 @Component({
   selector: 'app-anfitrion-asistencias',
   standalone: true,
@@ -67,7 +66,6 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   // Control de copiado de enlaces
   copiadoGeneral = signal<boolean>(false);
-  copiadoInvitadoId = signal<string | null>(null);
 
   // Métricas de Aforo y Recepción en Vivo
   totalIngresados = computed(() =>
@@ -90,11 +88,6 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     if (total === 0) return 0;
     return Math.round((this.totalConfirmados() / total) * 100);
   });
-  // Modal de visualización de QR individual para el anfitrión
-  invitadoModalQr = signal<{
-    invitado: InvitadoModel;
-    qrDataUrl: string;
-  } | null>(null);
   // Estado del Escáner de Cámara y Check-in
   escanerActivo = signal<boolean>(false);
   html5QrCodeInstance: any = null;
@@ -456,6 +449,18 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     } else {
       this.errorPin.set(true);
     }
+  }
+
+  // Cierra la sesión del anfitrión y regresa a la pantalla de ingreso de PIN
+  salir(): void {
+    const ev = this.evento();
+    if (ev?.id) {
+      sessionStorage.removeItem(`pin_${ev.id}`);
+    }
+    this.detenerEscaner();
+    this.pinIngresado = '';
+    this.errorPin.set(false);
+    this.pinDesbloqueado.set(false);
   }
 
   async cargarInvitados(eventoId: string) {
@@ -972,72 +977,36 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     this.detenerEscaner();
   }
 
-  // Abre el modal con el QR generado en tiempo real para el anfitrión
-  async abrirModalQr(invitado: InvitadoModel): Promise<void> {
+  // Abre el modal con el Pase VIP y QR mediante PrimeNG DialogService
+  abrirModalQr(invitado: InvitadoModel): void {
     const ev = this.evento();
-    if (!ev?.id || !invitado.id) return;
+    if (!ev) return;
 
-    const payloadQr = JSON.stringify({
-      evId: ev.id,
-      invId: invitado.id,
-      slug: ev.enlace,
-    });
-
-    const qrUrl = await QRCode.toDataURL(payloadQr, {
-      width: 320,
-      margin: 2,
-      color: {
-        dark: '#1e293b',
-        light: '#ffffff',
+    const ref = this.dialogService.open(InvitadoQrModalComponent, {
+      header: 'Pase Digital VIP',
+      width: '420px',
+      breakpoints: { '640px': '94vw' },
+      closable: true,
+      dismissableMask: true,
+      data: {
+        invitado,
+        evento: ev,
       },
     });
 
-    this.invitadoModalQr.set({
-      invitado,
-      qrDataUrl: qrUrl,
+    ref?.onClose.subscribe((res: any) => {
+      if (res?.pasesActualizados && res.invitadoId) {
+        this.invitados.update((lista) =>
+          lista.map((i) =>
+            i.id === res.invitadoId ? { ...i, pasesConfirmados: res.nuevoTotal } : i,
+          ),
+        );
+        const pasesTotales = this.invitados()
+          .filter((i) => i.asistira)
+          .reduce((sum, i) => sum + (Number(i.pasesConfirmados) || 0), 0);
+        this.totalPases.set(pasesTotales);
+      }
     });
-  }
-
-  cerrarModalQr(): void {
-    this.invitadoModalQr.set(null);
-  }
-
-  async descargarQrInvitado(): Promise<void> {
-    const modal = this.invitadoModalQr();
-    if (!modal) return;
-
-    const cardEl = document.querySelector('.modal-card-qr') as HTMLElement;
-    if (cardEl) {
-      await capturarYDescargarTarjetaPaseWeb(cardEl, modal.invitado.nombre);
-    }
-  }
-
-  // Genera el mensaje personalizado y comparte el QR nativo o al portapapeles
-  // Genera el mensaje oficial con el enlace directo al Pase Digital VIP
-  compartirQrWhatsApp(): void {
-    const modal = this.invitadoModalQr();
-    const ev = this.evento();
-    if (!modal || !ev) return;
-
-    const nombre = modal.invitado.nombre;
-    const pases = modal.invitado.pasesConfirmados || 1;
-    const pasesTexto = pases === 1 ? '1 persona' : `${pases} personas`;
-    const telefono = (modal.invitado.telefono || '').replace(/\D/g, '');
-
-    // Enlace directo al Pase Digital del invitado
-    const urlPase = `${window.location.origin}/e/${ev.enlace}?pase=${modal.invitado.id}`;
-
-    const nombreEventoCompleto = ev.preTitulo ? `${ev.preTitulo} · ${ev.titulo}` : ev.titulo;
-    const esPendiente = modal.invitado.estado === 'pendiente';
-    const mensaje = esPendiente
-      ? `¡Hola ${nombre}! 🎉\n\nTe invitamos con mucho cariño a *${nombreEventoCompleto}*.\n🎟️ Tienes asignados: *${pasesTexto}*.\n\n📲 Confirma tu asistencia y accede a tu pase aquí:\n${urlPase}\n\n¡Esperamos de corazón contar con tu presencia! ✨`
-      : `¡Hola ${nombre}! 🎉\n\nAquí tienes tu Pase Digital VIP para *${nombreEventoCompleto}*.\n🎟️ Acceso autorizado para: *${pasesTexto}*.\n\n📲 Abre tu Pase con Código QR aquí:\n${urlPase}\n\nPresenta tu código en la recepción al llegar.\n¡Nos dará muchísimo gusto celebrar contigo! ✨`;
-
-    const urlWa = telefono
-      ? `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`
-      : `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
-
-    window.open(urlWa, '_blank');
   }
 
   // Permite al anfitrión ajustar el número de pases asignados a un invitado
@@ -1055,13 +1024,6 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       lista.map((i) => (i.id === invId ? { ...i, pasesConfirmados: nuevo } : i))
     );
 
-    // Si el modal de este invitado está abierto, actualizarlo también
-    this.invitadoModalQr.update((m) =>
-      m && m.invitado.id === invId
-        ? { ...m, invitado: { ...m.invitado, pasesConfirmados: nuevo } }
-        : m
-    );
-
     // Actualizar KPI de pases
     const pasesTotales = this.invitados()
       .filter((i) => i.asistira)
@@ -1075,11 +1037,6 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       // Revertir en caso de error
       this.invitados.update((lista) =>
         lista.map((i) => (i.id === invId ? { ...i, pasesConfirmados: actual } : i))
-      );
-      this.invitadoModalQr.update((m) =>
-        m && m.invitado.id === invId
-          ? { ...m, invitado: { ...m.invitado, pasesConfirmados: actual } }
-          : m
       );
       const pasesTotalesRev = this.invitados()
         .filter((i) => i.asistira)
@@ -1104,18 +1061,45 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     setTimeout(() => this.copiadoGeneral.set(false), 2500);
   }
 
-  // Copia el enlace personalizado de un invitado con su parámetro ?pase=ID
-  copiarEnlaceInvitado(invitado: InvitadoModel): void {
+  // Abre la invitación oficial en una pestaña nueva
+  abrirInvitacion(): void {
     const ev = this.evento();
-    if (!ev?.enlace || !invitado?.id) return;
-    const url = `${window.location.origin}/e/${ev.enlace}?pase=${invitado.id}`;
-    navigator.clipboard.writeText(url);
-    this.copiadoInvitadoId.set(invitado.id);
-    setTimeout(() => {
-      if (this.copiadoInvitadoId() === invitado.id) {
-        this.copiadoInvitadoId.set(null);
-      }
-    }, 2500);
+    if (!ev?.enlace) return;
+    window.open(`/e/${ev.enlace}`, '_blank');
+  }
+
+  // Abre el muro/álbum digital en vivo en una pestaña nueva
+  abrirAlbumEnVivo(): void {
+    const ev = this.evento();
+    if (!ev?.enlace) return;
+    window.open(`/e/${ev.enlace}/album`, '_blank');
+  }
+
+  // Envía el Pase VIP directamente por WhatsApp con el enlace exclusivo del pase
+  enviarPaseVipWhatsApp(invitado: InvitadoModel): void {
+    const ev = this.evento();
+    if (!ev?.enlace || !invitado) return;
+
+    const nombre = invitado.nombre || 'Invitado(a)';
+    const pases = invitado.pasesConfirmados || 1;
+    const pasesTexto = pases === 1 ? '1 pase personal' : `${pases} pases`;
+    const urlPase = `${window.location.origin}/e/${ev.enlace}?pase=${invitado.id}`;
+    const nombreEvento = ev.preTitulo ? `${ev.preTitulo} · ${ev.titulo}` : ev.titulo;
+
+    let mensaje = '';
+    if (ev.modulos?.tipoControlInvitados === 'total') {
+      mensaje = `¡Hola ${nombre}! ✨\n\nAquí tienes tu *Pase Digital de Acceso VIP* para *${nombreEvento}*.\n\n🎟️ *Acceso autorizado:* ${pasesTexto}\n\n📲 Muestra tu código QR al ingresar al evento desde este enlace:\n${urlPase}\n\nPresenta este código en la recepción al llegar. ¡Esperamos verte y celebrar juntos! 🎉`;
+    } else {
+      mensaje = `¡Hola ${nombre}! ✨\n\nAquí tienes tu *Pase Digital de Acceso* para *${nombreEvento}*.\n\n🎟️ *Acceso asignado:* ${pasesTexto}\n\n📲 Accede a tu pase digital aquí:\n${urlPase}\n\n¡Esperamos contar con tu presencia! 🎉`;
+    }
+
+    const telefono = (invitado.telefono || '').replace(/\D/g, '');
+    const urlWa =
+      telefono && telefono.length >= 10
+        ? `https://api.whatsapp.com/send?phone=${telefono}&text=${encodeURIComponent(mensaje)}`
+        : `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
+
+    window.open(urlWa, '_blank');
   }
 
   // Envía un mensaje cálido y personalizado por WhatsApp con el enlace directo del pase
