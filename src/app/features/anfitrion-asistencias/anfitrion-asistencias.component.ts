@@ -109,6 +109,55 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     if (total === 0) return 0;
     return Math.round((this.totalConfirmados() / total) * 100);
   });
+
+  // Helpers reactivos para los paquetes y módulos contratados
+  tieneInvitacion = computed(() => this.evento()?.modulos?.tieneInvitacion ?? true);
+
+  tieneControlInvitados = computed(() => {
+    const mod = this.evento()?.modulos;
+    return !mod || mod.tipoControlInvitados !== 'inactivo';
+  });
+
+  tieneRecepcionOPuerta = computed(() => {
+    const mod = this.evento()?.modulos;
+    return mod?.tipoControlInvitados === 'total' || mod?.tipoControlInvitados === 'lista_puerta';
+  });
+
+  tieneAlbum = computed(() => {
+    const mod = this.evento()?.modulos;
+    return !mod || mod.tieneAlbum;
+  });
+
+  // Módulos que requieren el portal de anfitrión / asistencias
+  tieneModulosAsistencias = computed(() => {
+    return this.tieneControlInvitados() || this.tieneAlbum();
+  });
+
+  // Caso exclusivo: Solo tiene contratada la invitación web (sin módulos de asistencias)
+  esSoloInvitacion = computed(() => {
+    return this.tieneInvitacion() && !this.tieneModulosAsistencias();
+  });
+
+  // Caso exclusivo: No tiene ningún servicio activo (ni invitación, ni asistencias, ni álbum)
+  sinServiciosActivos = computed(() => {
+    return !this.tieneInvitacion() && !this.tieneModulosAsistencias();
+  });
+
+  // Cantidad de pestañas disponibles (si es <= 1, no se dibuja la barra de navegación)
+  totalPestanasDisponibles = computed(() => {
+    let count = 1; // 'resumen' siempre está
+    if (this.tieneControlInvitados()) count++;
+    if (this.tieneRecepcionOPuerta()) count++;
+    if (this.tieneAlbum()) count++;
+    return count;
+  });
+
+  // Enlace web oficial completo de la invitación
+  urlInvitacionCompleta = computed(() => {
+    const ev = this.evento();
+    if (!ev?.enlace) return '';
+    return `${window.location.origin}/e/${ev.enlace}`;
+  });
   // Estado del Escáner de Cámara y Check-in
   escanerActivo = signal<boolean>(false);
   html5QrCodeInstance: any = null;
@@ -622,6 +671,22 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
           minute: '2-digit',
         });
   }
+
+  // Formatea la fecha y hora completa del evento para el resumen
+  formatearFechaEvento(fecha: any): string {
+    if (!fecha) return '-';
+    const d = fecha?.toDate ? fecha.toDate() : new Date(fecha);
+    return isNaN(d.getTime())
+      ? '-'
+      : d.toLocaleDateString('es-MX', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+  }
   async cargarRecuerdos(eventoId: string): Promise<void> {
     try {
       const lista = await this.eventService.getRecuerdos(eventoId);
@@ -1001,18 +1066,22 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   // Despliega el menú contextual con las acciones del invitado en móviles y tablets
   abrirMenuAcciones(event: Event, invitado: InvitadoModel, menuRef: any): void {
     const ev = this.evento();
-    const items: MenuItem[] = [
-      {
+    const items: MenuItem[] = [];
+
+    // Solo mostrar el envío de invitación por WhatsApp si la invitación web está activa
+    if (this.tieneInvitacion()) {
+      items.push({
         label: 'Enviar Invitación (WhatsApp)',
         icon: 'pi pi-whatsapp',
         command: () => this.enviarInvitacionWhatsApp(invitado),
-      },
-      {
-        label: 'Enviar Pase VIP (WhatsApp)',
-        icon: 'pi pi-ticket',
-        command: () => this.enviarPaseVipWhatsApp(invitado),
-      },
-    ];
+      });
+    }
+
+    items.push({
+      label: 'Enviar Pase VIP (WhatsApp)',
+      icon: 'pi pi-ticket',
+      command: () => this.enviarPaseVipWhatsApp(invitado),
+    });
 
     if (
       ev?.modulos?.tipoControlInvitados === 'total' &&

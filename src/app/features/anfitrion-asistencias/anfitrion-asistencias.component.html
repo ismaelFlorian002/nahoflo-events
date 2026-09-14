@@ -9,7 +9,7 @@
     <div class="center-box">
       <i class="pi pi-exclamation-circle error-icon"></i>
       <h2>Evento no disponible</h2>
-      <p>Verifica que el enlace sea el correcto.</p>
+      <p>Favor de ponerse en contacto con los administradores.</p>
     </div>
   } @else if (evento(); as ev) {
 
@@ -49,15 +49,17 @@
           </button>
         </form>
 
-        <a [routerLink]="['/e', ev.enlace]" class="back-link">
-          ← Volver a la Invitación
-        </a>
+        @if (tieneInvitacion()) {
+          <a [routerLink]="['/e', ev.enlace]" class="back-link">
+            ← Volver a la Invitación
+          </a>
+        }
       </div>
     }
 
     <!-- 2. PANEL DESBLOQUEADO (VISTA DEL CLIENTE) -->
     @else {
-      <div class="dashboard-container">
+      <div class="dashboard-container" [class.sin-bottom-bar]="totalPestanasDisponibles() <= 1">
 
         <header class="dash-header">
           <div class="dash-header-info">
@@ -84,28 +86,30 @@
             }
             <h1 class="dash-title">{{ ev.titulo }}</h1>
           </div>
-          <div class="dash-acciones-header">
-            <p-button
-              [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
-              [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
-              size="small"
-              [outlined]="!copiadoGeneral()"
-              [severity]="copiadoGeneral() ? 'success' : 'secondary'"
-              [text]="!copiadoGeneral()"
-              (onClick)="copiarEnlaceGeneral()"
-              aria-label="Copiar enlace general del evento">
-            </p-button>
+          <div class="dash-acciones-header" [class.solo-salir]="!tieneInvitacion()">
+            @if (tieneInvitacion()) {
+              <p-button
+                [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
+                [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
+                size="small"
+                [outlined]="!copiadoGeneral()"
+                [severity]="copiadoGeneral() ? 'success' : 'secondary'"
+                [text]="!copiadoGeneral()"
+                (onClick)="copiarEnlaceGeneral()"
+                aria-label="Copiar enlace general del evento">
+              </p-button>
 
-            <p-button
-              label="Ver Invitación"
-              icon="pi pi-external-link"
-              size="small"
-              [outlined]="true"
-              severity="secondary"
-              text
-              (onClick)="abrirInvitacion()"
-              aria-label="Abrir invitación en nueva pestaña">
-            </p-button>
+              <p-button
+                label="Ver Invitación"
+                icon="pi pi-external-link"
+                size="small"
+                [outlined]="true"
+                severity="secondary"
+                text
+                (onClick)="abrirInvitacion()"
+                aria-label="Abrir invitación en nueva pestaña">
+              </p-button>
+            }
 
             <div class="dash-salir-desktop">
               <p-button
@@ -122,7 +126,8 @@
         </header>
 
         <!-- NAVEGACIÓN MODERNA HÍBRIDA: TOP NAVBAR EN DESKTOP, BOTTOM BAR EN MÓVIL -->
-        <div class="pestanas-nav-container">
+        @if (totalPestanasDisponibles() > 1) {
+          <div class="pestanas-nav-container">
           <nav class="pestanas-nav" aria-label="Navegación de secciones del anfitrión">
             <button
               type="button"
@@ -199,15 +204,154 @@
             }
           </nav>
         </div>
+      }
 
         <!-- 0. PESTAÑA: RESUMEN GENERAL Y EJECUTIVO POR PAQUETE -->
         @if (pestanaActiva() === 'resumen') {
           <div class="seccion-resumen">
 
+            <!-- CASO 0: NINGÚN SERVICIO O PAQUETE HABILITADO -->
+            @if (sinServiciosActivos()) {
+              <div class="card-resumen-sin-servicios">
+                <div class="sin-servicios-cabecera">
 
-            <!-- 2. RESUMEN DE ASISTENCIA Y PASES (SI EL CONTROL DE INVITADOS ESTÁ ACTIVO) -->
-            @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
-              <div class="bloque-resumen-asistencia">
+                  <div class="sin-servicios-info">
+                    <div class="badge-sin-servicios">
+                      <i class="pi pi-exclamation-circle"></i> Sin Paquetes Habilitados
+                    </div>
+                    <h3>Evento sin Servicios Activos</h3>
+                    <p>
+                      Actualmente este evento no cuenta con módulos o paquetes habilitados.
+                      Para activar la Invitación Web, el Control de Invitados o el Álbum Digital,
+                      comunícate con tu administrador o soporte técnico.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="servicios-estado-grid">
+                  <div class="item-servicio-estado inactivo">
+                    <div class="icono-servicio">
+                      <i class="pi pi-globe"></i>
+                    </div>
+                    <div class="info-servicio">
+                      <span class="titulo-servicio">Invitación Web</span>
+                      <span class="estado-servicio"><i class="pi pi-times"></i> Inactiva</span>
+                    </div>
+                  </div>
+
+                  <div class="item-servicio-estado inactivo">
+                    <div class="icono-servicio">
+                      <i class="pi pi-users"></i>
+                    </div>
+                    <div class="info-servicio">
+                      <span class="titulo-servicio">Control de Invitados (RSVP)</span>
+                      <span class="estado-servicio"><i class="pi pi-times"></i> Inactivo</span>
+                    </div>
+                  </div>
+
+                  <div class="item-servicio-estado inactivo">
+                    <div class="icono-servicio">
+                      <i class="pi pi-qrcode"></i>
+                    </div>
+                    <div class="info-servicio">
+                      <span class="titulo-servicio">Recepción en Puerta / Escáner</span>
+                      <span class="estado-servicio"><i class="pi pi-times"></i> Inactivo</span>
+                    </div>
+                  </div>
+
+                  <div class="item-servicio-estado inactivo">
+                    <div class="icono-servicio">
+                      <i class="pi pi-camera"></i>
+                    </div>
+                    <div class="info-servicio">
+                      <span class="titulo-servicio">Álbum Digital en Mesas</span>
+                      <span class="estado-servicio"><i class="pi pi-times"></i> Inactivo</span>
+                    </div>
+                  </div>
+                </div>
+
+
+              </div>
+            }
+
+            <!-- CASO 1: SOLO TIENE INVITACIÓN CONTRATADA (SIN ASISTENCIAS/ANFITRIÓN) -->
+            @else if (esSoloInvitacion()) {
+              <div class="card-resumen-solo-invitacion">
+                <div class="solo-inv-cabecera">
+                  <div class="solo-inv-info">
+                    <span class="badge-solo-inv">
+                      <i class="pi pi-globe"></i> Paquete de Invitación Web
+                    </span>
+                    <h3>Invitación Digital Habilitada</h3>
+                    <p>
+                      Tu evento cuenta con el servicio oficial de Invitación Web. Tus invitados pueden acceder
+                      a la página interactiva para consultar la fecha, cuenta regresiva, itinerario y mapa de ubicaciones.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="solo-inv-link-box">
+                  <div class="solo-inv-link-text">
+                    <span class="link-label">Enlace Oficial de tu Invitación:</span>
+                    <span class="link-url">{{ urlInvitacionCompleta() }}</span>
+                  </div>
+                  <div class="solo-inv-link-acciones">
+                    <p-button
+                      [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
+                      [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
+                      size="small"
+                      [severity]="copiadoGeneral() ? 'success' : 'secondary'"
+                      [outlined]="!copiadoGeneral()"
+                      (onClick)="copiarEnlaceGeneral()"
+                      aria-label="Copiar enlace de invitación">
+                    </p-button>
+
+                    <p-button
+                      label="Ver Invitación"
+                      icon="pi pi-external-link"
+                      size="small"
+                      severity="secondary"
+                      [outlined]="true"
+                      (onClick)="abrirInvitacion()"
+                      aria-label="Ver invitación en pestaña nueva">
+                    </p-button>
+                  </div>
+                </div>
+
+                <div class="solo-inv-detalles-grid">
+                  <div class="detalle-box">
+                    <span class="box-label"><i class="pi pi-calendar"></i> Fecha del Evento</span>
+                    <span class="box-valor">{{ formatearFechaEvento(ev.fecha) | titlecase }}</span>
+                  </div>
+                  @if (ev.ceremoniaLugar) {
+                    <div class="detalle-box">
+                      <span class="box-label"><i class="pi pi-map-marker"></i> Ceremonia</span>
+                      <span class="box-valor">{{ ev.ceremoniaLugar }}</span>
+                    </div>
+                  }
+                  @if (ev.recepcionLugar) {
+                    <div class="detalle-box">
+                      <span class="box-label"><i class="pi pi-compass"></i> Recepción</span>
+                      <span class="box-valor">{{ ev.recepcionLugar }}</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="solo-inv-aviso-paquete">
+                  <i class="pi pi-info-circle"></i>
+                  <p>
+                    <strong>Información del Servicio:</strong> Tu evento tiene activo exclusivamente el módulo de <strong>Invitación Web</strong>. Las funciones de <strong>Control de Asistencias (RSVP)</strong>, <strong>Recepción en Puerta con Escáner</strong> y <strong>Álbum Digital de Recuerdos</strong> no forman parte de este paquete contratado.
+                  </p>
+                </div>
+              </div>
+            }
+
+            <!-- CASO 2: TIENE MÓDULOS DE ASISTENCIAS / ANFITRIÓN ACTIVOS -->
+            @else {
+
+              <!-- 2. RESUMEN DE ASISTENCIA Y PASES (SI EL CONTROL DE INVITADOS ESTÁ ACTIVO) -->
+              @if (tieneControlInvitados()) {
+                <div class="bloque-resumen-asistencia">
                 <div class="cabecera-bloque-resumen">
                   <div>
                     <h3>Métricas de Confirmación & Asistencia</h3>
@@ -384,6 +528,7 @@
                 </div>
               </div>
             }
+          }
 
           </div>
         }
@@ -542,27 +687,29 @@
 
                   <!-- DERECHA: COMPARTIR INVITACIONES + BOTÓN AGREGAR -->
                   <div class="toolbar-derecha">
-                    <p-button
-                      label="Cómo compartir invitación"
-                      icon="pi pi-info-circle"
-                      size="small"
-                      [outlined]="true"
-                      severity="secondary"
-                      class="btn-compartir-desktop"
-                      (onClick)="abrirModalCompartir()"
-                      title="Cómo compartir invitación">
-                    </p-button>
+                    @if (tieneInvitacion()) {
+                      <p-button
+                        label="Cómo compartir invitación"
+                        icon="pi pi-info-circle"
+                        size="small"
+                        [outlined]="true"
+                        severity="secondary"
+                        class="btn-compartir-desktop"
+                        (onClick)="abrirModalCompartir()"
+                        title="Cómo compartir invitación">
+                      </p-button>
 
-                    <!-- Versión compacta para móvil -->
-                    <p-button
-                      icon="pi pi-info-circle"
-                      size="small"
-                      [outlined]="true"
-                      severity="secondary"
-                      class="btn-compartir-mobile"
-                      (onClick)="abrirModalCompartir()"
-                      title="Cómo compartir invitación">
-                    </p-button>
+                      <!-- Versión compacta para móvil -->
+                      <p-button
+                        icon="pi pi-info-circle"
+                        size="small"
+                        [outlined]="true"
+                        severity="secondary"
+                        class="btn-compartir-mobile"
+                        (onClick)="abrirModalCompartir()"
+                        title="Cómo compartir invitación">
+                      </p-button>
+                    }
 
                     <p-button
                       label="Agregar"
@@ -726,16 +873,18 @@
 
                     <!-- ACCIONES DESKTOP: BOTONES INDIVIDUALES CON TOOLTIP -->
                     <div class="acciones-desktop action-buttons">
-                      <!-- BOTÓN WHATSAPP INVITACIÓN PERSONALIZADA -->
-                      <p-button
-                        icon="pi pi-whatsapp"
-                        [rounded]="true"
-                        [text]="true"
-                        severity="success"
-                        [pTooltip]="'Enviar invitación personalizada a ' + invitado.nombre"
-                        tooltipPosition="top"
-                        (onClick)="enviarInvitacionWhatsApp(invitado)">
-                      </p-button>
+                      <!-- BOTÓN WHATSAPP INVITACIÓN PERSONALIZADA (SOLO SI LA INVITACIÓN WEB ESTÁ ACTIVA) -->
+                      @if (tieneInvitacion()) {
+                        <p-button
+                          icon="pi pi-whatsapp"
+                          [rounded]="true"
+                          [text]="true"
+                          severity="success"
+                          [pTooltip]="'Enviar invitación personalizada a ' + invitado.nombre"
+                          tooltipPosition="top"
+                          (onClick)="enviarInvitacionWhatsApp(invitado)">
+                        </p-button>
+                      }
 
                       <!-- BOTÓN ENVIAR PASE VIP -->
                       <p-button

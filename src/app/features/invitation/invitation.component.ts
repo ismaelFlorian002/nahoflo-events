@@ -168,6 +168,13 @@ export class InvitationComponent implements OnInit, OnDestroy {
     try {
       const data = await this.eventService.getEventBySlug(slug);
       if (data) {
+        // Si la invitación web está deshabilitada en los módulos y no es un acceso directo con pase (?pase=ID)
+        if (data.modulos && data.modulos.tieneInvitacion === false && !paseId) {
+          this.notFound.set(true);
+          this.isLoading.set(false);
+          return;
+        }
+
         this.evento.set(data);
         this.iniciarCuentaRegresiva(data.fecha);
 

@@ -46,7 +46,7 @@
             <span>Guardar Pase en el Celular</span>
           </button>
 
-          @if (esSoloPase) {
+          @if (esSoloPase && (ev.modulos?.tieneInvitacion ?? true)) {
             <button type="button" class="btn-ver-invitacion-completa" (click)="modoSoloPase.set(false)">
               <i class="pi pi-eye"></i>
               <span>Ver Invitación Completa (Música, Mapa, Itinerario)</span>
@@ -412,10 +412,12 @@
     <!-- PIE DE PÁGINA CON ACCESO ANFITRIÓN DISCRETO -->
     <footer class="invitation-footer">
       <p class="studio-credit">Diseñado por <strong>NahoFlo Creative Studio</strong></p>
-      <a [routerLink]="['/e', ev.enlace, 'asistencias']" class="host-access-link">
-        <i class="pi pi-lock"></i>
-        <span>Acceso Anfitrión</span>
-      </a>
+      @if ((ev.modulos?.tipoControlInvitados && ev.modulos.tipoControlInvitados !== 'inactivo') || ev.modulos?.tieneAlbum) {
+        <a [routerLink]="['/e', ev.enlace, 'asistencias']" class="host-access-link">
+          <i class="pi pi-lock"></i>
+          <span>Acceso Anfitrión</span>
+        </a>
+      }
     </footer>
 
     <!-- REPRODUCTOR FLOTANTE DE MÚSICA DE FONDO -->
