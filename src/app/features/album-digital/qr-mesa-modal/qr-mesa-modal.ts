@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Evento } from '../../../core/models/event.model';
+import { copiarAlPortapapeles } from '../../../core/utils/clipboard.util';
 import QRCode from 'qrcode';
 
 @Component({
@@ -49,9 +50,9 @@ export class QrMesaModalComponent implements OnInit {
     }
   }
 
-  copiarEnlace(): void {
+  async copiarEnlace(): Promise<void> {
     if (!this.urlAlbum()) return;
-    navigator.clipboard.writeText(this.urlAlbum());
+    await copiarAlPortapapeles(this.urlAlbum());
     this.copiado.set(true);
     setTimeout(() => this.copiado.set(false), 2500);
   }

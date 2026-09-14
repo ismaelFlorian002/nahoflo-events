@@ -207,6 +207,13 @@
     margin: 0.25rem 0 0;
     line-height: 1.15;
   }
+
+  .dash-acciones-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
 }
 
 /* ==========================================================================
@@ -309,125 +316,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 1. Tarjeta del Paquete Contratado */
-.card-paquete-resumen {
-  background: #ffffff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  padding: 1.75rem;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
 
-  .paquete-info-principal {
-    .paquete-badge-tipo {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      background: #fefce8;
-      color: #854d0e;
-      border: 1px solid #fef08a;
-      padding: 0.2rem 0.65rem;
-      border-radius: 20px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
-
-      i {
-        color: #cca633;
-      }
-    }
-
-    h2 {
-      margin: 0;
-      font-family: Georgia, 'Times New Roman', serif;
-      font-size: clamp(1.5rem, 2.5vw, 1.85rem);
-      color: #0f172a;
-      line-height: 1.2;
-    }
-
-    .paquete-subtitulo {
-      margin: 0.35rem 0 0;
-      font-size: 0.85rem;
-      color: #64748b;
-    }
-  }
-
-  .servicios-chips-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0.75rem;
-
-    .chip-servicio {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.85rem 1rem;
-      border-radius: 12px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      transition: all 0.2s ease;
-
-      .chip-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
-        background: #e2e8f0;
-        color: #64748b;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1rem;
-        flex-shrink: 0;
-      }
-
-      .chip-texto {
-        display: flex;
-        flex-direction: column;
-
-        .chip-titulo {
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: #1e293b;
-        }
-
-        .chip-estado {
-          font-size: 0.75rem;
-          color: #64748b;
-        }
-      }
-
-      &.activo {
-        background: #ffffff;
-        border-color: #cbd5e1;
-        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
-
-        .chip-icon {
-          background: #fefce8;
-          color: #cca633;
-          border: 1px solid #fef08a;
-        }
-
-        .chip-texto .chip-estado {
-          color: #15803d;
-          font-weight: 600;
-        }
-      }
-    }
-  }
-
-  .paquete-acciones-rapidas {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    padding-top: 0.5rem;
-    border-top: 1px solid #f1f5f9;
-  }
-}
 
 /* 2. Bloque de Asistencia y Progreso */
 .bloque-resumen-asistencia {
@@ -912,157 +801,241 @@
 }
 
 /* ==========================================================================
-   NAVEGACIÓN HÍBRIDA (TOP NAVBAR EN DESKTOP / BOTTOM BAR EN MÓVIL)
+   DESKTOP NAVBAR (>= 768px): TABS CON LÍNEA INFERIOR DE ACENTO DORADO
    ========================================================================== */
-.pestanas-nav-container {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0.25rem 0;
-  transition: all 0.3s ease;
-}
+@media screen and (min-width: 768px) {
+  .dash-salir-mobile {
+    display: none;
+  }
 
-.pestanas-nav {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: #f1f5f9;
-  padding: 0.35rem;
-  border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
-
-  .btn-tab {
+  .dash-salir-desktop {
     display: inline-flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.6rem 1.15rem;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 10px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    color: #64748b;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-    user-select: none;
-    outline: none;
+  }
 
-    .tab-icon-wrap {
+  .pestanas-nav-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 0;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.25s ease;
+  }
+
+  .pestanas-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+
+    .btn-tab {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1.25rem;
+      background: transparent;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #64748b;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: color 0.2s ease, background-color 0.2s ease;
+      user-select: none;
+      outline: none;
       position: relative;
+      bottom: -2px;
 
-      i {
-        font-size: 0.95rem;
-        color: #94a3b8;
-        transition: color 0.2s ease, transform 0.2s ease;
+      .tab-icon-wrap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        i {
+          font-size: 1rem;
+          color: #94a3b8;
+          transition: color 0.2s ease, transform 0.2s ease;
+        }
       }
-    }
 
-    .tab-badge-mobile {
-      display: none;
-    }
-
-    .tab-label {
-      letter-spacing: -0.01em;
-
-      .tab-label-text {
+      .tab-badge-mobile {
         display: none;
       }
 
-      .tab-label-desktop {
-        display: inline;
+      .tab-label {
+        letter-spacing: -0.01em;
+
+        .tab-label-text {
+          display: none;
+        }
+
+        .tab-label-desktop {
+          display: inline;
+        }
       }
-    }
 
-    .tab-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      line-height: 1;
-      padding: 0.2rem 0.55rem;
-      border-radius: 9999px;
-      background: #e2e8f0;
-      color: #475569;
-      transition: all 0.2s ease;
-    }
-
-    &:hover:not(.activo) {
-      color: #1e293b;
-      background: rgba(255, 255, 255, 0.65);
-
-      .tab-icon-wrap i {
+      .tab-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        font-weight: 700;
+        line-height: 1;
+        padding: 0.2rem 0.55rem;
+        border-radius: 9999px;
+        background: #f1f5f9;
         color: #475569;
+        transition: all 0.2s ease;
       }
 
-      .tab-badge {
-        background: #cbd5e1;
+      &:hover:not(.activo) {
         color: #0f172a;
-      }
-    }
+        background: #f8fafc;
 
-    &:active {
-      transform: scale(0.98);
-    }
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: #cbd5e1;
+          border-radius: 2px 2px 0 0;
+        }
 
-    &.activo {
-      background: #ffffff;
-      color: #0f172a;
-      font-weight: 700;
-      border-color: rgba(226, 232, 240, 0.8);
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
-
-      .tab-icon-wrap i {
-        color: #cca633;
-        transform: scale(1.08);
-      }
-
-      .tab-badge {
-        background: #fefce8;
-        color: #854d0e;
-        border: 1px solid #fef08a;
-      }
-
-      &.tab-recepcion {
         .tab-icon-wrap i {
-          color: #0284c7;
+          color: #334155;
         }
 
         .tab-badge {
-          background: #f0f9ff;
-          color: #0369a1;
-          border: 1px solid #bae6fd;
+          background: #e2e8f0;
+          color: #0f172a;
+        }
+      }
+
+      &:active {
+        transform: scale(0.99);
+      }
+
+      &.activo {
+        color: #0f172a;
+        font-weight: 700;
+        background: transparent;
+        box-shadow: none;
+        border: none;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background: #cca633;
+          border-radius: 3px 3px 0 0;
+        }
+
+        .tab-icon-wrap i {
+          color: #cca633;
+          transform: scale(1.08);
+        }
+
+        .tab-badge {
+          background: #fefce8;
+          color: #854d0e;
+          border: 1px solid #fef08a;
+        }
+
+        &.tab-recepcion {
+          &::after {
+            background: #0284c7;
+          }
+
+          .tab-icon-wrap i {
+            color: #0284c7;
+          }
+
+          .tab-badge {
+            background: #f0f9ff;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+          }
         }
       }
     }
   }
 }
 
-/* En Móvil (< 768px): Barra Inferior Fija (Bottom Navigation Bar) */
+/* ==========================================================================
+   MÓVIL (< 768px): CABECERA EQUILIBRADA Y BOTTOM BAR NATIVA PERFECTA
+   ========================================================================== */
 @media screen and (max-width: 767px) {
   .dashboard-container {
     padding-bottom: calc(5rem + env(safe-area-inset-bottom, 16px)) !important;
   }
 
+  /* Cabecera Móvil Limpia y Balanceada */
+  .dash-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+
+    .dash-header-info {
+      width: 100% !important;
+    }
+
+    .dash-header-top-row {
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      width: 100% !important;
+      margin-bottom: 0.35rem !important;
+    }
+
+    .dash-salir-mobile {
+      display: inline-flex !important;
+    }
+
+    .dash-acciones-header {
+      width: 100% !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 0.5rem !important;
+
+      p-button,
+      .p-button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+    }
+
+    .dash-salir-desktop {
+      display: none !important;
+    }
+  }
+
+  /* Barra de Navegación Inferior Móvil (Bottom Navigation Bar) */
   .pestanas-nav-container {
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    z-index: 990 !important;
-    padding: 0 !important;
-    background: rgba(255, 255, 255, 0.96) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    z-index: 1000 !important;
+    background: #ffffff !important;
     border-top: 1px solid #e2e8f0 !important;
-    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.06) !important;
-    padding-bottom: env(safe-area-inset-bottom, 4px) !important;
+    border-bottom: none !important;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08) !important;
+    padding: 0.35rem 0.25rem calc(0.35rem + env(safe-area-inset-bottom, 2px)) !important;
+    margin: 0 !important;
     overflow: visible !important;
   }
 
@@ -1074,9 +1047,10 @@
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    padding: 0.35rem 0.25rem 0.4rem !important;
+    padding: 0 !important;
     gap: 0 !important;
     justify-content: space-around !important;
+    align-items: center !important;
 
     .btn-tab {
       flex: 1 1 0 !important;
@@ -1084,7 +1058,7 @@
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
-      padding: 0.35rem 0.15rem !important;
+      padding: 0.3rem 0.1rem !important;
       gap: 0.2rem !important;
       border-radius: 8px !important;
       border: none !important;
@@ -1092,17 +1066,24 @@
       box-shadow: none !important;
       transition: all 0.18s ease !important;
       position: relative !important;
+      bottom: 0 !important;
+
+      &::before,
+      &::after {
+        display: none !important;
+        content: none !important;
+      }
 
       .tab-icon-wrap {
         position: relative !important;
-        display: flex !important;
+        display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         width: 28px !important;
         height: 24px !important;
 
         i {
-          font-size: 1.15rem !important;
+          font-size: 1.2rem !important;
           color: #64748b !important;
           transition: color 0.2s ease, transform 0.2s ease !important;
         }
@@ -1113,18 +1094,18 @@
         align-items: center !important;
         justify-content: center !important;
         position: absolute !important;
-        top: -4px !important;
-        right: -8px !important;
+        top: -5px !important;
+        right: -10px !important;
         min-width: 16px !important;
         height: 16px !important;
         padding: 0 4px !important;
         border-radius: 9999px !important;
-        font-size: 0.625rem !important;
+        font-size: 0.6rem !important;
         font-weight: 700 !important;
-        line-height: 1 !important;
+        line-height: 16px !important;
         background: #cca633 !important;
         color: #ffffff !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
         white-space: nowrap !important;
       }
 
@@ -1153,20 +1134,15 @@
         box-shadow: none !important;
         border: none !important;
 
-        &::before {
-          content: '' !important;
-          position: absolute !important;
-          top: -0.35rem !important;
-          left: 20% !important;
-          right: 20% !important;
-          height: 3px !important;
-          background: #cca633 !important;
-          border-radius: 0 0 4px 4px !important;
+        &::before,
+        &::after {
+          display: none !important;
+          content: none !important;
         }
 
         .tab-icon-wrap i {
           color: #cca633 !important;
-          transform: scale(1.1) !important;
+          transform: scale(1.15) !important;
         }
 
         .tab-label .tab-label-text {
@@ -1175,10 +1151,6 @@
         }
 
         &.tab-recepcion {
-          &::before {
-            background: #0284c7 !important;
-          }
-
           .tab-icon-wrap i {
             color: #0284c7 !important;
           }

@@ -22,7 +22,9 @@
 
         <h2>Panel de Anfitrión</h2>
         <p class="pin-subtitle">
-          Ingresa el PIN de seguridad de <strong>{{ ev.preTitulo ? ev.preTitulo + ' - ' + ev.titulo : ev.titulo }}</strong> para consultar tu lista de invitados.
+          Ingresa el PIN de seguridad de
+          <strong>{{ ev.preTitulo ? ev.preTitulo + ' - ' + ev.titulo : ev.titulo }}</strong> para consultar tu lista de
+          invitados.
         </p>
 
         <form (ngSubmit)="verificarPin()" class="pin-form">
@@ -59,10 +61,23 @@
 
         <header class="dash-header">
           <div class="dash-header-info">
-            <div class="dash-meta-badge">
-              <span class="dash-portal-pill">
-                <i class="pi pi-shield"></i> Portal de Anfitrión
-              </span>
+            <div class="dash-header-top-row">
+              <div class="dash-meta-badge">
+                <span class="dash-portal-pill">
+                  <i class="pi pi-shield"></i> Portal de Anfitrión
+                </span>
+              </div>
+              <div class="dash-salir-mobile">
+                <p-button
+                  label="Salir"
+                  icon="pi pi-sign-out"
+                  size="small"
+                  [outlined]="true"
+                  severity="danger"
+                  (onClick)="salir()"
+                  aria-label="Cerrar sesión de anfitrión">
+                </p-button>
+              </div>
             </div>
             @if (ev.preTitulo || ev.tipo) {
               <span class="dash-evento-subtitulo">{{ ev.preTitulo || ev.tipo }}</span>
@@ -71,15 +86,38 @@
           </div>
           <div class="dash-acciones-header">
             <p-button
-              label="Salir"
-              icon="pi pi-sign-out"
+              [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
+              [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
               size="small"
-              text
-              [outlined]="true"
-              severity="danger"
-              (onClick)="salir()"
-              title="Cerrar sesión de anfitrión">
+              [outlined]="!copiadoGeneral()"
+              [severity]="copiadoGeneral() ? 'success' : 'secondary'"
+              [text]="!copiadoGeneral()"
+              (onClick)="copiarEnlaceGeneral()"
+              aria-label="Copiar enlace general del evento">
             </p-button>
+
+            <p-button
+              label="Ver Invitación"
+              icon="pi pi-external-link"
+              size="small"
+              [outlined]="true"
+              severity="secondary"
+              text
+              (onClick)="abrirInvitacion()"
+              aria-label="Abrir invitación en nueva pestaña">
+            </p-button>
+
+            <div class="dash-salir-desktop">
+              <p-button
+                label="Salir"
+                icon="pi pi-sign-out"
+                size="small"
+                text="true"
+                severity="danger"
+                (onClick)="salir()"
+                aria-label="Cerrar sesión de anfitrión">
+              </p-button>
+            </div>
           </div>
         </header>
 
@@ -96,6 +134,8 @@
               </div>
               <span class="tab-label">
                 <span class="tab-label-text">Resumen</span>
+                                  <span class="tab-label-desktop">Resumen</span>
+
               </span>
             </button>
 
@@ -128,10 +168,13 @@
                   <span class="tab-badge-mobile">{{ totalIngresados() }}/{{ totalPases() }}</span>
                 </div>
                 <span class="tab-label">
-                  <span class="tab-label-text">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Escáner' : 'Puerta' }}</span>
-                  <span class="tab-label-desktop">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner' : 'Recepción en Puerta' }}</span>
+                  <span
+                    class="tab-label-text">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Escáner' : 'Puerta' }}</span>
+                  <span
+                    class="tab-label-desktop">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner' : 'Recepción en Puerta' }}</span>
                 </span>
-                <span class="tab-badge tab-badge-desktop tab-badge-recepcion">{{ totalIngresados() }}/{{ totalPases() }}</span>
+                <span class="tab-badge tab-badge-desktop tab-badge-recepcion">{{ totalIngresados() }}
+                  /{{ totalPases() }}</span>
               </button>
             }
 
@@ -161,90 +204,6 @@
         @if (pestanaActiva() === 'resumen') {
           <div class="seccion-resumen">
 
-            <!-- 1. TARJETA DE ESTADO DEL PAQUETE Y SERVICIOS CONTRATADOS -->
-            <div class="card-paquete-resumen">
-              <div class="paquete-info-principal">
-                <div class="paquete-badge-tipo">
-                  <i class="pi pi-briefcase"></i>
-                  <span>Servicios Contratados</span>
-                </div>
-                <p class="paquete-subtitulo">
-                 · Enlace: nahoflo.com/e/{{ ev.enlace }}
-                </p>
-              </div>
-
-              <div class="servicios-chips-grid">
-                <!-- MÓDULO INVITACIÓN WEB -->
-                <div class="chip-servicio activo">
-                  <div class="chip-icon"><i class="pi pi-globe"></i></div>
-                  <div class="chip-texto">
-                    <span class="chip-titulo">Invitación Web</span>
-                    <span class="chip-estado">Página Activa</span>
-                  </div>
-                </div>
-
-                <!-- MÓDULO CONTROL DE INVITADOS -->
-                <div class="chip-servicio" [class.activo]="ev.modulos?.tipoControlInvitados !== 'inactivo'">
-                  <div class="chip-icon">
-                    <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : (ev.modulos?.tipoControlInvitados === 'lista_puerta' ? 'pi pi-id-card' : 'pi pi-users')"></i>
-                  </div>
-                  <div class="chip-texto">
-                    <span class="chip-titulo">
-                      @if (ev.modulos?.tipoControlInvitados === 'total') {
-                        Control Total VIP
-                      } @else if (ev.modulos?.tipoControlInvitados === 'lista_puerta') {
-                        Control de Puerta
-                      } @else if (ev.modulos?.tipoControlInvitados === 'basico') {
-                        Confirmación RSVP
-                      } @else {
-                        Control de Invitados
-                      }
-                    </span>
-                    <span class="chip-estado">
-                      @if (ev.modulos?.tipoControlInvitados === 'total') {
-                        Pases QR & Escáner
-                      } @else if (ev.modulos?.tipoControlInvitados === 'lista_puerta') {
-                        Lista de Acceso
-                      } @else if (ev.modulos?.tipoControlInvitados === 'basico') {
-                        Registro Digital
-                      } @else {
-                        No contratado
-                      }
-                    </span>
-                  </div>
-                </div>
-
-                <!-- MÓDULO ÁLBUM DIGITAL -->
-                <div class="chip-servicio" [class.activo]="ev.modulos?.tieneAlbum">
-                  <div class="chip-icon"><i class="pi pi-camera"></i></div>
-                  <div class="chip-texto">
-                    <span class="chip-titulo">Álbum de Recuerdos</span>
-                    <span class="chip-estado">
-                      {{ ev.modulos?.tieneAlbum ? 'Muro Digital Activo' : 'No contratado' }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- ACCIONES RÁPIDAS DEL RESUMEN -->
-              <div class="paquete-acciones-rapidas">
-                <p-button
-                  [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace General'"
-                  [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
-                  size="small"
-                  (onClick)="copiarEnlaceGeneral()">
-                </p-button>
-
-                <p-button
-                  label="Ver Invitación"
-                  icon="pi pi-external-link"
-                  size="small"
-                  [outlined]="true"
-                  severity="secondary"
-                  (onClick)="abrirInvitacion()">
-                </p-button>
-              </div>
-            </div>
 
             <!-- 2. RESUMEN DE ASISTENCIA Y PASES (SI EL CONTROL DE INVITADOS ESTÁ ACTIVO) -->
             @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
@@ -620,9 +579,16 @@
               <!-- CABECERAS MINIMALISTAS Y RESPONSIVAS -->
               <ng-template pTemplate="header">
                 <tr>
-                  <th pSortableColumn="nombre" class="col-nombre">Nombre / Familia <p-sortIcon field="nombre"></p-sortIcon></th>
-                  <th pSortableColumn="asistira" class="col-respuesta col-desktop-tablet">Respuesta <p-sortIcon field="asistira"></p-sortIcon></th>
-                  <th pSortableColumn="pasesConfirmados" class="col-pases col-desktop-tablet" style="text-align: center;">Pases <p-sortIcon field="pasesConfirmados"></p-sortIcon></th>
+                  <th pSortableColumn="nombre" class="col-nombre">Nombre / Familia
+                    <p-sortIcon field="nombre"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="asistira" class="col-respuesta col-desktop-tablet">Respuesta
+                    <p-sortIcon field="asistira"></p-sortIcon>
+                  </th>
+                  <th pSortableColumn="pasesConfirmados" class="col-pases col-desktop-tablet"
+                      style="text-align: center;">Pases
+                    <p-sortIcon field="pasesConfirmados"></p-sortIcon>
+                  </th>
                   <th class="col-whatsapp col-desktop">WhatsApp</th>
                   @if (ev.modulos?.tipoControlInvitados === 'total') {
                     <th class="col-vip col-desktop" style="text-align: center;">Pase VIP</th>
@@ -898,7 +864,8 @@
                           <h4>{{ res.mensaje }}</h4>
                           @if (res.invitado; as inv) {
                             <p class="alerta-detalles">
-                              <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }} pases
+                              <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }}
+                              pases
                               @if (res.hora) {
                                 <span>({{ res.hora }})</span>
                               }
@@ -925,8 +892,11 @@
               <div class="col-manual">
                 <div class="card-manual">
                   <div class="cabecera-card-puerta">
-                    <h3><i class="pi pi-list"></i> {{ ev.modulos?.tipoControlInvitados === 'total' ? 'Búsqueda Nominal de Respaldo' : 'Lista de Recepción en Puerta' }}</h3>
-                    <span class="subtexto-puerta">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Por si el invitado no tiene celular' : 'Busca por nombre o apellido para registrar el acceso' }}</span>
+                    <h3><i
+                      class="pi pi-list"></i> {{ ev.modulos?.tipoControlInvitados === 'total' ? 'Búsqueda Nominal de Respaldo' : 'Lista de Recepción en Puerta' }}
+                    </h3>
+                    <span
+                      class="subtexto-puerta">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Por si el invitado no tiene celular' : 'Busca por nombre o apellido para registrar el acceso' }}</span>
                   </div>
 
                   <!-- BUSCADOR RÁPIDO EN PUERTA -->

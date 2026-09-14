@@ -602,21 +602,20 @@ html body .p-menu {
     padding-bottom: calc(5.2rem + env(safe-area-inset-bottom, 16px)) !important;
   }
 
-  /* Barra de Navegación Inferior Fija (Bottom Navigation Bar) */
+  /* Barra de Navegación Inferior Móvil (Bottom Navigation Bar) */
   .pestanas-nav-container {
     position: fixed !important;
     bottom: 0 !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    z-index: 990 !important;
-    padding: 0 !important;
-    background: rgba(255, 255, 255, 0.96) !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    z-index: 1000 !important;
+    background: #ffffff !important;
     border-top: 1px solid #e2e8f0 !important;
-    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.06) !important;
-    padding-bottom: env(safe-area-inset-bottom, 4px) !important;
+    border-bottom: none !important;
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08) !important;
+    padding: 0.35rem 0.25rem calc(0.35rem + env(safe-area-inset-bottom, 2px)) !important;
+    margin: 0 !important;
     overflow: visible !important;
   }
 
@@ -628,9 +627,10 @@ html body .p-menu {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    padding: 0.35rem 0.25rem 0.4rem !important;
+    padding: 0 !important;
     gap: 0 !important;
     justify-content: space-around !important;
+    align-items: center !important;
 
     .btn-tab {
       flex: 1 1 0 !important;
@@ -638,7 +638,7 @@ html body .p-menu {
       flex-direction: column !important;
       align-items: center !important;
       justify-content: center !important;
-      padding: 0.35rem 0.15rem !important;
+      padding: 0.3rem 0.1rem !important;
       gap: 0.2rem !important;
       border-radius: 8px !important;
       border: none !important;
@@ -646,17 +646,24 @@ html body .p-menu {
       box-shadow: none !important;
       transition: all 0.18s ease !important;
       position: relative !important;
+      bottom: 0 !important;
+
+      &::before,
+      &::after {
+        display: none !important;
+        content: none !important;
+      }
 
       .tab-icon-wrap {
         position: relative !important;
-        display: flex !important;
+        display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         width: 28px !important;
         height: 24px !important;
 
         i {
-          font-size: 1.15rem !important;
+          font-size: 1.2rem !important;
           color: #64748b !important;
           transition: color 0.2s ease, transform 0.2s ease !important;
         }
@@ -667,18 +674,18 @@ html body .p-menu {
         align-items: center !important;
         justify-content: center !important;
         position: absolute !important;
-        top: -4px !important;
-        right: -8px !important;
+        top: -5px !important;
+        right: -10px !important;
         min-width: 16px !important;
         height: 16px !important;
         padding: 0 4px !important;
         border-radius: 9999px !important;
-        font-size: 0.625rem !important;
+        font-size: 0.6rem !important;
         font-weight: 700 !important;
-        line-height: 1 !important;
+        line-height: 16px !important;
         background: #cca633 !important;
         color: #ffffff !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
         white-space: nowrap !important;
       }
 
@@ -707,20 +714,15 @@ html body .p-menu {
         box-shadow: none !important;
         border: none !important;
 
-        &::before {
-          content: '' !important;
-          position: absolute !important;
-          top: -0.35rem !important;
-          left: 20% !important;
-          right: 20% !important;
-          height: 3px !important;
-          background: #cca633 !important;
-          border-radius: 0 0 4px 4px !important;
+        &::before,
+        &::after {
+          display: none !important;
+          content: none !important;
         }
 
         .tab-icon-wrap i {
           color: #cca633 !important;
-          transform: scale(1.1) !important;
+          transform: scale(1.15) !important;
         }
 
         .tab-label .tab-label-text {
@@ -729,10 +731,6 @@ html body .p-menu {
         }
 
         &.tab-recepcion {
-          &::before {
-            background: #0284c7 !important;
-          }
-
           .tab-icon-wrap i {
             color: #0284c7 !important;
           }

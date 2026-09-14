@@ -24,6 +24,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
+import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
 
 @Component({
   selector: 'app-anfitrion-asistencias',
@@ -1118,12 +1119,12 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     this.detenerEscaner();
   }
 
-  // Copia el enlace general público del evento al portapapeles
-  copiarEnlaceGeneral(): void {
+  // Copia el enlace general público del evento al portapapeles con soporte robusto para móviles y HTTPS/HTTP
+  async copiarEnlaceGeneral(): Promise<void> {
     const ev = this.evento();
     if (!ev?.enlace) return;
     const url = `${window.location.origin}/e/${ev.enlace}`;
-    navigator.clipboard.writeText(url);
+    await copiarAlPortapapeles(url);
     this.copiadoGeneral.set(true);
     setTimeout(() => this.copiadoGeneral.set(false), 2500);
   }
