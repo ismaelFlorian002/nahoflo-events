@@ -1,0 +1,83 @@
+<div class="compartir-modal-wrapper">
+
+  <p class="modal-intro">
+    Tienes dos formas prácticas de compartir con tus invitados según lo que prefieras:
+  </p>
+
+  <div class="opciones-container">
+
+    <!-- 1. OPCIÓN A: ENLACE GENERAL -->
+    <div class="opcion-bloque bloque-general">
+      <div class="opcion-cabecera">
+        <span class="badge-opcion badge-a">Opción A · Enlace General</span>
+        <h4>Para Grupos de WhatsApp y Redes Sociales</h4>
+      </div>
+
+      <p class="opcion-descripcion">
+        Comparte este enlace único en grupos familiares o estados. Si el invitado ya estaba precargado en tu lista,
+        el sistema lo detecta automáticamente por su nombre y le asigna sus pases reservados. Si es de último momento,
+        podrá indicar sus acompañantes.
+      </p>
+
+      <!-- CAJA CON URL Y BOTONES DE COPIADO -->
+      <div class="enlace-general-box">
+        <span class="enlace-texto">{{ urlGeneral() }}</span>
+        <div class="enlace-acciones">
+          <p-button
+            [label]="copiado() ? '¡Copiado!' : 'Copiar Enlace'"
+            [icon]="copiado() ? 'pi pi-check' : 'pi pi-copy'"
+            size="small"
+            (onClick)="copiarEnlace()">
+          </p-button>
+
+          @if (puedeCompartirNativo()) {
+            <p-button
+              icon="pi pi-share-alt"
+              size="small"
+              [outlined]="true"
+              severity="secondary"
+              (onClick)="compartirNativo()"
+              title="Compartir mediante el menú de tu dispositivo">
+            </p-button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. OPCIÓN B: INVITACIÓN PERSONALIZADA DIRECTA -->
+    <div class="opcion-bloque bloque-personalizada">
+      <div class="opcion-cabecera">
+        <span class="badge-opcion badge-b">
+          <i class="pi pi-star-fill"></i> Opción B · Recomendada
+        </span>
+        <h4>Invitación Personalizada por Invitado (WhatsApp)</h4>
+      </div>
+
+      <p class="opcion-descripcion">
+        En cada fila de tu <strong>Lista de Invitados</strong> encontrarás el botón verde de WhatsApp
+        (<i class="pi pi-whatsapp wa-icono"></i>) y el botón de enlace directo (<i class="pi pi-link link-icono"></i>).
+      </p>
+
+      <div class="beneficio-destacado">
+        <i class="pi pi-shield-check"></i>
+        <span>
+          <strong>Máxima Precisión:</strong> El enlace ya incluye su código de pase con sus boletos exactos
+          preasignados para que tu invitado confirme al instante sin margen de confusión ni registros duplicados.
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER CON BOTÓN DE CIERRE -->
+  <div class="modal-footer-acciones">
+    <p-button
+      label="Entendido, volver a la lista"
+      icon="pi pi-check"
+      size="small"
+      severity="secondary"
+      (onClick)="cerrar()">
+    </p-button>
+  </div>
+
+</div>

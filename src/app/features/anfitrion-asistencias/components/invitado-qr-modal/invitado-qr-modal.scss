@@ -1,0 +1,197 @@
+.modal-qr-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modal-card-qr {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 2px solid #cca633;
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(204, 166, 51, 0.12);
+
+  .modal-qr-header {
+    border-bottom: 1px dashed #cbd5e1;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.85rem;
+
+    .badge-vip-modal {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #cca633;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      margin-bottom: 0.5rem;
+
+      i {
+        font-size: 0.75rem;
+      }
+    }
+
+    h3 {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.55rem;
+      color: #0f172a;
+      margin: 0 0 0.2rem;
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 0.8rem;
+      color: #a16207;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0;
+      font-weight: 600;
+    }
+  }
+
+  .modal-qr-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.85rem;
+
+    .modal-guest-details {
+      .sub {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 1px;
+        font-weight: 600;
+      }
+
+      h4 {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0.2rem 0 0.4rem;
+        line-height: 1.25;
+      }
+
+      .badge-pases-modal {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        padding: 0.25rem 0.65rem;
+        font-size: 0.82rem;
+        color: #334155;
+        text-align: center;
+        white-space: nowrap;
+
+        .btn-pases-mini {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          border: 1px solid #cbd5e1;
+          background: #ffffff;
+          color: #1e293b;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          font-size: 0.65rem;
+          transition: all 0.15s ease;
+          padding: 0;
+
+          &:hover:not(:disabled) {
+            background: #cca633;
+            border-color: #cca633;
+            color: #ffffff;
+          }
+
+          &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+          }
+        }
+
+        i {
+          color: #cca633;
+          font-size: 0.85rem;
+          margin: 0 0.15rem;
+          vertical-align: -1px;
+        }
+
+        .label-pases {
+          color: #475569;
+          font-weight: 500;
+          margin-right: 0.25rem;
+          vertical-align: middle;
+        }
+
+        .num-pases {
+          color: #0f172a;
+          font-weight: 700;
+          vertical-align: middle;
+        }
+      }
+    }
+
+    .modal-qr-canvas {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .img-qr-modal {
+        width: 190px;
+        height: 190px;
+        display: block;
+        border-radius: 6px;
+      }
+
+      .qr-loading-placeholder {
+        width: 190px;
+        height: 190px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: #94a3b8;
+        font-size: 0.82rem;
+
+        i {
+          font-size: 1.5rem;
+          color: #cca633;
+        }
+      }
+
+      .modal-qr-instruccion {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        color: #64748b;
+        margin: 0.65rem 0 0;
+
+        i {
+          color: #cca633;
+        }
+      }
+    }
+  }
+}
+
+.modal-qr-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
