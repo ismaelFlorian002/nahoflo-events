@@ -912,20 +912,14 @@
 }
 
 /* ==========================================================================
-   NAVEGACIÓN POR PESTAÑAS (SEGMENTED CONTROL MODERNO / LUXURY UX)
+   NAVEGACIÓN HÍBRIDA (TOP NAVBAR EN DESKTOP / BOTTOM BAR EN MÓVIL)
    ========================================================================== */
 .pestanas-nav-container {
   display: flex;
   align-items: center;
   width: 100%;
-  overflow-x: auto;
   padding: 0.25rem 0;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  transition: all 0.3s ease;
 }
 
 .pestanas-nav {
@@ -955,14 +949,33 @@
     user-select: none;
     outline: none;
 
-    i {
-      font-size: 0.95rem;
-      color: #94a3b8;
-      transition: color 0.2s ease, transform 0.2s ease;
+    .tab-icon-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      i {
+        font-size: 0.95rem;
+        color: #94a3b8;
+        transition: color 0.2s ease, transform 0.2s ease;
+      }
+    }
+
+    .tab-badge-mobile {
+      display: none;
     }
 
     .tab-label {
       letter-spacing: -0.01em;
+
+      .tab-label-text {
+        display: none;
+      }
+
+      .tab-label-desktop {
+        display: inline;
+      }
     }
 
     .tab-badge {
@@ -983,7 +996,7 @@
       color: #1e293b;
       background: rgba(255, 255, 255, 0.65);
 
-      i {
+      .tab-icon-wrap i {
         color: #475569;
       }
 
@@ -1004,7 +1017,7 @@
       border-color: rgba(226, 232, 240, 0.8);
       box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08), 0 1px 3px rgba(15, 23, 42, 0.04);
 
-      i {
+      .tab-icon-wrap i {
         color: #cca633;
         transform: scale(1.08);
       }
@@ -1016,7 +1029,7 @@
       }
 
       &.tab-recepcion {
-        i {
+        .tab-icon-wrap i {
           color: #0284c7;
         }
 
@@ -1024,6 +1037,159 @@
           background: #f0f9ff;
           color: #0369a1;
           border: 1px solid #bae6fd;
+        }
+      }
+    }
+  }
+}
+
+/* En Móvil (< 768px): Barra Inferior Fija (Bottom Navigation Bar) */
+@media screen and (max-width: 767px) {
+  .dashboard-container {
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 16px)) !important;
+  }
+
+  .pestanas-nav-container {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 990 !important;
+    padding: 0 !important;
+    background: rgba(255, 255, 255, 0.96) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border-top: 1px solid #e2e8f0 !important;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.06) !important;
+    padding-bottom: env(safe-area-inset-bottom, 4px) !important;
+    overflow: visible !important;
+  }
+
+  .pestanas-nav {
+    display: flex !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0.35rem 0.25rem 0.4rem !important;
+    gap: 0 !important;
+    justify-content: space-around !important;
+
+    .btn-tab {
+      flex: 1 1 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0.35rem 0.15rem !important;
+      gap: 0.2rem !important;
+      border-radius: 8px !important;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      transition: all 0.18s ease !important;
+      position: relative !important;
+
+      .tab-icon-wrap {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 28px !important;
+        height: 24px !important;
+
+        i {
+          font-size: 1.15rem !important;
+          color: #64748b !important;
+          transition: color 0.2s ease, transform 0.2s ease !important;
+        }
+      }
+
+      .tab-badge-mobile {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: absolute !important;
+        top: -4px !important;
+        right: -8px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        padding: 0 4px !important;
+        border-radius: 9999px !important;
+        font-size: 0.625rem !important;
+        font-weight: 700 !important;
+        line-height: 1 !important;
+        background: #cca633 !important;
+        color: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+        white-space: nowrap !important;
+      }
+
+      .tab-badge-desktop {
+        display: none !important;
+      }
+
+      .tab-label {
+        .tab-label-desktop {
+          display: none !important;
+        }
+
+        .tab-label-text {
+          display: block !important;
+          font-size: 0.68rem !important;
+          font-weight: 600 !important;
+          line-height: 1.1 !important;
+          color: #64748b !important;
+          letter-spacing: -0.01em !important;
+          transition: color 0.2s ease !important;
+        }
+      }
+
+      &.activo {
+        background: transparent !important;
+        box-shadow: none !important;
+        border: none !important;
+
+        &::before {
+          content: '' !important;
+          position: absolute !important;
+          top: -0.35rem !important;
+          left: 20% !important;
+          right: 20% !important;
+          height: 3px !important;
+          background: #cca633 !important;
+          border-radius: 0 0 4px 4px !important;
+        }
+
+        .tab-icon-wrap i {
+          color: #cca633 !important;
+          transform: scale(1.1) !important;
+        }
+
+        .tab-label .tab-label-text {
+          color: #a16207 !important;
+          font-weight: 700 !important;
+        }
+
+        &.tab-recepcion {
+          &::before {
+            background: #0284c7 !important;
+          }
+
+          .tab-icon-wrap i {
+            color: #0284c7 !important;
+          }
+
+          .tab-badge-mobile {
+            background: #0284c7 !important;
+          }
+
+          .tab-label .tab-label-text {
+            color: #0369a1 !important;
+          }
         }
       }
     }

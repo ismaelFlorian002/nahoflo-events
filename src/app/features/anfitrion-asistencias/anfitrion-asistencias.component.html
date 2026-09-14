@@ -83,7 +83,7 @@
           </div>
         </header>
 
-        <!-- NAVEGACIÓN MODERNA POR PESTAÑAS (SEGMENTED CONTROL UX) -->
+        <!-- NAVEGACIÓN MODERNA HÍBRIDA: TOP NAVBAR EN DESKTOP, BOTTOM BAR EN MÓVIL -->
         <div class="pestanas-nav-container">
           <nav class="pestanas-nav" aria-label="Navegación de secciones del anfitrión">
             <button
@@ -91,8 +91,12 @@
               class="btn-tab"
               [class.activo]="pestanaActiva() === 'resumen'"
               (click)="cambiarPestana('resumen')">
-              <i class="pi pi-chart-pie"></i>
-              <span class="tab-label">Resumen</span>
+              <div class="tab-icon-wrap">
+                <i class="pi pi-chart-pie"></i>
+              </div>
+              <span class="tab-label">
+                <span class="tab-label-text">Resumen</span>
+              </span>
             </button>
 
             @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
@@ -101,9 +105,15 @@
                 class="btn-tab"
                 [class.activo]="pestanaActiva() === 'invitados'"
                 (click)="cambiarPestana('invitados')">
-                <i class="pi pi-users"></i>
-                <span class="tab-label">Lista de Invitados</span>
-                <span class="tab-badge">{{ invitados().length }}</span>
+                <div class="tab-icon-wrap">
+                  <i class="pi pi-users"></i>
+                  <span class="tab-badge-mobile">{{ invitados().length }}</span>
+                </div>
+                <span class="tab-label">
+                  <span class="tab-label-text">Invitados</span>
+                  <span class="tab-label-desktop">Lista de Invitados</span>
+                </span>
+                <span class="tab-badge tab-badge-desktop">{{ invitados().length }}</span>
               </button>
             }
 
@@ -113,9 +123,15 @@
                 class="btn-tab tab-recepcion"
                 [class.activo]="pestanaActiva() === 'recepcion'"
                 (click)="cambiarPestana('recepcion')">
-                <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-id-card'"></i>
-                <span class="tab-label">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner' : 'Recepción en Puerta' }}</span>
-                <span class="tab-badge tab-badge-recepcion">{{ totalIngresados() }}/{{ totalPases() }}</span>
+                <div class="tab-icon-wrap">
+                  <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-id-card'"></i>
+                  <span class="tab-badge-mobile">{{ totalIngresados() }}/{{ totalPases() }}</span>
+                </div>
+                <span class="tab-label">
+                  <span class="tab-label-text">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Escáner' : 'Puerta' }}</span>
+                  <span class="tab-label-desktop">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner' : 'Recepción en Puerta' }}</span>
+                </span>
+                <span class="tab-badge tab-badge-desktop tab-badge-recepcion">{{ totalIngresados() }}/{{ totalPases() }}</span>
               </button>
             }
 
@@ -125,9 +141,17 @@
                 class="btn-tab"
                 [class.activo]="pestanaActiva() === 'album'"
                 (click)="cambiarPestana('album')">
-                <i class="pi pi-camera"></i>
-                <span class="tab-label">Álbum de Recuerdos</span>
-                <span class="tab-badge">{{ recuerdos().length }}</span>
+                <div class="tab-icon-wrap">
+                  <i class="pi pi-camera"></i>
+                  @if (recuerdos().length > 0) {
+                    <span class="tab-badge-mobile">{{ recuerdos().length }}</span>
+                  }
+                </div>
+                <span class="tab-label">
+                  <span class="tab-label-text">Álbum</span>
+                  <span class="tab-label-desktop">Álbum de Recuerdos</span>
+                </span>
+                <span class="tab-badge tab-badge-desktop">{{ recuerdos().length }}</span>
               </button>
             }
           </nav>
