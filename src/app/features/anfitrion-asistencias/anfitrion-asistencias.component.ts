@@ -22,6 +22,9 @@ import { InputTextModule } from 'primeng/inputtext';
 
 import { TooltipModule } from 'primeng/tooltip';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { MenuModule } from 'primeng/menu';
+import { MenuItem } from 'primeng/api';
+
 @Component({
   selector: 'app-anfitrion-asistencias',
   standalone: true,
@@ -37,6 +40,7 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     DynamicDialogModule,
     TooltipModule,
     OverlayPanelModule,
+    MenuModule,
   ],
   providers: [DialogService],
   templateUrl: './anfitrion-asistencias.component.html',
@@ -66,6 +70,22 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   // Control de copiado de enlaces
   copiadoGeneral = signal<boolean>(false);
+
+  // Menús desplegables responsivos (PrimeNG Menu)
+  menuExportItems: MenuItem[] = [
+    {
+      label: 'Descargar Excel (.xlsx)',
+      icon: 'pi pi-file-excel',
+      command: () => this.exportarExcel(),
+    },
+    {
+      label: 'Descargar Reporte PDF',
+      icon: 'pi pi-file-pdf',
+      command: () => this.exportarPdf(),
+    },
+  ];
+
+  menuInvitadoItems: MenuItem[] = [];
 
   // Métricas de Aforo y Recepción en Vivo
   totalIngresados = computed(() =>
@@ -975,6 +995,53 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   // Apaga la cámara si el anfitrión cambia de ruta
   ngOnDestroy(): void {
     this.detenerEscaner();
+  }
+
+  // Despliega el menú contextual con las acciones del invitado en móviles y tablets
+  abrirMenuAcciones(event: Event, invitado: InvitadoModel, menuRef: any): void {
+    const ev = this.evento();
+    const items: MenuItem[] = [
+      {
+        label: 'Enviar Invitación (WhatsApp)',
+        icon: 'pi pi-whatsapp',
+        command: () => this.enviarInvitacionWhatsApp(invitado),
+      },
+      {
+        label: 'Enviar Pase VIP (WhatsApp)',
+        icon: 'pi pi-ticket',
+        command: () => this.enviarPaseVipWhatsApp(invitado),
+      },
+    ];
+
+    if (
+      ev?.modulos?.tipoControlInvitados === 'total' &&
+      (invitado.asistira || invitado.estado === 'pendiente')
+    ) {
+      items.push({
+        label: 'Ver Pase QR VIP',
+        icon: 'pi pi-qrcode',
+        command: () => this.abrirModalQr(invitado),
+      });
+    }
+
+    items.push(
+      {
+        separator: true,
+      },
+      {
+        label: 'Ver Detalle',
+        icon: 'pi pi-eye',
+        command: () => this.abrirModalDetalle(invitado),
+      },
+      {
+        label: 'Editar Invitado',
+        icon: 'pi pi-pencil',
+        command: () => this.abrirModalEditar(invitado),
+      },
+    );
+
+    this.menuInvitadoItems = items;
+    menuRef.toggle(event);
   }
 
   // Abre el modal con el Pase VIP y QR mediante PrimeNG DialogService

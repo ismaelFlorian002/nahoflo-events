@@ -781,6 +781,77 @@
       }
       p { margin: 0; line-height: 1.5; }
     }
+
+    /* --- RESPONSIVIDAD TABLET (768px a 1023px) --- */
+    @media screen and (min-width: 768px) and (max-width: 1023px) {
+      th.col-whatsapp,
+      td.col-whatsapp,
+      th.col-vip,
+      td.col-vip {
+        display: none !important;
+      }
+
+      th.col-respuesta,
+      td.col-respuesta,
+      th.col-pases,
+      td.col-pases {
+        display: table-cell !important;
+      }
+
+      .acciones-desktop {
+        display: flex !important;
+        gap: 0.15rem;
+      }
+
+      .acciones-mobile {
+        display: none !important;
+      }
+
+      .guest-meta-mobile {
+        display: none !important;
+      }
+    }
+
+    /* --- RESPONSIVIDAD MÓVIL (< 768px): SOLO NOMBRE Y ACCIONES --- */
+    @media screen and (max-width: 767px) {
+      th.col-respuesta,
+      td.col-respuesta,
+      th.col-pases,
+      td.col-pases,
+      th.col-whatsapp,
+      td.col-whatsapp,
+      th.col-vip,
+      td.col-vip {
+        display: none !important;
+      }
+
+      th.col-nombre,
+      td.col-nombre {
+        display: table-cell !important;
+        padding: 0.85rem 0.65rem !important;
+      }
+
+      th.col-acciones,
+      td.col-acciones {
+        display: table-cell !important;
+        padding: 0.85rem 0.65rem !important;
+        width: 48px !important;
+        text-align: right !important;
+      }
+
+      .guest-meta-mobile {
+        display: flex !important;
+      }
+
+      .acciones-desktop {
+        display: none !important;
+      }
+
+      .acciones-mobile {
+        display: flex !important;
+        justify-content: flex-end !important;
+      }
+    }
   }
 }
 
@@ -1168,29 +1239,24 @@
     gap: 0.4rem;
   }
 
+  .exportar-mobile {
+    display: none;
+  }
+
   .toolbar-derecha {
     display: flex;
     align-items: center;
     gap: 0.55rem;
     flex-wrap: wrap;
     margin-left: auto;
+  }
 
-    @media (max-width: 1040px) {
-      margin-left: 0;
-      width: 100%;
-      justify-content: flex-start;
-    }
+  .btn-compartir-mobile {
+    display: none;
+  }
 
-    @media (max-width: 640px) {
-      flex-direction: column;
-      align-items: stretch;
-
-      .search-wrapper,
-      p-button {
-        width: 100%;
-        max-width: 100%;
-      }
-    }
+  .btn-compartir-desktop {
+    display: inline-flex;
   }
 
   .filtro-dropdown-wrap {
@@ -1242,6 +1308,140 @@
       }
     }
   }
+
+  /* --- ADAPTACIÓN TABLET (768px a 1023px) --- */
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .exportar-desktop {
+      display: none !important;
+    }
+    .exportar-mobile {
+      display: inline-flex !important;
+    }
+    .btn-compartir-desktop {
+      display: none !important;
+    }
+    .btn-compartir-mobile {
+      display: inline-flex !important;
+    }
+    .search-wrapper {
+      width: 200px;
+      max-width: 210px;
+    }
+  }
+
+  /* --- ADAPTACIÓN MÓVIL (< 768px) --- */
+  @media (max-width: 767px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+
+    .toolbar-izquierda {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .search-wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+      order: 1;
+    }
+
+    .filtro-dropdown-wrap {
+      order: 2;
+      flex: 1;
+
+      p-button,
+      .p-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .exportar-desktop {
+      display: none !important;
+    }
+
+    .exportar-mobile {
+      order: 3;
+      flex: 1;
+      display: inline-flex !important;
+
+      p-button,
+      .p-button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .toolbar-divider {
+      display: none !important;
+    }
+
+    .toolbar-derecha {
+      width: 100%;
+      margin-left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+
+      .btn-compartir-desktop {
+        display: none !important;
+      }
+
+      .btn-compartir-mobile {
+        display: inline-flex !important;
+        flex: 0 0 auto;
+      }
+
+      p-button:last-child,
+      .p-button:last-child {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+/* --- CELDAS Y COLUMNAS DE LA TABLA --- */
+.guest-name-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  .guest-name-text {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: #0f172a;
+    line-height: 1.3;
+  }
+}
+
+.guest-meta-mobile {
+  display: none;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+
+  .pases-badge-mobile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: #475569;
+
+    i {
+      color: #cca633;
+      font-size: 0.72rem;
+    }
+  }
 }
 
 /* --- EDITOR INLINE DE PASES EN TABLA --- */
@@ -1282,23 +1482,32 @@
     }
   }
 
-    .pases-count {
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #0f172a;
-      min-width: 22px;
-      text-align: center;
-      user-select: none;
-    }
+  .pases-count {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #0f172a;
+    min-width: 22px;
+    text-align: center;
+    user-select: none;
   }
+}
 
-  /* --- BOTONES DE ACCIÓN (ESTILO PANEL ADMIN PRIMENG) --- */
-  .action-buttons {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.25rem;
-  }
+/* --- BOTONES DE ACCIÓN (ESTILO PANEL ADMIN PRIMENG) --- */
+.action-buttons,
+.acciones-desktop {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.acciones-mobile {
+  display: none;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+
 /* ==========================================================================
    CENTRO DE RECEPCIÓN Y CONTROL TOTAL VIP
    ========================================================================== */

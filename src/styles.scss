@@ -336,3 +336,266 @@ html body .p-overlaypanel.popover-filtros-invitados {
   }
 }
 
+/* =========================================================
+   9. MENÚS DESPLEGABLES FLOTANTES (p-menu de PrimeNG)
+   ========================================================= */
+html body .p-menu {
+  background: #ffffff !important;
+  border-radius: 12px !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 4px 10px -2px rgba(15, 23, 42, 0.06) !important;
+  padding: 0.35rem !important;
+  min-width: 210px !important;
+
+  .p-menuitem {
+    margin-bottom: 2px;
+
+    .p-menuitem-link {
+      border-radius: 8px !important;
+      padding: 0.55rem 0.75rem !important;
+      font-size: 0.835rem !important;
+      font-weight: 500 !important;
+      color: #334155 !important;
+      transition: all 0.15s ease !important;
+
+      .p-menuitem-icon {
+        margin-right: 0.6rem !important;
+        font-size: 0.95rem !important;
+        color: #cca633 !important;
+
+        &.pi-whatsapp {
+          color: #16a34a !important;
+        }
+
+        &.pi-file-excel {
+          color: #16a34a !important;
+        }
+
+        &.pi-file-pdf {
+          color: #dc2626 !important;
+        }
+
+        &.pi-eye {
+          color: #0284c7 !important;
+        }
+
+        &.pi-pencil {
+          color: #64748b !important;
+        }
+      }
+
+      &:hover {
+        background: #f8fafc !important;
+        color: #0f172a !important;
+      }
+    }
+
+    &.p-menuitem-separator {
+      border-top: 1px solid #f1f5f9 !important;
+      margin: 0.3rem 0 !important;
+    }
+  }
+}
+
+/* =========================================================
+   10. RESPONSIVIDAD GLOBAL DE LA TABLA DE INVITADOS (MÓVIL Y TABLET)
+   ========================================================= */
+
+/* En Desktop (>= 1024px) */
+.modern-table {
+  .acciones-desktop {
+    display: flex !important;
+  }
+  .acciones-mobile {
+    display: none !important;
+  }
+  .guest-meta-mobile {
+    display: none !important;
+  }
+}
+
+.table-toolbar {
+  .exportar-desktop {
+    display: flex !important;
+  }
+  .exportar-mobile {
+    display: none !important;
+  }
+  .btn-compartir-desktop {
+    display: inline-flex !important;
+  }
+  .btn-compartir-mobile {
+    display: none !important;
+  }
+}
+
+/* En Tablet (768px a 1023px) */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  .modern-table {
+    th.col-whatsapp,
+    td.col-whatsapp,
+    th.col-vip,
+    td.col-vip {
+      display: none !important;
+    }
+
+    th.col-respuesta,
+    td.col-respuesta,
+    th.col-pases,
+    td.col-pases {
+      display: table-cell !important;
+    }
+
+    .acciones-desktop {
+      display: flex !important;
+    }
+
+    .acciones-mobile {
+      display: none !important;
+    }
+
+    .guest-meta-mobile {
+      display: none !important;
+    }
+  }
+
+  .table-toolbar {
+    .exportar-desktop {
+      display: none !important;
+    }
+    .exportar-mobile {
+      display: inline-flex !important;
+    }
+    .btn-compartir-desktop {
+      display: none !important;
+    }
+    .btn-compartir-mobile {
+      display: inline-flex !important;
+    }
+  }
+}
+
+/* En Móvil (< 768px) - SOLO NOMBRE Y ACCIONES (3 PUNTITOS) */
+@media screen and (max-width: 767px) {
+  .modern-table {
+    /* Ocultar completamente columnas que saturan la pantalla */
+    th.col-respuesta,
+    td.col-respuesta,
+    th.col-pases,
+    td.col-pases,
+    th.col-whatsapp,
+    td.col-whatsapp,
+    th.col-vip,
+    td.col-vip {
+      display: none !important;
+    }
+
+    /* Columna Nombre toma todo el ancho disponible */
+    th.col-nombre,
+    td.col-nombre {
+      display: table-cell !important;
+      padding: 0.85rem 0.65rem !important;
+    }
+
+    /* Columna Acciones ajustada a los 3 puntitos */
+    th.col-acciones,
+    td.col-acciones {
+      display: table-cell !important;
+      padding: 0.85rem 0.65rem !important;
+      width: 48px !important;
+      text-align: right !important;
+    }
+
+    /* Mostrar subtítulo de estado y pases debajo del nombre */
+    .guest-meta-mobile {
+      display: flex !important;
+    }
+
+    /* Ocultar botones individuales de desktop */
+    .acciones-desktop {
+      display: none !important;
+    }
+
+    /* Mostrar botón de 3 puntitos */
+    .acciones-mobile {
+      display: flex !important;
+      justify-content: flex-end !important;
+    }
+  }
+
+  /* Toolbar en móvil: limpio y compacto */
+  .table-toolbar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.6rem !important;
+
+    .toolbar-izquierda {
+      width: 100% !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.4rem !important;
+      flex-wrap: wrap !important;
+    }
+
+    .search-wrapper {
+      width: 100% !important;
+      max-width: 100% !important;
+      order: 1 !important;
+    }
+
+    .filtro-dropdown-wrap {
+      order: 2 !important;
+      flex: 1 1 auto !important;
+
+      .p-button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+    }
+
+    .exportar-desktop {
+      display: none !important;
+    }
+
+    .exportar-mobile {
+      order: 3 !important;
+      flex: 1 1 auto !important;
+      display: inline-flex !important;
+
+      .p-button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+    }
+
+    .toolbar-divider {
+      display: none !important;
+    }
+
+    .toolbar-derecha {
+      width: 100% !important;
+      margin-left: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 0.45rem !important;
+
+      .btn-compartir-desktop {
+        display: none !important;
+      }
+
+      .btn-compartir-mobile {
+        display: inline-flex !important;
+      }
+
+      p-button:last-child,
+      .p-button:last-child {
+        flex: 1 1 auto !important;
+        justify-content: center !important;
+      }
+    }
+  }
+}
+
+
