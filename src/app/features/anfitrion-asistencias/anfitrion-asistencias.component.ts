@@ -1,4 +1,17 @@
-import { Component, OnDestroy, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  computed,
+  inject,
+  OnInit,
+  signal,
+  AfterViewInit,
+  Directive,
+  ElementRef,
+  HostListener,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -25,6 +38,72 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
+import { InputOtpModule } from 'primeng/inputotp';
+
+/**
+ * Directiva que fuerza a iOS y Android a abrir el teclado numérico telefónico
+ * en las casillas de InputOtp sin romper el funcionamiento ni las animaciones,
+ * y previene la escritura de letras emitiendo una alerta.
+ */
+@Directive({
+  selector: '[appOtpNumerico]',
+  standalone: true,
+})
+export class OtpNumericoDirective implements AfterViewInit {
+  private el = inject(ElementRef);
+  @Output() caracterInvalido = new EventEmitter<void>();
+
+  ngAfterViewInit(): void {
+    this.aplicarAtributos();
+  }
+
+  @HostListener('focusin')
+  onFocus(): void {
+    this.aplicarAtributos();
+  }
+
+  @HostListener('keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    const teclasEspeciales = [
+      'Backspace',
+      'Tab',
+      'Delete',
+      'ArrowLeft',
+      'ArrowRight',
+      'ArrowUp',
+      'ArrowDown',
+      'Enter',
+      'Escape',
+    ];
+    if (teclasEspeciales.includes(event.key) || event.ctrlKey || event.metaKey) {
+      return;
+    }
+
+    // Si se presiona cualquier tecla que no sea un número 0-9
+    if (!/^[0-9]$/.test(event.key)) {
+      event.preventDefault();
+      this.caracterInvalido.emit();
+    }
+  }
+
+  @HostListener('paste', ['$event'])
+  onPaste(event: ClipboardEvent): void {
+    const pegado = event.clipboardData?.getData('text') || '';
+    if (pegado && !/^\d+$/.test(pegado)) {
+      this.caracterInvalido.emit();
+    }
+  }
+
+  private aplicarAtributos(): void {
+    const inputs = this.el.nativeElement.querySelectorAll('input');
+    inputs.forEach((input: HTMLInputElement) => {
+      input.setAttribute('type', 'tel');
+      input.setAttribute('inputmode', 'numeric');
+      input.setAttribute('pattern', '[0-9]*');
+      input.setAttribute('autocomplete', 'one-time-code');
+    });
+  }
+}
 
 @Component({
   selector: 'app-anfitrion-asistencias',
@@ -42,12 +121,14 @@ import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
     TooltipModule,
     OverlayPanelModule,
     MenuModule,
+    InputOtpModule,
+    OtpNumericoDirective,
   ],
   providers: [DialogService],
   templateUrl: './anfitrion-asistencias.component.html',
   styleUrl: './anfitrion-asistencias.component.scss',
 })
-export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
+export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy, AfterViewInit {
   private route = inject(ActivatedRoute);
   private eventService = inject(EventService);
   private dialogService = inject(DialogService);
@@ -65,6 +146,8 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   pinIngresado = '';
   pinDesbloqueado = signal<boolean>(false);
   errorPin = signal<boolean>(false);
+  errorSoloNumeros = signal<boolean>(false);
+  private timerAlertaNumeros: any;
 
   // Pestañas del portal anfitrión
   pestanaActiva = signal<'resumen' | 'invitados' | 'recepcion' | 'album'>('resumen');
@@ -87,6 +170,21 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   ];
 
   menuInvitadoItems: MenuItem[] = [];
+
+  ngAfterViewInit(): void {
+    this.activarTecladoNumericoMovil();
+  }
+  // Fuerza a los navegadores móviles (iOS y Android) a abrir el teclado numérico grande
+  activarTecladoNumericoMovil(): void {
+    setTimeout(() => {
+      const inputs = document.querySelectorAll<HTMLInputElement>('.pin-otp-contenedor input');
+      inputs.forEach((input) => {
+        input.setAttribute('inputmode', 'numeric');
+        input.setAttribute('pattern', '[0-9]*');
+        input.setAttribute('type', 'tel');
+      });
+    }, 150);
+  }
 
   // Métricas de Aforo y Recepción en Vivo
   totalIngresados = computed(() =>
@@ -172,7 +270,9 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   // Búsqueda manual de respaldo en recepción
   busquedaRecepcion = signal<string>('');
   invitadosRecepcionFiltrados = computed(() => {
-    const lista = this.invitados().filter((i) => (i.estado ? i.estado === 'confirmado' : i.asistira));
+    const lista = this.invitados().filter((i) =>
+      i.estado ? i.estado === 'confirmado' : i.asistira,
+    );
     const q = this.busquedaRecepcion().trim().toLowerCase();
     if (!q) return lista;
     return lista.filter(
@@ -499,6 +599,31 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       this.cargando.set(false);
     }
   }
+
+  // Muestra alerta temporal cuando se intenta teclear o pegar texto
+  mostrarAlertaSoloNumeros(): void {
+    this.errorSoloNumeros.set(true);
+    clearTimeout(this.timerAlertaNumeros);
+    this.timerAlertaNumeros = setTimeout(() => {
+      this.errorSoloNumeros.set(false);
+    }, 2800);
+  }
+
+  // Se dispara en cada pulsación del InputOtp
+  onPinChange(): void {
+    this.errorPin.set(false);
+    // Si contiene caracteres no numéricos, mostramos la alerta y limpiamos
+    if (this.pinIngresado && /\D/.test(this.pinIngresado)) {
+      this.mostrarAlertaSoloNumeros();
+      this.pinIngresado = this.pinIngresado.replace(/\D/g, '');
+    }
+    const pinEsperado = this.evento()?.pinAnfitrion;
+    const longitud = pinEsperado ? pinEsperado.length : 4;
+    // Si ya completó todos los dígitos, validamos automáticamente
+    if (this.pinIngresado && this.pinIngresado.length === longitud) {
+      this.verificarPin();
+    }
+  }
   async verificarPin() {
     const ev = this.evento();
     if (!ev || !ev.id) return;
@@ -551,9 +676,13 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       const pases = normalizada
         .filter((i) => (i.estado ? i.estado === 'confirmado' : i.asistira))
         .reduce((sum, i) => sum + (Number(i.pasesConfirmados) || 0), 0);
-      const confirmados = normalizada.filter((i) => (i.estado ? i.estado === 'confirmado' : i.asistira)).length;
+      const confirmados = normalizada.filter((i) =>
+        i.estado ? i.estado === 'confirmado' : i.asistira,
+      ).length;
       const pendientes = normalizada.filter((i) => i.estado === 'pendiente').length;
-      const cancelados = normalizada.filter((i) => (i.estado ? i.estado === 'declinado' : !i.asistira)).length;
+      const cancelados = normalizada.filter((i) =>
+        i.estado ? i.estado === 'declinado' : !i.asistira,
+      ).length;
 
       this.totalPases.set(pases);
       this.totalConfirmados.set(confirmados);
@@ -1158,7 +1287,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
     // Actualización reactiva inmediata
     this.invitados.update((lista) =>
-      lista.map((i) => (i.id === invId ? { ...i, pasesConfirmados: nuevo } : i))
+      lista.map((i) => (i.id === invId ? { ...i, pasesConfirmados: nuevo } : i)),
     );
 
     // Actualizar KPI de pases
@@ -1173,7 +1302,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       console.error('Error al actualizar pases del invitado:', err);
       // Revertir en caso de error
       this.invitados.update((lista) =>
-        lista.map((i) => (i.id === invId ? { ...i, pasesConfirmados: actual } : i))
+        lista.map((i) => (i.id === invId ? { ...i, pasesConfirmados: actual } : i)),
       );
       const pasesTotalesRev = this.invitados()
         .filter((i) => i.asistira)
