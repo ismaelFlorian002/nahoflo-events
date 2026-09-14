@@ -278,24 +278,4 @@
       color: #cca633;
     }
   }
-
-  .btn-modal-cancelar {
-    border-radius: 8px;
-    font-weight: 600;
-  }
-
-  .btn-modal-guardar {
-    background: linear-gradient(135deg, #cca633, #b8952d);
-    border-color: #cca633;
-    border-radius: 8px;
-    color: #ffffff;
-    font-weight: 700;
-    box-shadow: 0 2px 8px rgba(204, 166, 51, 0.25);
-
-    &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #b8952d, #a18124);
-      border-color: #b8952d;
-      transform: translateY(-1px);
-    }
-  }
 }

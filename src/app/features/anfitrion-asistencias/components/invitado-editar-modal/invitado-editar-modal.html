@@ -117,18 +117,18 @@
     <p-button
       label="Cancelar"
       severity="secondary"
-      text
+      [text]="true"
+      size="small"
       [disabled]="guardando()"
-      (onClick)="cancelar()"
-      styleClass="btn-modal-cancelar">
+      (onClick)="cancelar()">
     </p-button>
 
     <p-button
       label="Guardar Cambios"
       icon="pi pi-check"
       type="submit"
-      [loading]="guardando()"
-      styleClass="btn-modal-guardar">
+      size="small"
+      [loading]="guardando()">
     </p-button>
   </div>
 </form>

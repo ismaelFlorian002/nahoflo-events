@@ -156,60 +156,10 @@
   .acciones-izquierda {
     display: flex;
     gap: 0.65rem;
-  }
-
-  .btn-accion-secundario {
-    display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
-    padding: 0.6rem 1rem;
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    color: #334155;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.2s, border-color 0.2s;
 
-    &:hover {
-      background: #f1f5f9;
-      border-color: #94a3b8;
-    }
-
-    i {
-      font-size: 0.9rem;
-      color: #64748b;
-    }
-  }
-
-  .btn-imprimir-principal {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.65rem 1.35rem;
-    background: linear-gradient(135deg, #cca633 0%, #b89228 100%);
-    border: none;
-    border-radius: 50px;
-    color: #ffffff;
-    font-size: 0.88rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(204, 166, 51, 0.35);
-    transition: transform 0.2s, box-shadow 0.2s;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 18px rgba(204, 166, 51, 0.5);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-
-    i {
-      font-size: 1rem;
+    .link-descargar-qr {
+      text-decoration: none;
     }
   }
 }

@@ -150,13 +150,13 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   conteoFiltroActivo = computed(() => {
     switch (this.filtroRespuesta()) {
       case 'asistira':
-        return this.totalConfirmados();
+        return String(this.totalConfirmados());
       case 'pendiente':
-        return this.totalPendientesConfirmacion();
+        return String(this.totalPendientesConfirmacion());
       case 'no_asiste':
-        return this.totalCancelados();
+        return String(this.totalCancelados());
       default:
-        return this.invitados().length;
+        return String(this.invitados().length);
     }
   });
 

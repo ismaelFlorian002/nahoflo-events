@@ -201,13 +201,12 @@
 
               <!-- ACCIONES RÁPIDAS DEL RESUMEN -->
               <div class="paquete-acciones-rapidas">
-                <button
-                  type="button"
-                  class="btn-resumen-accion btn-copiar-general-resumen"
-                  (click)="copiarEnlaceGeneral()">
-                  <i [class]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"></i>
-                  <span>{{ copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace General' }}</span>
-                </button>
+                <p-button
+                  [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace General'"
+                  [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
+                  size="small"
+                  (onClick)="copiarEnlaceGeneral()">
+                </p-button>
 
                 <a [routerLink]="['/e', ev.enlace]" target="_blank" class="btn-resumen-accion btn-ver-inv-resumen">
                   <i class="pi pi-external-link"></i>
@@ -224,13 +223,14 @@
                     <h3>Métricas de Confirmación & Asistencia</h3>
                     <p>Balance general de pases reservados y respuestas registradas.</p>
                   </div>
-                  <button
-                    type="button"
-                    class="btn-ir-seccion"
-                    (click)="cambiarPestana('invitados')">
-                    <i class="pi pi-users"></i>
-                    <span>Ver Lista de Invitados</span>
-                  </button>
+                  <p-button
+                    label="Ver Lista de Invitados"
+                    icon="pi pi-users"
+                    size="small"
+                    [outlined]="true"
+                    severity="secondary"
+                    (onClick)="cambiarPestana('invitados')">
+                  </p-button>
                 </div>
 
                 <!-- TARJETAS DE KPIS PRINCIPALES -->
@@ -319,13 +319,14 @@
                     <p>Monitorea la llegada de tus invitados y valida sus accesos en tiempo real.</p>
                   </div>
 
-                  <button
-                    type="button"
-                    class="btn-ir-seccion"
-                    (click)="cambiarPestana('recepcion')">
-                    <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"></i>
-                    <span>{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción' }}</span>
-                  </button>
+                  <p-button
+                    [label]="ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción'"
+                    [icon]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"
+                    size="small"
+                    [outlined]="true"
+                    severity="secondary"
+                    (onClick)="cambiarPestana('recepcion')">
+                  </p-button>
                 </div>
 
                 <div class="grid-metricas-puerta-resumen">
@@ -359,21 +360,21 @@
                   </div>
 
                   <div class="album-botones-resumen">
-                    <button
-                      type="button"
-                      class="btn-qr-mesas-resumen"
-                      (click)="abrirModalQrMesas()">
-                      <i class="pi pi-qrcode"></i>
-                      <span>QR para Mesas</span>
-                    </button>
+                    <p-button
+                      label="QR para Mesas"
+                      icon="pi pi-qrcode"
+                      size="small"
+                      (onClick)="abrirModalQrMesas()">
+                    </p-button>
 
-                    <button
-                      type="button"
-                      class="btn-ir-seccion"
-                      (click)="cambiarPestana('album')">
-                      <i class="pi pi-images"></i>
-                      <span>Moderar Álbum</span>
-                    </button>
+                    <p-button
+                      label="Moderar Álbum"
+                      icon="pi pi-images"
+                      size="small"
+                      [outlined]="true"
+                      severity="secondary"
+                      (onClick)="cambiarPestana('album')">
+                    </p-button>
                   </div>
                 </div>
 
@@ -421,17 +422,17 @@
                   <div class="toolbar-izquierda">
                     <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL -->
                     <div class="filtro-dropdown-wrap">
-                      <button
-                        type="button"
-                        class="btn-filtro-trigger"
-                        [class.filtro-activo]="filtroRespuesta() !== 'todos'"
-                        (click)="opFiltros.toggle($event)"
+                      <p-button
+                        icon="pi pi-filter"
+                        [label]="labelFiltroActivo()"
+                        [badge]="conteoFiltroActivo()"
+                        badgeClass="p-badge-secondary"
+                        size="small"
+                        [outlined]="filtroRespuesta() === 'todos'"
+                        [severity]="filtroRespuesta() !== 'todos' ? 'primary' : 'secondary'"
+                        (onClick)="opFiltros.toggle($event)"
                         title="Filtrar por estado de respuesta">
-                        <i class="pi pi-filter"></i>
-                        <span class="label-filtro">{{ labelFiltroActivo() }}</span>
-                        <span class="badge-filtro-conteo">{{ conteoFiltroActivo() }}</span>
-                        <i class="pi pi-chevron-down flecha-filtro"></i>
-                      </button>
+                      </p-button>
 
                       <p-overlayPanel #opFiltros styleClass="popover-filtros-invitados">
                         <div class="menu-filtros-popover">
@@ -497,25 +498,27 @@
 
                     <!-- BOTONES DE EXPORTAR -->
                     <div class="exportar-grupo">
-                      <button
-                        type="button"
-                        class="btn-exportar-excel"
-                        (click)="exportarExcel()"
+                      <p-button
+                        label="Excel"
+                        icon="pi pi-file-excel"
+                        size="small"
+                        severity="success"
+                        [outlined]="true"
                         [disabled]="invitadosFiltrados().length === 0"
+                        (onClick)="exportarExcel()"
                         title="Descargar lista filtrada en Excel">
-                        <i class="pi pi-file-excel"></i>
-                        <span>Excel</span>
-                      </button>
+                      </p-button>
 
-                      <button
-                        type="button"
-                        class="btn-exportar-pdf"
-                        (click)="exportarPdf()"
+                      <p-button
+                        label="PDF"
+                        icon="pi pi-file-pdf"
+                        size="small"
+                        severity="danger"
+                        [outlined]="true"
                         [disabled]="invitadosFiltrados().length === 0"
+                        (onClick)="exportarPdf()"
                         title="Descargar reporte filtrado en PDF">
-                        <i class="pi pi-file-pdf"></i>
-                        <span>PDF</span>
-                      </button>
+                      </p-button>
                     </div>
                   </div>
 
@@ -532,23 +535,24 @@
                         placeholder="Buscar por nombre o teléfono..." />
                     </span>
 
-                    <button
-                      type="button"
-                      class="btn-compartir-toolbar"
-                      (click)="abrirModalCompartir()"
+                    <p-button
+                      label="Cómo compartir invitación"
+                      icon="pi pi-info-circle"
+                      size="small"
+                      [outlined]="true"
+                      severity="secondary"
+                      (onClick)="abrirModalCompartir()"
                       title="Cómo compartir invitación">
-                      <i class="pi pi-info-circle"></i>
-                      <span>Cómo compartir invitación</span>
-                    </button>
+                    </p-button>
 
-                    <button
-                      type="button"
-                      class="btn-nuevo-invitado"
-                      (click)="abrirModalCrearInvitado()"
+                    <p-button
+                      label="Agregar"
+                      icon="pi pi-user-plus"
+                      size="small"
+
+                      (onClick)="abrirModalCrearInvitado()"
                       title="Registrar nuevo invitado manualmente">
-                      <i class="pi pi-user-plus"></i>
-                      <span>Agregar</span>
-                    </button>
+                    </p-button>
 
                   </div>
 
@@ -750,14 +754,13 @@
                   <div class="card-escaner">
                     <div class="cabecera-card-puerta">
                       <h3><i class="pi pi-camera"></i> Escáner en Puerta</h3>
-                      <button
-                        type="button"
-                        class="btn-toggle-camara"
-                        [class.activo]="escanerActivo()"
-                        (click)="toggleEscaner()">
-                        <i [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
-                        <span>{{ escanerActivo() ? 'Detener Cámara' : 'Activar Cámara' }}</span>
-                      </button>
+                      <p-button
+                        [label]="escanerActivo() ? 'Detener Cámara' : 'Activar Cámara'"
+                        [icon]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"
+                        [severity]="escanerActivo() ? 'danger' : 'primary'"
+                        size="small"
+                        (onClick)="toggleEscaner()">
+                      </p-button>
                     </div>
 
                     <!-- VISOR DE CÁMARA -->
@@ -794,9 +797,14 @@
                               }
                             </p>
                             @if (res.tipo === 'exito') {
-                              <button type="button" class="btn-deshacer" (click)="revertirCheckIn(inv)">
-                                Deshacer ingreso
-                              </button>
+                              <p-button
+                                label="Deshacer ingreso"
+                                icon="pi pi-undo"
+                                size="small"
+                                [text]="true"
+                                severity="secondary"
+                                (onClick)="revertirCheckIn(inv)">
+                              </p-button>
                             }
                           }
                         </div>
@@ -841,21 +849,23 @@
                             <span class="badge-ingresado">
                               <i class="pi pi-check"></i> Ingresó {{ formatearFecha(inv.horaIngreso) }}
                             </span>
-                            <button
-                              type="button"
-                              class="btn-revertir-mini"
-                              (click)="revertirCheckIn(inv)"
-                              title="Revertir ingreso">
-                              <i class="pi pi-undo"></i>
-                            </button>
+                            <p-button
+                              icon="pi pi-undo"
+                              [rounded]="true"
+                              [text]="true"
+                              severity="secondary"
+                              size="small"
+                              pTooltip="Revertir ingreso"
+                              tooltipPosition="left"
+                              (onClick)="revertirCheckIn(inv)">
+                            </p-button>
                           } @else {
-                            <button
-                              type="button"
-                              class="btn-checkin-manual"
-                              (click)="hacerCheckIn(inv)">
-                              <i class="pi pi-sign-in"></i>
-                              <span>Dar Acceso</span>
-                            </button>
+                            <p-button
+                              label="Dar Acceso"
+                              icon="pi pi-sign-in"
+                              size="small"
+                              (onClick)="hacerCheckIn(inv)">
+                            </p-button>
                           }
                         </div>
                       </div>
@@ -885,27 +895,22 @@
               <!-- BOTONES DE ACCIÓN PARA EL ANFITRIÓN -->
               <div class="acciones-cabecera-album">
                 <!-- BOTÓN QR PARA CENTROS DE MESA -->
-                <button
-                  type="button"
-                  class="btn-qr-mesas"
-                  (click)="abrirModalQrMesas()">
-                  <i class="pi pi-qrcode"></i>
-                  <span>QR para Mesas</span>
-                </button>
+                <p-button
+                  label="QR para Mesas"
+                  icon="pi pi-qrcode"
+                  size="small"
+                  (onClick)="abrirModalQrMesas()">
+                </p-button>
                 @if (recuerdos().length > 0) {
-                  <button
-                    type="button"
-                    class="btn-descargar-todo"
+                  <p-button
+                    [label]="descargandoTodo() ? progresoDescarga() : 'Descargar Todo (' + contarFotosTotales() + ')'"
+                    [icon]="descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"
+                    size="small"
+                    [outlined]="true"
+                    severity="secondary"
                     [disabled]="descargandoTodo()"
-                    (click)="descargarTodasLasFotos()">
-                    @if (descargandoTodo()) {
-                      <i class="pi pi-spin pi-spinner"></i>
-                      <span>{{ progresoDescarga() }}</span>
-                    } @else {
-                      <i class="pi pi-download"></i>
-                      <span>Descargar Todo ({{ contarFotosTotales() }})</span>
-                    }
-                  </button>
+                    (onClick)="descargarTodasLasFotos()">
+                  </p-button>
                 }
 
                 <a [routerLink]="['/e', ev.enlace, 'album']" target="_blank" class="btn-invitacion">
@@ -955,24 +960,24 @@
 
                       <!-- BOTONES: DESCARGAR + ELIMINAR -->
                       <div class="fila-acciones-recuerdo">
-                        <button
-                          type="button"
-                          class="btn-card-accion btn-card-descargar"
-                          (click)="descargarRecuerdo(recuerdo, $event)"
-                          title="Descargar fotos de esta publicación">
-                          <i class="pi pi-download"></i>
-                          <span>Descargar</span>
-                        </button>
+                        <p-button
+                          label="Descargar"
+                          icon="pi pi-download"
+                          size="small"
+                          [outlined]="true"
+                          severity="secondary"
+                          (onClick)="descargarRecuerdo(recuerdo, $event)">
+                        </p-button>
 
-                        <button
-                          type="button"
-                          class="btn-card-accion btn-card-eliminar"
+                        <p-button
+                          label="Eliminar"
+                          [icon]="eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"
+                          size="small"
+                          [outlined]="true"
+                          severity="danger"
                           [disabled]="eliminandoId() === recuerdo.id"
-                          (click)="eliminarRecuerdo(recuerdo)"
-                          title="Eliminar del álbum">
-                          <i [class]="eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"></i>
-                          <span>Eliminar</span>
-                        </button>
+                          (onClick)="eliminarRecuerdo(recuerdo)">
+                        </p-button>
                       </div>
                     </div>
 
@@ -990,9 +995,15 @@
     @if (invitadoModalQr(); as modal) {
       <div class="modal-backdrop-qr" (click)="cerrarModalQr()">
         <div class="modal-card-qr" (click)="$event.stopPropagation()">
-          <button type="button" class="btn-cerrar-modal" (click)="cerrarModalQr()">
-            <i class="pi pi-times"></i>
-          </button>
+          <p-button
+            icon="pi pi-times"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            styleClass="btn-cerrar-modal-p"
+            (onClick)="cerrarModalQr()">
+          </p-button>
 
           <div class="modal-qr-header">
             <span class="badge-vip-modal"><i class="pi pi-shield"></i> PASE DIGITAL VIP</span>
@@ -1036,14 +1047,23 @@
           </div>
 
           <div class="modal-qr-actions">
-            <button type="button" class="btn-action-qr btn-descargar" (click)="descargarQrInvitado()">
-              <i class="pi pi-download"></i>
-              <span>Descargar Pase (PNG)</span>
-            </button>
-            <button type="button" class="btn-action-qr btn-whatsapp" (click)="compartirQrWhatsApp()">
-              <i class="pi pi-whatsapp"></i>
-              <span>Enviar por WhatsApp</span>
-            </button>
+            <p-button
+              label="Descargar Pase (PNG)"
+              icon="pi pi-download"
+              size="small"
+              severity="secondary"
+              [outlined]="true"
+              styleClass="w-full"
+              (onClick)="descargarQrInvitado()">
+            </p-button>
+            <p-button
+              label="Enviar por WhatsApp"
+              icon="pi pi-whatsapp"
+              size="small"
+              severity="success"
+              styleClass="w-full"
+              (onClick)="compartirQrWhatsApp()">
+            </p-button>
           </div>
         </div>
       </div>

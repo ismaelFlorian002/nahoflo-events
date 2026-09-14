@@ -20,32 +20,96 @@ app-root {
 }
 
 /* =========================================================
-   2. TAMAÑO DE BOTONES (Compactos por defecto)
+   2. TAMAÑO DE BOTONES (Estándar, Small y Large)
    ========================================================= */
 html body .p-button {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 html body .p-button .p-button-icon {
   font-size: 0.875rem;
+}
+
+/* Soporte para PrimeNG size="small" (p-button-sm) */
+html body .p-button.p-button-sm:not(.p-button-icon-only),
+html body .p-button-sm .p-button:not(.p-button-icon-only) {
+  padding: 0.42rem 0.85rem !important;
+  font-size: 0.8125rem !important;
+  border-radius: 8px !important;
+
+  .p-button-icon {
+    font-size: 0.8125rem !important;
+  }
+}
+
+html body .p-button.p-button-sm.p-button-icon-only,
+html body .p-button-sm .p-button.p-button-icon-only {
+  width: 2rem !important;
+  height: 2rem !important;
+  padding: 0 !important;
+  font-size: 0.8125rem !important;
+
+  .p-button-icon {
+    font-size: 0.8125rem !important;
+  }
+}
+
+/* Soporte para PrimeNG size="large" (p-button-lg) */
+html body .p-button.p-button-lg:not(.p-button-icon-only),
+html body .p-button-lg .p-button:not(.p-button-icon-only) {
+  padding: 0.65rem 1.25rem !important;
+  font-size: 1rem !important;
+  border-radius: 10px !important;
+}
+
+html body .p-button.p-button-lg.p-button-icon-only,
+html body .p-button-lg .p-button.p-button-icon-only {
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  padding: 0 !important;
+  font-size: 1.15rem !important;
 }
 
 /* =========================================================
    3. DORADO NAHOFLO PARA BOTONES PRIMARIOS
    Excluye severidades y el botón del calendario
    ========================================================= */
-/* Línea 38 */
 html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):not(.p-selectbutton *) {
   background-color: #cca633;
   border-color: #cca633;
   color: #ffffff;
-}
 
-/* Línea 44 (hover) */
-html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):not(.p-selectbutton *):hover {
-  background-color: #b8952d;
-  border-color: #b8952d;
+  &:hover {
+    background-color: #b8952d;
+    border-color: #b8952d;
+    color: #ffffff;
+  }
+
+  &.p-button-outlined {
+    background-color: transparent !important;
+    border-color: #cca633 !important;
+    color: #cca633 !important;
+
+    &:hover {
+      background-color: rgba(204, 166, 51, 0.08) !important;
+      border-color: #b8952d !important;
+      color: #b8952d !important;
+    }
+  }
+
+  &.p-button-text {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: #cca633 !important;
+
+    &:hover {
+      background-color: rgba(204, 166, 51, 0.08) !important;
+      color: #b8952d !important;
+    }
+  }
 }
 
 /* =========================================================

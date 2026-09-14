@@ -263,18 +263,4 @@
   gap: 0.75rem;
   padding-top: 1rem;
   border-top: 1px solid #e2e8f0;
-
-  :host ::ng-deep {
-    .btn-modal-editar {
-      background: #0f172a;
-      border-color: #0f172a;
-      color: #cca633;
-      font-weight: 700;
-
-      &:hover {
-        background: #1e293b;
-        border-color: #1e293b;
-      }
-    }
-  }
 }
