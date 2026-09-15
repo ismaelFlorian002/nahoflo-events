@@ -12,8 +12,8 @@ import { AuthService } from '../../../core/services/auth';
   selector: 'app-admin-layout',
   standalone: true,
   imports: [RouterOutlet, ButtonModule, SidebarModule, MenuModule],
-  templateUrl: './admin-layout.html',
-  styleUrls: ['./admin-layout.scss'],
+  templateUrl: './admin-layout.component.html',
+  styleUrls: ['./admin-layout.component.scss'],
 })
 export class AdminLayoutComponent implements OnInit {
   private authService = inject(AuthService);

@@ -6,7 +6,7 @@ import { Evento } from '../../core/models/event.model';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
-import { ReproductorMusicaComponent } from './reproductor-musica/reproductor-musica';
+import { ReproductorMusicaComponent } from './reproductor-musica/reproductor-musica.component';
 import { AudioService } from '../../core/services/audio.service';
 import { Button } from 'primeng/button';
 import QRCode from 'qrcode';

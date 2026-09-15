@@ -14,8 +14,8 @@ import { AuthService } from '../../../core/services/auth';
   standalone: true,
   // Al ser Standalone, debemos importar estrictamente lo que usaremos
   imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, CardModule],
-  templateUrl: './login.html',
-  styleUrls: ['./login.scss'],
+  templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   // Inyección de dependencias

@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { EventLayout } from './event-layout';
+import { AdminLayout } from './admin-layout.component';
 
-describe('EventLayout', () => {
-  let component: EventLayout;
-  let fixture: ComponentFixture<EventLayout>;
+describe('AdminLayout', () => {
+  let component: AdminLayout;
+  let fixture: ComponentFixture<AdminLayout>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EventLayout],
+      imports: [AdminLayout],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(EventLayout);
+    fixture = TestBed.createComponent(AdminLayout);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

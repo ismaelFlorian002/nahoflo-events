@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PublicLayout } from './public-layout';
+import { PublicLayout } from './public-layout.component';
 
 describe('PublicLayout', () => {
   let component: PublicLayout;

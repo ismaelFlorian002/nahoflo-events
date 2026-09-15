@@ -37,8 +37,8 @@ import { ClienteModel } from '../../../../core/models/cliente.model';
     DropdownModule,
     TooltipModule,
   ],
-  templateUrl: './event-form.html',
-  styleUrl: './event-form.scss',
+  templateUrl: './event-form.component.html',
+  styleUrl: './event-form.component.scss',
 })
 export class EventFormComponent implements OnInit {
   private fb = inject(FormBuilder);

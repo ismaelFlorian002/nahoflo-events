@@ -10,8 +10,8 @@ import QRCode from 'qrcode';
   selector: 'app-qr-mesa-modal',
   standalone: true,
   imports: [CommonModule, ButtonModule],
-  templateUrl: './qr-mesa-modal.html',
-  styleUrl: './qr-mesa-modal.scss',
+  templateUrl: './qr-mesa-modal.component.html',
+  styleUrl: './qr-mesa-modal.component.scss',
 })
 export class QrMesaModalComponent implements OnInit {
   public config = inject(DynamicDialogConfig);

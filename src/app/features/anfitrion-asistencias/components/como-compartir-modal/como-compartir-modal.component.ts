@@ -9,8 +9,8 @@ import { copiarAlPortapapeles } from '../../../../core/utils/clipboard.util';
   selector: 'app-como-compartir-modal',
   standalone: true,
   imports: [CommonModule, ButtonModule],
-  templateUrl: './como-compartir-modal.html',
-  styleUrl: './como-compartir-modal.scss',
+  templateUrl: './como-compartir-modal.component.html',
+  styleUrl: './como-compartir-modal.component.scss',
 })
 export class ComoCompartirModalComponent implements OnInit {
   public config = inject(DynamicDialogConfig);

@@ -27,11 +27,11 @@ import { GuestTableComponent } from './components/guest-table/guest-table.compon
 import { ScannerViewComponent } from './components/scanner-view/scanner-view.component';
 
 // Modales existentes
-import { QrMesaModalComponent } from '../album-digital/qr-mesa-modal/qr-mesa-modal';
-import { InvitadoDetalleModalComponent } from './components/invitado-detalle-modal/invitado-detalle-modal';
-import { InvitadoFormModalComponent } from './components/invitado-form-modal/invitado-form-modal';
-import { ComoCompartirModalComponent } from './components/como-compartir-modal/como-compartir-modal';
-import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitado-qr-modal';
+import { QrMesaModalComponent } from '../album-digital/qr-mesa-modal/qr-mesa-modal.component';
+import { InvitadoDetalleModalComponent } from './components/invitado-detalle-modal/invitado-detalle-modal.component';
+import { InvitadoFormModalComponent } from './components/invitado-form-modal/invitado-form-modal.component';
+import { ComoCompartirModalComponent } from './components/como-compartir-modal/como-compartir-modal.component';
+import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitado-qr-modal.component';
 
 @Component({
   selector: 'app-anfitrion-asistencias',

@@ -7,17 +7,17 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { EventService } from '../../core/services/event.service';
 import { Evento } from '../../core/models/event.model';
 import { RecuerdoModel } from '../../core/models/RecuerdoModel';
-import { SubirFotoModalComponent } from './subir-foto-modal/subir-foto-modal';
-import { RecuerdoPreviewComponent } from './recuerdo-preview/recuerdo-preview';
-import { ComentariosModalComponent } from './comentarios-modal/comentarios-modal';
+import { SubirFotoModalComponent } from './subir-foto-modal/subir-foto-modal.component';
+import { RecuerdoPreviewComponent } from './recuerdo-preview/recuerdo-preview.component';
+import { ComentariosModalComponent } from './comentarios-modal/comentarios-modal.component';
 
 @Component({
   selector: 'app-album-digital',
   standalone: true,
   imports: [CommonModule, RouterModule, ButtonModule, ProgressSpinnerModule],
   providers: [DialogService],
-  templateUrl: './album-digital.html',
-  styleUrl: './album-digital.scss',
+  templateUrl: './album-digital.component.html',
+  styleUrl: './album-digital.component.scss',
 })
 export class AlbumDigitalComponent implements OnInit {
   private route = inject(ActivatedRoute);

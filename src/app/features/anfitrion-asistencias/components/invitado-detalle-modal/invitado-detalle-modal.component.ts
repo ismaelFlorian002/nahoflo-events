@@ -10,8 +10,8 @@ import { Evento } from '../../../../core/models/event.model';
   selector: 'app-invitado-detalle-modal',
   standalone: true,
   imports: [CommonModule, ButtonModule, TagModule],
-  templateUrl: './invitado-detalle-modal.html',
-  styleUrl: './invitado-detalle-modal.scss',
+  templateUrl: './invitado-detalle-modal.component.html',
+  styleUrl: './invitado-detalle-modal.component.scss',
 })
 export class InvitadoDetalleModalComponent implements OnInit {
   public config = inject(DynamicDialogConfig);

@@ -11,8 +11,8 @@ import { ComentarioModel, RecuerdoModel } from '../../../core/models/RecuerdoMod
   selector: 'app-comentarios-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule],
-  templateUrl: './comentarios-modal.html',
-  styleUrl: './comentarios-modal.scss',
+  templateUrl: './comentarios-modal.component.html',
+  styleUrl: './comentarios-modal.component.scss',
 })
 export class ComentariosModalComponent implements OnInit {
   private fb = inject(FormBuilder);

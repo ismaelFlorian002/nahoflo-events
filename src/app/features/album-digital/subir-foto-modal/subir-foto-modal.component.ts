@@ -12,8 +12,8 @@ import { comprimirImagen } from '../../../core/utils/image-compresor';
   selector: 'app-subir-foto-modal',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, InputTextareaModule],
-  templateUrl: './subir-foto-modal.html',
-  styleUrl: './subir-foto-modal.scss',
+  templateUrl: './subir-foto-modal.component.html',
+  styleUrl: './subir-foto-modal.component.scss',
 })
 export class SubirFotoModalComponent implements OnInit {
   private fb = inject(FormBuilder);

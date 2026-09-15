@@ -6,11 +6,11 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { EventService } from '../../../core/services/event.service';
-import { EventFormComponent } from '../components/event-form/event-form';
+import { EventFormComponent } from '../components/event-form/event-form.component';
 import { AsistenciasModalComponent } from '../components/asistencias-modal/asistencias-modal.component';
 import { DockModule } from 'primeng/dock';
 import { TooltipModule } from 'primeng/tooltip';
-import { QrMesaModalComponent } from '../../album-digital/qr-mesa-modal/qr-mesa-modal';
+import { QrMesaModalComponent } from '../../album-digital/qr-mesa-modal/qr-mesa-modal.component';
 
 // CORRECCIÓN 1: La ruta del servicio (3 niveles arriba)
 
@@ -34,9 +34,9 @@ import { QrMesaModalComponent } from '../../album-digital/qr-mesa-modal/qr-mesa-
   // CORRECCIÓN 3: Angular dice que no encuentra el archivo HTML.
   // Fíjate en el panel de la izquierda de tu WebStorm cómo se llama tu archivo HTML realmente.
   // Si se llama solo "dashboard.html", quítale el ".component" a esta línea:
-  templateUrl: './dashboard.html',
+  templateUrl: './dashboard.component.html',
 
-  styleUrl: './dashboard.scss',
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
   private eventService = inject(EventService);

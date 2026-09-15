@@ -8,8 +8,8 @@ import { RecuerdoModel } from '../../../core/models/RecuerdoModel';
   selector: 'app-recuerdo-preview',
   standalone: true,
   imports: [CommonModule, ButtonModule],
-  templateUrl: './recuerdo-preview.html',
-  styleUrl: './recuerdo-preview.scss',
+  templateUrl: './recuerdo-preview.component.html',
+  styleUrl: './recuerdo-preview.component.scss',
 })
 export class RecuerdoPreviewComponent implements OnInit {
   public config = inject(DynamicDialogConfig);

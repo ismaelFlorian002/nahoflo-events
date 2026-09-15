@@ -20,8 +20,8 @@ import { EstadoInvitado, InvitadoModel } from '../../../../core/models/invitado.
     ButtonModule,
     InputTextModule,
   ],
-  templateUrl: './invitado-form-modal.html',
-  styleUrl: './invitado-form-modal.scss',
+  templateUrl: './invitado-form-modal.component.html',
+  styleUrl: './invitado-form-modal.component.scss',
 })
 export class InvitadoFormModalComponent implements OnInit {
   private fb = inject(FormBuilder);

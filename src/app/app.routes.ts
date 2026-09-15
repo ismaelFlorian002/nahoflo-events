@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { PublicLayout } from './shared/layouts/public-layout/public-layout';
-import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout';
-import { EventLayout } from './shared/layouts/event-layout/event-layout';
+import { PublicLayout } from './shared/layouts/public-layout/public-layout.component';
+import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout.component';
+import { EventLayout } from './shared/layouts/event-layout/event-layout.component';
 import { authGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
@@ -16,7 +16,7 @@ export const routes: Routes = [
   {
     path: 'login',
     // Lazy Loading moderno: Solo descarga el código del login si el usuario entra a /login
-    loadComponent: () => import('./features/admin/login/login').then((m) => m.LoginComponent),
+    loadComponent: () => import('./features/admin/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'admin',
@@ -26,7 +26,7 @@ export const routes: Routes = [
       {
         path: '', // Al entrar a /admin, cargará el Dashboard por defecto
         loadComponent: () =>
-          import('./features/admin/dashboard/dashboard').then((m) => m.DashboardComponent),
+          import('./features/admin/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
         path: 'eventos',
@@ -61,7 +61,7 @@ export const routes: Routes = [
       {
         path: 'album',
         loadComponent: () =>
-          import('./features/album-digital/album-digital').then((m) => m.AlbumDigitalComponent),
+          import('./features/album-digital/album-digital.component').then((m) => m.AlbumDigitalComponent),
       },
     ],
   },

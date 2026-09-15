@@ -6,8 +6,8 @@ import { AudioService } from '../../../core/services/audio.service';
   selector: 'app-reproductor-musica',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './reproductor-musica.html',
-  styleUrl: './reproductor-musica.scss',
+  templateUrl: './reproductor-musica.component.html',
+  styleUrl: './reproductor-musica.component.scss',
 })
 export class ReproductorMusicaComponent implements OnInit, OnDestroy {
   // Signal Input moderna para la URL de la música

@@ -12,8 +12,8 @@ import { capturarYDescargarTarjetaPaseWeb } from '../../../../core/utils/image-c
   selector: 'app-invitado-qr-modal',
   standalone: true,
   imports: [CommonModule, ButtonModule],
-  templateUrl: './invitado-qr-modal.html',
-  styleUrl: './invitado-qr-modal.scss',
+  templateUrl: './invitado-qr-modal.component.html',
+  styleUrl: './invitado-qr-modal.component.scss',
 })
 export class InvitadoQrModalComponent implements OnInit {
   public config = inject(DynamicDialogConfig);
