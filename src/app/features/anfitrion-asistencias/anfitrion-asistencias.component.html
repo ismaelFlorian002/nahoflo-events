@@ -13,57 +13,13 @@
     </div>
   } @else if (evento(); as ev) {
 
-    <!-- 1. PANTALLA DE BLOQUEO POR PIN -->
+    <!-- 1. PANTALLA DE BLOQUEO POR PIN (EXTRAÍDA EN SUB-COMPONENTE) -->
     @if (!pinDesbloqueado()) {
-      <div class="pin-card">
-        <div class="pin-icon-wrap">
-          <i class="pi pi-lock"></i>
-        </div>
-
-        <h2>Panel de Anfitrión</h2>
-        <p class="pin-subtitle">
-          Ingresa el PIN de seguridad de
-          <strong>{{ ev.preTitulo ? ev.preTitulo + ' - ' + ev.titulo : ev.titulo }}</strong> para consultar tu lista de
-          invitados.
-        </p>
-
-        <form (ngSubmit)="verificarPin()" class="pin-form">
-          <!-- CASILLAS OTP NATIVAS CON TECLADO NUMÉRICO FORZADO -->
-          <div class="pin-otp-contenedor">
-            <p-inputOtp
-              appOtpNumerico
-              (caracterInvalido)="mostrarAlertaSoloNumeros()"
-              [(ngModel)]="pinIngresado"
-              name="pin"
-              [length]="ev.pinAnfitrion?.length || 4"
-              [invalid]="errorPin() || errorSoloNumeros()"
-              (onChange)="onPinChange()"
-              autofocus />
-          </div>
-
-          @if (errorSoloNumeros()) {
-            <span class="pin-error-text alerta-numeros">
-              <i class="pi pi-exclamation-circle"></i> Solo se permiten números en el PIN.
-            </span>
-          } @else if (errorPin()) {
-            <span class="pin-error-text">
-              <i class="pi pi-exclamation-triangle"></i> PIN incorrecto. Intenta de nuevo.
-            </span>
-          }
-
-          <button
-            type="submit"
-            class="pin-submit-btn"
-            [disabled]="!pinIngresado || pinIngresado.length < (ev.pinAnfitrion?.length || 4)">
-            Ingresar al Panel
-          </button>
-        </form>
-        @if (tieneInvitacion()) {
-          <a [routerLink]="['/e', ev.enlace]" class="back-link">
-            ← Volver a la Invitación
-          </a>
-        }
-      </div>
+      <app-pin-login
+        [evento]="ev"
+        [tieneInvitacion]="tieneInvitacion()"
+        (pinValido)="onPinValido($event)">
+      </app-pin-login>
     }
 
     <!-- 2. PANEL DESBLOQUEADO (VISTA DEL CLIENTE) -->
@@ -148,8 +104,7 @@
               </div>
               <span class="tab-label">
                 <span class="tab-label-text">Resumen</span>
-                                  <span class="tab-label-desktop">Resumen</span>
-
+                <span class="tab-label-desktop">Resumen</span>
               </span>
             </button>
 
@@ -278,7 +233,6 @@
                     </div>
                   </div>
                 </div>
-
 
               </div>
             }
@@ -542,581 +496,38 @@
           </div>
         }
 
-        <!-- 1. PESTAÑA: LISTA DE INVITADOS (RSVP + CONTROL DE PASES) -->
+        <!-- 1. PESTAÑA: LISTA DE INVITADOS (EXTRAÍDA EN SUB-COMPONENTE) -->
         @if (pestanaActiva() === 'invitados') {
-          <!-- TABLA DE INVITADOS -->
-          <div class="table-card">
-            <!-- MENÚS FLOTANTES RESPONSIVOS (EXPORTAR Y ACCIONES DE INVITADO) -->
-            <p-menu #menuExport [popup]="true" [model]="menuExportItems" appendTo="body"></p-menu>
-            <p-menu #menuAcciones [popup]="true" [model]="menuInvitadoItems" appendTo="body"></p-menu>
-
-            <p-table
-              #dt1
-              [value]="invitadosFiltrados()"
-              dataKey="id"
-              [rows]="10"
-              [rowsPerPageOptions]="[10, 25, 50]"
-              [loading]="cargando()"
-              [paginator]="true"
-              [globalFilterFields]="['nombre', 'telefono', 'mensaje']"
-              responsiveLayout="scroll"
-              styleClass="p-datatable-borderless modern-table">
-
-              <!-- TOOLBAR DE LA TABLA: RESPONSIVA (MÓVIL, TABLET Y DESKTOP) -->
-              <ng-template pTemplate="caption">
-                <div class="table-toolbar">
-
-                  <!-- IZQUIERDA: BUSCADOR + FILTRO POR ESTADO + EXPORTAR -->
-                  <div class="toolbar-izquierda">
-                    <span class="p-input-icon-left search-wrapper">
-                      <i class="pi pi-search"></i>
-                      <input
-                        pInputText
-                        type="text"
-                        [ngModel]="terminoBusqueda()"
-                        (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
-                        placeholder="Buscar por nombre o teléfono..." />
-                    </span>
-
-                    <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL -->
-                    <div class="filtro-dropdown-wrap">
-                      <p-button
-                        icon="pi pi-filter"
-                        [label]="labelFiltroActivo()"
-                        [badge]="conteoFiltroActivo()"
-                        badgeClass="p-badge-secondary"
-                        size="small"
-                        [outlined]="filtroRespuesta() === 'todos'"
-                        [severity]="filtroRespuesta() !== 'todos' ? 'primary' : 'secondary'"
-                        (onClick)="opFiltros.toggle($event)"
-                        title="Filtrar por estado de respuesta">
-                      </p-button>
-
-                      <p-overlayPanel #opFiltros styleClass="popover-filtros-invitados">
-                        <div class="menu-filtros-popover">
-                          <div class="popover-filtros-header">
-                            <i class="pi pi-filter"></i>
-                            <span>Filtrar por respuesta</span>
-                          </div>
-
-                          <div class="popover-filtros-lista">
-                            <button
-                              type="button"
-                              class="item-filtro-btn"
-                              [class.activo]="filtroRespuesta() === 'todos'"
-                              (click)="seleccionarFiltro('todos', dt1, opFiltros)">
-                              <span class="filtro-item-left">
-                                <i class="pi pi-users icono-todos"></i>
-                                <span>Todos los invitados</span>
-                              </span>
-                              <span class="badge-filtro-cant cant-todos">{{ invitados().length }}</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              class="item-filtro-btn asistira"
-                              [class.activo]="filtroRespuesta() === 'asistira'"
-                              (click)="seleccionarFiltro('asistira', dt1, opFiltros)">
-                              <span class="filtro-item-left">
-                                <i class="pi pi-check icono-asistira"></i>
-                                <span>Confirmados (Sí)</span>
-                              </span>
-                              <span class="badge-filtro-cant cant-asistira">{{ totalConfirmados() }}</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              class="item-filtro-btn pendiente"
-                              [class.activo]="filtroRespuesta() === 'pendiente'"
-                              (click)="seleccionarFiltro('pendiente', dt1, opFiltros)">
-                              <span class="filtro-item-left">
-                                <i class="pi pi-clock icono-pendiente"></i>
-                                <span>Pendientes</span>
-                              </span>
-                              <span class="badge-filtro-cant cant-pendiente">{{ totalPendientesConfirmacion() }}</span>
-                            </button>
-
-                            <button
-                              type="button"
-                              class="item-filtro-btn declinado"
-                              [class.activo]="filtroRespuesta() === 'no_asiste'"
-                              (click)="seleccionarFiltro('no_asiste', dt1, opFiltros)">
-                              <span class="filtro-item-left">
-                                <i class="pi pi-times icono-declinado"></i>
-                                <span>No asistirán</span>
-                              </span>
-                              <span class="badge-filtro-cant cant-declinado">{{ totalCancelados() }}</span>
-                            </button>
-                          </div>
-                        </div>
-                      </p-overlayPanel>
-                    </div>
-
-                    <span class="toolbar-divider col-desktop"></span>
-
-                    <!-- BOTONES DE EXPORTAR DESKTOP (DIRECTOS) -->
-                    <div class="exportar-grupo exportar-desktop">
-                      <p-button
-                        label="Excel"
-                        icon="pi pi-file-excel"
-                        size="small"
-                        severity="success"
-                        [outlined]="true"
-                        [disabled]="invitadosFiltrados().length === 0"
-                        (onClick)="exportarExcel()"
-                        title="Descargar lista filtrada en Excel">
-                      </p-button>
-
-                      <p-button
-                        label="PDF"
-                        icon="pi pi-file-pdf"
-                        size="small"
-                        severity="danger"
-                        [outlined]="true"
-                        [disabled]="invitadosFiltrados().length === 0"
-                        (onClick)="exportarPdf()"
-                        title="Descargar reporte filtrado en PDF">
-                      </p-button>
-                    </div>
-
-                    <!-- BOTÓN DESPLEGABLE DE EXPORTAR (MÓVIL Y TABLET) -->
-                    <div class="exportar-mobile">
-                      <p-button
-                        label="Exportar"
-                        icon="pi pi-download"
-                        size="small"
-                        [outlined]="true"
-                        severity="secondary"
-                        [disabled]="invitadosFiltrados().length === 0"
-                        (onClick)="menuExport.toggle($event)"
-                        title="Exportar lista en Excel o PDF">
-                      </p-button>
-                    </div>
-                  </div>
-
-                  <!-- DERECHA: COMPARTIR INVITACIONES + BOTÓN AGREGAR -->
-                  <div class="toolbar-derecha">
-                    @if (tieneInvitacion()) {
-                      <p-button
-                        label="Cómo compartir invitación"
-                        icon="pi pi-info-circle"
-                        size="small"
-                        [outlined]="true"
-                        severity="secondary"
-                        class="btn-compartir-desktop"
-                        (onClick)="abrirModalCompartir()"
-                        title="Cómo compartir invitación">
-                      </p-button>
-
-                      <!-- Versión compacta para móvil -->
-                      <p-button
-                        icon="pi pi-info-circle"
-                        size="small"
-                        [outlined]="true"
-                        severity="secondary"
-                        class="btn-compartir-mobile"
-                        (onClick)="abrirModalCompartir()"
-                        title="Cómo compartir invitación">
-                      </p-button>
-                    }
-
-                    <p-button
-                      label="Agregar"
-                      icon="pi pi-user-plus"
-                      size="small"
-                      (onClick)="abrirModalCrearInvitado()"
-                      title="Registrar nuevo invitado manualmente">
-                    </p-button>
-                  </div>
-
-                </div>
-              </ng-template>
-
-              <!-- CABECERAS MINIMALISTAS Y RESPONSIVAS -->
-              <ng-template pTemplate="header">
-                <tr>
-                  <th pSortableColumn="nombre" class="col-nombre">Nombre / Familia
-                    <p-sortIcon field="nombre"></p-sortIcon>
-                  </th>
-                  <th pSortableColumn="asistira" class="col-respuesta col-desktop-tablet">Respuesta
-                    <p-sortIcon field="asistira"></p-sortIcon>
-                  </th>
-                  <th pSortableColumn="pasesConfirmados" class="col-pases col-desktop-tablet"
-                      style="text-align: center;">Pases
-                    <p-sortIcon field="pasesConfirmados"></p-sortIcon>
-                  </th>
-                  <th class="col-whatsapp col-desktop">WhatsApp</th>
-                  @if (ev.modulos?.tipoControlInvitados === 'total') {
-                    <th class="col-vip col-desktop" style="text-align: center;">Pase VIP</th>
-                  }
-                  <th class="col-acciones" style="text-align: right;">Acciones</th>
-                </tr>
-              </ng-template>
-
-              <!-- FILAS DE LA TABLA -->
-              <ng-template pTemplate="body" let-invitado>
-                <tr>
-                  <!-- COLUMNA NOMBRE: En móvil muestra nombre + ficha de estado y pases -->
-                  <td class="col-nombre fw-medium">
-                    <div class="guest-name-cell">
-                      <span class="guest-name-text">{{ invitado.nombre }}</span>
-
-                      <!-- META SÓLO MÓVIL: Estado y pases limpios debajo del nombre -->
-                      <div class="guest-meta-mobile">
-                        @if (invitado.estado === 'pendiente') {
-                          <p-tag
-                            value="Pendiente"
-                            severity="warning"
-                            icon="pi pi-clock"
-                            [rounded]="true">
-                          </p-tag>
-                        } @else {
-                          <p-tag
-                            [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
-                            [severity]="invitado.asistira ? 'success' : 'danger'"
-                            [rounded]="true">
-                          </p-tag>
-                        }
-
-                        @if (invitado.asistira || invitado.estado === 'pendiente') {
-                          <span class="pases-badge-mobile">
-                            <i class="pi pi-ticket"></i>
-                            <span>{{ invitado.pasesConfirmados || 1 }} {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}</span>
-                          </span>
-                        }
-                      </div>
-                    </div>
-                  </td>
-
-                  <!-- COLUMNA RESPUESTA (DESKTOP Y TABLET) -->
-                  <td class="col-respuesta col-desktop-tablet">
-                    @if (invitado.estado === 'pendiente') {
-                      <p-tag
-                        value="Pendiente"
-                        severity="warning"
-                        icon="pi pi-clock"
-                        [rounded]="true">
-                      </p-tag>
-                    } @else {
-                      <p-tag
-                        [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
-                        [severity]="invitado.asistira ? 'success' : 'danger'"
-                        [rounded]="true">
-                      </p-tag>
-                    }
-                  </td>
-
-                  <!-- COLUMNA PASES (DESKTOP Y TABLET) -->
-                  <td class="col-pases col-desktop-tablet" style="text-align: center;">
-                    @if (invitado.asistira || invitado.estado === 'pendiente') {
-                      <div class="pases-editor-inline">
-                        <button
-                          type="button"
-                          class="btn-pases-mini"
-                          [disabled]="(invitado.pasesConfirmados || 1) <= 1"
-                          (click)="cambiarPasesInvitado(invitado, -1)"
-                          title="Restar pase">
-                          <i class="pi pi-minus"></i>
-                        </button>
-                        <span class="pases-count" [class.pendiente-pases]="invitado.estado === 'pendiente'">
-                          {{ invitado.pasesConfirmados || 1 }}
-                        </span>
-                        <button
-                          type="button"
-                          class="btn-pases-mini"
-                          (click)="cambiarPasesInvitado(invitado, 1)"
-                          title="Sumar pase">
-                          <i class="pi pi-plus"></i>
-                        </button>
-                      </div>
-                    } @else {
-                      <span class="pases-count muted">0</span>
-                    }
-                  </td>
-
-                  <!-- COLUMNA WHATSAPP (SOLO DESKTOP) -->
-                  <td class="col-whatsapp col-desktop text-secondary">
-                    @if (invitado.telefono) {
-                      <a [href]="'https://wa.me/' + invitado.telefono" target="_blank" class="wa-btn">
-                        <i class="pi pi-whatsapp"></i>
-                        <span>{{ invitado.telefono }}</span>
-                      </a>
-                    } @else {
-                      <span style="color: #cbd5e1;">-</span>
-                    }
-                  </td>
-
-                  <!-- COLUMNA PASE VIP (SOLO DESKTOP CON CONTROL TOTAL) -->
-                  @if (ev.modulos?.tipoControlInvitados === 'total') {
-                    <td class="col-vip col-desktop" style="text-align: center;">
-                      @if (invitado.asistira || invitado.estado === 'pendiente') {
-                        <p-button
-                          icon="pi pi-qrcode"
-                          [rounded]="true"
-                          [text]="true"
-                          severity="warning"
-                          pTooltip="Ver Pase QR VIP"
-                          tooltipPosition="top"
-                          (onClick)="abrirModalQr(invitado)">
-                        </p-button>
-                      } @else {
-                        <span style="color: #cbd5e1;">-</span>
-                      }
-                    </td>
-                  }
-
-                  <!-- COLUMNA ACCIONES: 3 PUNTITOS EN MÓVIL Y BOTONES DIRECTOS EN DESKTOP -->
-                  <td class="col-acciones" style="text-align: right;">
-                    <!-- ACCIONES MÓVIL: BOTÓN DESPLEGABLE DE 3 PUNTOS -->
-                    <div class="acciones-mobile">
-                      <p-button
-                        icon="pi pi-ellipsis-v"
-                        [rounded]="true"
-                        [text]="true"
-                        severity="secondary"
-                        size="small"
-                        (onClick)="abrirMenuAcciones($event, invitado, menuAcciones)"
-                        [title]="'Acciones para ' + invitado.nombre">
-                      </p-button>
-                    </div>
-
-                    <!-- ACCIONES DESKTOP: BOTONES INDIVIDUALES CON TOOLTIP -->
-                    <div class="acciones-desktop action-buttons">
-                      <!-- BOTÓN WHATSAPP INVITACIÓN PERSONALIZADA (SOLO SI LA INVITACIÓN WEB ESTÁ ACTIVA) -->
-                      @if (tieneInvitacion()) {
-                        <p-button
-                          icon="pi pi-whatsapp"
-                          [rounded]="true"
-                          [text]="true"
-                          severity="success"
-                          [pTooltip]="'Enviar invitación personalizada a ' + invitado.nombre"
-                          tooltipPosition="top"
-                          (onClick)="enviarInvitacionWhatsApp(invitado)">
-                        </p-button>
-                      }
-
-                      <!-- BOTÓN ENVIAR PASE VIP -->
-                      <p-button
-                        icon="pi pi-ticket"
-                        [rounded]="true"
-                        [text]="true"
-                        [pTooltip]="(ev.modulos?.tipoControlInvitados === 'total' ? 'Enviar Pase VIP a ' : 'Enviar Pase a ') + invitado.nombre"
-                        tooltipPosition="top"
-                        (onClick)="enviarPaseVipWhatsApp(invitado)">
-                      </p-button>
-
-                      <!-- BOTÓN VER DETALLE -->
-                      <p-button
-                        icon="pi pi-eye"
-                        [rounded]="true"
-                        [text]="true"
-                        severity="info"
-                        pTooltip="Ver Detalle"
-                        tooltipPosition="top"
-                        (onClick)="abrirModalDetalle(invitado)">
-                      </p-button>
-
-                      <!-- BOTÓN EDITAR INVITADO -->
-                      <p-button
-                        icon="pi pi-pencil"
-                        [rounded]="true"
-                        [text]="true"
-                        severity="secondary"
-                        pTooltip="Editar Invitado"
-                        tooltipPosition="top"
-                        (onClick)="abrirModalEditar(invitado)">
-                      </p-button>
-                    </div>
-                  </td>
-                </tr>
-              </ng-template>
-
-              <!-- ESTADO VACÍO ELEGANTE -->
-              <ng-template pTemplate="emptymessage">
-                <tr>
-                  <td [attr.colspan]="ev.modulos?.tipoControlInvitados === 'total' ? 6 : 5" class="empty-state">
-                    <i class="pi pi-folder-open empty-icon"></i>
-                    <p>No se encontraron invitados que coincidan con la búsqueda o filtros.</p>
-                  </td>
-                </tr>
-              </ng-template>
-            </p-table>
-          </div>
+          <app-guest-table
+            [evento]="ev"
+            [invitados]="invitados()"
+            [cargando]="cargando()"
+            [tieneInvitacion]="tieneInvitacion()"
+            [totalConfirmados]="totalConfirmados()"
+            [totalPendientesConfirmacion]="totalPendientesConfirmacion()"
+            [totalCancelados]="totalCancelados()"
+            (abrirDetalle)="abrirModalDetalle($event)"
+            (abrirEditar)="abrirModalEditar($event)"
+            (crearInvitado)="abrirModalCrearInvitado()"
+            (compartir)="abrirModalCompartir()"
+            (abrirQr)="abrirModalQr($event)"
+            (cambiarPases)="cambiarPasesInvitado($event.invitado, $event.delta)"
+            (enviarInvitacionWa)="enviarInvitacionWhatsApp($event)"
+            (enviarPaseWa)="enviarPaseVipWhatsApp($event)">
+          </app-guest-table>
         }
-        <!-- PESTAÑA: CENTRO DE RECEPCIÓN Y CONTROL TOTAL VIP -->
+
+        <!-- PESTAÑA: CENTRO DE RECEPCIÓN Y CONTROL TOTAL VIP (EXTRAÍDA EN SUB-COMPONENTE) -->
         @if (pestanaActiva() === 'recepcion') {
-          <div class="seccion-recepcion">
-
-            <!-- 1. MÉTRICAS DE AFORO EN VIVO (SLIM HORIZONTAL) -->
-            <div class="kpi-grid-recepcion">
-              <div class="kpi-card-recepcion ingresados">
-                <div class="kpi-left">
-                  <div class="kpi-badge-porcentaje">
-                    {{ porcentajeAsistencia() }}%
-                  </div>
-                  <span class="kpi-label">Pases en Sala</span>
-                </div>
-                <span class="kpi-value">{{ totalIngresados() }}</span>
-              </div>
-
-              <div class="kpi-card-recepcion pendientes">
-                <div class="kpi-left">
-                  <div class="kpi-icon"><i class="pi pi-clock"></i></div>
-                  <span class="kpi-label">Pases Pendientes</span>
-                </div>
-                <span class="kpi-value">{{ totalPendientes() }}</span>
-              </div>
-
-              <div class="kpi-card-recepcion totales">
-                <div class="kpi-left">
-                  <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
-                  <span class="kpi-label">Pases Totales</span>
-                </div>
-                <span class="kpi-value">{{ totalPases() }}</span>
-              </div>
-            </div>
-
-            <!-- 2. PANEL DUAL: ESCÁNER DE CÁMARA (IZQ) Y BÚSQUEDA MANUAL (DER) -->
-            <div class="grid-puerta" [class.solo-manual]="ev.modulos?.tipoControlInvitados === 'lista_puerta'">
-
-              <!-- COLUMNA A: ESCÁNER DE CÁMARA QR (SOLO EN MODO CONTROL TOTAL VIP) -->
-              @if (ev.modulos?.tipoControlInvitados === 'total') {
-                <div class="col-escaner">
-                  <div class="card-escaner">
-                    <div class="cabecera-card-puerta">
-                      <h3><i class="pi pi-camera"></i> Escáner en Puerta</h3>
-                      <p-button
-                        [label]="escanerActivo() ? 'Detener Cámara' : 'Activar Cámara'"
-                        [icon]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"
-                        [severity]="escanerActivo() ? 'danger' : 'primary'"
-                        size="small"
-                        (onClick)="toggleEscaner()">
-                      </p-button>
-                    </div>
-
-                    <!-- VISOR DE CÁMARA -->
-                    <div class="contenedor-visor">
-                      <div id="qr-reader" class="visor-camara"></div>
-
-                      @if (!escanerActivo()) {
-                        <div class="camara-placeholder" (click)="iniciarEscaner()">
-                          <i class="pi pi-qrcode"></i>
-                          <p>Haz clic para encender la cámara y escanear pases VIP</p>
-                        </div>
-                      }
-                    </div>
-
-                    <!-- TARJETA DINÁMICA DE RESULTADO DE ESCANEO -->
-                    @if (resultadoEscaneo(); as res) {
-                      <div class="alerta-escaneo" [class]="res.tipo">
-                        <div class="alerta-icono">
-                          @if (res.tipo === 'exito') {
-                            <i class="pi pi-check-circle"></i>
-                          } @else if (res.tipo === 'duplicado') {
-                            <i class="pi pi-exclamation-triangle"></i>
-                          } @else {
-                            <i class="pi pi-times-circle"></i>
-                          }
-                        </div>
-                        <div class="alerta-contenido">
-                          <h4>{{ res.mensaje }}</h4>
-                          @if (res.invitado; as inv) {
-                            <p class="alerta-detalles">
-                              <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }}
-                              pases
-                              @if (res.hora) {
-                                <span>({{ res.hora }})</span>
-                              }
-                            </p>
-                            @if (res.tipo === 'exito') {
-                              <p-button
-                                label="Deshacer ingreso"
-                                icon="pi pi-undo"
-                                size="small"
-                                [text]="true"
-                                severity="secondary"
-                                (onClick)="revertirCheckIn(inv)">
-                              </p-button>
-                            }
-                          }
-                        </div>
-                      </div>
-                    }
-                  </div>
-                </div>
-              }
-
-              <!-- COLUMNA B: BÚSQUEDA Y CHECK-IN MANUAL -->
-              <div class="col-manual">
-                <div class="card-manual">
-                  <div class="cabecera-card-puerta">
-                    <h3><i
-                      class="pi pi-list"></i> {{ ev.modulos?.tipoControlInvitados === 'total' ? 'Búsqueda Nominal de Respaldo' : 'Lista de Recepción en Puerta' }}
-                    </h3>
-                    <span
-                      class="subtexto-puerta">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Por si el invitado no tiene celular' : 'Busca por nombre o apellido para registrar el acceso' }}</span>
-                  </div>
-
-                  <!-- BUSCADOR RÁPIDO EN PUERTA -->
-                  <div class="buscador-recepcion">
-                    <i class="pi pi-search"></i>
-                    <input
-                      type="text"
-                      [ngModel]="busquedaRecepcion()"
-                      (ngModelChange)="busquedaRecepcion.set($event)"
-                      placeholder="Buscar por nombre o familia..."
-                      class="input-busqueda-recepcion" />
-                  </div>
-
-                  <!-- LISTADO DE INVITADOS CON CHECK-IN RÁPIDO -->
-                  <div class="lista-invitados-recepcion">
-                    @for (inv of invitadosRecepcionFiltrados(); track inv.id) {
-                      <div class="item-recepcion" [class.ingresado]="inv.haIngresado">
-                        <div class="info-invitado-puerta">
-                          <span class="nombre-puerta">{{ inv.nombre }}</span>
-                          <span class="pases-puerta">
-                            <i class="pi pi-ticket"></i> {{ inv.pasesConfirmados || 1 }} pases confirmados
-                          </span>
-                        </div>
-
-                        <div class="accion-invitado-puerta">
-                          @if (inv.haIngresado) {
-                            <span class="badge-ingresado">
-                              <i class="pi pi-check"></i> Ingresó {{ formatearFecha(inv.horaIngreso) }}
-                            </span>
-                            <p-button
-                              icon="pi pi-undo"
-                              [rounded]="true"
-                              [text]="true"
-                              severity="secondary"
-                              size="small"
-                              pTooltip="Revertir ingreso"
-                              tooltipPosition="left"
-                              (onClick)="revertirCheckIn(inv)">
-                            </p-button>
-                          } @else {
-                            <p-button
-                              label="Dar Acceso"
-                              icon="pi pi-sign-in"
-                              size="small"
-                              (onClick)="hacerCheckIn(inv)">
-                            </p-button>
-                          }
-                        </div>
-                      </div>
-                    } @empty {
-                      <div class="vacio-recepcion">
-                        <p>No se encontraron invitados confirmados con ese nombre.</p>
-                      </div>
-                    }
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
+          <app-scanner-view
+            [evento]="ev"
+            [invitados]="invitados()"
+            [totalPases]="totalPases()"
+            (checkIn)="onCheckIn($event.invitado, $event.pases)"
+            (revertir)="revertirCheckIn($event)">
+          </app-scanner-view>
         }
+
         <!-- 2. PESTAÑA: MODERACIÓN DEL ÁLBUM DE FOTOS -->
         @if (pestanaActiva() === 'album') {
           <div class="seccion-moderacion-album">
@@ -1166,7 +577,6 @@
                 <p>Las fotos que los invitados tomen o suban aparecerán aquí para que puedas moderarlas.</p>
               </div>
             } @else {
-              <!-- REEMPLAZAR ESTE BLOQUE DESDE <div class="grid-moderacion">: -->
               <div class="grid-moderacion">
                 @for (recuerdo of recuerdos(); track recuerdo.id) {
                   <article class="tarjeta-moderacion">
@@ -1176,8 +586,8 @@
                       <img [src]="recuerdo.fotoUrl" [alt]="'Foto de ' + recuerdo.nombreAutor" />
                       @if (recuerdo.fotosUrls && recuerdo.fotosUrls.length > 1) {
                         <span class="badge-carrusel-cant">
-                      <i class="pi pi-clone"></i> {{ recuerdo.fotosUrls.length }} fotos
-                    </span>
+                          <i class="pi pi-clone"></i> {{ recuerdo.fotosUrls.length }} fotos
+                        </span>
                       }
                     </div>
 

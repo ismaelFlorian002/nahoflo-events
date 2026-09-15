@@ -1,0 +1,397 @@
+<div class="table-card">
+  <!-- MENÚS FLOTANTES RESPONSIVOS (EXPORTAR Y ACCIONES DE INVITADO) -->
+  <p-menu #menuExport [popup]="true" [model]="menuExportItems" appendTo="body"></p-menu>
+  <p-menu #menuAcciones [popup]="true" [model]="menuInvitadoItems" appendTo="body"></p-menu>
+
+  <p-table
+    #dt1
+    [value]="invitadosFiltrados()"
+    dataKey="id"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [loading]="cargando()"
+    [paginator]="true"
+    [globalFilterFields]="['nombre', 'telefono', 'mensaje']"
+    responsiveLayout="scroll"
+    styleClass="p-datatable-borderless modern-table">
+
+    <!-- TOOLBAR DE LA TABLA: RESPONSIVA (MÓVIL, TABLET Y DESKTOP) -->
+    <ng-template pTemplate="caption">
+      <div class="table-toolbar">
+
+        <!-- IZQUIERDA: BUSCADOR + FILTRO POR ESTADO + EXPORTAR -->
+        <div class="toolbar-izquierda">
+          <span class="p-input-icon-left search-wrapper">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              [ngModel]="terminoBusqueda()"
+              (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
+              placeholder="Buscar por nombre o teléfono..." />
+          </span>
+
+          <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL -->
+          <div class="filtro-dropdown-wrap">
+            <p-button
+              icon="pi pi-filter"
+              [label]="labelFiltroActivo()"
+              [badge]="conteoFiltroActivo()"
+              badgeClass="p-badge-secondary"
+              size="small"
+              [outlined]="filtroRespuesta() === 'todos'"
+              [severity]="filtroRespuesta() !== 'todos' ? 'primary' : 'secondary'"
+              (onClick)="opFiltros.toggle($event)"
+              title="Filtrar por estado de respuesta">
+            </p-button>
+
+            <p-overlayPanel #opFiltros styleClass="popover-filtros-invitados">
+              <div class="menu-filtros-popover">
+                <div class="popover-filtros-header">
+                  <i class="pi pi-filter"></i>
+                  <span>Filtrar por respuesta</span>
+                </div>
+
+                <div class="popover-filtros-lista">
+                  <button
+                    type="button"
+                    class="item-filtro-btn"
+                    [class.activo]="filtroRespuesta() === 'todos'"
+                    (click)="seleccionarFiltro('todos', dt1, opFiltros)">
+                    <span class="filtro-item-left">
+                      <i class="pi pi-users icono-todos"></i>
+                      <span>Todos los invitados</span>
+                    </span>
+                    <span class="badge-filtro-cant cant-todos">{{ invitados().length }}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="item-filtro-btn asistira"
+                    [class.activo]="filtroRespuesta() === 'asistira'"
+                    (click)="seleccionarFiltro('asistira', dt1, opFiltros)">
+                    <span class="filtro-item-left">
+                      <i class="pi pi-check icono-asistira"></i>
+                      <span>Confirmados (Sí)</span>
+                    </span>
+                    <span class="badge-filtro-cant cant-asistira">{{ totalConfirmados() }}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="item-filtro-btn pendiente"
+                    [class.activo]="filtroRespuesta() === 'pendiente'"
+                    (click)="seleccionarFiltro('pendiente', dt1, opFiltros)">
+                    <span class="filtro-item-left">
+                      <i class="pi pi-clock icono-pendiente"></i>
+                      <span>Pendientes</span>
+                    </span>
+                    <span class="badge-filtro-cant cant-pendiente">{{ totalPendientesConfirmacion() }}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    class="item-filtro-btn declinado"
+                    [class.activo]="filtroRespuesta() === 'no_asiste'"
+                    (click)="seleccionarFiltro('no_asiste', dt1, opFiltros)">
+                    <span class="filtro-item-left">
+                      <i class="pi pi-times icono-declinado"></i>
+                      <span>No asistirán</span>
+                    </span>
+                    <span class="badge-filtro-cant cant-declinado">{{ totalCancelados() }}</span>
+                  </button>
+                </div>
+              </div>
+            </p-overlayPanel>
+          </div>
+
+          <span class="toolbar-divider col-desktop"></span>
+
+          <!-- BOTONES DE EXPORTAR DESKTOP (DIRECTOS) -->
+          <div class="exportar-grupo exportar-desktop">
+            <p-button
+              label="Excel"
+              icon="pi pi-file-excel"
+              size="small"
+              severity="success"
+              [outlined]="true"
+              [disabled]="invitadosFiltrados().length === 0"
+              (onClick)="exportarExcel()"
+              title="Descargar lista filtrada en Excel">
+            </p-button>
+
+            <p-button
+              label="PDF"
+              icon="pi pi-file-pdf"
+              size="small"
+              severity="danger"
+              [outlined]="true"
+              [disabled]="invitadosFiltrados().length === 0"
+              (onClick)="exportarPdf()"
+              title="Descargar reporte filtrado en PDF">
+            </p-button>
+          </div>
+
+          <!-- BOTÓN DESPLEGABLE DE EXPORTAR (MÓVIL Y TABLET) -->
+          <div class="exportar-mobile">
+            <p-button
+              label="Exportar"
+              icon="pi pi-download"
+              size="small"
+              [outlined]="true"
+              severity="secondary"
+              [disabled]="invitadosFiltrados().length === 0"
+              (onClick)="menuExport.toggle($event)"
+              title="Exportar lista en Excel o PDF">
+            </p-button>
+          </div>
+        </div>
+
+        <!-- DERECHA: COMPARTIR INVITACIONES + BOTÓN AGREGAR -->
+        <div class="toolbar-derecha">
+          @if (tieneInvitacion()) {
+            <p-button
+              label="Cómo compartir invitación"
+              icon="pi pi-info-circle"
+              size="small"
+              outlined
+              severity="help"
+              class="btn-compartir-desktop"
+              (onClick)="abrirModalCompartir()"
+              title="Cómo compartir invitación">
+            </p-button>
+
+            <!-- Versión compacta para móvil -->
+            <p-button
+              icon="pi pi-info-circle"
+              size="small"
+              [outlined]="true"
+              severity="secondary"
+              class="btn-compartir-mobile"
+              (onClick)="abrirModalCompartir()"
+              title="Cómo compartir invitación">
+            </p-button>
+          }
+
+          <p-button
+            label="Agregar"
+            icon="pi pi-user-plus"
+            size="small"
+            (onClick)="abrirModalCrearInvitado()"
+            title="Registrar nuevo invitado manualmente">
+          </p-button>
+        </div>
+
+      </div>
+    </ng-template>
+
+    <!-- CABECERAS MINIMALISTAS Y RESPONSIVAS -->
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="nombre" class="col-nombre">Nombre / Familia
+          <p-sortIcon field="nombre"></p-sortIcon>
+        </th>
+        <th pSortableColumn="asistira" class="col-respuesta col-desktop-tablet">Respuesta
+          <p-sortIcon field="asistira"></p-sortIcon>
+        </th>
+        <th pSortableColumn="pasesConfirmados" class="col-pases col-desktop-tablet"
+            style="text-align: center;">Pases
+          <p-sortIcon field="pasesConfirmados"></p-sortIcon>
+        </th>
+        <th class="col-whatsapp col-desktop">WhatsApp</th>
+        @if (evento()?.modulos?.tipoControlInvitados === 'total') {
+          <th class="col-vip col-desktop" style="text-align: center;">Pase VIP</th>
+        }
+        <th class="col-acciones" style="text-align: right;">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <!-- FILAS DE LA TABLA -->
+    <ng-template pTemplate="body" let-invitado>
+      <tr>
+        <!-- COLUMNA NOMBRE: En móvil muestra nombre + ficha de estado y pases -->
+        <td class="col-nombre fw-medium">
+          <div class="guest-name-cell">
+            <span class="guest-name-text">{{ invitado.nombre }}</span>
+
+            <!-- META SÓLO MÓVIL: Estado y pases limpios debajo del nombre -->
+            <div class="guest-meta-mobile">
+              @if (invitado.estado === 'pendiente') {
+                <p-tag
+                  value="Pendiente"
+                  severity="warning"
+                  icon="pi pi-clock"
+                  [rounded]="true">
+                </p-tag>
+              } @else {
+                <p-tag
+                  [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
+                  [severity]="invitado.asistira ? 'success' : 'danger'"
+                  [rounded]="true">
+                </p-tag>
+              }
+
+              @if (invitado.asistira || invitado.estado === 'pendiente') {
+                <span class="pases-badge-mobile">
+                  <i class="pi pi-ticket"></i>
+                  <span>{{ invitado.pasesConfirmados || 1 }} {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}</span>
+                </span>
+              }
+            </div>
+          </div>
+        </td>
+
+        <!-- COLUMNA RESPUESTA (DESKTOP Y TABLET) -->
+        <td class="col-respuesta col-desktop-tablet">
+          @if (invitado.estado === 'pendiente') {
+            <p-tag
+              value="Pendiente"
+              severity="warning"
+              icon="pi pi-clock"
+              [rounded]="true">
+            </p-tag>
+          } @else {
+            <p-tag
+              [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
+              [severity]="invitado.asistira ? 'success' : 'danger'"
+              [rounded]="true">
+            </p-tag>
+          }
+        </td>
+
+        <!-- COLUMNA PASES (DESKTOP Y TABLET) -->
+        <td class="col-pases col-desktop-tablet" style="text-align: center;">
+          @if (invitado.asistira || invitado.estado === 'pendiente') {
+            <div class="pases-editor-inline">
+              <button
+                type="button"
+                class="btn-pases-mini"
+                [disabled]="(invitado.pasesConfirmados || 1) <= 1"
+                (click)="cambiarPasesInvitado(invitado, -1)"
+                title="Restar pase">
+                <i class="pi pi-minus"></i>
+              </button>
+              <span class="pases-count" [class.pendiente-pases]="invitado.estado === 'pendiente'">
+                {{ invitado.pasesConfirmados || 1 }}
+              </span>
+              <button
+                type="button"
+                class="btn-pases-mini"
+                (click)="cambiarPasesInvitado(invitado, 1)"
+                title="Sumar pase">
+                <i class="pi pi-plus"></i>
+              </button>
+            </div>
+          } @else {
+            <span class="pases-count muted">0</span>
+          }
+        </td>
+
+        <!-- COLUMNA WHATSAPP (SOLO DESKTOP) -->
+        <td class="col-whatsapp col-desktop text-secondary">
+          @if (invitado.telefono) {
+            <a [href]="'https://wa.me/' + invitado.telefono" target="_blank" class="wa-btn">
+              <i class="pi pi-whatsapp"></i>
+              <span>{{ invitado.telefono }}</span>
+            </a>
+          } @else {
+            <span style="color: #cbd5e1;">-</span>
+          }
+        </td>
+
+        <!-- COLUMNA PASE VIP (SOLO DESKTOP CON CONTROL TOTAL) -->
+        @if (evento()?.modulos?.tipoControlInvitados === 'total') {
+          <td class="col-vip col-desktop" style="text-align: center;">
+            @if (invitado.asistira || invitado.estado === 'pendiente') {
+              <p-button
+                icon="pi pi-qrcode"
+                [rounded]="true"
+                [text]="true"
+                severity="warning"
+                pTooltip="Ver Pase QR VIP"
+                tooltipPosition="top"
+                (onClick)="abrirModalQr(invitado)">
+              </p-button>
+            } @else {
+              <span style="color: #cbd5e1;">-</span>
+            }
+          </td>
+        }
+
+        <!-- COLUMNA ACCIONES: 3 PUNTITOS EN MÓVIL Y BOTONES DIRECTOS EN DESKTOP -->
+        <td class="col-acciones" style="text-align: right;">
+          <!-- ACCIONES MÓVIL: BOTÓN DESPLEGABLE DE 3 PUNTOS -->
+          <div class="acciones-mobile">
+            <p-button
+              icon="pi pi-ellipsis-v"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="abrirMenuAcciones($event, invitado, menuAcciones)"
+              [title]="'Acciones para ' + invitado.nombre">
+            </p-button>
+          </div>
+
+          <!-- ACCIONES DESKTOP: BOTONES INDIVIDUALES CON TOOLTIP -->
+          <div class="acciones-desktop action-buttons">
+            <!-- BOTÓN WHATSAPP INVITACIÓN PERSONALIZADA (SOLO SI LA INVITACIÓN WEB ESTÁ ACTIVA) -->
+            @if (tieneInvitacion()) {
+              <p-button
+                icon="pi pi-whatsapp"
+                [rounded]="true"
+                [text]="true"
+                severity="success"
+                [pTooltip]="'Enviar invitación personalizada a ' + invitado.nombre"
+                tooltipPosition="top"
+                (onClick)="enviarInvitacionWhatsApp(invitado)">
+              </p-button>
+            }
+
+            <!-- BOTÓN ENVIAR PASE VIP -->
+            <p-button
+              icon="pi pi-ticket"
+              [rounded]="true"
+              [text]="true"
+              [pTooltip]="(evento()?.modulos?.tipoControlInvitados === 'total' ? 'Enviar Pase VIP a ' : 'Enviar Pase a ') + invitado.nombre"
+              tooltipPosition="top"
+              (onClick)="enviarPaseVipWhatsApp(invitado)">
+            </p-button>
+
+            <!-- BOTÓN VER DETALLE -->
+            <p-button
+              icon="pi pi-eye"
+              [rounded]="true"
+              [text]="true"
+              severity="info"
+              pTooltip="Ver Detalle"
+              tooltipPosition="top"
+              (onClick)="abrirModalDetalle(invitado)">
+            </p-button>
+
+            <!-- BOTÓN EDITAR INVITADO -->
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              pTooltip="Editar Invitado"
+              tooltipPosition="top"
+              (onClick)="abrirModalEditar(invitado)">
+            </p-button>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- ESTADO VACÍO ELEGANTE -->
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td [attr.colspan]="evento()?.modulos?.tipoControlInvitados === 'total' ? 6 : 5" class="empty-state">
+          <i class="pi pi-folder-open empty-icon"></i>
+          <p>No se encontraron invitados que coincidan con la búsqueda o filtros.</p>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

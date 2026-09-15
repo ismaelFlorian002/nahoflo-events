@@ -12,7 +12,7 @@ import {
 import { EstadoInvitado, InvitadoModel } from '../../../../core/models/invitado.model';
 
 @Component({
-  selector: 'app-invitado-crear-modal',
+  selector: 'app-invitado-form-modal',
   standalone: true,
   imports: [
     CommonModule,
@@ -20,17 +20,20 @@ import { EstadoInvitado, InvitadoModel } from '../../../../core/models/invitado.
     ButtonModule,
     InputTextModule,
   ],
-  templateUrl: './invitado-crear-modal.html',
-  styleUrl: './invitado-crear-modal.scss',
+  templateUrl: './invitado-form-modal.html',
+  styleUrl: './invitado-form-modal.scss',
 })
-export class InvitadoCrearModalComponent implements OnInit {
+export class InvitadoFormModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private eventService = inject(EventService);
   public config = inject(DynamicDialogConfig);
   public ref = inject(DynamicDialogRef);
 
+  invitado?: InvitadoModel;
   eventoId!: string;
   invitadosExistentes: InvitadoModel[] = [];
+
+  esEdicion = false;
   coincidenciaExistente = signal<InvitadoModel | null>(null);
 
   form!: FormGroup;
@@ -38,6 +41,7 @@ export class InvitadoCrearModalComponent implements OnInit {
   errorMensaje = signal<string | null>(null);
 
   ngOnInit(): void {
+    this.invitado = this.config.data?.invitado;
     this.eventoId = this.config.data?.eventoId;
     this.invitadosExistentes = this.config.data?.invitadosExistentes || [];
 
@@ -46,20 +50,41 @@ export class InvitadoCrearModalComponent implements OnInit {
       return;
     }
 
-    this.form = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2)]],
-      telefono: [''],
-      estado: ['pendiente' as EstadoInvitado, Validators.required],
-      pasesConfirmados: [1, [Validators.required, Validators.min(0)]],
-    });
+    this.esEdicion = !!this.invitado;
 
-    this.form.valueChanges.subscribe((val) => {
-      this.verificarCoincidencia(val.nombre, val.telefono);
-    });
+    if (this.esEdicion && this.invitado) {
+      // Modo Edición: Precargar datos del invitado existente
+      const estadoInicial: EstadoInvitado =
+        this.invitado.estado || (this.invitado.asistira ? 'confirmado' : 'declinado');
+
+      this.form = this.fb.group({
+        nombre: [this.invitado.nombre || '', [Validators.required, Validators.minLength(2)]],
+        telefono: [this.invitado.telefono || ''],
+        estado: [estadoInicial, Validators.required],
+        asistira: [this.invitado.asistira ?? true],
+        pasesConfirmados: [
+          this.invitado.pasesConfirmados ?? 1,
+          [Validators.required, Validators.min(0)],
+        ],
+      });
+    } else {
+      // Modo Creación: Inicializar con valores por defecto
+      this.form = this.fb.group({
+        nombre: ['', [Validators.required, Validators.minLength(2)]],
+        telefono: [''],
+        estado: ['pendiente' as EstadoInvitado, Validators.required],
+        asistira: [false],
+        pasesConfirmados: [1, [Validators.required, Validators.min(0)]],
+      });
+
+      this.form.valueChanges.subscribe((val) => {
+        this.verificarCoincidencia(val.nombre, val.telefono);
+      });
+    }
   }
 
   private verificarCoincidencia(nombre?: string, telefono?: string): void {
-    if (!this.invitadosExistentes?.length) {
+    if (this.esEdicion || !this.invitadosExistentes?.length) {
       this.coincidenciaExistente.set(null);
       return;
     }
@@ -82,7 +107,8 @@ export class InvitadoCrearModalComponent implements OnInit {
   }
 
   cambiarEstado(nuevoEstado: EstadoInvitado): void {
-    this.form.patchValue({ estado: nuevoEstado });
+    const asiste = nuevoEstado === 'confirmado';
+    this.form.patchValue({ estado: nuevoEstado, asistira: asiste });
     if (nuevoEstado === 'declinado') {
       this.form.patchValue({ pasesConfirmados: 0 });
     } else if (this.form.get('pasesConfirmados')?.value < 1) {
@@ -117,26 +143,48 @@ export class InvitadoCrearModalComponent implements OnInit {
       const estado: EstadoInvitado = valores.estado;
       const asistira = estado === 'confirmado';
 
-      const datosInvitado: Partial<InvitadoModel> = {
-        nombre: valores.nombre.trim(),
-        asistira,
-        estado,
-        pasesConfirmados: Number(valores.pasesConfirmados) || (asistira ? 1 : 0),
-        telefono: valores.telefono?.trim() || '',
-      };
+      if (this.esEdicion && this.invitado?.id) {
+        // Actualizar invitado existente
+        const datosActualizados: Partial<InvitadoModel> = {
+          nombre: valores.nombre.trim(),
+          asistira,
+          estado,
+          pasesConfirmados: Number(valores.pasesConfirmados) || (asistira ? 1 : 0),
+          telefono: valores.telefono?.trim() || '',
+          mensaje: this.invitado.mensaje || '',
+        };
 
-      const match = this.coincidenciaExistente();
-      if (match?.id) {
-        // Actualiza el registro existente en lugar de duplicarlo
-        await this.eventService.actualizarInvitado(this.eventoId, match.id, datosInvitado);
+        await this.eventService.actualizarInvitado(this.eventoId, this.invitado.id, datosActualizados);
+        this.ref.close({ guardado: true, datos: datosActualizados });
       } else {
-        await this.eventService.agregarInvitado(this.eventoId, datosInvitado as Omit<InvitadoModel, 'id'>);
-      }
+        // Crear nuevo invitado (o actualizar coincidencia si fue detectada)
+        const datosInvitado: Partial<InvitadoModel> = {
+          nombre: valores.nombre.trim(),
+          asistira,
+          estado,
+          pasesConfirmados: Number(valores.pasesConfirmados) || (asistira ? 1 : 0),
+          telefono: valores.telefono?.trim() || '',
+        };
 
-      this.ref.close({ guardado: true });
+        const match = this.coincidenciaExistente();
+        if (match?.id) {
+          await this.eventService.actualizarInvitado(this.eventoId, match.id, datosInvitado);
+        } else {
+          await this.eventService.agregarInvitado(
+            this.eventoId,
+            datosInvitado as Omit<InvitadoModel, 'id'>,
+          );
+        }
+
+        this.ref.close({ guardado: true });
+      }
     } catch (err: any) {
       console.error('Error al agregar/actualizar invitado:', err);
-      this.errorMensaje.set('Ocurrió un error al registrar el invitado. Intenta nuevamente.');
+      this.errorMensaje.set(
+        this.esEdicion
+          ? 'Ocurrió un error al guardar los cambios. Intenta nuevamente.'
+          : 'Ocurrió un error al registrar el invitado. Intenta nuevamente.',
+      );
     } finally {
       this.guardando.set(false);
     }

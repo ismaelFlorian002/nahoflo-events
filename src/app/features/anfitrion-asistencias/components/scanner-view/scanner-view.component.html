@@ -1,0 +1,171 @@
+<div class="seccion-recepcion">
+
+  <!-- 1. MÉTRICAS DE AFORO EN VIVO (SLIM HORIZONTAL) -->
+  <div class="kpi-grid-recepcion">
+    <div class="kpi-card-recepcion ingresados">
+      <div class="kpi-left">
+        <div class="kpi-badge-porcentaje">
+          {{ porcentajeAsistencia() }}%
+        </div>
+        <span class="kpi-label">Pases en Sala</span>
+      </div>
+      <span class="kpi-value">{{ totalIngresados() }}</span>
+    </div>
+
+    <div class="kpi-card-recepcion pendientes">
+      <div class="kpi-left">
+        <div class="kpi-icon"><i class="pi pi-clock"></i></div>
+        <span class="kpi-label">Pases Pendientes</span>
+      </div>
+      <span class="kpi-value">{{ totalPendientes() }}</span>
+    </div>
+
+    <div class="kpi-card-recepcion totales">
+      <div class="kpi-left">
+        <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
+        <span class="kpi-label">Pases Totales</span>
+      </div>
+      <span class="kpi-value">{{ totalPases() }}</span>
+    </div>
+  </div>
+
+  <!-- 2. PANEL DUAL: ESCÁNER DE CÁMARA (IZQ) Y BÚSQUEDA MANUAL (DER) -->
+  <div class="grid-puerta" [class.solo-manual]="evento()?.modulos?.tipoControlInvitados === 'lista_puerta'">
+
+    <!-- COLUMNA A: ESCÁNER DE CÁMARA QR (SOLO EN MODO CONTROL TOTAL VIP) -->
+    @if (evento()?.modulos?.tipoControlInvitados === 'total') {
+      <div class="col-escaner">
+        <div class="card-escaner">
+          <div class="cabecera-card-puerta">
+            <h3><i class="pi pi-camera"></i> Escáner en Puerta</h3>
+            <p-button
+              [label]="escanerActivo() ? 'Detener Cámara' : 'Activar Cámara'"
+              [icon]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"
+              [severity]="escanerActivo() ? 'danger' : 'primary'"
+              size="small"
+              (onClick)="toggleEscaner()">
+            </p-button>
+          </div>
+
+          <!-- VISOR DE CÁMARA -->
+          <div class="contenedor-visor">
+            <div id="qr-reader" class="visor-camara"></div>
+
+            @if (!escanerActivo()) {
+              <div class="camara-placeholder" (click)="iniciarEscaner()">
+                <i class="pi pi-qrcode"></i>
+                <p>Haz clic para encender la cámara y escanear pases VIP</p>
+              </div>
+            }
+          </div>
+
+          <!-- TARJETA DINÁMICA DE RESULTADO DE ESCANEO -->
+          @if (resultadoEscaneo(); as res) {
+            <div class="alerta-escaneo" [class]="res.tipo">
+              <div class="alerta-icono">
+                @if (res.tipo === 'exito') {
+                  <i class="pi pi-check-circle"></i>
+                } @else if (res.tipo === 'duplicado') {
+                  <i class="pi pi-exclamation-triangle"></i>
+                } @else {
+                  <i class="pi pi-times-circle"></i>
+                }
+              </div>
+              <div class="alerta-contenido">
+                <h4>{{ res.mensaje }}</h4>
+                @if (res.invitado; as inv) {
+                  <p class="alerta-detalles">
+                    <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }}
+                    pases
+                    @if (res.hora) {
+                      <span>({{ res.hora }})</span>
+                    }
+                  </p>
+                  @if (res.tipo === 'exito') {
+                    <p-button
+                      label="Deshacer ingreso"
+                      icon="pi pi-undo"
+                      size="small"
+                      [text]="true"
+                      severity="secondary"
+                      (onClick)="revertirCheckIn(inv)">
+                    </p-button>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- COLUMNA B: BÚSQUEDA Y CHECK-IN MANUAL -->
+    <div class="col-manual">
+      <div class="card-manual">
+        <div class="cabecera-card-puerta">
+          <h3><i
+            class="pi pi-list"></i> {{ evento()?.modulos?.tipoControlInvitados === 'total' ? 'Búsqueda Nominal de Respaldo' : 'Lista de Recepción en Puerta' }}
+          </h3>
+          <span
+            class="subtexto-puerta">{{ evento()?.modulos?.tipoControlInvitados === 'total' ? 'Por si el invitado no tiene celular' : 'Busca por nombre o apellido para registrar el acceso' }}</span>
+        </div>
+
+        <!-- BUSCADOR RÁPIDO EN PUERTA -->
+        <div class="buscador-recepcion">
+          <i class="pi pi-search"></i>
+          <input
+            type="text"
+            [ngModel]="busquedaRecepcion()"
+            (ngModelChange)="busquedaRecepcion.set($event)"
+            placeholder="Buscar por nombre o familia..."
+            class="input-busqueda-recepcion" />
+        </div>
+
+        <!-- LISTADO DE INVITADOS CON CHECK-IN RÁPIDO -->
+        <div class="lista-invitados-recepcion">
+          @for (inv of invitadosRecepcionFiltrados(); track inv.id) {
+            <div class="item-recepcion" [class.ingresado]="inv.haIngresado">
+              <div class="info-invitado-puerta">
+                <span class="nombre-puerta">{{ inv.nombre }}</span>
+                <span class="pases-puerta">
+                  <i class="pi pi-ticket"></i> {{ inv.pasesConfirmados || 1 }} pases confirmados
+                </span>
+              </div>
+
+              <div class="accion-invitado-puerta">
+                @if (inv.haIngresado) {
+                  <span class="badge-ingresado">
+                    <i class="pi pi-check"></i> Ingresó {{ formatearFecha(inv.horaIngreso) }}
+                  </span>
+                  <p-button
+                    icon="pi pi-undo"
+                    [rounded]="true"
+                    [text]="true"
+                    severity="secondary"
+                    size="small"
+                    pTooltip="Revertir ingreso"
+                    tooltipPosition="left"
+                    (onClick)="revertirCheckIn(inv)">
+                  </p-button>
+                } @else {
+                  <p-button
+                    label="Dar Acceso"
+                    icon="pi pi-sign-in"
+                    size="small"
+                    (onClick)="hacerCheckIn(inv)">
+                  </p-button>
+                }
+              </div>
+            </div>
+          } @empty {
+            <div class="vacio-recepcion">
+              <p>No se encontraron invitados confirmados con ese nombre.</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

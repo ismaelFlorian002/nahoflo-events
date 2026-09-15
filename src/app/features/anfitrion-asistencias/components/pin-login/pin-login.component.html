@@ -1,0 +1,49 @@
+<div class="pin-card">
+  <div class="pin-icon-wrap">
+    <i class="pi pi-lock"></i>
+  </div>
+
+  <h2>Panel de Anfitrión</h2>
+  <p class="pin-subtitle">
+    Ingresa el PIN de seguridad de
+    <strong>{{ evento.preTitulo ? evento.preTitulo + ' - ' + evento.titulo : evento.titulo }}</strong> para consultar tu lista de
+    invitados.
+  </p>
+
+  <form (ngSubmit)="verificarPin()" class="pin-form">
+    <!-- CASILLAS OTP NATIVAS CON TECLADO NUMÉRICO FORZADO -->
+    <div class="pin-otp-contenedor">
+      <p-inputOtp
+        appOtpNumerico
+        (caracterInvalido)="mostrarAlertaSoloNumeros()"
+        [(ngModel)]="pinIngresado"
+        name="pin"
+        [length]="evento.pinAnfitrion?.length || 4"
+        [invalid]="errorPin() || errorSoloNumeros()"
+        (onChange)="onPinChange()"
+        autofocus />
+    </div>
+
+    @if (errorSoloNumeros()) {
+      <span class="pin-error-text alerta-numeros">
+        <i class="pi pi-exclamation-circle"></i> Solo se permiten números en el PIN.
+      </span>
+    } @else if (errorPin()) {
+      <span class="pin-error-text">
+        <i class="pi pi-exclamation-triangle"></i> PIN incorrecto. Intenta de nuevo.
+      </span>
+    }
+
+    <button
+      type="submit"
+      class="pin-submit-btn"
+      [disabled]="!pinIngresado || pinIngresado.length < (evento.pinAnfitrion?.length || 4)">
+      Ingresar al Panel
+    </button>
+  </form>
+  @if (tieneInvitacion) {
+    <a [routerLink]="['/e', evento.enlace]" class="back-link">
+      ← Volver a la Invitación
+    </a>
+  }
+</div>
