@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, Router, RouterModule } from '@angular/router';
 
 // Módulos de PrimeNG
 import { ButtonModule } from 'primeng/button';
@@ -11,7 +12,7 @@ import { AuthService } from '../../../core/services/auth';
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, ButtonModule, SidebarModule, MenuModule],
+  imports: [CommonModule, RouterModule, RouterOutlet, ButtonModule, SidebarModule, MenuModule],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.scss'],
 })

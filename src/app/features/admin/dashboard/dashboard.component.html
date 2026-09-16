@@ -1,31 +1,189 @@
-<div class="dashboard-container">
+<div class="w-full">
 
-  <!-- HEADER PRINCIPAL -->
-  <div class="dashboard-header">
-    <div class="title-group">
-      <h1 class="dashboard-title">Tus Eventos</h1>
-      <p class="dashboard-subtitle">Gestiona y administra todas tus invitaciones digitales</p>
+  <!-- ENCABEZADO INTERNO: SUBTÍTULO Y BOTÓN NUEVO EVENTO -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">Tus Eventos</h1>
+      <p class="text-sm text-gray-500 m-0 mt-0.5">Gestiona y administra todas tus invitaciones digitales</p>
     </div>
-    <p-button label="Nuevo Evento" icon="pi pi-plus" (onClick)="openDialog()" [rounded]="true"></p-button>
+
+    <!-- Botón Nuevo Evento con Colores Corporativos -->
+    <p-button
+      label="Nuevo Evento"
+      icon="pi pi-plus"
+      size="small"
+      (onClick)="openDialog()"
+      [rounded]="true"
+      styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
+    </p-button>
   </div>
 
-  <!-- TARJETA CONTENEDORA DE LA TABLA -->
-  <div class="table-card">
+  <!-- TARJETA CONTENEDORA PREMIUM DE LA TABLA -->
+  <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6">
     <p-table
       #dt
-      [value]="eventos"
+      [value]="eventosFiltrados()"
       [paginator]="true"
       [rows]="5"
       [rowsPerPageOptions]="[5, 10, 20]"
-      [globalFilterFields]="['titulo', 'fecha', 'enlace', 'contactoNombre', 'contactoTelefono']"
-      styleClass="p-datatable-borderless modern-table"
+      styleClass="p-datatable-borderless modern-table w-full"
     >
-      <!-- TOOLBAR DE LA TABLA (Solo el buscador, alineado a la derecha) -->
+      <!-- TOOLBAR DE LA TABLA (Filtros y Buscador) -->
       <ng-template pTemplate="caption">
-        <div class="table-toolbar">
-          <span class="p-input-icon-left search-wrapper">
-            <i class="pi pi-search"></i>
-            <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Buscar por nombre, cliente, URL o fecha..." />
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-4">
+
+          <!-- FILTROS CORPORATIVOS (ESTADO Y FECHA) -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- 1. FILTRO DE ESTADO (BOTÓN + OVERLAYPANEL) -->
+            <div class="filtro-dropdown-wrap">
+              <p-button
+                icon="pi pi-filter"
+                [label]="'Estado: ' + labelFiltroEstado()"
+                [badge]="conteoFiltroEstado()"
+                badgeClass="p-badge-secondary"
+                size="small"
+                [outlined]="filtroEstado() === 'todos'"
+                [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
+                (onClick)="opFiltrosEstado.toggle($event)"
+                title="Filtrar por estado del evento">
+              </p-button>
+
+              <p-overlayPanel #opFiltrosEstado styleClass="popover-filtros-invitados">
+                <div class="menu-filtros-popover">
+                  <div class="popover-filtros-header">
+                    <i class="pi pi-filter"></i>
+                    <span>Filtrar por estado</span>
+                  </div>
+
+                  <div class="popover-filtros-lista">
+                    <button
+                      type="button"
+                      class="item-filtro-btn"
+                      [class.activo]="filtroEstado() === 'todos'"
+                      (click)="seleccionarFiltroEstado('todos', dt, opFiltrosEstado)">
+                      <span class="filtro-item-left">
+                        <i class="pi pi-th-large text-slate-500"></i>
+                        <span>Todos los eventos</span>
+                      </span>
+                      <span class="badge-filtro-cant">{{ totalEventos() }}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="item-filtro-btn activo-verde"
+                      [class.activo]="filtroEstado() === 'activos'"
+                      (click)="seleccionarFiltroEstado('activos', dt, opFiltrosEstado)">
+                      <span class="filtro-item-left">
+                        <i class="pi pi-check-circle text-emerald-600"></i>
+                        <span>Activos</span>
+                      </span>
+                      <span class="badge-filtro-cant">{{ totalActivos() }}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="item-filtro-btn activo-ambar"
+                      [class.activo]="filtroEstado() === 'borradores'"
+                      (click)="seleccionarFiltroEstado('borradores', dt, opFiltrosEstado)">
+                      <span class="filtro-item-left">
+                        <i class="pi pi-file-edit text-amber-500"></i>
+                        <span>Borradores</span>
+                      </span>
+                      <span class="badge-filtro-cant">{{ totalBorradores() }}</span>
+                    </button>
+                  </div>
+                </div>
+              </p-overlayPanel>
+            </div>
+
+            <!-- 2. FILTRO DE FECHA DE EVENTO (BOTÓN + OVERLAYPANEL CALENDARIO) -->
+            <div class="filtro-dropdown-wrap">
+              <p-button
+                icon="pi pi-calendar"
+                [label]="labelFiltroFecha()"
+                [badge]="filtroFecha() ? '1' : undefined"
+                badgeClass="p-badge-secondary"
+                size="small"
+                [outlined]="!filtroFecha()"
+                [severity]="filtroFecha() ? 'primary' : 'secondary'"
+                (onClick)="opFiltroFecha.toggle($event)"
+                title="Filtrar por fecha de evento">
+              </p-button>
+
+              <p-overlayPanel #opFiltroFecha styleClass="popover-filtros-invitados">
+                <div class="menu-filtros-popover" style="min-width: 290px;">
+                  <div class="popover-filtros-header">
+                    <i class="pi pi-calendar"></i>
+                    <span>Filtrar por fecha del evento</span>
+                  </div>
+
+                  <div class="popover-filtros-lista">
+                    <button
+                      type="button"
+                      class="item-filtro-btn"
+                      [class.activo]="!filtroFecha()"
+                      (click)="seleccionarFecha(null, dt, opFiltroFecha)">
+                      <span class="filtro-item-left">
+                        <i class="pi pi-calendar text-slate-500"></i>
+                        <span>Todas las fechas</span>
+                      </span>
+                      <span class="badge-filtro-cant">{{ totalEventos() }}</span>
+                    </button>
+
+                    <div class="pt-2 pb-1 border-t border-gray-100 mt-1">
+                      <p-calendar
+                        [inline]="true"
+                        [ngModel]="filtroFecha()"
+                        (onSelect)="seleccionarFecha($event, dt, opFiltroFecha)"
+                        dateFormat="dd/mm/yy"
+                        styleClass="w-full mini-admin-calendar">
+                        <ng-template pTemplate="date" let-date>
+                          <span class="relative flex items-center justify-center w-full h-full">
+                            {{ date.day }}
+                            <span *ngIf="tieneEventoEnFecha(date)" class="absolute bottom-0.5 w-1.5 h-1.5 rounded-full bg-gold-500"></span>
+                          </span>
+                        </ng-template>
+                      </p-calendar>
+                    </div>
+
+                    <div *ngIf="filtroFecha()" class="pt-1.5 border-t border-gray-100 flex justify-end">
+                      <button
+                        type="button"
+                        (click)="seleccionarFecha(null, dt, opFiltroFecha)"
+                        class="text-xs text-red-600 hover:text-red-700 font-medium py-1 px-2.5 rounded-lg hover:bg-red-50 border-0 bg-transparent cursor-pointer flex items-center gap-1 transition-colors">
+                        <i class="pi pi-times text-[10px]"></i>
+                        <span>Quitar filtro de fecha</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </p-overlayPanel>
+            </div>
+
+            <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
+            <p-button
+              *ngIf="hayFiltrosActivos()"
+              icon="pi pi-filter-slash"
+              label="Limpiar filtros"
+              size="small"
+              [text]="true"
+              severity="secondary"
+              (onClick)="limpiarTodosFiltros(dt)"
+              pTooltip="Restablecer todos los filtros"
+              tooltipPosition="top">
+            </p-button>
+          </div>
+
+          <!-- BÚSQUEDA GLOBAL -->
+          <span class="p-input-icon-left w-full md:w-80">
+            <i class="pi pi-search text-gray-400"></i>
+            <input
+              pInputText
+              type="text"
+              class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+              [ngModel]="terminoBusqueda()"
+              (input)="onBusquedaChange($any($event.target).value, dt)"
+              placeholder="Buscar por nombre, cliente, URL o fecha..." />
           </span>
         </div>
       </ng-template>
@@ -34,9 +192,9 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="titulo">Evento <p-sortIcon field="titulo"></p-sortIcon></th>
-          <th pSortableColumn="fecha">Fecha <p-sortIcon field="fecha"></p-sortIcon></th>
+          <th pSortableColumn="fechaTimestamp">Fecha <p-sortIcon field="fechaTimestamp"></p-sortIcon></th>
           <th pSortableColumn="enlace">Enlace</th>
-          <th>Estado</th>
+          <th pSortableColumn="estaActivo">Estado <p-sortIcon field="estaActivo"></p-sortIcon></th>
           <th style="text-align: right;">Acciones</th>
         </tr>
       </ng-template>
@@ -45,35 +203,41 @@
       <ng-template pTemplate="body" let-evento>
         <tr>
           <td class="fw-medium">
-            <div>{{ evento.titulo }}</div>
-            <div *ngIf="evento.contactoNombre" style="display: flex; align-items: center; gap: 0.35rem; margin-top: 0.25rem; font-size: 0.78rem; color: #64748b; font-weight: normal;">
-              <i class="pi pi-user" style="color: #cca633; font-size: 0.72rem;"></i>
+            <div class="font-semibold text-gray-900">{{ evento.titulo }}</div>
+            <div *ngIf="evento.contactoNombre" class="flex items-center gap-1.5 mt-1 text-xs text-gray-500 font-normal">
+              <i class="pi pi-user text-gold-500 text-[11px]"></i>
               <span>{{ evento.contactoNombre }}</span>
               <a
                 *ngIf="evento.contactoTelefono"
                 [href]="getWhatsappUrl(evento.contactoTelefono)"
                 target="_blank"
-                style="display: inline-flex; align-items: center; color: #16a34a; text-decoration: none; margin-left: 0.2rem;"
+                class="inline-flex items-center text-emerald-600 hover:text-emerald-700 no-underline ml-1"
                 pTooltip="Escribir por WhatsApp"
                 tooltipPosition="top">
-                <i class="pi pi-whatsapp" style="font-size: 0.82rem;"></i>
+                <i class="pi pi-whatsapp text-xs"></i>
               </a>
             </div>
           </td>
-          <td class="text-secondary">{{ evento.fecha }}</td>
-          <td class="text-secondary">
-            <span class="url-badge">/e/{{ evento.enlace }}</span>
+          <td class="text-gray-600 text-sm font-medium">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-calendar text-gray-400 text-xs"></i>
+              <span>{{ evento.fechaFormateada }}</span>
+            </div>
+          </td>
+          <td class="text-gray-500 text-sm">
+            <span class="px-2.5 py-1 rounded-md bg-gray-50 text-gray-600 text-xs font-mono border border-gray-100">
+              /e/{{ evento.enlace }}
+            </span>
           </td>
           <td>
-            <p-tag [value]="evento.estaActivo ? 'Activo' : 'Borrador'"
-                   [severity]="evento.estaActivo ? 'success' : 'warning'"
-                   [rounded]="true">
+            <p-tag
+              [value]="evento.estaActivo ? 'Activo' : 'Borrador'"
+              [severity]="evento.estaActivo ? 'success' : 'warning'"
+              [rounded]="true">
             </p-tag>
           </td>
           <td style="text-align: right;">
-
-            <div class="action-buttons">
-
+            <div class="flex items-center justify-end gap-1">
               <!-- BOTÓN QR PARA MESAS (Solo si tiene Álbum contratado) -->
               <p-button
                 *ngIf="!evento.modulos || evento.modulos.tieneAlbum"
@@ -86,7 +250,6 @@
                 (onClick)="abrirQrMesas(evento)">
               </p-button>
 
-
               <p-button
                 icon="pi pi-users"
                 [rounded]="true"
@@ -96,14 +259,27 @@
                 tooltipPosition="top"
                 (onClick)="verAsistencias(evento)">
               </p-button>
-              <p-button icon="pi pi-pencil" [rounded]="true" [text]="true" severity="secondary" (onClick)="openDialog(evento)"></p-button>
+
+              <p-button
+                icon="pi pi-pencil"
+                [rounded]="true"
+                [text]="true"
+                severity="secondary"
+                pTooltip="Editar Evento"
+                tooltipPosition="top"
+                (onClick)="openDialog(evento)">
+              </p-button>
+
               <p-button
                 [icon]="evento.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"
                 [rounded]="true"
                 [text]="true"
                 [severity]="evento.estaActivo ? 'danger' : 'success'"
+                [pTooltip]="evento.estaActivo ? 'Desactivar Evento' : 'Activar Evento'"
+                tooltipPosition="top"
                 (onClick)="toggleEstado(evento)">
-              </p-button>            </div>
+              </p-button>
+            </div>
           </td>
         </tr>
       </ng-template>
@@ -111,10 +287,24 @@
       <!-- ESTADO VACÍO ELEGANTE -->
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="5" class="empty-state">
-            <i class="pi pi-folder-open empty-icon"></i>
-            <p>No tienes eventos registrados aún.<br>Haz clic en "Nuevo Evento" para empezar.</p>
+          <td colspan="5" class="py-12 text-center text-gray-400">
+            <i [class]="hayFiltrosActivos() ? 'pi pi-filter-slash text-4xl text-gray-300 mb-2 block' : 'pi pi-folder-open text-4xl text-gray-300 mb-2 block'"></i>
+            <p *ngIf="!hayFiltrosActivos()" class="text-sm m-0">No tienes eventos registrados aún.<br>Haz clic en "Nuevo Evento" para empezar.</p>
+            <div *ngIf="hayFiltrosActivos()">
+              <p class="text-sm m-0 font-medium text-gray-600">No se encontraron eventos con los filtros seleccionados.</p>
+              <button
+                type="button"
+                (click)="limpiarTodosFiltros(dt)"
+                class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-gold-600 hover:text-gold-700 bg-gold-50 hover:bg-gold-100 px-3 py-1.5 rounded-lg border-0 cursor-pointer transition-colors">
+                <i class="pi pi-filter-slash text-xs"></i>
+                <span>Restablecer filtros</span>
+              </button>
+            </div>
           </td>
         </tr>
-
       </ng-template>
+
+    </p-table>
+  </div>
+
+</div>

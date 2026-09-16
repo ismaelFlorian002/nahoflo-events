@@ -328,12 +328,88 @@ html body .p-overlaypanel.popover-filtros-invitados {
           color: #b91c1c;
         }
       }
+
+      &.activo-verde {
+        background: #f0fdf4 !important;
+        color: #15803d !important;
+        border-color: #bbf7d0 !important;
+
+        .badge-filtro-cant {
+          background: #dcfce7 !important;
+          color: #15803d !important;
+        }
+      }
+
+      &.activo-ambar {
+        background: #fffbeb !important;
+        color: #b45309 !important;
+        border-color: #fde68a !important;
+
+        .badge-filtro-cant {
+          background: #fef3c7 !important;
+          color: #b45309 !important;
+        }
+      }
     }
 
     &:active {
       transform: scale(0.98);
     }
   }
+
+  .mini-admin-calendar {
+    width: 100%;
+
+    .p-datepicker {
+      border: none !important;
+      padding: 0 !important;
+      width: 100% !important;
+      background: transparent !important;
+    }
+
+    .p-datepicker-header {
+      padding: 0.35rem 0.5rem 0.5rem !important;
+      background: transparent !important;
+      border-bottom: 1px solid #f1f5f9 !important;
+    }
+
+    .p-datepicker-title {
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+    }
+
+    table {
+      font-size: 0.78rem !important;
+      margin-top: 0.25rem !important;
+
+      th {
+        padding: 0.25rem !important;
+        font-size: 0.72rem !important;
+        color: #94a3b8 !important;
+      }
+    }
+
+    .p-datepicker-calendar td {
+      padding: 1.5px !important;
+
+      > span {
+        width: 1.9rem !important;
+        height: 1.9rem !important;
+        border-radius: 8px !important;
+        font-size: 0.78rem !important;
+
+        &.p-highlight {
+          background: #cca633 !important;
+          color: #ffffff !important;
+        }
+      }
+    }
+  }
+}
+
+.filtro-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
 }
 
 /* =========================================================
