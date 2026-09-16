@@ -203,7 +203,14 @@
       <ng-template pTemplate="body" let-evento>
         <tr>
           <td class="fw-medium">
-            <div class="font-semibold text-gray-900">{{ evento.titulo }}</div>
+            <div
+              (click)="verDetalleEvento(evento)"
+              class="font-semibold text-gray-900 hover:text-gold-600 transition-colors cursor-pointer inline-flex items-center gap-1.5 group"
+              pTooltip="Ver detalle del evento"
+              tooltipPosition="top">
+              <span>{{ evento.titulo }}</span>
+              <i class="pi pi-search-plus text-[10px] text-gray-400 group-hover:text-gold-500 transition-colors"></i>
+            </div>
             <div *ngIf="evento.contactoNombre" class="flex items-center gap-1.5 mt-1 text-xs text-gray-500 font-normal">
               <i class="pi pi-user text-gold-500 text-[11px]"></i>
               <span>{{ evento.contactoNombre }}</span>
@@ -238,6 +245,17 @@
           </td>
           <td style="text-align: right;">
             <div class="flex items-center justify-end gap-1">
+              <!-- BOTÓN VER DETALLE (MODAL CON DIALOGSERVICE) -->
+              <p-button
+                icon="pi pi-eye"
+                [rounded]="true"
+                [text]="true"
+                severity="secondary"
+                pTooltip="Ver Detalle del Evento"
+                tooltipPosition="top"
+                (onClick)="verDetalleEvento(evento)">
+              </p-button>
+
               <!-- BOTÓN QR PARA MESAS (Solo si tiene Álbum contratado) -->
               <p-button
                 *ngIf="!evento.modulos || evento.modulos.tieneAlbum"

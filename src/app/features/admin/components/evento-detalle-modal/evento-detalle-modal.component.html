@@ -1,0 +1,401 @@
+<div class="evento-detalle-modal">
+<!--  overflow-x: hidden;-->
+  <!-- CABECERA HERO DEL EVENTO -->
+  <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 text-white p-6 mb-6 shadow-sm">
+    @if (evento.fotoPrincipalUrl) {
+      <div
+        class="absolute inset-0 bg-cover bg-center opacity-50 filter blur-xs"
+        [style.background-image]="'url(' + evento.fotoPrincipalUrl + ')'">
+      </div>
+    }
+
+    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-start gap-4">
+        @if (evento.fotoPrincipalUrl) {
+          <img
+            [src]="evento.fotoPrincipalUrl"
+            [alt]="evento.titulo"
+            class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-white/20 shadow-md shrink-0" />
+        } @else {
+          <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/15">
+            <i class="pi pi-calendar-plus text-2xl text-gold-400"></i>
+          </div>
+        }
+
+        <div class="flex flex-col gap-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-500/20 text-gold-300 border border-gold-400/30 uppercase tracking-wider">
+              {{ evento.tipo || 'Evento' }}
+            </span>
+            <p-tag
+              [value]="evento.estaActivo ? 'Activo' : 'Borrador'"
+              [severity]="evento.estaActivo ? 'success' : 'warning'"
+              [rounded]="true">
+            </p-tag>
+          </div>
+
+          <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white m-0">
+            {{ evento.titulo }}
+          </h2>
+
+          @if (evento.preTitulo) {
+            <span class="text-xs text-slate-300 font-medium tracking-wide">
+              {{ evento.preTitulo }}
+            </span>
+          }
+
+          @if (evento.nombreEvento && evento.nombreEvento !== evento.titulo) {
+            <span class="text-xs text-slate-400">
+              Ref. interna: {{ evento.nombreEvento }}
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- PIN DE ANFITRIÓN RÁPIDO -->
+      @if (evento.pinAnfitrion) {
+        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-3 flex items-center gap-3 shrink-0 self-start md:self-center">
+          <div class="w-9 h-9 rounded-lg bg-gold-500/20 text-gold-300 flex items-center justify-center">
+            <i class="pi pi-key text-base"></i>
+          </div>
+          <div>
+            <span class="block text-[11px] uppercase tracking-wider text-slate-300 font-semibold">PIN Anfitrión</span>
+            <span class="text-base font-bold font-mono tracking-widest text-white">{{ evento.pinAnfitrion }}</span>
+          </div>
+          <button
+            type="button"
+            (click)="copiarPin()"
+            class="text-xs px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white border-0 cursor-pointer transition-colors flex items-center gap-1"
+            [pTooltip]="copiadoPin ? '¡Copiado!' : 'Copiar PIN'"
+            tooltipPosition="top">
+            <i [class]="copiadoPin ? 'pi pi-check text-emerald-400' : 'pi pi-copy'"></i>
+            <span>{{ copiadoPin ? 'Copiado' : 'Copiar' }}</span>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ENLACE PÚBLICO OFICIAL -->
+  <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-2.5 overflow-hidden">
+      <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 shrink-0">
+        <i class="pi pi-link text-sm"></i>
+      </div>
+      <div class="min-w-0">
+        <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Enlace Público de la Invitación</span>
+        <span class="text-sm font-mono text-slate-700 truncate block font-medium">
+          {{ obtenerUrlPublica() }}
+        </span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 shrink-0">
+      <p-button
+        [label]="copiadoEnlace ? '¡Copiado!' : 'Copiar Enlace'"
+        [icon]="copiadoEnlace ? 'pi pi-check' : 'pi pi-copy'"
+        size="small"
+        [severity]="copiadoEnlace ? 'success' : 'secondary'"
+        [outlined]="!copiadoEnlace"
+        (onClick)="copiarEnlace()">
+      </p-button>
+
+      <p-button
+        label="Abrir"
+        icon="pi pi-external-link"
+        size="small"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="abrirInvitacion()">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- CONTENIDO PRINCIPAL EN DOS COLUMNAS -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+
+    <!-- COLUMNA IZQUIERDA: FECHA Y CONTACTO -->
+    <div class="flex flex-col gap-4">
+
+      <!-- TARJETA: FECHA Y HORA -->
+      <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
+          <i class="pi pi-calendar text-gold-500 text-base"></i>
+          <h4 class="text-sm font-bold text-gray-800 m-0">Fecha y Horario</h4>
+        </div>
+        <div class="space-y-2">
+          <div>
+            <span class="block text-xs text-gray-400">Fecha del Evento</span>
+            <span class="text-sm font-semibold text-gray-800 capitalize">
+              {{ formatearFechaCompleta(evento.fecha) }}
+            </span>
+          </div>
+          @if (formatearHora(evento.fecha); as hora) {
+            <div>
+              <span class="block text-xs text-gray-400">Hora Programada</span>
+              <span class="text-sm font-semibold text-gray-800">
+                <i class="pi pi-clock text-xs text-slate-400 mr-1"></i>{{ hora }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- TARJETA: CLIENTE Y CONTACTO -->
+      <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
+          <i class="pi pi-user text-gold-500 text-base"></i>
+          <h4 class="text-sm font-bold text-gray-800 m-0">Cliente Responsable</h4>
+        </div>
+
+        @if (evento.contactoNombre) {
+          <div class="space-y-2.5">
+            <div>
+              <span class="block text-xs text-gray-400">Nombre</span>
+              <span class="text-sm font-semibold text-gray-900">{{ evento.contactoNombre }}</span>
+            </div>
+
+            @if (evento.contactoTelefono) {
+              <div>
+                <span class="block text-xs text-gray-400">Teléfono / WhatsApp</span>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <a
+                    [href]="'tel:' + evento.contactoTelefono"
+                    class="text-sm font-medium text-gray-700 hover:text-gray-900 no-underline">
+                    {{ evento.contactoTelefono }}
+                  </a>
+                  <a
+                    [href]="getWhatsappUrl(evento.contactoTelefono)"
+                    target="_blank"
+                    class="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium no-underline">
+                    <i class="pi pi-whatsapp"></i> WhatsApp
+                  </a>
+                </div>
+              </div>
+            }
+
+            @if (evento.contactoEmail) {
+              <div>
+                <span class="block text-xs text-gray-400">Correo Electrónico</span>
+                <a
+                  [href]="'mailto:' + evento.contactoEmail"
+                  class="text-sm font-medium text-slate-700 hover:underline">
+                  {{ evento.contactoEmail }}
+                </a>
+              </div>
+            }
+
+            @if (evento.contactoNotas) {
+              <div class="pt-2 border-t border-gray-100">
+                <span class="block text-xs text-gray-400">Notas de Atención</span>
+                <p class="text-xs text-gray-600 italic m-0 mt-0.5 bg-gray-50 p-2 rounded-lg">
+                  {{ evento.contactoNotas }}
+                </p>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="text-xs text-gray-400 italic m-0">No se ha asignado un cliente o contacto directo a este evento.</p>
+        }
+      </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: MÓDULOS Y UBICACIONES -->
+    <div class="flex flex-col gap-4">
+
+      <!-- TARJETA: MÓDULOS CONTRATADOS -->
+      <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
+          <i class="pi pi-th-large text-gold-500 text-base"></i>
+          <h4 class="text-sm font-bold text-gray-800 m-0">Servicios y Módulos</h4>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <!-- Invitación Web -->
+          <div class="p-2.5 rounded-lg border flex items-center gap-2.5"
+            [class.bg-emerald-50]="!evento.modulos || evento.modulos.tieneInvitacion"
+            [class.border-emerald-100]="!evento.modulos || evento.modulos.tieneInvitacion"
+            [class.bg-gray-50]="evento.modulos && !evento.modulos.tieneInvitacion"
+            [class.border-gray-100]="evento.modulos && !evento.modulos.tieneInvitacion">
+            <i class="pi pi-globe text-sm"
+              [class.text-emerald-600]="!evento.modulos || evento.modulos.tieneInvitacion"
+              [class.text-gray-400]="evento.modulos && !evento.modulos.tieneInvitacion">
+            </i>
+            <div class="min-w-0">
+              <span class="block text-xs font-semibold text-gray-800">Invitación Web</span>
+              <span class="text-[11px]"
+                [class.text-emerald-700]="!evento.modulos || evento.modulos.tieneInvitacion"
+                [class.text-gray-400]="evento.modulos && !evento.modulos.tieneInvitacion">
+                {{ (!evento.modulos || evento.modulos.tieneInvitacion) ? 'Habilitada' : 'Inactiva' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Control de Invitados -->
+          <div class="p-2.5 rounded-lg border flex items-center gap-2.5"
+            [class.bg-blue-50]="evento.modulos?.tipoControlInvitados && evento.modulos?.tipoControlInvitados !== 'inactivo'"
+            [class.border-blue-100]="evento.modulos?.tipoControlInvitados && evento.modulos?.tipoControlInvitados !== 'inactivo'"
+            [class.bg-gray-50]="!evento.modulos || evento.modulos?.tipoControlInvitados === 'inactivo'"
+            [class.border-gray-100]="!evento.modulos || evento.modulos?.tipoControlInvitados === 'inactivo'">
+            <i class="pi pi-users text-sm"
+              [class.text-blue-600]="evento.modulos?.tipoControlInvitados && evento.modulos?.tipoControlInvitados !== 'inactivo'"
+              [class.text-gray-400]="!evento.modulos || evento.modulos?.tipoControlInvitados === 'inactivo'">
+            </i>
+            <div class="min-w-0">
+              <span class="block text-xs font-semibold text-gray-800">Invitados</span>
+              <span class="text-[11px] truncate block"
+                [class.text-blue-700]="evento.modulos?.tipoControlInvitados && evento.modulos?.tipoControlInvitados !== 'inactivo'"
+                [class.text-gray-400]="!evento.modulos || evento.modulos?.tipoControlInvitados === 'inactivo'">
+                @if (evento.modulos?.tipoControlInvitados === 'total') {
+                  Pases QR & Escáner
+                } @else if (evento.modulos?.tipoControlInvitados === 'basico') {
+                  RSVP Web
+                } @else if (evento.modulos?.tipoControlInvitados === 'lista_puerta') {
+                  Puerta
+                } @else {
+                  Inactivo
+                }
+              </span>
+            </div>
+          </div>
+
+          <!-- Álbum Digital -->
+          <div class="p-2.5 rounded-lg border flex items-center gap-2.5"
+            [class.bg-purple-50]="!evento.modulos || evento.modulos.tieneAlbum"
+            [class.border-purple-100]="!evento.modulos || evento.modulos.tieneAlbum"
+            [class.bg-gray-50]="evento.modulos && !evento.modulos.tieneAlbum"
+            [class.border-gray-100]="evento.modulos && !evento.modulos.tieneAlbum">
+            <i class="pi pi-camera text-sm"
+              [class.text-purple-600]="!evento.modulos || evento.modulos.tieneAlbum"
+              [class.text-gray-400]="evento.modulos && !evento.modulos.tieneAlbum">
+            </i>
+            <div class="min-w-0">
+              <span class="block text-xs font-semibold text-gray-800">Álbum Digital</span>
+              <span class="text-[11px]"
+                [class.text-purple-700]="!evento.modulos || evento.modulos.tieneAlbum"
+                [class.text-gray-400]="evento.modulos && !evento.modulos.tieneAlbum">
+                {{ (!evento.modulos || evento.modulos.tieneAlbum) ? 'Habilitado' : 'Inactivo' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Música de Fondo -->
+          <div class="p-2.5 rounded-lg border flex items-center gap-2.5"
+            [class.bg-amber-50]="evento.musicaFondoUrl"
+            [class.border-amber-100]="evento.musicaFondoUrl"
+            [class.bg-gray-50]="!evento.musicaFondoUrl"
+            [class.border-gray-100]="!evento.musicaFondoUrl">
+            <i class="pi pi-volume-up text-sm"
+              [class.text-amber-600]="evento.musicaFondoUrl"
+              [class.text-gray-400]="!evento.musicaFondoUrl">
+            </i>
+            <div class="min-w-0">
+              <span class="block text-xs font-semibold text-gray-800">Música Fondo</span>
+              <span class="text-[11px]"
+                [class.text-amber-700]="evento.musicaFondoUrl"
+                [class.text-gray-400]="!evento.musicaFondoUrl">
+                {{ evento.musicaFondoUrl ? 'Configurada' : 'Sin audio' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TARJETA: UBICACIONES -->
+      <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
+          <i class="pi pi-map-marker text-gold-500 text-base"></i>
+          <h4 class="text-sm font-bold text-gray-800 m-0">Ubicaciones del Evento</h4>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Ceremonia -->
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Ceremonia</span>
+              @if (evento.ceremoniaUrl) {
+                <a
+                  [href]="evento.ceremoniaUrl"
+                  target="_blank"
+                  class="text-xs text-gold-600 hover:text-gold-700 font-medium inline-flex items-center gap-1 no-underline">
+                  <span>Google Maps</span>
+                  <i class="pi pi-external-link text-[10px]"></i>
+                </a>
+              }
+            </div>
+            <span class="text-sm text-gray-800 font-medium block mt-0.5">
+              {{ evento.ceremoniaLugar || 'No especificada' }}
+            </span>
+          </div>
+
+          <!-- Recepción -->
+          <div class="pt-2 border-t border-gray-100">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Recepción / Fiesta</span>
+              @if (evento.recepcionUrl) {
+                <a
+                  [href]="evento.recepcionUrl"
+                  target="_blank"
+                  class="text-xs text-gold-600 hover:text-gold-700 font-medium inline-flex items-center gap-1 no-underline">
+                  <span>Google Maps</span>
+                  <i class="pi pi-external-link text-[10px]"></i>
+                </a>
+              }
+            </div>
+            <span class="text-sm text-gray-800 font-medium block mt-0.5">
+              {{ evento.recepcionLugar || 'No especificada' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DEDICATORIA / MENSAJE PÚBLICO (SI TIENE) -->
+  @if (evento.mensaje) {
+    <div class="bg-pastel-pink-50/50 border border-pastel-pink-100 rounded-xl p-4 mb-6">
+      <div class="flex items-center gap-2 mb-1.5 text-pastel-pink-500">
+        <i class="pi pi-heart-fill text-sm"></i>
+        <span class="text-xs font-bold uppercase tracking-wider">Dedicatoria del Evento</span>
+      </div>
+      <p class="text-sm text-gray-700 italic m-0">
+        "{{ evento.mensaje }}"
+      </p>
+    </div>
+  }
+
+  <!-- GALERÍA DE FOTOS (SI TIENE) -->
+  @if (evento.galeriaUrls && evento.galeriaUrls.length > 0) {
+    <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm mb-6">
+      <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-images text-gold-500 text-base"></i>
+          <h4 class="text-sm font-bold text-gray-800 m-0">Galería de Imágenes</h4>
+        </div>
+        <span class="text-xs text-gray-400 font-semibold">{{ evento.galeriaUrls.length }} fotos</span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2.5 pb-1">
+        @for (img of evento.galeriaUrls; track $index) {
+          <a [href]="img" target="_blank" class="block shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:opacity-90 transition-opacity">
+            <img [src]="img" alt="Foto de galería" class="w-16 h-16 object-cover" />
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <div
+    style="position: sticky; bottom: -1.5rem; margin: 1rem -1.5rem -1.5rem -1.5rem; padding: 1.5rem; background: #ffffff; z-index: 100; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid #e2e8f0;">
+    <p-button
+      label="Cerrar"
+      icon="pi pi-times"
+      size="small"
+      [text]="true"
+      severity="secondary"
+      (onClick)="cerrar()">
+    </p-button>
+  </div>
+</div>

@@ -13,6 +13,7 @@ import { DockModule } from 'primeng/dock';
 import { EventService } from '../../../core/services/event.service';
 import { EventFormComponent } from '../components/event-form/event-form.component';
 import { AsistenciasModalComponent } from '../components/asistencias-modal/asistencias-modal.component';
+import { EventoDetalleModalComponent } from '../components/evento-detalle-modal/evento-detalle-modal.component';
 import { QrMesaModalComponent } from '../../album-digital/qr-mesa-modal/qr-mesa-modal.component';
 
 @Component({
@@ -116,7 +117,7 @@ export class DashboardComponent implements OnInit {
           (e.fechaFormateada || '').toLowerCase().includes(query) ||
           (e.enlace || '').toLowerCase().includes(query) ||
           (e.contactoNombre || '').toLowerCase().includes(query) ||
-          (e.contactoTelefono || '').toLowerCase().includes(query)
+          (e.contactoTelefono || '').toLowerCase().includes(query),
       );
     }
 
@@ -192,9 +193,7 @@ export class DashboardComponent implements OnInit {
       const d = e.fechaDate;
       if (!d) return false;
       return (
-        d.getFullYear() === date.year &&
-        d.getMonth() === date.month &&
-        d.getDate() === date.day
+        d.getFullYear() === date.year && d.getMonth() === date.month && d.getDate() === date.day
       );
     });
   }
@@ -202,7 +201,7 @@ export class DashboardComponent implements OnInit {
   seleccionarFiltroEstado(
     estado: 'todos' | 'activos' | 'borradores',
     table?: Table,
-    op?: OverlayPanel
+    op?: OverlayPanel,
   ): void {
     this.filtroEstado.set(estado);
     table?.reset();
@@ -251,6 +250,18 @@ export class DashboardComponent implements OnInit {
       await this.eventService.updateEvent(evento.id, { estaActivo: !evento.estaActivo });
       await this.cargarEventos();
     }
+  }
+
+  // Abre el modal de vista detalle con DialogService
+  verDetalleEvento(evento: any) {
+    const ref = this.dialogService.open(EventoDetalleModalComponent, {
+      header: `Detalle del Evento — ${evento.titulo || evento.nombreEvento}`,
+      width: '1200px',
+      breakpoints: { '960px': '75vw', '640px': '90vw' },
+      closable: true,
+      focusOnShow: false,
+      data: evento,
+    });
   }
 
   verAsistencias(evento: any) {
