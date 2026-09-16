@@ -36,6 +36,7 @@ export class PinLoginComponent implements AfterViewInit {
   errorPin = signal<boolean>(false);
   errorSoloNumeros = signal<boolean>(false);
   private timerAlertaNumeros: any;
+  private timerErrorPin: any;
 
   ngAfterViewInit(): void {
     this.activarTecladoNumericoMovil();
@@ -65,6 +66,7 @@ export class PinLoginComponent implements AfterViewInit {
   // Se dispara en cada pulsación del InputOtp
   onPinChange(): void {
     this.errorPin.set(false);
+    clearTimeout(this.timerErrorPin);
     if (this.pinIngresado && /\D/.test(this.pinIngresado)) {
       this.mostrarAlertaSoloNumeros();
       this.pinIngresado = this.pinIngresado.replace(/\D/g, '');
@@ -81,9 +83,21 @@ export class PinLoginComponent implements AfterViewInit {
 
     if (this.pinIngresado.trim() === this.evento.pinAnfitrion) {
       this.errorPin.set(false);
+      clearTimeout(this.timerErrorPin);
       this.pinValido.emit(this.pinIngresado.trim());
     } else {
       this.errorPin.set(true);
+      clearTimeout(this.timerErrorPin);
+      this.timerErrorPin = setTimeout(() => {
+        this.errorPin.set(false);
+      }, 3000);
+
+      // Limpia el PIN para que el usuario pueda volver a ingresarlo de inmediato
+      setTimeout(() => {
+        this.pinIngresado = '';
+        const firstInput = document.querySelector<HTMLInputElement>('.pin-otp-contenedor input');
+        firstInput?.focus();
+      }, 350);
     }
   }
 }

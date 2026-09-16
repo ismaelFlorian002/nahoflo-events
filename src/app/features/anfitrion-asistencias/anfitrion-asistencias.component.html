@@ -1,4 +1,4 @@
-<div class="anfitrion-wrapper">
+<div class="anfitrion-wrapper min-h-screen bg-[#fcfbf9]">
 
   @if (cargando()) {
     <div class="center-box">
@@ -22,66 +22,128 @@
       </app-pin-login>
     }
 
-    <!-- 2. PANEL DESBLOQUEADO (VISTA DEL CLIENTE) -->
+    <!-- 2. PANEL DESBLOQUEADO (VISTA CORPORATIVA PREMIUM DEL CLIENTE) -->
     @else {
-      <div class="dashboard-container" [class.sin-bottom-bar]="totalPestanasDisponibles() <= 1">
+      <div class="w-full flex flex-col min-h-screen">
 
-        <header class="dash-header">
-          <div class="dash-header-info">
-            <div class="dash-header-top-row">
-              <div class="dash-meta-badge">
-                <span class="dash-portal-pill">
-                  <i class="pi pi-shield"></i> Portal de Anfitrión
+        <!-- HEADER SUPERIOR CORPORATIVO -->
+        <header class="w-full bg-white border-b border-gray-100 px-4 sm:px-8 py-3.5 flex flex-wrap justify-between items-center sticky top-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.02)] gap-4">
+          
+          <!-- Lado Izquierdo: Título del Evento y Badge -->
+          <div class="flex items-center gap-3">
+            <div class="flex flex-col">
+              @if (ev.preTitulo || ev.tipo) {
+                <span class="text-xs uppercase tracking-wider font-semibold text-gold-500">
+                  {{ ev.preTitulo || ev.tipo }}
                 </span>
-              </div>
-              <div class="dash-salir-mobile">
+              }
+              <h1 class="text-xl font-bold text-gray-800 tracking-tight m-0 leading-tight">
+                {{ ev.titulo }}
+              </h1>
+            </div>
+            <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-pastel-pink-50 text-pastel-pink-500 border border-pastel-pink-100">
+              <i class="pi pi-shield text-[10px]"></i> Portal de Anfitrión
+            </span>
+          </div>
+
+          <!-- Lado Derecho: Navegación Corporativa con Hover Rosa Pastel y Acciones -->
+          <div class="flex items-center flex-wrap gap-2">
+            @if (totalPestanasDisponibles() > 1) {
+              <nav class="hidden md:flex items-center gap-1" aria-label="Navegación del portal">
+                <button
+                  type="button"
+                  (click)="cambiarPestana('resumen')"
+                  [class.bg-pastel-pink-50]="pestanaActiva() === 'resumen'"
+                  [class.text-pastel-pink-500]="pestanaActiva() === 'resumen'"
+                  [class.font-semibold]="pestanaActiva() === 'resumen'"
+                  [class.text-gray-600]="pestanaActiva() !== 'resumen'"
+                  class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                  <i class="pi pi-chart-pie text-xs"></i>
+                  <span>Resumen</span>
+                </button>
+
+                @if (tieneControlInvitados()) {
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('invitados')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'invitados'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'invitados'"
+                    [class.font-semibold]="pestanaActiva() === 'invitados'"
+                    [class.text-gray-600]="pestanaActiva() !== 'invitados'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i class="pi pi-users text-xs"></i>
+                    <span>Lista de Invitados</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[11px] bg-gray-100 text-gray-600 font-semibold">{{ invitados().length }}</span>
+                  </button>
+                }
+
+                @if (tieneRecepcionOPuerta()) {
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('recepcion')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'recepcion'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'recepcion'"
+                    [class.font-semibold]="pestanaActiva() === 'recepcion'"
+                    [class.text-gray-600]="pestanaActiva() !== 'recepcion'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode text-xs' : 'pi pi-id-card text-xs'"></i>
+                    <span>{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner' : 'Recepción' }}</span>
+                    <span class="px-1.5 py-0.2 rounded-full text-[11px] bg-blue-50 text-blue-600 font-semibold">{{ totalIngresados() }}/{{ totalPases() }}</span>
+                  </button>
+                }
+
+                @if (tieneAlbum()) {
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('album')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'album'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'album'"
+                    [class.font-semibold]="pestanaActiva() === 'album'"
+                    [class.text-gray-600]="pestanaActiva() !== 'album'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i class="pi pi-camera text-xs"></i>
+                    <span>Álbum</span>
+                    @if (recuerdos().length > 0) {
+                      <span class="px-1.5 py-0.2 rounded-full text-[11px] bg-gray-100 text-gray-600 font-semibold">{{ recuerdos().length }}</span>
+                    }
+                  </button>
+                }
+              </nav>
+            }
+
+            <div class="h-5 w-px bg-gray-200 mx-1 hidden md:block"></div>
+
+            <!-- Acciones Rápidas (Copiar Enlace, Ver Invitación, Salir) -->
+            <div class="flex items-center gap-2">
+              @if (tieneInvitacion()) {
                 <p-button
-                  label="Salir"
-                  icon="pi pi-sign-out"
+                  [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
+                  [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
+                  size="small"
+                  [outlined]="!copiadoGeneral()"
+                  [severity]="copiadoGeneral() ? 'success' : 'secondary'"
+                  [text]="!copiadoGeneral()"
+                  (onClick)="copiarEnlaceGeneral()"
+                  aria-label="Copiar enlace general del evento">
+                </p-button>
+
+                <p-button
+                  label="Ver Invitación"
+                  icon="pi pi-external-link"
                   size="small"
                   [outlined]="true"
-                  severity="danger"
-                  (onClick)="salir()"
-                  aria-label="Cerrar sesión de anfitrión">
+                  severity="secondary"
+                  [text]="true"
+                  (onClick)="abrirInvitacion()"
+                  aria-label="Abrir invitación en nueva pestaña">
                 </p-button>
-              </div>
-            </div>
-            @if (ev.preTitulo || ev.tipo) {
-              <span class="dash-evento-subtitulo">{{ ev.preTitulo || ev.tipo }}</span>
-            }
-            <h1 class="dash-title">{{ ev.titulo }}</h1>
-          </div>
-          <div class="dash-acciones-header" [class.solo-salir]="!tieneInvitacion()">
-            @if (tieneInvitacion()) {
-              <p-button
-                [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
-                [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
-                size="small"
-                [outlined]="!copiadoGeneral()"
-                [severity]="copiadoGeneral() ? 'success' : 'secondary'"
-                [text]="!copiadoGeneral()"
-                (onClick)="copiarEnlaceGeneral()"
-                aria-label="Copiar enlace general del evento">
-              </p-button>
+              }
 
-              <p-button
-                label="Ver Invitación"
-                icon="pi pi-external-link"
-                size="small"
-                [outlined]="true"
-                severity="secondary"
-                text
-                (onClick)="abrirInvitacion()"
-                aria-label="Abrir invitación en nueva pestaña">
-              </p-button>
-            }
-
-            <div class="dash-salir-desktop">
               <p-button
                 label="Salir"
                 icon="pi pi-sign-out"
                 size="small"
-                text="true"
+                [text]="true"
                 severity="danger"
                 (onClick)="salir()"
                 aria-label="Cerrar sesión de anfitrión">
@@ -90,551 +152,575 @@
           </div>
         </header>
 
-        <!-- NAVEGACIÓN MODERNA HÍBRIDA: TOP NAVBAR EN DESKTOP, BOTTOM BAR EN MÓVIL -->
-        @if (totalPestanasDisponibles() > 1) {
-          <div class="pestanas-nav-container">
-          <nav class="pestanas-nav" aria-label="Navegación de secciones del anfitrión">
-            <button
-              type="button"
-              class="btn-tab"
-              [class.activo]="pestanaActiva() === 'resumen'"
-              (click)="cambiarPestana('resumen')">
-              <div class="tab-icon-wrap">
-                <i class="pi pi-chart-pie"></i>
-              </div>
-              <span class="tab-label">
-                <span class="tab-label-text">Resumen</span>
-                <span class="tab-label-desktop">Resumen</span>
-              </span>
-            </button>
+        <!-- CONTENIDO PRINCIPAL CENTRADO -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:pb-8 w-full flex-1">
 
-            @if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
-              <button
-                type="button"
-                class="btn-tab"
-                [class.activo]="pestanaActiva() === 'invitados'"
-                (click)="cambiarPestana('invitados')">
-                <div class="tab-icon-wrap">
-                  <i class="pi pi-users"></i>
-                  <span class="tab-badge-mobile">{{ invitados().length }}</span>
-                </div>
-                <span class="tab-label">
-                  <span class="tab-label-text">Invitados</span>
-                  <span class="tab-label-desktop">Lista de Invitados</span>
-                </span>
-                <span class="tab-badge tab-badge-desktop">{{ invitados().length }}</span>
-              </button>
-            }
+          <!-- 0. PESTAÑA: RESUMEN GENERAL -->
+          @if (pestanaActiva() === 'resumen') {
+            <div class="w-full">
 
-            @if (ev.modulos?.tipoControlInvitados === 'total' || ev.modulos?.tipoControlInvitados === 'lista_puerta') {
-              <button
-                type="button"
-                class="btn-tab tab-recepcion"
-                [class.activo]="pestanaActiva() === 'recepcion'"
-                (click)="cambiarPestana('recepcion')">
-                <div class="tab-icon-wrap">
-                  <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-id-card'"></i>
-                  <span class="tab-badge-mobile">{{ totalIngresados() }}/{{ totalPases() }}</span>
-                </div>
-                <span class="tab-label">
-                  <span
-                    class="tab-label-text">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Escáner' : 'Puerta' }}</span>
-                  <span
-                    class="tab-label-desktop">{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner' : 'Recepción en Puerta' }}</span>
-                </span>
-                <span class="tab-badge tab-badge-desktop tab-badge-recepcion">{{ totalIngresados() }}
-                  /{{ totalPases() }}</span>
-              </button>
-            }
-
-            @if (!ev.modulos || ev.modulos.tieneAlbum) {
-              <button
-                type="button"
-                class="btn-tab"
-                [class.activo]="pestanaActiva() === 'album'"
-                (click)="cambiarPestana('album')">
-                <div class="tab-icon-wrap">
-                  <i class="pi pi-camera"></i>
-                  @if (recuerdos().length > 0) {
-                    <span class="tab-badge-mobile">{{ recuerdos().length }}</span>
-                  }
-                </div>
-                <span class="tab-label">
-                  <span class="tab-label-text">Álbum</span>
-                  <span class="tab-label-desktop">Álbum de Recuerdos</span>
-                </span>
-                <span class="tab-badge tab-badge-desktop">{{ recuerdos().length }}</span>
-              </button>
-            }
-          </nav>
-        </div>
-      }
-
-        <!-- 0. PESTAÑA: RESUMEN GENERAL Y EJECUTIVO POR PAQUETE -->
-        @if (pestanaActiva() === 'resumen') {
-          <div class="seccion-resumen">
-
-            <!-- CASO 0: NINGÚN SERVICIO O PAQUETE HABILITADO -->
-            @if (sinServiciosActivos()) {
-              <div class="card-resumen-sin-servicios">
-                <div class="sin-servicios-cabecera">
-
-                  <div class="sin-servicios-info">
-                    <div class="badge-sin-servicios">
-                      <i class="pi pi-exclamation-circle"></i> Sin Paquetes Habilitados
+              <!-- CASO 0: NINGÚN SERVICIO O PAQUETE HABILITADO -->
+              @if (sinServiciosActivos()) {
+                <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+                  <div class="flex items-start gap-4 pb-4 mb-4 border-b border-gray-100">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                      <i class="pi pi-exclamation-circle text-lg"></i>
                     </div>
-                    <h3>Evento sin Servicios Activos</h3>
-                    <p>
-                      Actualmente este evento no cuenta con módulos o paquetes habilitados.
-                      Para activar la Invitación Web, el Control de Invitados o el Álbum Digital,
-                      comunícate con tu administrador o soporte técnico.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="servicios-estado-grid">
-                  <div class="item-servicio-estado inactivo">
-                    <div class="icono-servicio">
-                      <i class="pi pi-globe"></i>
-                    </div>
-                    <div class="info-servicio">
-                      <span class="titulo-servicio">Invitación Web</span>
-                      <span class="estado-servicio"><i class="pi pi-times"></i> Inactiva</span>
+                    <div>
+                      <h3 class="text-lg font-bold text-gray-900 m-0">Evento sin Servicios Activos</h3>
+                      <p class="text-sm text-gray-500 m-0 mt-1">
+                        Actualmente este evento no cuenta con módulos o paquetes habilitados.
+                        Para activar la Invitación Web, el Control de Invitados o el Álbum Digital,
+                        comunícate con tu administrador o soporte técnico.
+                      </p>
                     </div>
                   </div>
 
-                  <div class="item-servicio-estado inactivo">
-                    <div class="icono-servicio">
-                      <i class="pi pi-users"></i>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3">
+                      <i class="pi pi-globe text-gray-400 text-lg"></i>
+                      <div>
+                        <span class="block text-sm font-semibold text-gray-700">Invitación Web</span>
+                        <span class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><i class="pi pi-times text-[10px]"></i> Inactiva</span>
+                      </div>
                     </div>
-                    <div class="info-servicio">
-                      <span class="titulo-servicio">Control de Invitados (RSVP)</span>
-                      <span class="estado-servicio"><i class="pi pi-times"></i> Inactivo</span>
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3">
+                      <i class="pi pi-users text-gray-400 text-lg"></i>
+                      <div>
+                        <span class="block text-sm font-semibold text-gray-700">Control de Invitados</span>
+                        <span class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><i class="pi pi-times text-[10px]"></i> Inactivo</span>
+                      </div>
                     </div>
-                  </div>
-
-                  <div class="item-servicio-estado inactivo">
-                    <div class="icono-servicio">
-                      <i class="pi pi-qrcode"></i>
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3">
+                      <i class="pi pi-qrcode text-gray-400 text-lg"></i>
+                      <div>
+                        <span class="block text-sm font-semibold text-gray-700">Recepción / Escáner</span>
+                        <span class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><i class="pi pi-times text-[10px]"></i> Inactivo</span>
+                      </div>
                     </div>
-                    <div class="info-servicio">
-                      <span class="titulo-servicio">Recepción en Puerta / Escáner</span>
-                      <span class="estado-servicio"><i class="pi pi-times"></i> Inactivo</span>
-                    </div>
-                  </div>
-
-                  <div class="item-servicio-estado inactivo">
-                    <div class="icono-servicio">
-                      <i class="pi pi-camera"></i>
-                    </div>
-                    <div class="info-servicio">
-                      <span class="titulo-servicio">Álbum Digital en Mesas</span>
-                      <span class="estado-servicio"><i class="pi pi-times"></i> Inactivo</span>
+                    <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3">
+                      <i class="pi pi-camera text-gray-400 text-lg"></i>
+                      <div>
+                        <span class="block text-sm font-semibold text-gray-700">Álbum Digital</span>
+                        <span class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><i class="pi pi-times text-[10px]"></i> Inactivo</span>
+                      </div>
                     </div>
                   </div>
                 </div>
+              }
 
-              </div>
-            }
-
-            <!-- CASO 1: SOLO TIENE INVITACIÓN CONTRATADA (SIN ASISTENCIAS/ANFITRIÓN) -->
-            @else if (esSoloInvitacion()) {
-              <div class="card-resumen-solo-invitacion">
-                <div class="solo-inv-cabecera">
-                  <div class="solo-inv-info">
-                    <span class="badge-solo-inv">
-                      <i class="pi pi-globe"></i> Paquete de Invitación Web
+              <!-- CASO 1: SOLO TIENE INVITACIÓN CONTRATADA -->
+              @else if (esSoloInvitacion()) {
+                <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+                  <div class="pb-5 mb-5 border-b border-gray-100">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 mb-2">
+                      <i class="pi pi-globe text-[10px]"></i> Paquete de Invitación Web
                     </span>
-                    <h3>Invitación Digital Habilitada</h3>
-                    <p>
+                    <h3 class="text-lg font-bold text-gray-900 m-0">Invitación Digital Habilitada</h3>
+                    <p class="text-sm text-gray-500 m-0 mt-1">
                       Tu evento cuenta con el servicio oficial de Invitación Web. Tus invitados pueden acceder
                       a la página interactiva para consultar la fecha, cuenta regresiva, itinerario y mapa de ubicaciones.
                     </p>
                   </div>
-                </div>
 
-                <div class="solo-inv-link-box">
-                  <div class="solo-inv-link-text">
-                    <span class="link-label">Enlace Oficial de tu Invitación:</span>
-                    <span class="link-url">{{ urlInvitacionCompleta() }}</span>
-                  </div>
-                  <div class="solo-inv-link-acciones">
-                    <p-button
-                      [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
-                      [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
-                      size="small"
-                      [severity]="copiadoGeneral() ? 'success' : 'secondary'"
-                      [outlined]="!copiadoGeneral()"
-                      (onClick)="copiarEnlaceGeneral()"
-                      aria-label="Copiar enlace de invitación">
-                    </p-button>
-
-                    <p-button
-                      label="Ver Invitación"
-                      icon="pi pi-external-link"
-                      size="small"
-                      severity="secondary"
-                      [outlined]="true"
-                      (onClick)="abrirInvitacion()"
-                      aria-label="Ver invitación en pestaña nueva">
-                    </p-button>
-                  </div>
-                </div>
-
-                <div class="solo-inv-detalles-grid">
-                  <div class="detalle-box">
-                    <span class="box-label"><i class="pi pi-calendar"></i> Fecha del Evento</span>
-                    <span class="box-valor">{{ formatearFechaEvento(ev.fecha) | titlecase }}</span>
-                  </div>
-                  @if (ev.ceremoniaLugar) {
-                    <div class="detalle-box">
-                      <span class="box-label"><i class="pi pi-map-marker"></i> Ceremonia</span>
-                      <span class="box-valor">{{ ev.ceremoniaLugar }}</span>
+                  <div class="p-4 bg-gray-50 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                      <span class="block text-xs font-semibold uppercase text-gray-400">Enlace Oficial de tu Invitación</span>
+                      <span class="text-sm font-medium text-gray-800 break-all">{{ urlInvitacionCompleta() }}</span>
                     </div>
-                  }
-                  @if (ev.recepcionLugar) {
-                    <div class="detalle-box">
-                      <span class="box-label"><i class="pi pi-compass"></i> Recepción</span>
-                      <span class="box-valor">{{ ev.recepcionLugar }}</span>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <p-button
+                        [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
+                        [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
+                        size="small"
+                        [severity]="copiadoGeneral() ? 'success' : 'secondary'"
+                        [outlined]="!copiadoGeneral()"
+                        (onClick)="copiarEnlaceGeneral()"
+                        aria-label="Copiar enlace de invitación">
+                      </p-button>
+
+                      <p-button
+                        label="Ver Invitación"
+                        icon="pi pi-external-link"
+                        size="small"
+                        severity="secondary"
+                        [outlined]="true"
+                        (onClick)="abrirInvitacion()"
+                        aria-label="Ver invitación en pestaña nueva">
+                      </p-button>
                     </div>
-                  }
-                </div>
-
-                <div class="solo-inv-aviso-paquete">
-                  <i class="pi pi-info-circle"></i>
-                  <p>
-                    <strong>Información del Servicio:</strong> Tu evento tiene activo exclusivamente el módulo de <strong>Invitación Web</strong>. Las funciones de <strong>Control de Asistencias (RSVP)</strong>, <strong>Recepción en Puerta con Escáner</strong> y <strong>Álbum Digital de Recuerdos</strong> no forman parte de este paquete contratado.
-                  </p>
-                </div>
-              </div>
-            }
-
-            <!-- CASO 2: TIENE MÓDULOS DE ASISTENCIAS / ANFITRIÓN ACTIVOS -->
-            @else {
-
-              <!-- 2. RESUMEN DE ASISTENCIA Y PASES (SI EL CONTROL DE INVITADOS ESTÁ ACTIVO) -->
-              @if (tieneControlInvitados()) {
-                <div class="bloque-resumen-asistencia">
-                <div class="cabecera-bloque-resumen">
-                  <div>
-                    <h3>Métricas de Confirmación & Asistencia</h3>
-                    <p>Balance general de pases reservados y respuestas registradas.</p>
-                  </div>
-                  <p-button
-                    label="Ver Lista de Invitados"
-                    icon="pi pi-users"
-                    size="small"
-                    [outlined]="true"
-                    severity="secondary"
-                    (onClick)="cambiarPestana('invitados')">
-                  </p-button>
-                </div>
-
-                <!-- TARJETAS DE KPIS PRINCIPALES -->
-                <div class="kpi-grid">
-                  <div class="kpi-card pases">
-                    <div class="kpi-left">
-                      <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
-                      <span class="kpi-label">Pases Totales</span>
-                    </div>
-                    <span class="kpi-value">{{ totalPases() }}</span>
                   </div>
 
-                  <div class="kpi-card confirmed">
-                    <div class="kpi-left">
-                      <div class="kpi-icon"><i class="pi pi-check"></i></div>
-                      <span class="kpi-label">Confirmados (Sí)</span>
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 rounded-xl border border-gray-100 bg-white">
+                      <span class="block text-xs text-gray-500 mb-1"><i class="pi pi-calendar mr-1"></i> Fecha del Evento</span>
+                      <span class="text-sm font-semibold text-gray-900">{{ formatearFechaEvento(ev.fecha) | titlecase }}</span>
                     </div>
-                    <span class="kpi-value">{{ totalConfirmados() }}</span>
+                    @if (ev.ceremoniaLugar) {
+                      <div class="p-4 rounded-xl border border-gray-100 bg-white">
+                        <span class="block text-xs text-gray-500 mb-1"><i class="pi pi-map-marker mr-1"></i> Ceremonia</span>
+                        <span class="text-sm font-semibold text-gray-900">{{ ev.ceremoniaLugar }}</span>
+                      </div>
+                    }
+                    @if (ev.recepcionLugar) {
+                      <div class="p-4 rounded-xl border border-gray-100 bg-white">
+                        <span class="block text-xs text-gray-500 mb-1"><i class="pi pi-compass mr-1"></i> Recepción</span>
+                        <span class="text-sm font-semibold text-gray-900">{{ ev.recepcionLugar }}</span>
+                      </div>
+                    }
                   </div>
 
-                  <div class="kpi-card pending">
-                    <div class="kpi-left">
-                      <div class="kpi-icon"><i class="pi pi-clock"></i></div>
-                      <span class="kpi-label">Pendientes</span>
-                    </div>
-                    <span class="kpi-value">{{ totalPendientesConfirmacion() }}</span>
-                  </div>
-
-                  <div class="kpi-card declined">
-                    <div class="kpi-left">
-                      <div class="kpi-icon"><i class="pi pi-times"></i></div>
-                      <span class="kpi-label">No asistirán</span>
-                    </div>
-                    <span class="kpi-value">{{ totalCancelados() }}</span>
+                  <div class="p-3.5 bg-blue-50/60 rounded-xl text-xs text-blue-800 flex items-center gap-2">
+                    <i class="pi pi-info-circle text-sm shrink-0"></i>
+                    <p class="m-0">
+                      <strong>Información del Servicio:</strong> Tu evento tiene activo exclusivamente el módulo de <strong>Invitación Web</strong>. Las funciones de <strong>Control de Asistencias (RSVP)</strong>, <strong>Recepción en Puerta con Escáner</strong> y <strong>Álbum Digital de Recuerdos</strong> no forman parte de este paquete contratado.
+                    </p>
                   </div>
                 </div>
+              }
 
-                <!-- BARRA DE CONFIRMACIÓN Y DESGLOSE -->
-                <div class="card-progreso-confirmacion">
-                  <div class="progreso-header">
-                    <div class="progreso-label-wrap">
-                      <span class="progreso-titulo">Tasa de Confirmación</span>
-                      <span class="progreso-subtitulo">
-                        {{ totalConfirmados() }} de {{ invitados().length }} invitados han confirmado su asistencia
-                      </span>
+              <!-- CASO 2: TIENE MÓDULOS DE ASISTENCIAS / ANFITRIÓN ACTIVOS -->
+              @else {
+
+                <!-- RESUMEN DE ASISTENCIA Y PASES (SI EL CONTROL DE INVITADOS ESTÁ ACTIVO) -->
+                @if (tieneControlInvitados()) {
+                  <div class="mb-8">
+                    <!-- Cabecera de la Sección de Métricas -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                      <div>
+                        <h2 class="text-xl font-bold text-gray-900 m-0">Métricas de Confirmación & Asistencia</h2>
+                        <p class="text-sm text-gray-500 m-0 mt-0.5">Balance general de pases reservados y respuestas registradas.</p>
+                      </div>
+                      <p-button
+                        label="Ver Lista de Invitados"
+                        icon="pi pi-users"
+                        size="small"
+                        [outlined]="true"
+                        severity="secondary"
+                        (onClick)="cambiarPestana('invitados')">
+                      </p-button>
                     </div>
-                    <span class="progreso-porcentaje">{{ porcentajeConfirmacion() }}%</span>
-                  </div>
 
-                  <div class="barra-progreso-track">
-                    <div class="barra-progreso-fill" [style.width.%]="porcentajeConfirmacion()"></div>
-                  </div>
+                    <!-- GRID DE KPIS (TARJETAS CORPORATIVAS PREMIUM) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                      <!-- 1. Pases Totales -->
+                      <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                          <span class="text-sm font-medium text-gray-500">Pases Totales</span>
+                          <div class="w-10 h-10 rounded-xl bg-gold-50 text-gold-500 flex items-center justify-center">
+                            <i class="pi pi-ticket text-lg"></i>
+                          </div>
+                        </div>
+                        <div class="mt-4">
+                          <span class="text-3xl font-bold text-gray-900 tracking-tight">{{ totalPases() }}</span>
+                          <p class="text-xs text-gray-400 mt-1">Capacidad estimada del evento</p>
+                        </div>
+                      </div>
 
-                  <div class="desglose-resumen-grid">
-                    <div class="desglose-item">
-                      <span class="desglose-num">{{ invitados().length }}</span>
-                      <span class="desglose-text">Familias / Registros</span>
+                      <!-- 2. Confirmados (Sí) -->
+                      <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                          <span class="text-sm font-medium text-gray-500">Confirmados (Sí)</span>
+                          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <i class="pi pi-check-circle text-lg"></i>
+                          </div>
+                        </div>
+                        <div class="mt-4">
+                          <span class="text-3xl font-bold text-gray-900 tracking-tight">{{ totalConfirmados() }}</span>
+                          <p class="text-xs text-emerald-600 font-medium mt-1">{{ porcentajeConfirmacion() }}% de confirmación</p>
+                        </div>
+                      </div>
+
+                      <!-- 3. Pendientes -->
+                      <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                          <span class="text-sm font-medium text-gray-500">Pendientes</span>
+                          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                            <i class="pi pi-clock text-lg"></i>
+                          </div>
+                        </div>
+                        <div class="mt-4">
+                          <span class="text-3xl font-bold text-gray-900 tracking-tight">{{ totalPendientesConfirmacion() }}</span>
+                          <p class="text-xs text-amber-600 font-medium mt-1">Por responder invitación</p>
+                        </div>
+                      </div>
+
+                      <!-- 4. No asistirán -->
+                      <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between">
+                        <div class="flex items-center justify-between">
+                          <span class="text-sm font-medium text-gray-500">No asistirán</span>
+                          <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center">
+                            <i class="pi pi-times-circle text-lg"></i>
+                          </div>
+                        </div>
+                        <div class="mt-4">
+                          <span class="text-3xl font-bold text-gray-900 tracking-tight">{{ totalCancelados() }}</span>
+                          <p class="text-xs text-gray-400 mt-1">Declinaron invitación</p>
+                        </div>
+                      </div>
                     </div>
-                    <div class="desglose-item">
-                      <span class="desglose-num">{{ totalPases() }}</span>
-                      <span class="desglose-text">Pases Confirmados</span>
+
+                    <!-- CARD DE PROGRESO Y DESGLOSE -->
+                    <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+                      <div class="flex items-center justify-between mb-3">
+                        <div>
+                          <h3 class="text-base font-bold text-gray-900 m-0">Tasa de Confirmación</h3>
+                          <p class="text-xs text-gray-500 m-0 mt-0.5">
+                            {{ totalConfirmados() }} de {{ invitados().length }} invitados han confirmado su asistencia
+                          </p>
+                        </div>
+                        <span class="text-xl font-bold text-gray-800">{{ porcentajeConfirmacion() }}%</span>
+                      </div>
+
+                      <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden mb-6">
+                        <div class="bg-emerald-500 h-3 rounded-full transition-all duration-500" [style.width.%]="porcentajeConfirmacion()"></div>
+                      </div>
+
+                      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-gray-100 text-center">
+                        <div>
+                          <span class="block text-xl font-bold text-gray-900">{{ invitados().length }}</span>
+                          <span class="text-xs text-gray-500">Familias / Registros</span>
+                        </div>
+                        <div>
+                          <span class="block text-xl font-bold text-gray-900">{{ totalPases() }}</span>
+                          <span class="text-xs text-gray-500">Pases Confirmados</span>
+                        </div>
+                        <div>
+                          <span class="block text-xl font-bold text-amber-600">{{ totalPendientesConfirmacion() }}</span>
+                          <span class="text-xs text-gray-500">Por Responder</span>
+                        </div>
+                        <div>
+                          <span class="block text-xl font-bold text-red-500">{{ totalCancelados() }}</span>
+                          <span class="text-xs text-gray-500">Declinados</span>
+                        </div>
+                      </div>
                     </div>
-                    <div class="desglose-item">
-                      <span class="desglose-num">{{ totalPendientesConfirmacion() }}</span>
-                      <span class="desglose-text">Por Responder</span>
-                    </div>
-                    <div class="desglose-item">
-                      <span class="desglose-num">{{ totalCancelados() }}</span>
-                      <span class="desglose-text">Declinados</span>
-                    </div>
                   </div>
-                </div>
-              </div>
-            }
-
-            <!-- 3. RESUMEN DE RECEPCIÓN EN PUERTA (SI ES TOTAL VIP O LISTA PUERTA) -->
-            @if (ev.modulos?.tipoControlInvitados === 'total' || ev.modulos?.tipoControlInvitados === 'lista_puerta') {
-              <div class="card-resumen-recepcion">
-                <div class="recepcion-resumen-cabecera">
-                  <div class="recepcion-info">
-                    <div class="badge-puerta-tipo">
-                      <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-id-card'"></i>
-                      <span>{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner VIP' : 'Recepción en Puerta' }}</span>
-                    </div>
-                    <h3>Control de Aforo en el Salón</h3>
-                    <p>Monitorea la llegada de tus invitados y valida sus accesos en tiempo real.</p>
-                  </div>
-
-                  <p-button
-                    [label]="ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción'"
-                    [icon]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"
-                    size="small"
-                    [outlined]="true"
-                    severity="secondary"
-                    (onClick)="cambiarPestana('recepcion')">
-                  </p-button>
-                </div>
-
-                <div class="grid-metricas-puerta-resumen">
-                  <div class="item-metrica-puerta">
-                    <span class="num">{{ totalIngresados() }}</span>
-                    <span class="lbl">Pases en Sala</span>
-                  </div>
-                  <div class="item-metrica-puerta">
-                    <span class="num">{{ totalPendientes() }}</span>
-                    <span class="lbl">Pases por Llegar</span>
-                  </div>
-                  <div class="item-metrica-puerta">
-                    <span class="num">{{ porcentajeAsistencia() }}%</span>
-                    <span class="lbl">Aforo Ocupado</span>
-                  </div>
-                </div>
-              </div>
-            }
-
-            <!-- 4. RESUMEN DEL ÁLBUM DE FOTOS COLABORATIVO (SI TIENE ÁLBUM) -->
-            @if (!ev.modulos || ev.modulos.tieneAlbum) {
-              <div class="card-resumen-album">
-                <div class="album-resumen-cabecera">
-                  <div class="album-info">
-                    <div class="badge-album-tipo">
-                      <i class="pi pi-camera"></i>
-                      <span>Álbum Digital de Recuerdos</span>
-                    </div>
-                    <h3>Muro de Fotos en Vivo</h3>
-                    <p>Espacio colaborativo donde tus invitados capturan y comparten recuerdos de tu evento.</p>
-                  </div>
-
-                  <div class="album-botones-resumen">
-                    <p-button
-                      label="QR para Mesas"
-                      icon="pi pi-qrcode"
-                      size="small"
-                      (onClick)="abrirModalQrMesas()">
-                    </p-button>
-
-                    <p-button
-                      label="Moderar Álbum"
-                      icon="pi pi-images"
-                      size="small"
-                      [outlined]="true"
-                      severity="secondary"
-                      (onClick)="cambiarPestana('album')">
-                    </p-button>
-                  </div>
-                </div>
-
-                <div class="grid-metricas-album-resumen">
-                  <div class="item-metrica-album">
-                    <span class="num">{{ contarFotosTotales() }}</span>
-                    <span class="lbl">Fotos Subidas</span>
-                  </div>
-                  <div class="item-metrica-album">
-                    <span class="num">{{ recuerdos().length }}</span>
-                    <span class="lbl">Publicaciones</span>
-                  </div>
-                  <div class="item-metrica-album">
-                    <span class="num">Ilimitado</span>
-                    <span class="lbl">Almacenamiento</span>
-                  </div>
-                </div>
-              </div>
-            }
-          }
-
-          </div>
-        }
-
-        <!-- 1. PESTAÑA: LISTA DE INVITADOS (EXTRAÍDA EN SUB-COMPONENTE) -->
-        @if (pestanaActiva() === 'invitados') {
-          <app-guest-table
-            [evento]="ev"
-            [invitados]="invitados()"
-            [cargando]="cargando()"
-            [tieneInvitacion]="tieneInvitacion()"
-            [totalConfirmados]="totalConfirmados()"
-            [totalPendientesConfirmacion]="totalPendientesConfirmacion()"
-            [totalCancelados]="totalCancelados()"
-            (abrirDetalle)="abrirModalDetalle($event)"
-            (abrirEditar)="abrirModalEditar($event)"
-            (crearInvitado)="abrirModalCrearInvitado()"
-            (compartir)="abrirModalCompartir()"
-            (abrirQr)="abrirModalQr($event)"
-            (cambiarPases)="cambiarPasesInvitado($event.invitado, $event.delta)"
-            (enviarInvitacionWa)="enviarInvitacionWhatsApp($event)"
-            (enviarPaseWa)="enviarPaseVipWhatsApp($event)">
-          </app-guest-table>
-        }
-
-        <!-- PESTAÑA: CENTRO DE RECEPCIÓN Y CONTROL TOTAL VIP (EXTRAÍDA EN SUB-COMPONENTE) -->
-        @if (pestanaActiva() === 'recepcion') {
-          <app-scanner-view
-            [evento]="ev"
-            [invitados]="invitados()"
-            [totalPases]="totalPases()"
-            (checkIn)="onCheckIn($event.invitado, $event.pases)"
-            (revertir)="revertirCheckIn($event)">
-          </app-scanner-view>
-        }
-
-        <!-- 2. PESTAÑA: MODERACIÓN DEL ÁLBUM DE FOTOS -->
-        @if (pestanaActiva() === 'album') {
-          <div class="seccion-moderacion-album">
-            <div class="cabecera-moderacion">
-              <div>
-                <h3 class="subtitulo-seccion">Galería de Recuerdos</h3>
-                <p class="desc-seccion">Supervisa las fotos subidas por los invitados, descárgalas o elimina cualquier
-                  foto indeseada.</p>
-              </div>
-
-              <!-- BOTONES DE ACCIÓN PARA EL ANFITRIÓN -->
-              <div class="acciones-cabecera-album">
-                <!-- BOTÓN QR PARA CENTROS DE MESA -->
-                <p-button
-                  label="QR para Mesas"
-                  icon="pi pi-qrcode"
-                  size="small"
-                  (onClick)="abrirModalQrMesas()">
-                </p-button>
-                @if (recuerdos().length > 0) {
-                  <p-button
-                    [label]="descargandoTodo() ? progresoDescarga() : 'Descargar Todo (' + contarFotosTotales() + ')'"
-                    [icon]="descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"
-                    size="small"
-                    [outlined]="true"
-                    severity="secondary"
-                    [disabled]="descargandoTodo()"
-                    (onClick)="descargarTodasLasFotos()">
-                  </p-button>
                 }
 
-                <p-button
-                  label="Ver Muro en Vivo"
-                  icon="pi pi-external-link"
-                  size="small"
-                  [outlined]="true"
-                  severity="secondary"
-                  (onClick)="abrirAlbumEnVivo()">
-                </p-button>
-              </div>
-            </div>
+                <!-- RESUMEN DE RECEPCIÓN EN PUERTA (SI ES TOTAL O LISTA PUERTA) -->
+                @if (ev.modulos?.tipoControlInvitados === 'total' || ev.modulos?.tipoControlInvitados === 'lista_puerta') {
+                  <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-5 border-b border-gray-100">
+                      <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 mb-2">
+                          <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-id-card'"></i>
+                          <span>{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner VIP' : 'Recepción en Puerta' }}</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 m-0">Control de Aforo en el Salón</h3>
+                        <p class="text-sm text-gray-500 m-0 mt-0.5">Monitorea la llegada de tus invitados y valida sus accesos en tiempo real.</p>
+                      </div>
 
-            @if (recuerdos().length === 0) {
-              <div class="album-vacio-anfitrion">
-                <i class="pi pi-images"></i>
-                <h4>Aún no hay fotos en el álbum</h4>
-                <p>Las fotos que los invitados tomen o suban aparecerán aquí para que puedas moderarlas.</p>
-              </div>
-            } @else {
-              <div class="grid-moderacion">
-                @for (recuerdo of recuerdos(); track recuerdo.id) {
-                  <article class="tarjeta-moderacion">
-
-                    <!-- 1. FOTO / MINIATURA DEL RECUERDO -->
-                    <div class="foto-preview-moderacion">
-                      <img [src]="recuerdo.fotoUrl" [alt]="'Foto de ' + recuerdo.nombreAutor" />
-                      @if (recuerdo.fotosUrls && recuerdo.fotosUrls.length > 1) {
-                        <span class="badge-carrusel-cant">
-                          <i class="pi pi-clone"></i> {{ recuerdo.fotosUrls.length }} fotos
-                        </span>
-                      }
+                      <p-button
+                        [label]="ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción'"
+                        [icon]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"
+                        size="small"
+                        [outlined]="true"
+                        severity="secondary"
+                        (onClick)="cambiarPestana('recepcion')">
+                      </p-button>
                     </div>
 
-                    <!-- 2. INFORMACIÓN Y BOTONES -->
-                    <div class="info-moderacion">
-                      <div class="autor-fila">
-                        <strong class="autor-nombre">{{ recuerdo.nombreAutor }}</strong>
-                        <span class="foto-tiempo">{{ formatearFecha(recuerdo.creadoEn) }}</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                      <div class="p-4 bg-gray-50 rounded-xl">
+                        <span class="block text-2xl font-bold text-gray-900">{{ totalIngresados() }}</span>
+                        <span class="text-xs font-medium text-gray-500">Pases en Sala</span>
+                      </div>
+                      <div class="p-4 bg-gray-50 rounded-xl">
+                        <span class="block text-2xl font-bold text-gray-900">{{ totalPendientes() }}</span>
+                        <span class="text-xs font-medium text-gray-500">Pases por Llegar</span>
+                      </div>
+                      <div class="p-4 bg-gray-50 rounded-xl">
+                        <span class="block text-2xl font-bold text-emerald-600">{{ porcentajeAsistencia() }}%</span>
+                        <span class="text-xs font-medium text-gray-500">Aforo Ocupado</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- RESUMEN DEL ÁLBUM DE FOTOS COLABORATIVO -->
+                @if (!ev.modulos || ev.modulos.tieneAlbum) {
+                  <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-5 border-b border-gray-100">
+                      <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-pastel-pink-50 text-pastel-pink-500 mb-2">
+                          <i class="pi pi-camera"></i>
+                          <span>Álbum Digital de Recuerdos</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 m-0">Muro de Fotos en Vivo</h3>
+                        <p class="text-sm text-gray-500 m-0 mt-0.5">Espacio colaborativo donde tus invitados capturan y comparten recuerdos de tu evento.</p>
                       </div>
 
-                      @if (recuerdo.mensaje) {
-                        <p class="foto-mensaje">"{{ recuerdo.mensaje }}"</p>
-                      }
-
-                      <div class="metricas-mini">
-                        <span><i class="pi pi-heart-fill"></i> {{ recuerdo.meGusta || 0 }}</span>
-                        <span><i class="pi pi-comment"></i> {{ recuerdo.comentarios?.length || 0 }}</span>
-                      </div>
-
-                      <!-- BOTONES: DESCARGAR + ELIMINAR -->
-                      <div class="fila-acciones-recuerdo">
+                      <div class="flex items-center gap-2">
                         <p-button
-                          label="Descargar"
-                          icon="pi pi-download"
+                          label="QR para Mesas"
+                          icon="pi pi-qrcode"
+                          size="small"
+                          (onClick)="abrirModalQrMesas()">
+                        </p-button>
+
+                        <p-button
+                          label="Moderar Álbum"
+                          icon="pi pi-images"
                           size="small"
                           [outlined]="true"
                           severity="secondary"
-                          (onClick)="descargarRecuerdo(recuerdo, $event)">
-                        </p-button>
-
-                        <p-button
-                          label="Eliminar"
-                          [icon]="eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"
-                          size="small"
-                          [outlined]="true"
-                          severity="danger"
-                          [disabled]="eliminandoId() === recuerdo.id"
-                          (onClick)="eliminarRecuerdo(recuerdo)">
+                          (onClick)="cambiarPestana('album')">
                         </p-button>
                       </div>
                     </div>
 
-                  </article>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                      <div class="p-4 bg-gray-50 rounded-xl">
+                        <span class="block text-2xl font-bold text-gray-900">{{ contarFotosTotales() }}</span>
+                        <span class="text-xs font-medium text-gray-500">Fotos Subidas</span>
+                      </div>
+                      <div class="p-4 bg-gray-50 rounded-xl">
+                        <span class="block text-2xl font-bold text-gray-900">{{ recuerdos().length }}</span>
+                        <span class="text-xs font-medium text-gray-500">Publicaciones</span>
+                      </div>
+                      <div class="p-4 bg-gray-50 rounded-xl">
+                        <span class="block text-2xl font-bold text-gray-900">Ilimitado</span>
+                        <span class="text-xs font-medium text-gray-500">Almacenamiento</span>
+                      </div>
+                    </div>
+                  </div>
                 }
+
+              }
+
+            </div>
+          }
+
+          <!-- 1. PESTAÑA: LISTA DE INVITADOS (TARJETA PREMIUM ENVOLVENTE) -->
+          @if (pestanaActiva() === 'invitados') {
+            <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+              <app-guest-table
+                [evento]="ev"
+                [invitados]="invitados()"
+                [cargando]="cargando()"
+                [tieneInvitacion]="tieneInvitacion()"
+                [totalConfirmados]="totalConfirmados()"
+                [totalPendientesConfirmacion]="totalPendientesConfirmacion()"
+                [totalCancelados]="totalCancelados()"
+                (abrirDetalle)="abrirModalDetalle($event)"
+                (abrirEditar)="abrirModalEditar($event)"
+                (crearInvitado)="abrirModalCrearInvitado()"
+                (compartir)="abrirModalCompartir()"
+                (abrirQr)="abrirModalQr($event)"
+                (cambiarPases)="cambiarPasesInvitado($event.invitado, $event.delta)"
+                (enviarInvitacionWa)="enviarInvitacionWhatsApp($event)"
+                (enviarPaseWa)="enviarPaseVipWhatsApp($event)">
+              </app-guest-table>
+            </div>
+          }
+
+          <!-- 2. PESTAÑA: CENTRO DE RECEPCIÓN Y CONTROL TOTAL VIP (TARJETA PREMIUM ENVOLVENTE) -->
+          @if (pestanaActiva() === 'recepcion') {
+            <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+              <app-scanner-view
+                [evento]="ev"
+                [invitados]="invitados()"
+                [totalPases]="totalPases()"
+                (checkIn)="onCheckIn($event.invitado, $event.pases)"
+                (revertir)="revertirCheckIn($event)">
+              </app-scanner-view>
+            </div>
+          }
+
+          <!-- 3. PESTAÑA: MODERACIÓN DEL ÁLBUM DE FOTOS (TARJETA PREMIUM ENVOLVENTE) -->
+          @if (pestanaActiva() === 'album') {
+            <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-gray-100">
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900 m-0">Galería de Recuerdos</h3>
+                  <p class="text-sm text-gray-500 m-0 mt-0.5">Supervisa las fotos subidas por los invitados, descárgalas o elimina cualquier foto indeseada.</p>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN PARA EL ANFITRIÓN -->
+                <div class="flex flex-wrap items-center gap-2">
+                  <p-button
+                    label="QR para Mesas"
+                    icon="pi pi-qrcode"
+                    size="small"
+                    (onClick)="abrirModalQrMesas()">
+                  </p-button>
+
+                  @if (recuerdos().length > 0) {
+                    <p-button
+                      [label]="descargandoTodo() ? progresoDescarga() : 'Descargar Todo (' + contarFotosTotales() + ')'"
+                      [icon]="descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"
+                      size="small"
+                      [outlined]="true"
+                      severity="secondary"
+                      [disabled]="descargandoTodo()"
+                      (onClick)="descargarTodasLasFotos()">
+                    </p-button>
+                  }
+
+                  <p-button
+                    label="Ver Muro en Vivo"
+                    icon="pi pi-external-link"
+                    size="small"
+                    [outlined]="true"
+                    severity="secondary"
+                    (onClick)="abrirAlbumEnVivo()">
+                  </p-button>
+                </div>
               </div>
+
+              @if (recuerdos().length === 0) {
+                <div class="text-center py-12">
+                  <i class="pi pi-images text-4xl text-gray-300 mb-3 block"></i>
+                  <h4 class="text-base font-semibold text-gray-700 m-0 mb-1">Aún no hay fotos en el álbum</h4>
+                  <p class="text-sm text-gray-400 m-0">Las fotos que los invitados tomen o suban aparecerán aquí para que puedas moderarlas.</p>
+                </div>
+              } @else {
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  @for (recuerdo of recuerdos(); track recuerdo.id) {
+                    <article class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col justify-between">
+
+                      <!-- 1. FOTO / MINIATURA DEL RECUERDO -->
+                      <div class="relative w-full aspect-square bg-gray-50 overflow-hidden">
+                        <img [src]="recuerdo.fotoUrl" [alt]="'Foto de ' + recuerdo.nombreAutor" class="w-full h-full object-cover" />
+                        @if (recuerdo.fotosUrls && recuerdo.fotosUrls.length > 1) {
+                          <span class="absolute top-2 right-2 bg-black/60 text-white text-[11px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="pi pi-clone text-[10px]"></i> {{ recuerdo.fotosUrls.length }} fotos
+                          </span>
+                        }
+                      </div>
+
+                      <!-- 2. INFORMACIÓN Y BOTONES -->
+                      <div class="p-4 flex flex-col gap-2 flex-1 justify-between">
+                        <div>
+                          <div class="flex items-center justify-between gap-2">
+                            <strong class="text-sm font-bold text-gray-900 truncate">{{ recuerdo.nombreAutor }}</strong>
+                            <span class="text-[11px] text-gray-400 shrink-0">{{ formatearFecha(recuerdo.creadoEn) }}</span>
+                          </div>
+
+                          @if (recuerdo.mensaje) {
+                            <p class="text-xs text-gray-600 m-0 mt-1 italic line-clamp-2">"{{ recuerdo.mensaje }}"</p>
+                          }
+
+                          <div class="flex items-center gap-3 text-xs text-gray-400 my-2">
+                            <span class="flex items-center gap-1"><i class="pi pi-heart-fill text-red-500"></i> {{ recuerdo.meGusta || 0 }}</span>
+                            <span class="flex items-center gap-1"><i class="pi pi-comment text-blue-500"></i> {{ recuerdo.comentarios?.length || 0 }}</span>
+                          </div>
+                        </div>
+
+                        <!-- BOTONES: DESCARGAR + ELIMINAR -->
+                        <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+                          <p-button
+                            label="Descargar"
+                            icon="pi pi-download"
+                            size="small"
+                            [outlined]="true"
+                            severity="secondary"
+                            (onClick)="descargarRecuerdo(recuerdo, $event)">
+                          </p-button>
+
+                          <p-button
+                            label="Eliminar"
+                            [icon]="eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"
+                            size="small"
+                            [outlined]="true"
+                            severity="danger"
+                            [disabled]="eliminandoId() === recuerdo.id"
+                            (onClick)="eliminarRecuerdo(recuerdo)">
+                          </p-button>
+                        </div>
+                      </div>
+
+                    </article>
+                  }
+                </div>
+              }
+            </div>
+          }
+
+        </main>
+
+        <!-- MINI FOOTER MINIMALISTA -->
+        <footer class="text-center text-xs text-gray-400 mt-8 pb-24 md:pb-4">
+          Portal de Gestión &bull; Nahoflo Events
+        </footer>
+
+        <!-- NAVEGACIÓN INFERIOR EXCLUSIVA PARA MÓVILES (MOBILE BOTTOM NAV) -->
+        @if (totalPestanasDisponibles() > 1) {
+          <nav class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] z-50 md:hidden flex justify-around items-center px-2 py-3 pb-safe" aria-label="Navegación móvil inferior">
+            
+            <!-- 1. Botón Resumen -->
+            <button
+              type="button"
+              (click)="cambiarPestana('resumen')"
+              class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+              [class.text-gold-500]="pestanaActiva() === 'resumen'"
+              [class.text-gray-400]="pestanaActiva() !== 'resumen'">
+              <i class="pi pi-chart-pie text-lg mb-1"></i>
+              <span class="text-[10px] leading-none font-medium">Resumen</span>
+            </button>
+
+            <!-- 2. Botón Invitados (con badge de cantidad) -->
+            @if (tieneControlInvitados()) {
+              <button
+                type="button"
+                (click)="cambiarPestana('invitados')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'invitados'"
+                [class.text-gray-400]="pestanaActiva() !== 'invitados'">
+                <div class="relative flex items-center justify-center">
+                  <i class="pi pi-users text-lg mb-1"></i>
+                  @if (invitados().length > 0) {
+                    <span class="absolute -top-1.5 -right-3 min-w-[15px] h-3.5 px-1 rounded-full text-[9px] font-bold flex items-center justify-center bg-gray-100 text-gray-700">
+                      {{ invitados().length }}
+                    </span>
+                  }
+                </div>
+                <span class="text-[10px] leading-none font-medium">Invitados</span>
+              </button>
             }
-          </div>
+
+            <!-- 3. Botón Escáner / Recepción (con badge x/y) -->
+            @if (tieneRecepcionOPuerta()) {
+              <button
+                type="button"
+                (click)="cambiarPestana('recepcion')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'recepcion'"
+                [class.text-gray-400]="pestanaActiva() !== 'recepcion'">
+                <div class="relative flex items-center justify-center">
+                  <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode text-lg mb-1' : 'pi pi-id-card text-lg mb-1'"></i>
+                  <span class="absolute -top-1.5 -right-4.5 px-1 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center bg-blue-50 text-blue-600">
+                    {{ totalIngresados() }}/{{ totalPases() }}
+                  </span>
+                </div>
+                <span class="text-[10px] leading-none font-medium">
+                  {{ ev.modulos?.tipoControlInvitados === 'total' ? 'Escáner' : 'Puerta' }}
+                </span>
+              </button>
+            }
+
+            <!-- 4. Botón Álbum (con badge de fotos) -->
+            @if (tieneAlbum()) {
+              <button
+                type="button"
+                (click)="cambiarPestana('album')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'album'"
+                [class.text-gray-400]="pestanaActiva() !== 'album'">
+                <div class="relative flex items-center justify-center">
+                  <i class="pi pi-camera text-lg mb-1"></i>
+                  @if (recuerdos().length > 0) {
+                    <span class="absolute -top-1.5 -right-3 min-w-[15px] h-3.5 px-1 rounded-full text-[9px] font-bold flex items-center justify-center bg-gray-100 text-gray-700">
+                      {{ recuerdos().length }}
+                    </span>
+                  }
+                </div>
+                <span class="text-[10px] leading-none font-medium">Álbum</span>
+              </button>
+            }
+
+          </nav>
         }
 
       </div>
