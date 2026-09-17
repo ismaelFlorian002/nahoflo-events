@@ -1,22 +1,33 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
 import { EventService } from '../../../../core/services/event.service';
 import { InvitadoModel } from '../../../../core/models/invitado.model';
 
 @Component({
   selector: 'app-asistencias-modal',
   standalone: true,
-  imports: [CommonModule, TableModule, TagModule, ButtonModule, ProgressSpinnerModule],
+  imports: [
+    CommonModule,
+    TableModule,
+    TagModule,
+    ButtonModule,
+    ProgressSpinnerModule,
+    InputTextModule,
+    TooltipModule,
+  ],
   templateUrl: './asistencias-modal.component.html',
   styleUrl: './asistencias-modal.component.scss',
 })
 export class AsistenciasModalComponent implements OnInit {
   private eventService = inject(EventService);
+  private cdr = inject(ChangeDetectorRef);
   public config = inject(DynamicDialogConfig);
   public ref = inject(DynamicDialogRef);
 
@@ -31,6 +42,7 @@ export class AsistenciasModalComponent implements OnInit {
 
   async ngOnInit() {
     this.evento = this.config.data;
+    this.cdr.detectChanges();
 
     if (this.evento?.id) {
       try {
@@ -38,11 +50,14 @@ export class AsistenciasModalComponent implements OnInit {
         this.calcularMetricas();
       } catch (error) {
         console.error('Error al cargar la lista de invitados:', error);
+        this.invitados = [];
       } finally {
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     } else {
       this.cargando = false;
+      this.cdr.detectChanges();
     }
   }
 

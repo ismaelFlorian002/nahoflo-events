@@ -149,3 +149,42 @@
     font-size: 0.95rem;
   }
 }
+
+:host ::ng-deep {
+  .modern-table {
+    .p-datatable-thead > tr > th {
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 2px solid #f1f5f9;
+      padding: 0.85rem 0.5rem;
+    }
+
+    .p-datatable-tbody > tr > td {
+      border-bottom: 1px solid #f8fafc;
+      padding: 0.85rem 0.5rem;
+    }
+
+    .p-datatable-tbody > tr:hover {
+      background: #f8fafc;
+      transition: background 0.2s ease;
+    }
+
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    .p-paginator {
+      background: transparent;
+      border: none;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1rem;
+      margin-top: 0.25rem;
+    }
+  }
+}
+

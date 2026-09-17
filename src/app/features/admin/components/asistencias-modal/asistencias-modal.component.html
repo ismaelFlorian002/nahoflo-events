@@ -7,75 +7,86 @@
     </div>
   } @else {
 
-    <!-- TARJETAS DE MÉTRICAS -->
-    <div class="kpi-grid">
 
-      <div class="kpi-card pases">
-        <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
-        <div class="kpi-info">
-          <span class="kpi-label">Pases Totales (Platillos)</span>
-          <span class="kpi-value">{{ totalPasesConfirmados }}</span>
-        </div>
-      </div>
-
-      <div class="kpi-card confirmed">
-        <div class="kpi-icon"><i class="pi pi-check"></i></div>
-        <div class="kpi-info">
-          <span class="kpi-label">Confirmados (Sí)</span>
-          <span class="kpi-value">{{ totalAsistentes }}</span>
-        </div>
-      </div>
-
-      <div class="kpi-card declined">
-        <div class="kpi-icon"><i class="pi pi-times"></i></div>
-        <div class="kpi-info">
-          <span class="kpi-label">No asistirán</span>
-          <span class="kpi-value">{{ totalCancelados }}</span>
-        </div>
-      </div>
-
-    </div>
 
     <!-- TABLA DE INVITADOS -->
-    <div class="table-container">
+    <div class="table-container p-4">
       <p-table
+        #dt
         [value]="invitados"
-        [paginator]="invitados.length > 8"
+        [paginator]="true"
         [rows]="8"
+        [rowsPerPageOptions]="[8, 15, 30]"
+        [globalFilterFields]="['nombre', 'telefono', 'mensaje']"
         responsiveLayout="scroll"
-        styleClass="p-datatable-sm p-datatable-striped">
+        styleClass="p-datatable-borderless modern-table w-full">
 
+        <!-- TOOLBAR DE LA TABLA CON BUSCADOR DE PRIMENG -->
+        <ng-template pTemplate="caption">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100 mb-3">
+            <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">
+              Invitados Registrados ({{ invitados.length }})
+            </span>
+
+            <span class="p-input-icon-left w-full sm:w-72">
+              <i class="pi pi-search text-gray-400"></i>
+              <input
+                pInputText
+                type="text"
+                class="w-full rounded-xl border border-gray-200 text-xs py-2 pl-9 pr-3"
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                placeholder="Buscar por nombre o teléfono..." />
+            </span>
+          </div>
+        </ng-template>
+
+        <!-- CABECERAS -->
         <ng-template pTemplate="header">
           <tr>
-            <th>Nombre / Familia</th>
-            <th>Asistencia</th>
-            <th style="text-align: center;">Pases</th>
-            <th>Teléfono</th>
+            <th pSortableColumn="nombre">Nombre / Familia <p-sortIcon field="nombre"></p-sortIcon></th>
+            <th pSortableColumn="asistira">Asistencia <p-sortIcon field="asistira"></p-sortIcon></th>
+            <th pSortableColumn="pasesConfirmados" style="text-align: center;">Pases <p-sortIcon field="pasesConfirmados"></p-sortIcon></th>
+            <th>Teléfono / WhatsApp</th>
             <th>Mensaje</th>
-            <th>Fecha</th>
+            <th pSortableColumn="fechaConfirmacion">Fecha <p-sortIcon field="fechaConfirmacion"></p-sortIcon></th>
           </tr>
         </ng-template>
 
+        <!-- CUERPO DE LA TABLA -->
         <ng-template pTemplate="body" let-invitado>
           <tr>
             <td>
-              <span class="font-bold text-slate-800">{{ invitado.nombre }}</span>
+              <span class="font-bold text-slate-800 text-sm block">{{ invitado.nombre }}</span>
             </td>
             <td>
-              <p-tag
-                [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
-                [severity]="invitado.asistira ? 'success' : 'danger'"
-                [rounded]="true">
-              </p-tag>
+              @if (invitado.estado === 'pendiente') {
+                <p-tag
+                  value="Pendiente"
+                  severity="warning"
+                  icon="pi pi-clock"
+                  [rounded]="true">
+                </p-tag>
+              } @else {
+                <p-tag
+                  [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
+                  [severity]="invitado.asistira ? 'success' : 'danger'"
+                  [rounded]="true">
+                </p-tag>
+              }
             </td>
             <td style="text-align: center;">
               <span class="pases-badge" [class.inactive]="!invitado.asistira">
-                {{ invitado.asistira ? invitado.pasesConfirmados : 0 }}
+                {{ invitado.asistira ? (invitado.pasesConfirmados || 1) : 0 }}
               </span>
             </td>
             <td>
               @if (invitado.telefono) {
-                <a [href]="'https://wa.me/' + invitado.telefono" target="_blank" class="whatsapp-link">
+                <a
+                  [href]="'https://wa.me/' + invitado.telefono"
+                  target="_blank"
+                  class="whatsapp-link"
+                  pTooltip="Enviar WhatsApp"
+                  tooltipPosition="top">
                   <i class="pi pi-whatsapp"></i>
                   <span>{{ invitado.telefono }}</span>
                 </a>
@@ -84,7 +95,7 @@
               }
             </td>
             <td>
-              <span class="message-cell" [title]="invitado.mensaje || ''">
+              <span class="message-cell" [pTooltip]="invitado.mensaje" tooltipPosition="top">
                 {{ invitado.mensaje || '-' }}
               </span>
             </td>
@@ -94,12 +105,13 @@
           </tr>
         </ng-template>
 
+        <!-- ESTADO VACÍO -->
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="6" style="text-align: center; padding: 3rem 1rem;">
               <div class="empty-state">
                 <i class="pi pi-inbox"></i>
-                <p>Aún no hay confirmaciones registradas para este evento.</p>
+                <p>No se encontraron confirmaciones registradas.</p>
               </div>
             </td>
           </tr>

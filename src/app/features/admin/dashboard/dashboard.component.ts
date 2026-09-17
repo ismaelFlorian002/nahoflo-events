@@ -264,7 +264,14 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  tieneControlInvitados(evento: any): boolean {
+    if (!evento?.modulos) return true;
+    return Boolean(evento.modulos.tipoControlInvitados && evento.modulos.tipoControlInvitados !== 'inactivo');
+  }
+
   verAsistencias(evento: any) {
+    if (!this.tieneControlInvitados(evento)) return;
+
     this.dialogService.open(AsistenciasModalComponent, {
       header: `Lista de Invitados — ${evento.titulo || evento.nombreEvento}`,
       width: '1000px',

@@ -140,7 +140,8 @@
                         <ng-template pTemplate="date" let-date>
                           <span class="relative flex items-center justify-center w-full h-full">
                             {{ date.day }}
-                            <span *ngIf="tieneEventoEnFecha(date)" class="absolute bottom-0.5 w-1.5 h-1.5 rounded-full bg-gold-500"></span>
+                            <span *ngIf="tieneEventoEnFecha(date)"
+                                  class="absolute bottom-0.5 w-1.5 h-1.5 rounded-full bg-gold-500"></span>
                           </span>
                         </ng-template>
                       </p-calendar>
@@ -191,10 +192,16 @@
       <!-- CABECERAS MINIMALISTAS -->
       <ng-template pTemplate="header">
         <tr>
-          <th pSortableColumn="titulo">Evento <p-sortIcon field="titulo"></p-sortIcon></th>
-          <th pSortableColumn="fechaTimestamp">Fecha <p-sortIcon field="fechaTimestamp"></p-sortIcon></th>
+          <th pSortableColumn="titulo">Evento
+            <p-sortIcon field="titulo"></p-sortIcon>
+          </th>
+          <th pSortableColumn="fechaTimestamp">Fecha
+            <p-sortIcon field="fechaTimestamp"></p-sortIcon>
+          </th>
           <th pSortableColumn="enlace">Enlace</th>
-          <th pSortableColumn="estaActivo">Estado <p-sortIcon field="estaActivo"></p-sortIcon></th>
+          <th pSortableColumn="estaActivo">Estado
+            <p-sortIcon field="estaActivo"></p-sortIcon>
+          </th>
           <th style="text-align: right;">Acciones</th>
         </tr>
       </ng-template>
@@ -203,14 +210,8 @@
       <ng-template pTemplate="body" let-evento>
         <tr>
           <td class="fw-medium">
-            <div
-              (click)="verDetalleEvento(evento)"
-              class="font-semibold text-gray-900 hover:text-gold-600 transition-colors cursor-pointer inline-flex items-center gap-1.5 group"
-              pTooltip="Ver detalle del evento"
-              tooltipPosition="top">
-              <span>{{ evento.titulo }}</span>
-              <i class="pi pi-search-plus text-[10px] text-gray-400 group-hover:text-gold-500 transition-colors"></i>
-            </div>
+            <span>{{ evento.titulo }}</span>
+
             <div *ngIf="evento.contactoNombre" class="flex items-center gap-1.5 mt-1 text-xs text-gray-500 font-normal">
               <i class="pi pi-user text-gold-500 text-[11px]"></i>
               <span>{{ evento.contactoNombre }}</span>
@@ -269,6 +270,7 @@
               </p-button>
 
               <p-button
+                *ngIf="tieneControlInvitados(evento)"
                 icon="pi pi-users"
                 [rounded]="true"
                 [text]="true"
@@ -306,10 +308,13 @@
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="5" class="py-12 text-center text-gray-400">
-            <i [class]="hayFiltrosActivos() ? 'pi pi-filter-slash text-4xl text-gray-300 mb-2 block' : 'pi pi-folder-open text-4xl text-gray-300 mb-2 block'"></i>
-            <p *ngIf="!hayFiltrosActivos()" class="text-sm m-0">No tienes eventos registrados aún.<br>Haz clic en "Nuevo Evento" para empezar.</p>
+            <i
+              [class]="hayFiltrosActivos() ? 'pi pi-filter-slash text-4xl text-gray-300 mb-2 block' : 'pi pi-folder-open text-4xl text-gray-300 mb-2 block'"></i>
+            <p *ngIf="!hayFiltrosActivos()" class="text-sm m-0">No tienes eventos registrados aún.<br>Haz clic en "Nuevo
+              Evento" para empezar.</p>
             <div *ngIf="hayFiltrosActivos()">
-              <p class="text-sm m-0 font-medium text-gray-600">No se encontraron eventos con los filtros seleccionados.</p>
+              <p class="text-sm m-0 font-medium text-gray-600">No se encontraron eventos con los filtros
+                seleccionados.</p>
               <button
                 type="button"
                 (click)="limpiarTodosFiltros(dt)"

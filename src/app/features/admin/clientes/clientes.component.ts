@@ -10,6 +10,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 
 import { ClienteService } from '../../../core/services/cliente.service';
+import { EventService } from '../../../core/services/event.service';
 import { ClienteModel } from '../../../core/models/cliente.model';
 import { ClienteModalComponent } from './cliente-modal/cliente-modal.component';
 import { ClienteDetalleModalComponent } from './cliente-detalle-modal/cliente-detalle-modal.component';
@@ -32,6 +33,7 @@ import { ClienteDetalleModalComponent } from './cliente-detalle-modal/cliente-de
 })
 export class ClientesComponent implements OnInit {
   private clienteService = inject(ClienteService);
+  private eventService = inject(EventService);
   private dialogService = inject(DialogService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -45,7 +47,45 @@ export class ClientesComponent implements OnInit {
   async cargarClientes() {
     this.cargando = true;
     try {
-      this.clientes = await this.clienteService.getClientes();
+      const [listaClientes, listaEventos] = await Promise.all([
+        this.clienteService.getClientes(),
+        this.eventService.getEvents(),
+      ]);
+
+      this.clientes = listaClientes.map((cliente) => {
+        const clienteId = cliente.id;
+        const telLimpio = cliente.telefono ? String(cliente.telefono).replace(/\D/g, '') : '';
+        const nomLimpio = cliente.nombreCompleto ? cliente.nombreCompleto.trim().toLowerCase() : '';
+
+        const eventosDelCliente = listaEventos.filter((e) => {
+          if (clienteId && e.clienteId === clienteId) return true;
+          if (telLimpio && telLimpio.length >= 7 && e.contactoTelefono) {
+            const eTel = String(e.contactoTelefono).replace(/\D/g, '');
+            if (eTel.length >= 7 && (eTel.includes(telLimpio) || telLimpio.includes(eTel))) {
+              return true;
+            }
+          }
+          if (nomLimpio && e.contactoNombre) {
+            const eNom = String(e.contactoNombre).trim().toLowerCase();
+            if (eNom && (eNom === nomLimpio || eNom.includes(nomLimpio) || nomLimpio.includes(eNom))) {
+              return true;
+            }
+          }
+          return false;
+        });
+
+        const totalReal = eventosDelCliente.length;
+
+        // Si el total almacenado en Firestore estaba desincronizado, lo actualizamos en segundo plano
+        if (clienteId && cliente.totalEventos !== totalReal) {
+          this.clienteService.updateCliente(clienteId, { totalEventos: totalReal }).catch(() => {});
+        }
+
+        return {
+          ...cliente,
+          totalEventos: totalReal,
+        };
+      });
     } catch (error) {
       console.error('Error al obtener la lista de clientes:', error);
     } finally {
