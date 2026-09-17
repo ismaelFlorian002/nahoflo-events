@@ -60,12 +60,12 @@
         <tr>
           <!-- NOMBRE Y AVATAR -->
           <td class="fw-medium">
-            <div class="client-name-row">
-              <div class="client-avatar">
+            <div class="client-name-row cursor-pointer group" (click)="verDetalleCliente(cliente)" title="Ver detalle del cliente">
+              <div class="client-avatar transition-transform group-hover:scale-105">
                 <i class="pi pi-user"></i>
               </div>
               <div class="client-info">
-                <span class="client-fullname">{{ cliente.nombreCompleto }}</span>
+                <span class="client-fullname group-hover:text-gold-600 transition-colors">{{ cliente.nombreCompleto }}</span>
                 <span class="client-subid" *ngIf="cliente.id">ID: {{ cliente.id.substring(0, 8) }}</span>
               </div>
             </div>
@@ -119,6 +119,15 @@
           <!-- ACCIONES -->
           <td style="text-align: right;">
             <div class="action-buttons">
+              <p-button
+                icon="pi pi-eye"
+                [rounded]="true"
+                [text]="true"
+                severity="info"
+                pTooltip="Ver Detalle"
+                tooltipPosition="top"
+                (onClick)="verDetalleCliente(cliente)">
+              </p-button>
               <p-button
                 icon="pi pi-pencil"
                 [rounded]="true"

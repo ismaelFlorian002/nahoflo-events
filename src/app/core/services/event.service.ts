@@ -158,6 +158,44 @@ export class EventService {
     const docSnap = snapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() } as Evento;
   }
+
+  /**
+   * Obtiene todos los eventos asociados a un cliente por su ID, teléfono de contacto o nombre
+   */
+  async getEventsByCliente(clienteId?: string, telefono?: string, clienteNombre?: string): Promise<Evento[]> {
+    try {
+      if (!clienteId && !telefono && !clienteNombre) return [];
+      const todos = await this.getEvents();
+
+      const telLimpio = telefono ? String(telefono).replace(/\D/g, '') : '';
+      const nomLimpio = clienteNombre ? clienteNombre.trim().toLowerCase() : '';
+
+      return todos.filter((e) => {
+        // 1. Coincidencia directa por clienteId
+        if (clienteId && e.clienteId === clienteId) {
+          return true;
+        }
+        // 2. Coincidencia por teléfono de contacto registrado en el evento
+        if (telLimpio && telLimpio.length >= 7 && e.contactoTelefono) {
+          const eTel = String(e.contactoTelefono).replace(/\D/g, '');
+          if (eTel.length >= 7 && (eTel.includes(telLimpio) || telLimpio.includes(eTel))) {
+            return true;
+          }
+        }
+        // 3. Coincidencia por nombre de contacto registrado en el evento
+        if (nomLimpio && e.contactoNombre) {
+          const eNom = String(e.contactoNombre).trim().toLowerCase();
+          if (eNom && (eNom === nomLimpio || eNom.includes(nomLimpio) || nomLimpio.includes(eNom))) {
+            return true;
+          }
+        }
+        return false;
+      });
+    } catch (error) {
+      console.error('Error en getEventsByCliente:', error);
+      return [];
+    }
+  }
   // Guarda o actualiza la confirmación en la subcolección 'invitados' del evento
   // Incluye deduplicación inteligente: si ya existe por ID, teléfono o nombre,
   // actualiza el registro existente en vez de duplicarlo.

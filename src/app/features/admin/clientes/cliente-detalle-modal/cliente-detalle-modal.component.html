@@ -1,0 +1,282 @@
+<div class="cliente-detalle-modal">
+  <!-- CABECERA HERO DEL CLIENTE -->
+  <div class="cliente-hero-card">
+    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div class="flex items-center gap-4">
+        <!-- AVATAR CON INICIALES -->
+        <div class="avatar-iniciales">
+          {{ getIniciales(cliente.nombreCompleto) }}
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-600 text-white border border-gold-400/30 uppercase tracking-wider">
+              Cliente
+            </span>
+            <p-tag
+              [value]="(cargandoEventos ? (cliente.totalEventos || 0) : (eventosAsociados.length || cliente.totalEventos || 0)) + ' ' + (((cargandoEventos ? cliente.totalEventos : eventosAsociados.length) === 1) ? 'evento' : 'eventos')"
+              [severity]="((cargandoEventos ? cliente.totalEventos : eventosAsociados.length) || 0) > 0 ? 'success' : 'info'"
+              [rounded]="true">
+            </p-tag>
+          </div>
+
+          <h2 class="cliente-nombre-hero">
+            {{ cliente.nombreCompleto }}
+          </h2>
+
+          <div class="flex flex-wrap items-center gap-3 text-xs cliente-meta-text">
+            <span>
+              <i class="pi pi-calendar mr-1 text-gold-400"></i>Registrado: {{ formatFecha(cliente.creadoEn) }}
+            </span>
+            @if (cliente.id) {
+              <span class="cliente-id-badge">
+                ID: {{ cliente.id }}
+                <button
+                  type="button"
+                  (click)="copiarDato(cliente.id, 'id')"
+                  class="bg-transparent border-0 text-slate-300 hover:text-white p-0 cursor-pointer ml-1 inline-flex items-center"
+                  [pTooltip]="copiadoId ? '¡Copiado!' : 'Copiar ID'"
+                  tooltipPosition="top">
+                  <i [class]="copiadoId ? 'pi pi-check text-emerald-400' : 'pi pi-copy'"></i>
+                </button>
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCIÓN RÁPIDA DE WHATSAPP / LLAMADA -->
+      @if (cliente.telefono) {
+        <div class="flex sm:flex-col items-center sm:items-end gap-2 shrink-0">
+          <a
+            [href]="getWhatsappUrl(cliente.telefono)"
+            target="_blank"
+            class="btn-whatsapp-hero">
+            <i class="pi pi-whatsapp text-sm"></i>
+            <span>WhatsApp Directo</span>
+          </a>
+          <a
+            [href]="'tel:' + cliente.telefono"
+            class="btn-llamar-hero">
+            <i class="pi pi-phone text-xs text-gold-400"></i>
+            <span>Llamar al cliente</span>
+          </a>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- TARJETAS DE INFORMACIÓN DE CONTACTO Y NOTAS -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <!-- TARJETA TELÉFONO -->
+    <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+      <div class="flex items-center justify-between mb-2 pb-2 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-gold-50 flex items-center justify-center text-gold-600">
+            <i class="pi pi-phone text-sm"></i>
+          </div>
+          <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider m-0">Teléfono / WhatsApp</h4>
+        </div>
+        @if (cliente.telefono) {
+          <button
+            type="button"
+            (click)="copiarDato(cliente.telefono, 'telefono')"
+            class="text-xs px-2 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 cursor-pointer transition-colors inline-flex items-center gap-1"
+            [pTooltip]="copiadoTelefono ? '¡Copiado!' : 'Copiar teléfono'"
+            tooltipPosition="top">
+            <i [class]="copiadoTelefono ? 'pi pi-check text-emerald-500' : 'pi pi-copy'"></i>
+            <span>{{ copiadoTelefono ? 'Copiado' : 'Copiar' }}</span>
+          </button>
+        }
+      </div>
+      @if (cliente.telefono) {
+        <div class="flex items-center justify-between gap-2 mt-2">
+          <span class="text-base font-semibold text-gray-800 font-mono tracking-wide">
+            {{ cliente.telefono }}
+          </span>
+          <a
+            [href]="getWhatsappUrl(cliente.telefono)"
+            target="_blank"
+            class="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg font-medium no-underline">
+            <i class="pi pi-whatsapp"></i> Chat
+          </a>
+        </div>
+      } @else {
+        <p class="text-xs text-gray-400 italic m-0 mt-2">No se registró teléfono de contacto.</p>
+      }
+    </div>
+
+    <!-- TARJETA CORREO -->
+    <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+      <div class="flex items-center justify-between mb-2 pb-2 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+            <i class="pi pi-envelope text-sm"></i>
+          </div>
+          <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider m-0">Correo Electrónico</h4>
+        </div>
+        @if (cliente.email) {
+          <button
+            type="button"
+            (click)="copiarDato(cliente.email, 'email')"
+            class="text-xs px-2 py-1 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 cursor-pointer transition-colors inline-flex items-center gap-1"
+            [pTooltip]="copiadoEmail ? '¡Copiado!' : 'Copiar correo'"
+            tooltipPosition="top">
+            <i [class]="copiadoEmail ? 'pi pi-check text-emerald-500' : 'pi pi-copy'"></i>
+            <span>{{ copiadoEmail ? 'Copiado' : 'Copiar' }}</span>
+          </button>
+        }
+      </div>
+      @if (cliente.email) {
+        <div class="flex items-center justify-between gap-2 mt-2">
+          <a
+            [href]="'mailto:' + cliente.email"
+            class="text-sm font-medium text-slate-700 hover:text-gold-600 truncate no-underline hover:underline">
+            {{ cliente.email }}
+          </a>
+          <a
+            [href]="'mailto:' + cliente.email"
+            class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg font-medium no-underline">
+            <i class="pi pi-send"></i> Escribir
+          </a>
+        </div>
+      } @else {
+        <p class="text-xs text-gray-400 italic m-0 mt-2">No se registró correo electrónico.</p>
+      }
+    </div>
+  </div>
+
+  <!-- TARJETA DE NOTAS / OBSERVACIONES -->
+  @if (cliente.notas) {
+    <div class="bg-amber-50/60 border border-amber-100 rounded-xl p-4 mb-6">
+      <div class="flex items-center gap-2 mb-1.5 text-amber-700">
+        <i class="pi pi-file-edit text-sm"></i>
+        <h4 class="text-xs font-bold uppercase tracking-wider m-0">Notas y Preferencias Internas</h4>
+      </div>
+      <p class="text-sm text-gray-700 m-0 whitespace-pre-line leading-relaxed">
+        {{ cliente.notas }}
+      </p>
+    </div>
+  }
+
+  <!-- SECCIÓN DE EVENTOS ASOCIADOS -->
+  <div class="bg-white border border-gray-100 rounded-xl p-5 shadow-sm mb-6">
+    <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <i class="pi pi-calendar-plus text-gold-500 text-base"></i>
+        <h3 class="text-base font-bold text-gray-800 m-0">Historial de Eventos del Cliente</h3>
+      </div>
+      <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-600">
+        @if (cargandoEventos) {
+          <i class="pi pi-spin pi-spinner text-[10px] mr-1 text-gold-600"></i>Buscando...
+        } @else {
+          {{ eventosAsociados.length }} {{ eventosAsociados.length === 1 ? 'evento registrado' : 'eventos registrados' }}
+        }
+      </span>
+    </div>
+
+    <!-- ESTADO DE CARGA -->
+    @if (cargandoEventos) {
+      <div class="py-8 text-center text-gray-400 flex flex-col items-center justify-center gap-2">
+        <i class="pi pi-spin pi-spinner text-2xl text-gold-500"></i>
+        <span class="text-xs">Consultando eventos asociados...</span>
+      </div>
+    } @else if (eventosAsociados.length > 0) {
+      <!-- LISTA DE EVENTOS -->
+      <div class="space-y-3">
+        @for (evento of eventosAsociados; track evento.id || $index) {
+          <div class="border border-gray-100 rounded-xl p-4 hover:border-gold-200 transition-colors bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5 min-w-0">
+              <!-- MINIATURA O ÍCONO -->
+              @if (evento.fotoPrincipalUrl) {
+                <img
+                  [src]="evento.fotoPrincipalUrl"
+                  [alt]="evento.titulo"
+                  class="w-12 h-12 rounded-xl object-cover border border-gray-200 shrink-0" />
+              } @else {
+                <div class="w-12 h-12 rounded-xl bg-gold-50 border border-gold-100 flex items-center justify-center text-gold-600 shrink-0">
+                  <i class="pi pi-calendar text-lg"></i>
+                </div>
+              }
+
+              <div class="min-w-0">
+                <div class="flex items-center gap-2 mb-1 flex-wrap">
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold-100 text-gold-700">
+                    {{ evento.tipo || 'Evento' }}
+                  </span>
+                  <p-tag
+                    [value]="evento.estaActivo ? 'Activo' : 'Borrador'"
+                    [severity]="evento.estaActivo ? 'success' : 'warning'"
+                    [rounded]="true">
+                  </p-tag>
+                  @if (evento.pinAnfitrion) {
+                    <span class="text-[11px] font-mono font-medium text-slate-500 bg-white border border-slate-200 px-1.5 py-0.5 rounded">
+                      PIN: {{ evento.pinAnfitrion }}
+                    </span>
+                  }
+                </div>
+
+                <h4 class="text-sm font-bold text-gray-900 m-0 truncate">
+                  {{ evento.titulo }}
+                </h4>
+
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-gray-500">
+                  <span>
+                    <i class="pi pi-clock text-[11px] text-gray-400 mr-1"></i>{{ formatFecha(evento.fecha) }}
+                  </span>
+                  @if (evento.recepcionLugar) {
+                    <span class="truncate max-w-[200px]">
+                      <i class="pi pi-map-marker text-[11px] text-gray-400 mr-1"></i>{{ evento.recepcionLugar }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- ACCIONES DEL EVENTO -->
+            <div class="flex items-center gap-2 self-end sm:self-center shrink-0">
+              @if (evento.enlace) {
+                <p-button
+                  label="Ver Invitación"
+                  icon="pi pi-external-link"
+                  size="small"
+                  [outlined]="true"
+                  severity="secondary"
+                  (onClick)="abrirInvitacion(evento)">
+                </p-button>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- ESTADO VACÍO DE EVENTOS -->
+      <div class="py-8 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+        <i class="pi pi-calendar-times text-3xl text-gray-300 mb-2 block"></i>
+        <p class="text-sm font-semibold text-gray-700 m-0">Sin eventos asignados aún</p>
+        <p class="text-xs text-gray-400 m-0 mt-1">Este cliente no tiene ningún evento registrado actualmente en el sistema.</p>
+      </div>
+    }
+  </div>
+
+  <!-- FOOTER STICKY -->
+  <div
+    style="position: sticky; bottom: -1.5rem; margin: 1rem -1.5rem -1.5rem -1.5rem; padding: 1.25rem 1.5rem; background: #ffffff; z-index: 100; display: flex; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid #e2e8f0;">
+    <p-button
+      label="Cerrar"
+      icon="pi pi-times"
+      size="small"
+      [text]="true"
+      severity="secondary"
+      (onClick)="cerrar()">
+    </p-button>
+
+    <p-button
+      label="Editar Cliente"
+      icon="pi pi-pencil"
+      size="small"
+      styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 font-semibold"
+      (onClick)="editar()">
+    </p-button>
+  </div>
+</div>

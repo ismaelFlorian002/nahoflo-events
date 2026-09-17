@@ -12,6 +12,7 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ClienteService } from '../../../core/services/cliente.service';
 import { ClienteModel } from '../../../core/models/cliente.model';
 import { ClienteModalComponent } from './cliente-modal/cliente-modal.component';
+import { ClienteDetalleModalComponent } from './cliente-detalle-modal/cliente-detalle-modal.component';
 
 @Component({
   selector: 'app-clientes',
@@ -51,6 +52,24 @@ export class ClientesComponent implements OnInit {
       this.cargando = false;
       this.cdr.detectChanges();
     }
+  }
+
+  verDetalleCliente(cliente: ClienteModel) {
+    const ref = this.dialogService.open(ClienteDetalleModalComponent, {
+      header: `Detalle del Cliente — ${cliente.nombreCompleto}`,
+      width: '850px',
+      breakpoints: { '960px': '85vw', '640px': '95vw' },
+      closable: true,
+      dismissableMask: true,
+      focusOnShow: false,
+      data: cliente,
+    });
+
+    ref?.onClose.subscribe(async (res: any) => {
+      if (res?.accion === 'editar' && res?.cliente) {
+        this.openDialog(res.cliente);
+      }
+    });
   }
 
   openDialog(clienteAEditar?: ClienteModel) {
