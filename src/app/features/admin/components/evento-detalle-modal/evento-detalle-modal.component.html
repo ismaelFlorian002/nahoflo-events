@@ -24,7 +24,7 @@
 
         <div class="flex flex-col gap-1">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-500/20 text-gold-300 border border-gold-400/30 uppercase tracking-wider">
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-600 text-white border border-gold-400/30 uppercase tracking-wider">
               {{ evento.tipo || 'Evento' }}
             </span>
             <p-tag
@@ -34,18 +34,18 @@
             </p-tag>
           </div>
 
-          <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-white m-0">
+          <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-gold-600 m-0">
             {{ evento.titulo }}
           </h2>
 
           @if (evento.preTitulo) {
-            <span class="text-xs text-slate-300 font-medium tracking-wide">
+            <span class="text-xs text-gold-600 font-medium tracking-wide">
               {{ evento.preTitulo }}
             </span>
           }
 
           @if (evento.nombreEvento && evento.nombreEvento !== evento.titulo) {
-            <span class="text-xs text-slate-400">
+            <span class="text-xs text-gold-600">
               Ref. interna: {{ evento.nombreEvento }}
             </span>
           }
@@ -54,12 +54,12 @@
 
       <!-- PIN DE ANFITRIÓN RÁPIDO -->
       @if (evento.pinAnfitrion) {
-        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-3 flex items-center gap-3 shrink-0 self-start md:self-center">
-          <div class="w-9 h-9 rounded-lg bg-gold-500/20 text-gold-300 flex items-center justify-center">
+        <div class="bg-white/20 backdrop-blur-md border border-white/15 rounded-xl p-3 flex items-center gap-3 shrink-0 self-start md:self-center">
+          <div class="w-9 h-9 rounded-lg bg-gold-600 text-gold-300 flex items-center justify-center">
             <i class="pi pi-key text-base"></i>
           </div>
           <div>
-            <span class="block text-[11px] uppercase tracking-wider text-slate-300 font-semibold">PIN Anfitrión</span>
+            <span class="block text-[11px] uppercase tracking-wider text-gold-600 font-semibold">PIN Anfitrión</span>
             <span class="text-base font-bold font-mono tracking-widest text-white">{{ evento.pinAnfitrion }}</span>
           </div>
           <button
