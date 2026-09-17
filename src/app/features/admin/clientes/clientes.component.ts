@@ -57,7 +57,7 @@ export class ClientesComponent implements OnInit {
   verDetalleCliente(cliente: ClienteModel) {
     const ref = this.dialogService.open(ClienteDetalleModalComponent, {
       header: `Detalle del Cliente — ${cliente.nombreCompleto}`,
-      width: '850px',
+      width: '1000px',
       breakpoints: { '960px': '85vw', '640px': '95vw' },
       closable: true,
       dismissableMask: true,
@@ -75,7 +75,7 @@ export class ClientesComponent implements OnInit {
   openDialog(clienteAEditar?: ClienteModel) {
     const ref = this.dialogService.open(ClienteModalComponent, {
       header: clienteAEditar ? `Editar Cliente — ${clienteAEditar.nombreCompleto}` : 'Nuevo Cliente',
-      width: '480px',
+      width: '1000px',
       breakpoints: { '640px': '95vw' },
       closable: true,
       dismissableMask: true,
