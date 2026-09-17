@@ -32,12 +32,16 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   private elementRef = inject(ElementRef);
   private cdr = inject(ChangeDetectorRef);
 
-  // Control de estado expandido / minimizado
+  // Control de estado expandido / minimizado (Escritorio)
   sidebarExpandido = true;
+
+  // Control de menú deslizable en móvil
+  sidebarMovilAbierto = false;
 
   // Datos del usuario logueado
   usuarioActual: User | null = null;
   private userSub?: Subscription;
+  private routerSub?: Subscription;
 
   get saludoUsuario(): string {
     if (!this.usuarioActual) return '¡Bienvenido!';
@@ -92,6 +96,22 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const esMovil = window.innerWidth < 768;
+
+    if (esMovil) {
+      // En móvil: si está abierto y el clic es fuera del aside y no es el botón hamburguesa, se cierra
+      if (this.sidebarMovilAbierto) {
+        const aside = this.elementRef.nativeElement.querySelector('aside');
+        const botonHamburguesa = this.elementRef.nativeElement.querySelector('#btn-hamburguesa');
+        if (aside && !aside.contains(target) && (!botonHamburguesa || !botonHamburguesa.contains(target))) {
+          this.sidebarMovilAbierto = false;
+          this.cdr.detectChanges();
+        }
+      }
+      return;
+    }
+
+    // En escritorio:
     const aside = this.elementRef.nativeElement.querySelector('aside');
     if (!aside) return;
 
@@ -125,15 +145,40 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  toggleSidebarMovil(event?: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.sidebarMovilAbierto = !this.sidebarMovilAbierto;
+    this.cdr.detectChanges();
+  }
+
+  cerrarSidebarMovil(event?: MouseEvent) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.sidebarMovilAbierto = false;
+    this.cdr.detectChanges();
+  }
+
   ngOnInit() {
     this.userSub = this.authService.user$.subscribe((user) => {
       this.usuarioActual = user;
       this.cdr.detectChanges();
     });
+
+    // Cerrar automáticamente el menú móvil al navegar
+    this.routerSub = this.router.events.subscribe(() => {
+      if (this.sidebarMovilAbierto) {
+        this.sidebarMovilAbierto = false;
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   ngOnDestroy() {
     this.userSub?.unsubscribe();
+    this.routerSub?.unsubscribe();
   }
 
   async logout() {

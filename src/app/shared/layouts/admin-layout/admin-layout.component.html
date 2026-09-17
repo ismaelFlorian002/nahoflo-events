@@ -1,13 +1,22 @@
-<div class="min-h-screen flex text-gray-800 bg-gray-50">
+<div class="min-h-screen flex text-gray-800 bg-gray-50 relative">
 
-  <!-- MENÚ LATERAL (SIDEBAR COLAPSABLE) -->
+  <!-- TELÓN DE FONDO PARA MÓVIL -->
+  @if (sidebarMovilAbierto) {
+    <div
+      (click)="cerrarSidebarMovil($event)"
+      class="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 md:hidden transition-opacity duration-300">
+    </div>
+  }
+
+  <!-- MENÚ LATERAL (SIDEBAR COLAPSABLE EN DESKTOP / CAJÓN EN MÓVIL) -->
   <aside
-    [class.w-64]="sidebarExpandido"
-    [class.w-20]="!sidebarExpandido"
-    class="bg-white shadow-[4px_0_24px_rgba(0,0,0,0.02)] border-r border-gray-100 flex flex-col justify-between shrink-0 sticky top-0 h-screen z-20 transition-[width] duration-300 ease-in-out select-none overflow-hidden whitespace-nowrap">
+    class="admin-sidebar bg-white border-r border-gray-100 flex flex-col justify-between"
+    [class.mobile-open]="sidebarMovilAbierto"
+    [class.desktop-expanded]="sidebarExpandido"
+    [class.desktop-collapsed]="!sidebarExpandido">
     <div>
       <!-- Cabecera del Sidebar: Logo Centrado y Toggle -->
-      <div class="h-20 flex items-center justify-center relative px-4 border-b border-gray-100/80 transition-all duration-300">
+      <div class="h-16 sm:h-20 flex items-center justify-center relative px-4 border-b border-gray-100/80 transition-all duration-300">
         <div
           class="flex items-center justify-center"
           [pTooltip]="!sidebarExpandido ? 'Clic para maximizar' : ''"
@@ -15,30 +24,36 @@
           <img
             src="logo.png"
             alt="NahoFlo Events"
-            [class.max-w-[130px]]="sidebarExpandido"
-            [class.max-w-[46px]]="!sidebarExpandido"
-            class="h-11 w-auto object-contain transition-all duration-300 hover:scale-105" />
+            class="h-10 sm:h-11 w-auto max-w-[130px] object-contain transition-all duration-300 hover:scale-105" />
         </div>
 
+        <!-- Botón minimizar (solo en escritorio) -->
         @if (sidebarExpandido) {
           <button
             type="button"
             (click)="toggleSidebar($event)"
             pTooltip="Minimizar menú"
             tooltipPosition="left"
-            class="absolute right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-gold-600 hover:bg-gold-50 transition-colors border-0 bg-transparent cursor-pointer shrink-0">
+            class="hidden md:flex absolute right-3.5 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg items-center justify-center text-gray-400 hover:text-gold-600 hover:bg-gold-50 transition-colors border-0 bg-transparent cursor-pointer shrink-0">
             <i class="pi pi-angle-left text-sm"></i>
           </button>
         }
+
+        <!-- Botón cerrar (en móvil) -->
+        <button
+          type="button"
+          (click)="cerrarSidebarMovil($event)"
+          class="md:hidden absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-gray-500 hover:text-gray-800 hover:bg-gray-100 border border-gray-200/80 bg-gray-50 cursor-pointer shadow-xs"
+          aria-label="Cerrar menú">
+          <i class="pi pi-times text-base"></i>
+        </button>
       </div>
 
       <!-- Navegación Principal -->
-      <div [class.px-4]="sidebarExpandido" [class.px-2]="!sidebarExpandido" class="py-6 transition-all duration-300">
-        @if (sidebarExpandido) {
-          <span class="block px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            Panel de Control
-          </span>
-        }
+      <div class="sidebar-nav-container px-4 py-6 transition-all duration-300">
+        <span class="sidebar-label block px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          Panel de Control
+        </span>
         <nav class="flex flex-col gap-1.5" aria-label="Navegación del Administrador">
 
           <!-- Enlace: Eventos -->
@@ -49,15 +64,11 @@
             [class.text-gray-500]="true"
             [pTooltip]="!sidebarExpandido ? 'Eventos' : ''"
             tooltipPosition="right"
-            [class.justify-start]="sidebarExpandido"
-            [class.justify-center]="!sidebarExpandido"
-            [class.px-3.5]="sidebarExpandido"
-            [class.px-0]="!sidebarExpandido"
-            class="flex items-center gap-3 py-2.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
+            class="sidebar-link flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
             <i class="pi pi-calendar text-base shrink-0"></i>
-            @if (sidebarExpandido) {
-              <span class="whitespace-nowrap overflow-hidden text-ellipsis">Eventos</span>
-            }
+            <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
+              Eventos
+            </span>
           </a>
 
           <!-- Enlace: Clientes -->
@@ -67,15 +78,11 @@
             [class.text-gray-500]="true"
             [pTooltip]="!sidebarExpandido ? 'Clientes' : ''"
             tooltipPosition="right"
-            [class.justify-start]="sidebarExpandido"
-            [class.justify-center]="!sidebarExpandido"
-            [class.px-3.5]="sidebarExpandido"
-            [class.px-0]="!sidebarExpandido"
-            class="flex items-center gap-3 py-2.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
+            class="sidebar-link flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
             <i class="pi pi-users text-base shrink-0"></i>
-            @if (sidebarExpandido) {
-              <span class="whitespace-nowrap overflow-hidden text-ellipsis">Clientes</span>
-            }
+            <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
+              Clientes
+            </span>
           </a>
 
         </nav>
@@ -83,26 +90,20 @@
     </div>
 
     <!-- Sección Inferior: Cerrar Sesión -->
-    <div [class.p-4]="sidebarExpandido" [class.p-2]="!sidebarExpandido" class="border-t border-gray-100/80 transition-all duration-300">
-      @if (sidebarExpandido) {
-        <span class="block px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
-          Sistema
-        </span>
-      }
+    <div class="sidebar-nav-container p-4 border-t border-gray-100/80 transition-all duration-300">
+      <span class="sidebar-label block px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+        Sistema
+      </span>
       <button
         type="button"
         (click)="logout()"
         [pTooltip]="!sidebarExpandido ? 'Cerrar Sesión' : ''"
         tooltipPosition="right"
-        [class.justify-start]="sidebarExpandido"
-        [class.justify-center]="!sidebarExpandido"
-        [class.px-3.5]="sidebarExpandido"
-        [class.px-0]="!sidebarExpandido"
-        class="w-full flex items-center gap-3 py-2.5 rounded-xl text-sm text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors duration-200 border-0 bg-transparent cursor-pointer">
+        class="sidebar-link w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors duration-200 border-0 bg-transparent cursor-pointer">
         <i class="pi pi-power-off text-base shrink-0"></i>
-        @if (sidebarExpandido) {
-          <span class="whitespace-nowrap overflow-hidden text-ellipsis">Cerrar Sesión</span>
-        }
+        <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
+          Cerrar Sesión
+        </span>
       </button>
     </div>
   </aside>
@@ -111,32 +112,41 @@
   <div class="flex-1 min-w-0 flex flex-col min-h-screen">
 
     <!-- BARRA SUPERIOR (TOPBAR) -->
-    <header class="h-20 bg-white border-b border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] px-6 sm:px-8 flex items-center justify-between sticky top-0 z-10">
+    <header class="h-16 sm:h-20 bg-white border-b border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] px-3.5 sm:px-8 flex items-center justify-between sticky top-0 z-10">
       
-      <!-- Título de la Marca: NahoFlo Creative Studio Eventos -->
-      <div class="flex items-center gap-2.5 sm:gap-3">
-        <span class="font-bold text-gray-900 text-base sm:text-lg tracking-tight">
+      <!-- Lado Izquierdo: Botón Hamburguesa Móvil + Título de Marca -->
+      <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+        <button
+          id="btn-hamburguesa"
+          type="button"
+          (click)="toggleSidebarMovil($event)"
+          class="md:hidden w-8 h-8 rounded-lg flex items-center justify-center text-gray-600 hover:text-gold-600 hover:bg-gold-50 transition-colors border-0 bg-transparent cursor-pointer shrink-0"
+          aria-label="Abrir menú">
+          <i class="pi pi-bars text-lg"></i>
+        </button>
+
+        <span class="font-bold text-gray-900 text-sm sm:text-base md:text-lg tracking-tight truncate">
           NahoFlo Creative Studio
         </span>
-        <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-gold-50 text-gold-600 border border-gold-200/60 uppercase tracking-wider">
+        <span class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gold-50 text-gold-600 border border-gold-200/60 uppercase tracking-wider shrink-0">
           Eventos
         </span>
       </div>
 
-      <!-- Saludo al Usuario Logueado -->
-      <div class="flex items-center gap-3">
+      <!-- Lado Derecho: Saludo al Usuario Logueado -->
+      <div class="flex items-center gap-2 sm:gap-3 shrink-0">
         <div class="flex flex-col text-right">
-          <span class="text-sm font-semibold text-gray-800 leading-tight">
+          <span class="text-xs sm:text-sm font-semibold text-gray-800 leading-tight truncate max-w-[120px] sm:max-w-none">
             {{ saludoUsuario }}
           </span>
           @if (usuarioEmail) {
-            <span class="text-xs text-gray-400 font-medium hidden sm:inline">
+            <span class="text-[11px] text-gray-400 font-medium hidden md:inline truncate">
               {{ usuarioEmail }}
             </span>
           }
         </div>
         <div
-          class="w-9 h-9 rounded-full bg-gradient-to-tr from-gold-100 to-pastel-pink-100 border border-gold-200/60 flex items-center justify-center text-gold-700 font-bold text-xs shadow-xs shrink-0 select-none"
+          class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-gold-100 to-pastel-pink-100 border border-gold-200/60 flex items-center justify-center text-gold-700 font-bold text-xs shadow-xs shrink-0 select-none"
           [pTooltip]="usuarioEmail ? usuarioEmail : 'Administrador'"
           tooltipPosition="left">
           {{ inicialesUsuario }}
@@ -146,7 +156,7 @@
     </header>
 
     <!-- ÁREA DE CONTENIDO (MAIN) -->
-    <main class="flex-1 min-w-0 p-6 sm:p-8 w-full flex flex-col">
+    <main class="flex-1 min-w-0 p-3.5 sm:p-6 lg:p-8 w-full flex flex-col">
       <!-- Contenido Inyectado por Router Outlet -->
       <div class="flex-1 w-full">
         <router-outlet></router-outlet>

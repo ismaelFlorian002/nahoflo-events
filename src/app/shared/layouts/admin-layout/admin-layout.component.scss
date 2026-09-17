@@ -4,3 +4,66 @@
   height: 100%;
 }
 
+/* Panel Lateral Base (Sidebar) */
+.admin-sidebar {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  user-select: none;
+  overflow: hidden;
+
+  /* =========================================
+     COMPORTAMIENTO EN MÓVIL (< 768px)
+     ========================================= */
+  @media (max-width: 767px) {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    height: 100vh;
+    z-index: 50;
+    transform: translateX(-100%); /* Oculto fuera de pantalla */
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+
+    &.mobile-open {
+      transform: translateX(0); /* Visible al abrir */
+    }
+  }
+
+  /* =========================================
+     COMPORTAMIENTO EN ESCRITORIO (>= 768px)
+     ========================================= */
+  @media (min-width: 768px) {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    transform: translateX(0) !important;
+    flex-shrink: 0;
+    z-index: 20;
+
+    &.desktop-expanded {
+      width: 16rem; /* 256px */
+    }
+
+    &.desktop-collapsed {
+      width: 5rem; /* 80px */
+
+      .sidebar-label {
+        display: none !important;
+      }
+
+      .sidebar-link {
+        justify-content: center !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      .sidebar-nav-container {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+      }
+    }
+  }
+}
+
+

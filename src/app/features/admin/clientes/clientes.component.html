@@ -17,17 +17,18 @@
   </div>
 
   <!-- TARJETA CONTENEDORA DE LA TABLA -->
-  <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6">
-    <p-table
-      #dt
-      [value]="clientes"
-      [loading]="cargando"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[5, 10, 25]"
-      [globalFilterFields]="['nombreCompleto', 'telefono', 'email', 'notas']"
-      styleClass="p-datatable-borderless modern-table w-full"
-    >
+  <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-3.5 sm:p-6">
+    <div class="overflow-x-auto -mx-3.5 sm:mx-0 px-3.5 sm:px-0">
+      <p-table
+        #dt
+        [value]="clientes"
+        [loading]="cargando"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[5, 10, 25]"
+        [globalFilterFields]="['nombreCompleto', 'telefono', 'email', 'notas']"
+        styleClass="p-datatable-borderless modern-table w-full min-w-[700px]"
+      >
       <!-- TOOLBAR DE LA TABLA -->
       <ng-template pTemplate="caption">
         <div class="flex justify-end pb-4 border-b border-gray-100 mb-4">
@@ -155,6 +156,7 @@
         </tr>
       </ng-template>
     </p-table>
+    </div>
   </div>
 
 </div>

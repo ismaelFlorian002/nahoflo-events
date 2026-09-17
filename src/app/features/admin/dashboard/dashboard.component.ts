@@ -230,7 +230,7 @@ export class DashboardComponent implements OnInit {
     const ref = this.dialogService.open(EventFormComponent, {
       header: eventoAEditar ? 'Editar Evento' : 'Crear Nuevo Evento',
       width: '1200px',
-      breakpoints: { '960px': '75vw', '640px': '90vw' },
+      breakpoints: { '960px': '85vw', '640px': '95vw' },
       closable: true,
       focusOnShow: false,
       data: eventoAEditar,
@@ -257,7 +257,7 @@ export class DashboardComponent implements OnInit {
     const ref = this.dialogService.open(EventoDetalleModalComponent, {
       header: `Detalle del Evento — ${evento.titulo || evento.nombreEvento}`,
       width: '1200px',
-      breakpoints: { '960px': '75vw', '640px': '90vw' },
+      breakpoints: { '960px': '85vw', '640px': '95vw' },
       closable: true,
       focusOnShow: false,
       data: evento,

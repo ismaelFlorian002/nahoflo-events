@@ -5,7 +5,7 @@
     <!-- PESTAÑA 1: DATOS BÁSICOS -->
 
     <p-tabPanel header="1. Básico">
-      <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem;">
+      <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem; padding-bottom: 5rem;">
 
         <!-- SECCIÓN: MÓDULOS Y SERVICIOS CONTRATADOS (NAHOFLO SUITE) -->
         <div formGroupName="modulos" style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #cca633; border-radius: 10px; padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
@@ -14,7 +14,7 @@
             <p style="margin: 0.2rem 0 0 0; color: #64748b; font-size: 0.8rem;">Define qué módulos tendrá habilitados el cliente según el paquete contratado.</p>
           </div>
 
-          <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; justify-content: space-between;">
+          <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6 sm:items-center justify-between">
 
             <!-- 1. Interruptor: Invitación Web -->
             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -49,16 +49,16 @@
         </div>
 
         <!-- 1. NOMBRE INTERNO Y PIN DE ANFITRIÓN -->
-        <div style="display: flex; gap: 1rem; align-items: center;">
-          <span class="p-float-label" style="flex: 2;">
+        <div class="flex flex-col sm:flex-row gap-6 sm:items-center">
+          <span class="p-float-label flex-1 sm:flex-[2]">
             <input id="nombreEvento" pInputText formControlName="nombreEvento" style="width: 100%" autocomplete="off" />
             <label for="nombreEvento">Nombre del Evento (Control interno)</label>
           </span>
 
-          <div style="flex: 1; display: flex; gap: 0.5rem; align-items: center;">
-            <span class="p-float-label" style="flex: 1;">
+          <div class="flex-1 flex gap-2 items-center">
+            <span class="p-float-label flex-1">
               <input id="pinAnfitrion" pInputText formControlName="pinAnfitrion" style="width: 100%" maxlength="6"
-                     autocomplete="off" placeholder="4 dígitos" />
+                     autocomplete="off" />
               <label for="pinAnfitrion">PIN Anfitrión</label>
             </span>
             <p-button
@@ -75,28 +75,28 @@
         </div>
 
         <!-- 2. TEXTOS PÚBLICOS (Para el diseño de la invitación) -->
-        <div style="display: flex; gap: 1rem;">
-          <span class="p-float-label" style="flex: 1;">
+        <div class="flex flex-col sm:flex-row gap-6">
+          <span class="p-float-label flex-1">
             <input id="preTitulo" pInputText formControlName="preTitulo" style="width: 100%" autocomplete="off" />
             <label for="preTitulo">Frase (ej. Nuestra Boda, Mis XV Años)</label>
           </span>
-          <span class="p-float-label" style="flex: 2;">
+          <span class="p-float-label flex-1 sm:flex-[2]">
             <input id="titulo" pInputText formControlName="titulo" style="width: 100%" autocomplete="off" />
             <label for="titulo">Nombres de Invitación (ej. Alejandra & Felipe)</label>
           </span>
         </div>
 
         <!-- ENLACE Y FECHA (Mitad y mitad) -->
-        <div style="display: flex; gap: 1rem;">
+        <div class="flex flex-col sm:flex-row gap-6">
 
           <!-- Mitad Izquierda: Enlace -->
-          <span class="p-float-label" style="flex: 1;">
+          <span class="p-float-label flex-1">
             <input id="enlace" pInputText formControlName="enlace" style="width: 100%" autocomplete="off" />
             <label for="enlace">URL Pública (ej. boda-ale-felipe)</label>
           </span>
 
           <!-- Mitad Derecha: Fecha y Hora -->
-          <span class="p-float-label" style="flex: 1; position: relative;">
+          <span class="p-float-label flex-1 relative">
             <p-calendar id="fecha" formControlName="fecha" [showTime]="true" hourFormat="12" dateFormat="dd/mm/yy"
                         appendTo="body" [style]="{'width': '100%'}"></p-calendar>
             <label for="fecha">Fecha y Hora del Evento</label>
@@ -111,7 +111,7 @@
 
     <!-- PESTAÑA 2: CONTACTO / CLIENTE -->
     <p-tabPanel header="2. Contacto / Cliente">
-      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem;">
+      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem; padding-bottom: 5rem;">
 
         <!-- TARJETA: BUSCADOR EN EL CATÁLOGO DE CLIENTES -->
         <div class="cliente-selector-card">
@@ -189,7 +189,7 @@
         </div>
 
         <!-- FORMULARIO DE DATOS DE CONTACTO -->
-        <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
 
           <!-- NOMBRE COMPLETO -->
           <span class="p-float-label">
@@ -198,23 +198,31 @@
           </span>
 
           <!-- TELÉFONO Y CORREO -->
-          <div style="display: flex; gap: 1rem;">
-            <span class="p-float-label" style="flex: 1;">
-              <input id="contactoTelefono" pInputText formControlName="contactoTelefono" style="width: 100%" autocomplete="off" placeholder="Ej. 6671234567" />
+          <div class="flex flex-col sm:flex-row gap-6">
+            <span class="p-float-label flex-1">
+              <input id="contactoTelefono" pInputText formControlName="contactoTelefono" style="width: 100%" autocomplete="off" />
               <label for="contactoTelefono">Teléfono / WhatsApp (10 dígitos)</label>
             </span>
 
-            <span class="p-float-label" style="flex: 1;">
-              <input id="contactoEmail" pInputText formControlName="contactoEmail" type="email" style="width: 100%" autocomplete="off" placeholder="correo@ejemplo.com" />
+            <span class="p-float-label flex-1">
+              <input id="contactoEmail" pInputText formControlName="contactoEmail" type="email" style="width: 100%" autocomplete="off" />
               <label for="contactoEmail">Correo Electrónico (Opcional)</label>
             </span>
           </div>
 
-          <!-- NOTAS Y PREFERENCIAS -->
-          <span class="p-float-label">
-            <textarea id="contactoNotas" pInputTextarea formControlName="contactoNotas" rows="3" style="width: 100%; resize: none;"></textarea>
-            <label for="contactoNotas">Notas internas de atención al cliente (ej. horario preferido para llamadas, canal de contacto, requerimientos especiales)</label>
-          </span>
+          <!-- NOTAS Y PREFERENCIAS (ETIQUETA ESTÁNDAR PARA EVITAR SUPERPOSICIÓN) -->
+          <div class="flex flex-col gap-1.5">
+            <label for="contactoNotas" class="text-xs font-semibold text-gray-700">
+              Notas internas de atención al cliente (horario preferido para llamadas, canal de contacto, requerimientos especiales)
+            </label>
+            <textarea
+              id="contactoNotas"
+              pInputTextarea
+              formControlName="contactoNotas"
+              rows="3"
+              style="width: 100%; resize: none;"
+              placeholder="Escribe notas internas aquí..."></textarea>
+          </div>
 
         </div>
 
@@ -234,7 +242,8 @@
       </div>
     </p-tabPanel>
 
-    <p-tabPanel header="3. Ubicaciones" *ngIf="tieneInvitacionActiva">      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem;">
+    <p-tabPanel header="3. Ubicaciones" *ngIf="tieneInvitacionActiva">
+      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem; padding-bottom: 5rem;">
 
         <div>
           <h4 style="margin: 0 0 1.5rem 0; color: #cca633;">Ceremonia (Iglesia)</h4>
@@ -350,7 +359,7 @@
     </p-tabPanel>
 
     <p-tabPanel header="4. Galería">
-      <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem;">
+      <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem; padding-bottom: 5rem;">
 
         <span class="p-float-label">
           <textarea pInputTextarea formControlName="mensaje" rows="3" style="width: 100%; resize: none;"></textarea>

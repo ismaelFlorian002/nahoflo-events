@@ -1,6 +1,37 @@
-/* Selector de Control de Invitados (Solo resalta el activo) */
+/* Tabs scrolleables horizontalmente en móvil (previene corte de pestañas) */
+:host ::ng-deep .p-tabview {
+  .p-tabview-nav-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+  .p-tabview-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    white-space: nowrap;
+
+    li .p-tabview-nav-link {
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* Selector de Control de Invitados (Permite flujo envolvente en móvil) */
 :host ::ng-deep .p-selectbutton {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+
   .p-button {
+    flex: 1 1 auto;
+    min-width: fit-content;
+    text-align: center;
+    justify-content: center;
     background-color: #ffffff;
     color: #475569;
     border: 1px solid #cbd5e1;
@@ -61,10 +92,16 @@
 
   .dropdown-action-row {
     display: flex;
+    flex-direction: column;
     gap: 0.75rem;
-    align-items: center;
+
+    @media (min-width: 640px) {
+      flex-direction: row;
+      align-items: center;
+    }
 
     .dropdown-container {
+      width: 100%;
       flex: 1;
     }
 
