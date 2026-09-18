@@ -1,0 +1,74 @@
+<form [formGroup]="form" (ngSubmit)="guardar()" class="flex flex-col gap-5 p-1">
+  
+  <!-- HORA Y RESPONSABLE -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div class="flex flex-col gap-1">
+      <label for="hora" class="text-xs font-semibold text-slate-700">Hora de Inicio *</label>
+      <input
+        pInputText
+        id="hora"
+        type="time"
+        formControlName="hora"
+        class="w-full" />
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <label for="responsable" class="text-xs font-semibold text-slate-700">Responsable Principal *</label>
+      <p-dropdown
+        id="responsable"
+        [options]="opcionesResponsables"
+        optionLabel="label"
+        optionValue="value"
+        formControlName="responsable"
+        styleClass="w-full">
+      </p-dropdown>
+    </div>
+  </div>
+
+  <!-- ACTIVIDAD / MOMENTO CLAVE -->
+  <div class="flex flex-col gap-1">
+    <span class="p-float-label">
+      <input
+        pInputText
+        id="actividad"
+        type="text"
+        formControlName="actividad"
+        style="width: 100%"
+        autocomplete="off" />
+      <label for="actividad">Nombre del Momento / Actividad * (ej. Entrada a la Pista)</label>
+    </span>
+    @if (form.get('actividad')?.touched && form.get('actividad')?.invalid) {
+      <span class="text-xs text-red-600">Por favor indica qué actividad ocurrirá.</span>
+    }
+  </div>
+
+  <!-- DETALLES Y REQUERIMIENTOS -->
+  <div class="flex flex-col gap-1">
+    <label for="detalles" class="text-xs font-semibold text-slate-700">Detalles Técnicos / Notas para el Staff</label>
+    <textarea
+      id="detalles"
+      pInputTextarea
+      formControlName="detalles"
+      rows="3"
+      class="w-full"
+      placeholder="Ej. Canción: A Thousand Years. Chisperos fríos encendidos al segundo 45..."></textarea>
+  </div>
+
+  <!-- BOTONES DE ACCIÓN -->
+  <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+    <p-button
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      size="small"
+      (onClick)="cancelar()">
+    </p-button>
+
+    <p-button
+      [label]="esEdicion ? 'Guardar Cambios' : 'Agregar al Minutario'"
+      [icon]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"
+      type="submit"
+      size="small">
+    </p-button>
+  </div>
+</form>

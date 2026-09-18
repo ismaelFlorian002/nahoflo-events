@@ -104,8 +104,10 @@ export class PdfReportService {
       i.nombre || '-',
       i.asistira ? 'Confirmado' : 'Declinado',
       i.asistira ? (i.pasesConfirmados || 1).toString() : '0',
+      i.mesa || 'Sin mesa',
+      i.tipoMenu || 'Adulto',
+      i.restriccionesAlimentarias || '-',
       i.telefono || '-',
-      i.mensaje ? `"${i.mensaje}"` : '-',
       this.formatearFecha(i.fechaConfirmacion),
     ]);
 
@@ -117,8 +119,10 @@ export class PdfReportService {
           'Nombre / Familia',
           'Respuesta',
           'Pases',
+          'Mesa',
+          'Menú',
+          'Alergias / Restricciones',
           'WhatsApp',
-          'Dedicatoria / Mensaje',
           'Fecha',
         ],
       ],
@@ -128,24 +132,26 @@ export class PdfReportService {
         fillColor: [204, 166, 51],
         textColor: [255, 255, 255],
         fontStyle: 'bold',
-        fontSize: 8,
+        fontSize: 7.5,
       },
       bodyStyles: {
-        fontSize: 8,
+        fontSize: 7.5,
         textColor: [30, 41, 59],
-        cellPadding: 2.5,
+        cellPadding: 2,
       },
       alternateRowStyles: {
         fillColor: [250, 250, 249],
       },
       columnStyles: {
-        0: { halign: 'center', cellWidth: 8 },
-        1: { cellWidth: 42, fontStyle: 'bold' },
-        2: { halign: 'center', cellWidth: 22 },
-        3: { halign: 'center', cellWidth: 14, fontStyle: 'bold' },
-        4: { cellWidth: 26 },
-        5: { cellWidth: 48, fontStyle: 'italic', textColor: [71, 85, 105] },
-        6: { halign: 'center', cellWidth: 28, fontSize: 7 },
+        0: { halign: 'center', cellWidth: 7 },
+        1: { cellWidth: 35, fontStyle: 'bold' },
+        2: { halign: 'center', cellWidth: 20 },
+        3: { halign: 'center', cellWidth: 12, fontStyle: 'bold' },
+        4: { cellWidth: 20, fontStyle: 'bold', textColor: [161, 98, 7] },
+        5: { cellWidth: 18 },
+        6: { cellWidth: 32, textColor: [185, 28, 28] },
+        7: { cellWidth: 22 },
+        8: { halign: 'center', cellWidth: 22, fontSize: 7 },
       },
       didParseCell: (data) => {
         if (data.section === 'body' && data.column.index === 2) {
@@ -184,6 +190,230 @@ export class PdfReportService {
     doc.save(`Lista_Invitados_${slug}_${fechaDescarga}.pdf`);
   }
 
+  /**
+   * Genera y descarga el Dossier PDF Consolidado del Evento.
+   * Incluye Ficha Técnica, Minutario Técnico, Distribución de Mesas/Alergias y Directorio de Proveedores.
+   */
+  async generarDossierCompletoEvento(evento: Evento | null, invitados: InvitadoModel[]): Promise<void> {
+    if (!evento) return;
+
+    const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable'),
+    ]);
+
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'letter',
+    });
+
+    const agencia = evento.agenciaNombre || 'NahoFlo Event Studio';
+
+    // 1. ENCABEZADO PRINCIPAL (PORTADA DEL DOSSIER)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(204, 166, 51); // Dorado NahoFlo #cca633
+    doc.text(`DOSSIER COMPLETO DE COORDINACIÓN · ${agencia.toUpperCase()}`, 14, 16);
+
+    doc.setFontSize(20);
+    doc.setTextColor(15, 23, 42); // #0f172a
+    doc.text(evento.titulo || 'Dossier del Evento', 14, 26);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 116, 139);
+    const fechaEventoStr = evento.fecha ? this.formatearFechaLarga(evento.fecha) : 'Fecha por definir';
+    doc.text(`Tipo: ${evento.tipo || 'Evento Social'} | Fecha: ${fechaEventoStr}`, 14, 32);
+
+    let startY = 38;
+
+    // 2. FICHA TÉCNICA DEL EVENTO
+    doc.setFillColor(248, 250, 252);
+    doc.setDrawColor(226, 232, 240);
+    doc.roundedRect(14, startY, 188, 28, 3, 3, 'FD');
+
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(15, 23, 42);
+    doc.text('FICHA TÉCNICA DE UBICACIONES Y CONTACTO', 18, startY + 6);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(71, 85, 105);
+
+    const ceremonia = evento.ceremoniaLugar || 'No especificada';
+    const recepcion = evento.recepcionLugar || 'No especificada';
+    const contacto = evento.contactoNombre ? `${evento.contactoNombre} (${evento.contactoTelefono || 'Sin tel'})` : 'No especificado';
+    const planner = evento.agenciaNombre ? `${evento.agenciaNombre} (${evento.agenciaTelefono || 'Sin tel'})` : 'NahoFlo Events';
+
+    doc.text(`Ceremonia: ${ceremonia}`, 18, startY + 12);
+    doc.text(`Recepción: ${recepcion}`, 18, startY + 17);
+    doc.text(`Contacto Anfitrión: ${contacto}`, 18, startY + 22);
+    doc.text(`Coordinación / Planner: ${planner}`, 110, startY + 22);
+
+    startY += 34;
+
+    // 3. SECCIÓN: MINUTARIO TÉCNICO / RUN-OF-SHOW
+    if (evento.minutario && evento.minutario.length > 0) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text('1. CRONOGRAMA & MINUTARIO TÉCNICO', 14, startY);
+      startY += 4;
+
+      const filasMinutario = evento.minutario.map((m) => [
+        m.hora || '--:--',
+        m.actividad || '-',
+        m.responsable || 'Coordinación',
+        m.detalles || '-',
+      ]);
+
+      autoTable(doc, {
+        startY,
+        head: [['Hora', 'Momento / Actividad', 'Responsable', 'Notas / Requerimientos Técnicos']],
+        body: filasMinutario,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [15, 23, 42],
+          textColor: [255, 255, 255],
+          fontSize: 8,
+          fontStyle: 'bold',
+        },
+        styles: { fontSize: 8, cellPadding: 2.5 },
+        columnStyles: {
+          0: { cellWidth: 20, fontStyle: 'bold', textColor: [161, 98, 7] },
+          1: { cellWidth: 55, fontStyle: 'bold' },
+          2: { cellWidth: 35 },
+          3: { cellWidth: 'auto' },
+        },
+        margin: { left: 14, right: 14 },
+      });
+
+      startY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    // 4. SECCIÓN: DISTRIBUCIÓN DE MESAS, MENÚS Y ALERGIAS
+    if (invitados && invitados.length > 0) {
+      // Si la tabla anterior dejó poco espacio, agregamos nueva página
+      if (startY > 220) {
+        doc.addPage();
+        startY = 20;
+      }
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text('2. DISTRIBUCIÓN DE MESAS, MENÚS Y RESTRICCIONES ALIMENTARIAS', 14, startY);
+      startY += 4;
+
+      const invitadosConMesa = invitados.filter((i) => i.asistira);
+      const filasMesas = invitadosConMesa.map((i) => [
+        i.mesa || 'Sin Mesa',
+        i.nombre || 'Invitado',
+        String(i.pasesConfirmados || 1),
+        i.tipoMenu || 'Estándar',
+        i.restriccionesAlimentarias || 'Ninguna',
+      ]);
+
+      autoTable(doc, {
+        startY,
+        head: [['Mesa', 'Invitado Principal', 'Pases', 'Menú', 'Alergias / Restricciones']],
+        body: filasMesas,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [30, 41, 59],
+          textColor: [255, 255, 255],
+          fontSize: 8,
+          fontStyle: 'bold',
+        },
+        styles: { fontSize: 8, cellPadding: 2.5 },
+        columnStyles: {
+          0: { cellWidth: 24, fontStyle: 'bold', textColor: [204, 166, 51] },
+          1: { cellWidth: 55, fontStyle: 'bold' },
+          2: { cellWidth: 15, halign: 'center' },
+          3: { cellWidth: 35 },
+          4: { cellWidth: 'auto' },
+        },
+        didParseCell: (data) => {
+          if (data.section === 'body' && data.column.index === 4) {
+            if (data.cell.raw && data.cell.raw !== 'Ninguna') {
+              data.cell.styles.textColor = [185, 28, 28];
+              data.cell.styles.fontStyle = 'bold';
+            }
+          }
+        },
+        margin: { left: 14, right: 14 },
+      });
+
+      startY = (doc as any).lastAutoTable.finalY + 10;
+    }
+
+    // 5. SECCIÓN: DIRECTORIO DE PROVEEDORES DEL EVENTO
+    if (evento.proveedores && evento.proveedores.length > 0) {
+      if (startY > 220) {
+        doc.addPage();
+        startY = 20;
+      }
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(15, 23, 42);
+      doc.text('3. DIRECTORIO DE PROVEEDORES Y CONTACTOS DE EMERGENCIA STAFF', 14, startY);
+      startY += 4;
+
+      const filasProveedores = evento.proveedores.map((p) => [
+        p.categoria || 'Proveedor',
+        p.empresa || '-',
+        p.contactoNombre || '-',
+        p.telefono || '-',
+        p.notas || '-',
+      ]);
+
+      autoTable(doc, {
+        startY,
+        head: [['Categoría', 'Empresa / Proveedor', 'Contacto', 'Teléfono', 'Notas del Servicio']],
+        body: filasProveedores,
+        theme: 'striped',
+        headStyles: {
+          fillColor: [88, 28, 135], // Púrpura elegante
+          textColor: [255, 255, 255],
+          fontSize: 8,
+          fontStyle: 'bold',
+        },
+        styles: { fontSize: 8, cellPadding: 2.5 },
+        columnStyles: {
+          0: { cellWidth: 35, fontStyle: 'bold' },
+          1: { cellWidth: 45, fontStyle: 'bold' },
+          2: { cellWidth: 35 },
+          3: { cellWidth: 30, textColor: [15, 118, 110], fontStyle: 'bold' },
+          4: { cellWidth: 'auto' },
+        },
+        margin: { left: 14, right: 14 },
+      });
+    }
+
+    // Pie de página en todas las páginas
+    const totalPaginas = doc.getNumberOfPages();
+    for (let p = 1; p <= totalPaginas; p++) {
+      doc.setPage(p);
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(148, 163, 184);
+
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.3);
+      doc.line(14, 268, 202, 268);
+
+      doc.text(`Dossier Oficial de Coordinación · ${agencia} · NahoFlo Events`, 14, 273);
+      doc.text(`Página ${p} de ${totalPaginas}`, 202, 273, { align: 'right' });
+    }
+
+    const slug = evento.enlace || 'evento';
+    const fechaDescarga = new Date().toISOString().slice(0, 10);
+    doc.save(`Dossier_Coordinacion_${slug}_${fechaDescarga}.pdf`);
+  }
+
   private formatearFecha(fecha: any): string {
     if (!fecha) return '-';
     const d = fecha?.toDate ? fecha.toDate() : new Date(fecha);
@@ -196,4 +426,18 @@ export class PdfReportService {
           minute: '2-digit',
         });
   }
+
+  private formatearFechaLarga(fecha: any): string {
+    if (!fecha) return '-';
+    const d = fecha?.toDate ? fecha.toDate() : new Date(fecha);
+    return isNaN(d.getTime())
+      ? '-'
+      : d.toLocaleDateString('es-MX', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+  }
 }
+

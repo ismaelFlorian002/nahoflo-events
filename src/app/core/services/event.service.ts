@@ -15,7 +15,7 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { Evento } from '../models/event.model';
+import { Evento, ItemMinutario, ItemPresupuesto, ProveedorEvento, TareaPlaneacion } from '../models/event.model';
 import { InvitadoModel } from '../models/invitado.model';
 import { ComentarioModel, RecuerdoModel } from '../models/RecuerdoModel';
 
@@ -105,6 +105,12 @@ export class EventService {
   async updateEvent(id: string, data: any): Promise<void> {
     const eventDoc = doc(this.firestore, `eventos/${id}`);
     await updateDoc(eventDoc, data);
+  }
+
+  // Actualiza el minutario / cronograma técnico de un evento
+  async actualizarMinutario(eventoId: string, minutario: ItemMinutario[]): Promise<void> {
+    const eventDoc = doc(this.firestore, `eventos/${eventoId}`);
+    await updateDoc(eventDoc, { minutario });
   }
 
   // 4. BORRAR
@@ -456,4 +462,40 @@ export class EventService {
     const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
     await deleteDoc(docRef);
   }
+
+  // Actualiza el Presupuesto / Control Financiero del evento
+  async actualizarPresupuesto(eventoId: string, presupuesto: ItemPresupuesto[]): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}`);
+    await updateDoc(docRef, { presupuesto });
+  }
+
+
+  // Actualiza el Directorio de Proveedores del evento
+  async actualizarProveedores(eventoId: string, proveedores: ProveedorEvento[]): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}`);
+    await updateDoc(docRef, { proveedores });
+  }
+
+  // Actualiza el Checklist de Planeación por Fases del evento
+  async actualizarChecklist(eventoId: string, checklist: TareaPlaneacion[]): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}`);
+    await updateDoc(docRef, { checklist });
+  }
+
+  // Actualiza los datos de Marca Blanca / Agencia del evento
+  async actualizarDatosAgencia(
+    eventoId: string,
+    datosAgencia: {
+      agenciaNombre?: string;
+      agenciaLogoUrl?: string;
+      agenciaTelefono?: string;
+      agenciaNotas?: string;
+    },
+  ): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}`);
+    await updateDoc(docRef, { ...datosAgencia });
+  }
 }
+
+
+

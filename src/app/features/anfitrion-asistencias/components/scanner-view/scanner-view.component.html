@@ -74,13 +74,23 @@
               <div class="alerta-contenido">
                 <h4>{{ res.mensaje }}</h4>
                 @if (res.invitado; as inv) {
-                  <p class="alerta-detalles">
-                    <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }}
-                    pases
+                  <p class="alerta-detalles flex flex-wrap items-center gap-2 mt-1">
+                    <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }} pases
+                    @if (inv.mesa) {
+                      <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded text-xs">
+                        <i class="pi pi-th-large text-[11px]"></i> {{ inv.mesa }}
+                      </span>
+                    }
                     @if (res.hora) {
                       <span>({{ res.hora }})</span>
                     }
                   </p>
+                  @if (inv.restriccionesAlimentarias) {
+                    <div class="mt-2 bg-red-100 border border-red-300 text-red-900 text-xs font-semibold p-1.5 rounded flex items-center gap-1.5">
+                      <i class="pi pi-exclamation-triangle text-red-600"></i>
+                      <span>ALERTA ALERGIAS: {{ inv.restriccionesAlimentarias }}</span>
+                    </div>
+                  }
                   @if (res.tipo === 'exito') {
                     <p-button
                       label="Deshacer ingreso"
@@ -125,11 +135,23 @@
         <div class="lista-invitados-recepcion">
           @for (inv of invitadosRecepcionFiltrados(); track inv.id) {
             <div class="item-recepcion" [class.ingresado]="inv.haIngresado">
-              <div class="info-invitado-puerta">
+              <div class="info-invitado-puerta flex flex-col gap-0.5">
                 <span class="nombre-puerta">{{ inv.nombre }}</span>
-                <span class="pases-puerta">
-                  <i class="pi pi-ticket"></i> {{ inv.pasesConfirmados || 1 }} pases confirmados
-                </span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="pases-puerta">
+                    <i class="pi pi-ticket"></i> {{ inv.pasesConfirmados || 1 }} pases confirmados
+                  </span>
+                  @if (inv.mesa) {
+                    <span class="inline-flex items-center gap-1 text-[11px] bg-amber-100 text-amber-900 font-bold px-1.5 py-0.2 rounded">
+                      <i class="pi pi-th-large text-[10px]"></i> {{ inv.mesa }}
+                    </span>
+                  }
+                  @if (inv.restriccionesAlimentarias) {
+                    <span class="inline-flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.2 rounded font-semibold" [pTooltip]="inv.restriccionesAlimentarias" tooltipPosition="top">
+                      <i class="pi pi-exclamation-triangle"></i> Alergias
+                    </span>
+                  }
+                </div>
               </div>
 
               <div class="accion-invitado-puerta">

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import {
@@ -20,6 +21,7 @@ import { EstadoInvitado, InvitadoModel } from '../../../../core/models/invitado.
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
+    DropdownModule,
   ],
   templateUrl: './invitado-form-modal.component.html',
   styleUrl: './invitado-form-modal.component.scss',
@@ -42,6 +44,14 @@ export class InvitadoFormModalComponent implements OnInit {
   form!: FormGroup;
   guardando = signal<boolean>(false);
   errorMensaje = signal<string | null>(null);
+
+  opcionesMenu = [
+    { label: 'Adulto (Estándar)', value: 'Adulto' },
+    { label: 'Infantil', value: 'Infantil' },
+    { label: 'Vegetariano', value: 'Vegetariano' },
+    { label: 'Vegano', value: 'Vegano' },
+    { label: 'Especial / Diabético', value: 'Especial' },
+  ];
 
   ngOnInit(): void {
     this.invitado = this.config.data?.invitado;
@@ -69,6 +79,9 @@ export class InvitadoFormModalComponent implements OnInit {
           this.invitado.pasesConfirmados ?? 1,
           [Validators.required, Validators.min(0)],
         ],
+        mesa: [this.invitado.mesa || ''],
+        tipoMenu: [this.invitado.tipoMenu || 'Adulto'],
+        restriccionesAlimentarias: [this.invitado.restriccionesAlimentarias || ''],
       });
     } else {
       // Modo Creación: Inicializar con valores por defecto
@@ -78,6 +91,9 @@ export class InvitadoFormModalComponent implements OnInit {
         estado: ['pendiente' as EstadoInvitado, Validators.required],
         asistira: [false],
         pasesConfirmados: [1, [Validators.required, Validators.min(0)]],
+        mesa: [''],
+        tipoMenu: ['Adulto'],
+        restriccionesAlimentarias: [''],
       });
 
       this.form.valueChanges.subscribe((val) => {
@@ -188,6 +204,9 @@ export class InvitadoFormModalComponent implements OnInit {
           pasesConfirmados: Number(valores.pasesConfirmados) || (asistira ? 1 : 0),
           telefono: valores.telefono?.trim() || '',
           mensaje: this.invitado.mensaje || '',
+          mesa: valores.mesa?.trim() || '',
+          tipoMenu: valores.tipoMenu?.trim() || '',
+          restriccionesAlimentarias: valores.restriccionesAlimentarias?.trim() || '',
         };
 
         await this.eventService.actualizarInvitado(this.eventoId, this.invitado.id, datosActualizados);
@@ -205,6 +224,9 @@ export class InvitadoFormModalComponent implements OnInit {
           estado,
           pasesConfirmados: Number(valores.pasesConfirmados) || (asistira ? 1 : 0),
           telefono: valores.telefono?.trim() || '',
+          mesa: valores.mesa?.trim() || '',
+          tipoMenu: valores.tipoMenu?.trim() || '',
+          restriccionesAlimentarias: valores.restriccionesAlimentarias?.trim() || '',
         };
 
         const match = this.coincidenciaExistente();

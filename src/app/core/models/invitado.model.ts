@@ -15,5 +15,10 @@ export interface InvitadoModel {
   horaIngreso?: any; // Timestamp de llegada
   pasesIngresados?: number; // Personas que ingresaron efectivamente
   codigoAcceso?: string; // Token único del pase para el QR
+
+  // Organización de Banquete & Recepción (Fase 1):
+  mesa?: string; // ej. "Mesa 1", "Mesa VIP", "Mesa Novios"
+  tipoMenu?: string; // ej. "Adulto", "Infantil", "Vegetariano", "Vegano"
+  restriccionesAlimentarias?: string; // ej. "Alergia a mariscos", "Sin gluten"
 }
 

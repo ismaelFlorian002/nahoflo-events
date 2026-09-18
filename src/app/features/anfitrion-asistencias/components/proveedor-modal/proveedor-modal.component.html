@@ -1,0 +1,109 @@
+<form [formGroup]="form" (ngSubmit)="guardar()" class="p-1 space-y-4">
+  <!-- Empresa & Categoría -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nombre Comercial / Empresa *</label>
+      <input
+        type="text"
+        pInputText
+        formControlName="empresa"
+        placeholder="Ej. AudioVision & DJ Studio"
+        class="w-full p-inputtext-sm"
+      />
+    </div>
+
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Categoría del Proveedor *</label>
+      <p-dropdown
+        [options]="categorias"
+        formControlName="categoria"
+        optionLabel="label"
+        optionValue="value"
+        styleClass="w-full"
+        placeholder="Seleccionar Categoría">
+      </p-dropdown>
+    </div>
+  </div>
+
+  <!-- Contacto Directo & Teléfono -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nombre de Contacto</label>
+      <input
+        type="text"
+        pInputText
+        formControlName="contactoNombre"
+        placeholder="Ej. Ing. Roberto Mendoza"
+        class="w-full p-inputtext-sm"
+      />
+    </div>
+
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Teléfono / WhatsApp</label>
+      <input
+        type="text"
+        pInputText
+        formControlName="telefono"
+        placeholder="Ej. 5512345678"
+        class="w-full p-inputtext-sm"
+      />
+    </div>
+  </div>
+
+  <!-- Correo & Monto del Contrato -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
+      <input
+        type="email"
+        pInputText
+        formControlName="email"
+        placeholder="contacto@empresa.com"
+        class="w-full p-inputtext-sm"
+      />
+    </div>
+
+    <div>
+      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Monto Total del Contrato ($)</label>
+      <p-inputNumber
+        formControlName="montoContrato"
+        mode="currency"
+        currency="MXN"
+        locale="es-MX"
+        styleClass="w-full"
+        inputStyleClass="w-full text-sm font-semibold text-slate-800"
+        [min]="0">
+      </p-inputNumber>
+    </div>
+  </div>
+
+  <!-- Notas Clave -->
+  <div>
+    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Notas del Contrato / Requerimientos</label>
+    <input
+      type="text"
+      pInputText
+      formControlName="notas"
+      placeholder="Ej. Requiere mesa con mantel negro y toma de corriente de 220V"
+      class="w-full p-inputtext-sm"
+    />
+  </div>
+
+  <!-- Botones de Acción -->
+  <div class="flex justify-end items-center gap-2 pt-4 border-t border-slate-100">
+    <p-button
+      type="button"
+      label="Cancelar"
+      icon="pi pi-times"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="cancelar()">
+    </p-button>
+    <p-button
+      type="submit"
+      [label]="esEdicion ? 'Actualizar Proveedor' : 'Guardar Proveedor'"
+      icon="pi pi-check"
+      severity="primary">
+    </p-button>
+  </div>
+</form>

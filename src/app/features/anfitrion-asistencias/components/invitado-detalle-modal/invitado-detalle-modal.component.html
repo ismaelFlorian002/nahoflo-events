@@ -53,7 +53,32 @@
       <span class="item-label"><i class="pi pi-calendar"></i> Fecha de Registro</span>
       <span class="item-valor">{{ formatearFecha(invitado.fechaConfirmacion) }}</span>
     </div>
+
+    <!-- MESA ASIGNADA -->
+    <div class="detalle-item">
+      <span class="item-label"><i class="pi pi-th-large"></i> Mesa Asignada</span>
+      <span class="item-valor" [class.text-amber-600]="invitado.mesa" [class.font-semibold]="invitado.mesa">
+        {{ invitado.mesa || 'Sin asignar' }}
+      </span>
+    </div>
+
+    <!-- TIPO DE MENÚ -->
+    <div class="detalle-item">
+      <span class="item-label"><i class="pi pi-bookmark"></i> Tipo de Menú</span>
+      <span class="item-valor">{{ invitado.tipoMenu || 'Adulto' }}</span>
+    </div>
   </div>
+
+  <!-- ALERTA DE RESTRICCIONES ALIMENTARIAS -->
+  @if (invitado.restriccionesAlimentarias) {
+    <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 flex items-center gap-2 mt-3 mb-2">
+      <i class="pi pi-exclamation-triangle text-red-600 text-lg"></i>
+      <div class="flex flex-col">
+        <span class="text-xs font-bold uppercase tracking-wider text-red-700">Alergias / Restricciones Alimentarias</span>
+        <span class="text-sm font-semibold text-red-900">{{ invitado.restriccionesAlimentarias }}</span>
+      </div>
+    </div>
+  }
 
   <!-- DEDICATORIA DEL INVITADO (SOLO SI EL INVITADO LA ESCRIBIÓ EN LA WEB) -->
   @if (invitado.mensaje) {

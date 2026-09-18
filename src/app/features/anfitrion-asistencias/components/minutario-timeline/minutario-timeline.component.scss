@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+
+.timeline-item {
+  &:hover {
+    .p-button {
+      opacity: 1;
+    }
+  }
+
+  &.item-completado {
+    background-color: #f8fafc;
+    border-color: #e2e8f0;
+  }
+}

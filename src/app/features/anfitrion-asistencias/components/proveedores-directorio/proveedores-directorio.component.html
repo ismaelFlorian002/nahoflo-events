@@ -1,0 +1,157 @@
+<div class="space-y-6">
+  <!-- Header del Módulo -->
+  <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-purple-100 text-purple-700 font-bold">
+          <i class="pi pi-briefcase text-lg"></i>
+        </span>
+        <h2 class="text-xl font-bold text-slate-800 tracking-tight">Directorio de Proveedores</h2>
+      </div>
+      <p class="text-xs text-slate-500 mt-1">
+        Catálogo centralizado de empresas, contactos clave y presupuestos contratados para el evento.
+      </p>
+    </div>
+
+    <p-button
+      label="Agregar Proveedor"
+      icon="pi pi-plus"
+      severity="primary"
+      styleClass="p-button-sm font-semibold"
+      (onClick)="abrirModalNuevo()">
+    </p-button>
+  </div>
+
+  <!-- Filtros & Buscador -->
+  <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-3 justify-between items-center">
+    <div class="w-full sm:w-64">
+      <p-dropdown
+        [options]="categoriasFiltro"
+        [(ngModel)]="categoriaSeleccionada"
+        optionLabel="label"
+        optionValue="value"
+        styleClass="w-full"
+        placeholder="Categoría">
+      </p-dropdown>
+    </div>
+
+    <div class="relative w-full sm:w-72">
+      <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+      <input
+        type="text"
+        pInputText
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        placeholder="Buscar proveedor o contacto..."
+        class="w-full pl-9 p-inputtext-sm rounded-xl"
+      />
+    </div>
+  </div>
+
+  <!-- Tarjetero de Proveedores -->
+  @if (proveedoresFiltrados().length > 0) {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (prov of proveedoresFiltrados(); track prov.id) {
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between">
+          <div>
+            <!-- Categoría Badge -->
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-[11px] font-bold tracking-wider uppercase bg-purple-50 text-purple-700 border border-purple-100 px-2.5 py-1 rounded-full">
+                {{ prov.categoria }}
+              </span>
+
+              <div class="flex items-center gap-1">
+                <button
+                  pButton
+                  icon="pi pi-pencil"
+                  class="p-button-text p-button-secondary p-button-sm !w-7 !h-7"
+                  pTooltip="Editar"
+                  (click)="abrirModalEditar(prov)">
+                </button>
+                <button
+                  pButton
+                  icon="pi pi-trash"
+                  class="p-button-text p-button-danger p-button-sm !w-7 !h-7"
+                  pTooltip="Eliminar"
+                  (click)="eliminarProveedor(prov)">
+                </button>
+              </div>
+            </div>
+
+            <!-- Nombre de Empresa -->
+            <h3 class="text-lg font-bold text-slate-800 leading-tight mb-1">{{ prov.empresa }}</h3>
+
+            @if (prov.contactoNombre) {
+              <div class="text-xs font-medium text-slate-600 flex items-center gap-1.5 mb-2">
+                <i class="pi pi-user text-slate-400 text-xs"></i>
+                <span>{{ prov.contactoNombre }}</span>
+              </div>
+            }
+
+            <!-- Información de Contacto -->
+            <div class="space-y-1.5 border-t border-slate-100 pt-3 my-3 text-xs text-slate-600">
+              @if (prov.telefono) {
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-phone text-emerald-600"></i>
+                  <span>{{ prov.telefono }}</span>
+                </div>
+              }
+              @if (prov.email) {
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-envelope text-slate-400"></i>
+                  <span class="truncate">{{ prov.email }}</span>
+                </div>
+              }
+              @if (prov.montoContrato && prov.montoContrato > 0) {
+                <div class="flex items-center gap-2 font-semibold text-slate-800 pt-1">
+                  <i class="pi pi-tag text-amber-500"></i>
+                  <span>Contrato: ${{ prov.montoContrato | number:'1.0-0' }} MXN</span>
+                </div>
+              }
+            </div>
+
+            @if (prov.notas) {
+              <p class="text-xs text-slate-500 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100 mb-3">
+                "{{ prov.notas }}"
+              </p>
+            }
+          </div>
+
+          <!-- Botón de Contacto Directo por WhatsApp -->
+          <div class="pt-2 border-t border-slate-100">
+            @if (prov.telefono) {
+              <button
+                pButton
+                label="Contactar por WhatsApp"
+                icon="pi pi-whatsapp"
+                severity="success"
+                [outlined]="true"
+                styleClass="w-full p-button-sm !rounded-xl"
+                (click)="contactarWhatsApp(prov)">
+              </button>
+            } @else {
+              <span class="text-xs text-slate-400 block text-center py-1">Sin teléfono registrado</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="bg-white rounded-2xl p-12 border border-slate-200 text-center">
+      <i class="pi pi-briefcase text-4xl text-slate-300 block mb-3"></i>
+      <h4 class="text-base font-bold text-slate-700">No hay proveedores registrados</h4>
+      <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+        Agrega al DJ, fotógrafo, banquetera, florista y salón para mantener todo tu equipo de trabajo organizado.
+      </p>
+      <div class="mt-4">
+        <p-button
+          label="Agregar Primer Proveedor"
+          icon="pi pi-plus"
+          severity="primary"
+          styleClass="p-button-sm font-semibold"
+          (onClick)="abrirModalNuevo()">
+        </p-button>
+      </div>
+    </div>
+  }
+</div>

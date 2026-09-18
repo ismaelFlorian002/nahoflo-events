@@ -18,14 +18,20 @@ import { InvitadoModel } from '../../core/models/invitado.model';
 import { RecuerdoModel } from '../../core/models/RecuerdoModel';
 import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
 
-// Servicios de Clean Architecture (Fase 1)
+// Servicios de Clean Architecture (Fase 1 & Fase 5)
 import { ZipDownloaderService } from './services/zip-downloader.service';
 import { QrScannerService } from './services/qr-scanner.service';
+import { PdfReportService } from './services/pdf-report.service';
 
-// Componentes Visuales Extraídos (Fase 2)
+// Componentes Visuales Extraídos (Fase 2, 3, 4 & 5)
 import { PinLoginComponent } from './components/pin-login/pin-login.component';
 import { GuestTableComponent } from './components/guest-table/guest-table.component';
 import { ScannerViewComponent } from './components/scanner-view/scanner-view.component';
+import { MinutarioTimelineComponent } from './components/minutario-timeline/minutario-timeline.component';
+import { PresupuestoTrackerComponent } from './components/presupuesto-tracker/presupuesto-tracker.component';
+import { ProveedoresDirectorioComponent } from './components/proveedores-directorio/proveedores-directorio.component';
+import { ChecklistTrackerComponent } from './components/checklist-tracker/checklist-tracker.component';
+import { AgenciaBrandingModalComponent } from './components/agencia-branding-modal/agencia-branding-modal.component';
 
 // Modales existentes
 import { QrMesaModalComponent } from '../album-digital/qr-mesa-modal/qr-mesa-modal.component';
@@ -46,11 +52,17 @@ import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitad
     PinLoginComponent,
     GuestTableComponent,
     ScannerViewComponent,
+    MinutarioTimelineComponent,
+    PresupuestoTrackerComponent,
+    ProveedoresDirectorioComponent,
+    ChecklistTrackerComponent,
   ],
   providers: [DialogService],
   templateUrl: './anfitrion-asistencias.component.html',
   styleUrl: './anfitrion-asistencias.component.scss',
 })
+
+
 export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private eventService = inject(EventService);
@@ -61,6 +73,59 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   // Servicios inyectados para lógica pesada
   private zipDownloaderService = inject(ZipDownloaderService);
   private qrScannerService = inject(QrScannerService);
+  private pdfReportService = inject(PdfReportService);
+
+  descargandoDossier = signal<boolean>(false);
+
+  abrirModalBrandingAgencia(): void {
+    const ev = this.evento();
+    if (!ev) return;
+
+    const ref = this.dialogService.open(AgenciaBrandingModalComponent, {
+      header: 'Configuración de Marca Blanca / Agencia',
+      width: '620px',
+      breakpoints: { '960px': '85vw', '640px': '94vw' },
+      closable: true,
+      dismissableMask: true,
+      data: { evento: ev },
+    });
+
+    ref?.onClose.subscribe((res: any) => {
+      if (res?.guardado && res.datosAgencia) {
+        this.evento.update((e) => (e ? { ...e, ...res.datosAgencia } : null));
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Marca Blanca Actualizada',
+          detail: 'Se guardaron los datos de la agencia en el evento.',
+        });
+      }
+    });
+  }
+
+  async descargarDossierPdf(): Promise<void> {
+    const ev = this.evento();
+    if (!ev) return;
+
+    this.descargandoDossier.set(true);
+    try {
+      await this.pdfReportService.generarDossierCompletoEvento(ev, this.invitados());
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Dossier Generado',
+        detail: 'El informe PDF completo del evento ha sido descargado.',
+      });
+    } catch (err) {
+      console.error('Error al generar dossier PDF:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo generar el dossier PDF del evento.',
+      });
+    } finally {
+      this.descargandoDossier.set(false);
+    }
+  }
+
 
   // Estado general
   evento = signal<Evento | null>(null);
@@ -72,11 +137,19 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   descargandoTodo = this.zipDownloaderService.descargandoTodo;
   progresoDescarga = this.zipDownloaderService.progresoDescarga;
 
+  onEventoActualizado(ev: Evento): void {
+    this.evento.set(ev);
+  }
+
   // Control de PIN
   pinDesbloqueado = signal<boolean>(false);
 
   // Pestañas del portal anfitrión
-  pestanaActiva = signal<'resumen' | 'invitados' | 'recepcion' | 'album'>('resumen');
+  pestanaActiva = signal<
+    'resumen' | 'invitados' | 'recepcion' | 'minutario' | 'presupuesto' | 'proveedores' | 'checklist' | 'album'
+  >('resumen');
+
+
 
   // Control de copiado de enlaces
   copiadoGeneral = signal<boolean>(false);
@@ -144,7 +217,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   });
 
   totalPestanasDisponibles = computed(() => {
-    let count = 1;
+    let count = 2; // Resumen + Minutario (siempre disponibles)
     if (this.tieneControlInvitados()) count++;
     if (this.tieneRecepcionOPuerta()) count++;
     if (this.tieneAlbum()) count++;
@@ -547,10 +620,22 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     );
   }
 
-  cambiarPestana(pestana: 'resumen' | 'invitados' | 'recepcion' | 'album'): void {
+  cambiarPestana(
+    pestana:
+      | 'resumen'
+      | 'invitados'
+      | 'recepcion'
+      | 'minutario'
+      | 'presupuesto'
+      | 'proveedores'
+      | 'checklist'
+      | 'album',
+  ): void {
     this.pestanaActiva.set(pestana);
     this.qrScannerService.detenerEscaner();
   }
+
+
 
   async copiarEnlaceGeneral(): Promise<void> {
     const ev = this.evento();

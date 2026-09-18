@@ -11,7 +11,7 @@
     [rowsPerPageOptions]="[10, 25, 50]"
     [loading]="cargando()"
     [paginator]="true"
-    [globalFilterFields]="['nombre', 'telefono', 'mensaje']"
+    [globalFilterFields]="['nombre', 'telefono', 'mensaje', 'mesa', 'tipoMenu', 'restriccionesAlimentarias']"
     responsiveLayout="scroll"
     styleClass="p-datatable-borderless modern-table">
 
@@ -198,6 +198,9 @@
             style="text-align: center;">Pases
           <p-sortIcon field="pasesConfirmados"></p-sortIcon>
         </th>
+        <th pSortableColumn="mesa" class="col-mesa col-desktop">Mesa / Menú
+          <p-sortIcon field="mesa"></p-sortIcon>
+        </th>
         <th class="col-whatsapp col-desktop">WhatsApp</th>
         @if (evento()?.modulos?.tipoControlInvitados === 'total') {
           <th class="col-vip col-desktop" style="text-align: center;">Pase VIP</th>
@@ -214,7 +217,7 @@
           <div class="guest-name-cell">
             <span class="guest-name-text">{{ invitado.nombre }}</span>
 
-            <!-- META SÓLO MÓVIL: Estado y pases limpios debajo del nombre -->
+            <!-- META SÓLO MÓVIL: Estado, pases y mesa limpios debajo del nombre -->
             <div class="guest-meta-mobile">
               @if (invitado.estado === 'pendiente') {
                 <p-tag
@@ -235,6 +238,13 @@
                 <span class="pases-badge-mobile">
                   <i class="pi pi-ticket"></i>
                   <span>{{ invitado.pasesConfirmados || 1 }} {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}</span>
+                </span>
+              }
+
+              @if (invitado.mesa) {
+                <span class="pases-badge-mobile" style="background: #fef3c7; color: #92400e;">
+                  <i class="pi pi-th-large"></i>
+                  <span>{{ invitado.mesa }}</span>
                 </span>
               }
             </div>
@@ -285,6 +295,25 @@
           } @else {
             <span class="pases-count muted">0</span>
           }
+        </td>
+
+        <!-- COLUMNA MESA Y MENÚ (DESKTOP) -->
+        <td class="col-mesa col-desktop">
+          <div class="flex flex-col gap-0.5">
+            <span class="font-semibold text-slate-800 text-xs">
+              <i class="pi pi-th-large text-amber-600 mr-1"></i>
+              {{ invitado.mesa || 'Sin asignar' }}
+            </span>
+            <span class="text-xs text-slate-500">
+              {{ invitado.tipoMenu || 'Adulto' }}
+            </span>
+            @if (invitado.restriccionesAlimentarias) {
+              <span class="inline-flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-medium max-w-fit mt-0.5" [pTooltip]="invitado.restriccionesAlimentarias" tooltipPosition="top">
+                <i class="pi pi-exclamation-triangle text-[10px]"></i>
+                <span class="truncate max-w-[120px]">{{ invitado.restriccionesAlimentarias }}</span>
+              </span>
+            }
+          </div>
         </td>
 
         <!-- COLUMNA WHATSAPP (SOLO DESKTOP) -->

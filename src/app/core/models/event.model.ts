@@ -47,6 +47,69 @@ export interface Evento {
   contactoTelefono?: string; // Teléfono/WhatsApp del cliente
   contactoEmail?: string; // Correo de contacto
   contactoNotas?: string; // Notas de atención o preferencias
+
+  // Cronograma / Minutario Técnico del Evento (Fase 2):
+  minutario?: ItemMinutario[];
+
+  // Control Financiero y Proveedores (Fase 3):
+  presupuesto?: ItemPresupuesto[];
+  proveedores?: ProveedorEvento[];
+
+  // Checklist de Planeación por Fases (Fase 4):
+  checklist?: TareaPlaneacion[];
+
+  // Marca Blanca / Branding de la Agencia (Fase 5):
+  agenciaNombre?: string;
+  agenciaLogoUrl?: string;
+  agenciaTelefono?: string;
+  agenciaNotas?: string;
 }
+
+
+export interface ItemMinutario {
+  id: string;
+  hora: string; // ej. "16:30"
+  actividad: string; // ej. "Entrada de los Novios"
+  responsable?: string; // ej. "Coordinador", "DJ / Orquesta", "Banquetero", "Fotógrafo"
+  detalles?: string; // ej. "Chisperos fríos encendidos"
+  completado?: boolean; // Estado en vivo durante el evento
+}
+
+export interface ItemPresupuesto {
+  id: string;
+  categoria: string; // ej. "Banquete & Bebidas", "Música & DJ", "Decoración & Flores", "Fotografía & Video", "Lugar / Salón", "Vestido & Imagen", "Recuerdos & Papelería", "Coordinación & Planner", "Otros"
+  concepto: string; // ej. "Anticipo Banquete 150 Personas"
+  costoEstimado: number;
+  costoReal: number;
+  montoPagado: number;
+  estadoPago: 'pendiente' | 'parcial' | 'pagado';
+  fechaLimitePago?: string | Date;
+  proveedorNombre?: string;
+  notas?: string;
+}
+
+export interface ProveedorEvento {
+  id: string;
+  categoria: string; // ej. "DJ / Música", "Fotógrafo", "Florista", "Banquete", "Maquillaje", "Salón", "Decoración"
+  empresa: string;
+  contactoNombre?: string;
+  telefono?: string;
+  email?: string;
+  montoContrato?: number;
+  notas?: string;
+}
+
+export interface TareaPlaneacion {
+  id: string;
+  fase: string; // ej. "12 a 9 Meses Antes", "6 a 3 Meses Antes", "1 Mes Antes", "Semana del Evento", "Día del Evento"
+  titulo: string; // ej. "Reservar Banquete y Salón"
+  responsable?: string; // ej. "Wedding Planner", "Novia", "Novio", "Ambos"
+  fechaLimite?: string;
+  completada: boolean;
+  prioridad?: 'alta' | 'media' | 'baja';
+  notas?: string;
+}
+
+
 
 

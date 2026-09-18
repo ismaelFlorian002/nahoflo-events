@@ -1,0 +1,168 @@
+<div class="minutario-card bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 sm:p-6 flex flex-col gap-6">
+
+  <!-- CABECERA Y ACCIONES DE TOOLBAR -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+    <div>
+      <div class="flex items-center gap-2">
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 m-0 flex items-center gap-2">
+          <i class="pi pi-clock text-gold-500"></i>
+          Minutario & Cronograma Técnico del Evento
+        </h3>
+        <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-semibold">
+          {{ totalItems() }} {{ totalItems() === 1 ? 'momento' : 'momentos' }}
+        </span>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-500 m-0 mt-1">
+        Sincroniza el desarrollo minuto a minuto del evento con tu equipo (DJ, Banquetero, Fotógrafo y Coordinación).
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      @if (totalItems() > 0) {
+        <p-button
+          label="WhatsApp Staff"
+          icon="pi pi-whatsapp"
+          size="small"
+          severity="success"
+          [outlined]="true"
+          (onClick)="copiarMinutarioWhatsApp()"
+          pTooltip="Copiar cronograma para enviar por WhatsApp"
+          tooltipPosition="top">
+        </p-button>
+      }
+
+      <p-button
+        label="Agregar Momento"
+        icon="pi pi-plus"
+        size="small"
+        (onClick)="abrirModalAgregar()">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- BARRA DE PROGRESO DEL EVENTO EN VIVO -->
+  @if (totalItems() > 0) {
+    <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-3 sm:p-4 flex flex-col gap-2">
+      <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-slate-700">
+        <span class="flex items-center gap-1.5">
+          <i class="pi pi-chart-line text-gold-500"></i>
+          Progreso del Evento en Vivo
+        </span>
+        <span class="text-gold-600 font-bold">{{ completadosCount() }} de {{ totalItems() }} completados ({{ porcentajeCompletado() }}%)</span>
+      </div>
+      <p-progressBar [value]="porcentajeCompletado()" [showValue]="false" styleClass="h-2 rounded-full"></p-progressBar>
+    </div>
+  }
+
+  <!-- LÍNEA DE TIEMPO / TIMELINE DE MOMENTOS -->
+  <div class="minutario-timeline-container relative pl-3 sm:pl-6 my-2">
+    
+    <!-- LÍNEA CONECTORA CENTRAL -->
+    <div class="absolute left-6 top-3 bottom-3 w-0.5 bg-slate-200 hidden sm:block"></div>
+
+    @for (item of itemsMinutario(); track item.id; let idx = $index) {
+      <div
+        class="timeline-item flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 py-3 px-3 sm:px-4 rounded-xl transition-all duration-200 border border-transparent hover:border-slate-200 hover:bg-slate-50/80 mb-2 relative"
+        [class.item-completado]="item.completado">
+        
+        <!-- CHECKBOX EN VIVO PARA MARCAR CUMPLIDO -->
+        <button
+          type="button"
+          class="btn-check-live flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors duration-200"
+          [class.border-emerald-500]="item.completado"
+          [class.bg-emerald-500]="item.completado"
+          [class.text-white]="item.completado"
+          [class.border-slate-300]="!item.completado"
+          [class.bg-white]="!item.completado"
+          [class.text-transparent]="!item.completado"
+          (click)="toggleCompletado(item)"
+          pTooltip="Marcar momento como completado"
+          tooltipPosition="top">
+          <i class="pi pi-check text-xs font-bold"></i>
+        </button>
+
+        <!-- BADGE DE HORA -->
+        <div class="badge-hora flex-shrink-0 bg-slate-900 text-gold-400 font-mono font-bold text-sm px-3 py-1 rounded-lg shadow-xs flex items-center gap-1.5">
+          <i class="pi pi-clock text-xs text-gold-400"></i>
+          <span>{{ item.hora }}</span>
+        </div>
+
+        <!-- DETALLES DE LA ACTIVIDAD -->
+        <div class="flex-1 min-w-0 flex flex-col gap-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="actividad-titulo font-bold text-slate-800 text-sm sm:text-base" [class.line-through]="item.completado" [class.text-slate-400]="item.completado">
+              {{ item.actividad }}
+            </span>
+
+            @if (item.responsable) {
+              <span class="text-[11px] px-2 py-0.5 rounded-md font-semibold border" [ngClass]="getBadgeResponsableClass(item.responsable)">
+                {{ item.responsable }}
+              </span>
+            }
+          </div>
+
+          @if (item.detalles) {
+            <p class="text-xs text-slate-600 m-0 leading-relaxed italic" [class.text-slate-400]="item.completado">
+              {{ item.detalles }}
+            </p>
+          }
+        </div>
+
+        <!-- ACCIONES EDICIÓN / ELIMINAR -->
+        <div class="flex items-center gap-1 opacity-90 sm:opacity-0 hover:opacity-100 transition-opacity">
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            size="small"
+            (onClick)="abrirModalEditar(item)"
+            pTooltip="Editar momento">
+          </p-button>
+          <p-button
+            icon="pi pi-trash"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            size="small"
+            (onClick)="eliminarItem(item)"
+            pTooltip="Eliminar momento">
+          </p-button>
+        </div>
+
+      </div>
+    } @empty {
+      <!-- ESTADO VACÍO CON BOTÓN DE PLANTILLA -->
+      <div class="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50 my-4 gap-3">
+        <div class="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-200 text-gold-600 flex items-center justify-center text-2xl shadow-xs">
+          <i class="pi pi-calendar-plus"></i>
+        </div>
+        <div>
+          <h4 class="text-base font-bold text-slate-800 m-0">No hay momentos registrados en el minutario</h4>
+          <p class="text-xs text-slate-500 m-0 mt-1 max-w-md">
+            Puedes agregar actividades personalizadas una a una o cargar la plantilla estándar sugerida para eventos.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 mt-2">
+          <p-button
+            label="Cargar Plantilla Estándar"
+            icon="pi pi-sparkles"
+            size="small"
+            severity="warning"
+            (onClick)="cargarPlantillaEstandar()">
+          </p-button>
+          <p-button
+            label="Agregar Momento Manual"
+            icon="pi pi-plus"
+            size="small"
+            [outlined]="true"
+            (onClick)="abrirModalAgregar()">
+          </p-button>
+        </div>
+      </div>
+    }
+
+  </div>
+
+</div>
