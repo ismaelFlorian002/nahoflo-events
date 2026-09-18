@@ -13,6 +13,8 @@ import {
 } from '../../../../core/services/event.service';
 import { EstadoInvitado, InvitadoModel } from '../../../../core/models/invitado.model';
 
+import { FloatLabelModule } from 'primeng/floatlabel';
+
 @Component({
   selector: 'app-invitado-form-modal',
   standalone: true,
@@ -22,6 +24,7 @@ import { EstadoInvitado, InvitadoModel } from '../../../../core/models/invitado.
     ButtonModule,
     InputTextModule,
     DropdownModule,
+    FloatLabelModule,
   ],
   templateUrl: './invitado-form-modal.component.html',
   styleUrl: './invitado-form-modal.component.scss',

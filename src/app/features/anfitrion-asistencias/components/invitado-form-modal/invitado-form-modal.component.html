@@ -1,49 +1,46 @@
-<form [formGroup]="form" (ngSubmit)="guardar()" class="form-invitado-modal">
+<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-12 gap-x-5 gap-y-7 pt-6">
+
   <!-- MENSAJE DE ERROR -->
   @if (errorMensaje()) {
-    <div class="alerta-error">
+    <div class="col-span-12 alerta-error">
       <i class="pi pi-exclamation-triangle"></i>
       <span>{{ errorMensaje() }}</span>
     </div>
   }
 
-  <!-- FILA 1: NOMBRE Y TELÉFONO (FLOAT LABELS EN 2 COLUMNAS) -->
-  <div class="fila-dos-columnas">
-    <!-- CAMPO: NOMBRE -->
-    <div class="campo-float-wrap wrap-nombre">
-      <span class="p-float-label">
-        <input
-          pInputText
-          id="nombre"
-          type="text"
-          formControlName="nombre"
-          style="width: 100%"
-          autocomplete="off" />
-        <label for="nombre">Nombre Completo o Familia *</label>
-      </span>
-      @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
-        <span class="error-texto">El nombre es requerido (mínimo 2 caracteres).</span>
-      }
-    </div>
+  <!-- FILA 1: NOMBRE (7 COLS) Y TELÉFONO (5 COLS) -->
+  <div class="col-span-12 sm:col-span-7 flex flex-col gap-1">
+    <p-floatLabel class="w-full block">
+      <input
+        pInputText
+        id="nombre"
+        type="text"
+        formControlName="nombre"
+        class="w-full"
+        autocomplete="off" />
+      <label for="nombre">Nombre Completo o Familia *</label>
+    </p-floatLabel>
+    @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
+      <span class="text-xs text-rose-500 font-semibold pl-1">El nombre es requerido (mínimo 2 caracteres).</span>
+    }
+  </div>
 
-    <!-- CAMPO: TELÉFONO -->
-    <div class="campo-float-wrap wrap-telefono">
-      <span class="p-float-label">
-        <input
-          pInputText
-          id="telefono"
-          type="text"
-          formControlName="telefono"
-          style="width: 100%"
-          autocomplete="off" />
-        <label for="telefono">Teléfono (WhatsApp)</label>
-      </span>
-    </div>
+  <div class="col-span-12 sm:col-span-5">
+    <p-floatLabel class="w-full block">
+      <input
+        pInputText
+        id="telefono"
+        type="text"
+        formControlName="telefono"
+        class="w-full"
+        autocomplete="off" />
+      <label for="telefono">Teléfono (WhatsApp)</label>
+    </p-floatLabel>
   </div>
 
   <!-- NOTIFICACIÓN DE COINCIDENCIA CON INVITADO PREVIO (SOLO EN MODO CREAR) -->
   @if (!esEdicion && coincidenciaExistente(); as coincidencia) {
-    <div class="alerta-coincidencia">
+    <div class="col-span-12 alerta-coincidencia">
       <i class="pi pi-info-circle"></i>
       <div>
         <span>Ya existe un registro para <strong>{{ coincidencia.nombre }}</strong>
@@ -53,8 +50,8 @@
     </div>
   }
 
-  <!-- SECCIÓN: ESTADO DE ASISTENCIA Y PASES -->
-  <div class="seccion-opciones-card">
+  <!-- SECCIÓN: ESTADO DE ASISTENCIA Y PASES (FILA COMPLETA) -->
+  <div class="col-span-12 seccion-opciones-card">
     <!-- ESTADO DE ASISTENCIA -->
     <div class="opcion-bloque">
       <span class="opcion-label">{{ esEdicion ? 'Estado de Asistencia' : 'Estado Inicial de Asistencia' }}</span>
@@ -117,56 +114,53 @@
     </div>
   </div>
 
-  <!-- SECCIÓN: ORGANIZACIÓN DE BANQUETE Y MESAS (FASE 1) -->
-  <div class="fila-dos-columnas mt-3">
-    <!-- CAMPO: MESA ASIGNADA -->
-    <div class="campo-float-wrap">
-      <span class="p-float-label">
-        <input
-          pInputText
-          id="mesa"
-          type="text"
-          formControlName="mesa"
-          style="width: 100%"
-          autocomplete="off" />
-        <label for="mesa">Mesa Asignada (ej. Mesa 5, Mesa VIP)</label>
-      </span>
-    </div>
-
-    <!-- CAMPO: TIPO DE MENÚ -->
-    <div class="campo-float-wrap">
-      <div class="flex flex-col gap-1">
-        <label for="tipoMenu" class="text-xs font-semibold text-slate-700">Tipo de Menú</label>
-        <p-dropdown
-          id="tipoMenu"
-          [options]="opcionesMenu"
-          optionLabel="label"
-          optionValue="value"
-          formControlName="tipoMenu"
-          placeholder="Selecciona tipo de menú"
-          styleClass="w-full">
-        </p-dropdown>
-      </div>
-    </div>
+  <!-- FILA 2: MESA ASIGNADA (6 COLS) Y TIPO DE MENÚ (6 COLS) -->
+  <div class="col-span-12 sm:col-span-6">
+    <p-floatLabel class="w-full block">
+      <input
+        pInputText
+        id="mesa"
+        type="text"
+        formControlName="mesa"
+        class="w-full"
+        autocomplete="off" />
+      <label for="mesa">Mesa Asignada (ej. Mesa 5)</label>
+    </p-floatLabel>
   </div>
 
-  <!-- CAMPO: RESTRICCIONES ALIMENTARIAS / ALERGIAS -->
-  <div class="campo-float-wrap mt-3">
-    <span class="p-float-label">
+  <div class="col-span-12 sm:col-span-6">
+    <p-floatLabel class="w-full block">
+      <p-dropdown
+        id="tipoMenu"
+        inputId="tipoMenu"
+        [options]="opcionesMenu"
+        optionLabel="label"
+        optionValue="value"
+        formControlName="tipoMenu"
+        placeholder="Selecciona tipo de menú"
+        styleClass="w-full">
+      </p-dropdown>
+      <label for="tipoMenu">Tipo de Menú</label>
+    </p-floatLabel>
+  </div>
+
+  <!-- FILA 3: ALERGIAS Y RESTRICCIONES ALIMENTARIAS (FILA COMPLETA) -->
+  <div class="col-span-12">
+    <p-floatLabel class="w-full block">
       <input
         pInputText
         id="restriccionesAlimentarias"
         type="text"
         formControlName="restriccionesAlimentarias"
-        style="width: 100%"
+        class="w-full"
         autocomplete="off" />
-      <label for="restriccionesAlimentarias">Alergias / Restricciones Alimentarias (ej. Sin gluten, Alergia a mariscos)</label>
-    </span>
+      <label for="restriccionesAlimentarias">Alergias / Restricciones Alimentarias (ej. Sin gluten)</label>
+    </p-floatLabel>
   </div>
 
   <!-- MENSAJE O DEDICATORIA DEL INVITADO (SOLO LECTURA EN MODO EDICIÓN) -->
   @if (esEdicion && invitado?.mensaje) {
-    <div class="dedicatoria-card">
+    <div class="col-span-12 dedicatoria-card">
       <div class="dedicatoria-header">
         <i class="pi pi-heart-fill"></i>
         <span>Mensaje Dedicado del Invitado</span>
@@ -175,11 +169,13 @@
     </div>
   }
 
-  <!-- BOTONES DE ACCIÓN -->
-  <div class="modal-footer-acciones">
+  <!-- BOTONES DE ACCIÓN (ALINEADOS AL FINAL) -->
+  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
     <p-button
+      type="button"
+
       label="Cancelar"
-      severity="secondary"
+      severity="danger"
       [text]="true"
       size="small"
       [disabled]="guardando()"

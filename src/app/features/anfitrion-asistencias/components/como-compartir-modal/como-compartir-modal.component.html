@@ -27,14 +27,16 @@
             [label]="copiado() ? '¡Copiado!' : 'Copiar Enlace'"
             [icon]="copiado() ? 'pi pi-check' : 'pi pi-copy'"
             size="small"
+            text="true"
+            severity="contrast"
             (onClick)="copiarEnlace()">
           </p-button>
 
           @if (puedeCompartirNativo()) {
             <p-button
               icon="pi pi-share-alt"
+              text=""
               size="small"
-              [outlined]="true"
               severity="secondary"
               (onClick)="compartirNativo()"
               title="Compartir mediante el menú de tu dispositivo">

@@ -53,22 +53,20 @@
   </div>
 
   <!-- BOTONES DE ACCIÓN NATIVOS PRIMENG -->
-  <div class="modal-qr-actions">
+  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
     <p-button
-      label="Descargar Pase (PNG)"
+      label="Descargar"
       icon="pi pi-download"
-      size="small"
-      severity="secondary"
-      [outlined]="true"
+      text="true"
+      severity="info"
       styleClass="w-full"
       [loading]="descargando()"
       (onClick)="descargarPase()">
     </p-button>
 
     <p-button
-      label="Enviar por WhatsApp"
+      label="Enviar"
       icon="pi pi-whatsapp"
-      size="small"
       severity="success"
       styleClass="w-full"
       (onClick)="compartirWhatsApp()">

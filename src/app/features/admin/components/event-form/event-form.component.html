@@ -64,7 +64,7 @@
         </div>
 
         <!-- CUADRÍCULA DE CAMPOS BÁSICOS (SISTEMA DE 12 COLUMNAS) -->
-        <div class="grid grid-cols-12 gap-5 pt-2">
+        <div class="grid grid-cols-12 gap-x-5 gap-y-8 pt-6">
 
           <!-- 1. NOMBRE DEL EVENTO (8 columnas en desktop, 12 en móvil) -->
           <div class="col-span-12 sm:col-span-8">
@@ -211,7 +211,7 @@
         </div>
 
         <!-- FORMULARIO DE DATOS DE CONTACTO (CUADRÍCULA 12 COLUMNAS) -->
-        <div class="grid grid-cols-12 gap-5 pt-2">
+        <div class="grid grid-cols-12 gap-x-5 gap-y-8 pt-6">
 
           <!-- NOMBRE COMPLETO (12 columnas) -->
           <div class="col-span-12">
@@ -276,7 +276,7 @@
         <!-- SECCIÓN: CEREMONIA -->
         <div>
           <h4 class="m-0 mb-4 text-[#cca633] font-bold text-base">Ceremonia (Iglesia)</h4>
-          <div class="grid grid-cols-12 gap-5">
+          <div class="grid grid-cols-12 gap-x-5 gap-y-8 pt-3">
             <div class="col-span-12 sm:col-span-6">
               <p-floatLabel class="w-full block">
                 <input id="ceremoniaLugar" pInputText formControlName="ceremoniaLugar" class="w-full" autocomplete="off" />
@@ -338,7 +338,7 @@
         <!-- SECCIÓN: RECEPCIÓN -->
         <div>
           <h4 class="m-0 mb-4 text-[#cca633] font-bold text-base">Recepción (Salón)</h4>
-          <div class="grid grid-cols-12 gap-5">
+          <div class="grid grid-cols-12 gap-x-5 gap-y-8 pt-3">
             <div class="col-span-12 sm:col-span-6">
               <p-floatLabel class="w-full block">
                 <input id="recepcionLugar" pInputText formControlName="recepcionLugar" class="w-full" autocomplete="off" />
@@ -403,10 +403,12 @@
       <div class="flex flex-col gap-6 pt-4 pb-16">
 
         <!-- FRASE / MENSAJE -->
-        <p-floatLabel class="w-full block">
-          <textarea id="mensaje" pInputTextarea formControlName="mensaje" rows="3" class="w-full resize-none"></textarea>
-          <label for="mensaje">Frase / Mensaje</label>
-        </p-floatLabel>
+        <div class="pt-4">
+          <p-floatLabel class="w-full block">
+            <textarea id="mensaje" pInputTextarea formControlName="mensaje" rows="3" class="w-full resize-none"></textarea>
+            <label for="mensaje">Frase / Mensaje</label>
+          </p-floatLabel>
+        </div>
 
         <!-- SECCIÓN: MÚSICA DE FONDO -->
         <div class="flex flex-col items-start gap-2">

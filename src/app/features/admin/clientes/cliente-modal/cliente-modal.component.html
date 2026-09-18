@@ -64,14 +64,16 @@
     <p-button
       type="button"
       label="Cancelar"
-      severity="secondary"
+      severity="danger"
       [text]="true"
+      size="small"
       (onClick)="cancelar()"
     ></p-button>
     <p-button
       type="submit"
       [label]="clienteEnEdicion ? 'Actualizar Cliente' : 'Guardar Cliente'"
       [loading]="guardando"
+      size="small"
     ></p-button>
   </div>
 

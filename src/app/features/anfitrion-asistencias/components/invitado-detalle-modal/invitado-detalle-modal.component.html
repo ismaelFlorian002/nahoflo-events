@@ -8,18 +8,16 @@
       <h3>{{ invitado.nombre }}</h3>
       <div class="badges-fila">
         @if (invitado.estado === 'pendiente') {
-          <p-tag
+          <p-badge
             value="Pendiente de Confirmar"
             severity="warning"
-            icon="pi pi-clock"
-            [rounded]="true">
-          </p-tag>
+            icon="pi pi-clock">
+          </p-badge>
         } @else {
-          <p-tag
+          <p-badge
             [value]="invitado.asistira ? 'Asistencia Confirmada' : 'Declinó Asistencia'"
-            [severity]="invitado.asistira ? 'success' : 'danger'"
-            [rounded]="true">
-          </p-tag>
+            [severity]="invitado.asistira ? 'success' : 'danger'">
+          </p-badge>
         }
         @if (invitado.asistira || invitado.estado === 'pendiente') {
           <span class="badge-pases-info">
@@ -133,12 +131,11 @@
   }
 
   <!-- ACCIONES DE PIE DE MODAL -->
-  <div class="modal-footer-acciones">
+  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
     <p-button
       label="Cerrar"
       icon="pi pi-times"
       [text]="true"
-      size="small"
       severity="secondary"
       (onClick)="cerrar()">
     </p-button>

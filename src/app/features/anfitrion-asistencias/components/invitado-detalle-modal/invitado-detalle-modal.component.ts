@@ -5,11 +5,12 @@ import { TagModule } from 'primeng/tag';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InvitadoModel } from '../../../../core/models/invitado.model';
 import { Evento } from '../../../../core/models/event.model';
+import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'app-invitado-detalle-modal',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TagModule],
+  imports: [CommonModule, ButtonModule, TagModule, BadgeModule],
   templateUrl: './invitado-detalle-modal.component.html',
   styleUrl: './invitado-detalle-modal.component.scss',
 })

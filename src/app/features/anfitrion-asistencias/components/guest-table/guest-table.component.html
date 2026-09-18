@@ -38,14 +38,16 @@
 
         <!-- IZQUIERDA: BUSCADOR + FILTRO POR ESTADO + EXPORTAR -->
         <div class="toolbar-izquierda">
-          <span class="p-input-icon-left search-wrapper">
-            <i class="pi pi-search"></i>
+
+
+           <span class="p-input-icon-left w-full sm:w-80">
+            <i class="pi pi-search text-gray-400"></i>
             <input
               pInputText
               type="text"
-              [ngModel]="terminoBusqueda()"
+              class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
               (input)="terminoBusqueda.set($any($event.target).value); dt1.filterGlobal($any($event.target).value, 'contains')"
-              placeholder="Buscar por nombre o teléfono..." />
+              placeholder="Buscar por cliente, teléfono o correo..." />
           </span>
 
           <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL -->
