@@ -1,9 +1,14 @@
-/* Tabs scrolleables horizontalmente en móvil (previene corte de pestañas) */
+/* Header de Pestañas Fijo (Sticky) en Modal */
 :host ::ng-deep .p-tabview {
   .p-tabview-nav-container {
-    position: relative;
-    width: 100%;
-    overflow: hidden;
+    position: sticky;
+    top: -1.5rem;
+    margin: -1.5rem -1.5rem 0 -1.5rem;
+    padding: 0.75rem 1.5rem 0 1.5rem;
+    background-color: #ffffff;
+    z-index: 50;
+    width: auto;
+    border-bottom: 1px solid #e2e8f0;
   }
   .p-tabview-nav {
     display: flex;
@@ -12,6 +17,7 @@
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     white-space: nowrap;
+    border-bottom: none;
 
     li .p-tabview-nav-link {
       padding: 0.75rem 1rem;
