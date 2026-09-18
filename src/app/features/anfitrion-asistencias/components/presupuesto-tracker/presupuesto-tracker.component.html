@@ -92,17 +92,18 @@
       </p-dropdown>
     </div>
 
-    <div class="relative w-full sm:w-72">
-      <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-      <input
-        type="text"
-        pInputText
-        [ngModel]="busqueda()"
-        (ngModelChange)="busqueda.set($event)"
-        placeholder="Buscar concepto o proveedor..."
-        class="w-full pl-9 p-inputtext-sm rounded-xl"
-      />
-    </div>
+
+    <span class="p-input-icon-left w-full md:w-80">
+            <i class="pi pi-search text-gray-400"></i>
+            <input
+              pInputText
+              type="text"
+              class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+              [ngModel]="busqueda()"
+              (ngModelChange)="busqueda.set($event)"
+              placeholder="Buscar concepto o proveedor..."
+            />
+          </span>
   </div>
 
   <!-- Tabla Dinamica de Presupuesto -->
@@ -161,11 +162,11 @@
           </td>
 
           <td class="text-center">
-            <p-tag
+            <p-badge
               [value]="item.estadoPago === 'pagado' ? 'PAGADO' : item.estadoPago === 'parcial' ? 'ANTICIPO' : 'PENDIENTE'"
               [severity]="obtenerSeverityEstado(item.estadoPago)"
-              [rounded]="true">
-            </p-tag>
+             >
+            </p-badge>
           </td>
 
           <td class="text-center">

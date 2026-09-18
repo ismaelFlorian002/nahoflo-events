@@ -8,6 +8,9 @@ import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ItemPresupuesto } from '../../../../core/models/event.model';
 
+import { CalendarModule } from 'primeng/calendar';
+import { FloatLabelModule } from 'primeng/floatlabel';
+
 @Component({
   selector: 'app-presupuesto-item-modal',
   standalone: true,
@@ -18,6 +21,8 @@ import { ItemPresupuesto } from '../../../../core/models/event.model';
     InputTextModule,
     InputNumberModule,
     DropdownModule,
+    CalendarModule,
+    FloatLabelModule,
   ],
   templateUrl: './presupuesto-item-modal.component.html',
   styleUrl: './presupuesto-item-modal.component.scss',
@@ -53,6 +58,15 @@ export class PresupuestoItemModalComponent implements OnInit {
     this.item = this.config.data?.item;
     this.esEdicion = !!this.item;
 
+    let fechaInicial: Date | null = null;
+    if (this.item?.fechaLimitePago) {
+      const d =
+        this.item.fechaLimitePago instanceof Date
+          ? this.item.fechaLimitePago
+          : new Date(this.item.fechaLimitePago);
+      fechaInicial = isNaN(d.getTime()) ? null : d;
+    }
+
     this.form = this.fb.group({
       categoria: [this.item?.categoria || 'Banquete & Bebidas', Validators.required],
       concepto: [this.item?.concepto || '', [Validators.required, Validators.minLength(3)]],
@@ -61,7 +75,7 @@ export class PresupuestoItemModalComponent implements OnInit {
       montoPagado: [this.item?.montoPagado ?? 0, [Validators.required, Validators.min(0)]],
       estadoPago: [this.item?.estadoPago || 'pendiente', Validators.required],
       proveedorNombre: [this.item?.proveedorNombre || ''],
-      fechaLimitePago: [this.item?.fechaLimitePago || ''],
+      fechaLimitePago: [fechaInicial],
       notas: [this.item?.notas || ''],
     });
   }
@@ -73,6 +87,13 @@ export class PresupuestoItemModalComponent implements OnInit {
     }
 
     const val = this.form.value;
+    let fechaStr = '';
+    if (val.fechaLimitePago instanceof Date) {
+      fechaStr = val.fechaLimitePago.toISOString().substring(0, 10);
+    } else if (typeof val.fechaLimitePago === 'string') {
+      fechaStr = val.fechaLimitePago;
+    }
+
     const resultado: ItemPresupuesto = {
       id: this.item?.id || 'pres_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       categoria: val.categoria,
@@ -82,7 +103,7 @@ export class PresupuestoItemModalComponent implements OnInit {
       montoPagado: Number(val.montoPagado) || 0,
       estadoPago: val.estadoPago,
       proveedorNombre: val.proveedorNombre?.trim() || '',
-      fechaLimitePago: val.fechaLimitePago || '',
+      fechaLimitePago: fechaStr,
       notas: val.notas?.trim() || '',
     };
 

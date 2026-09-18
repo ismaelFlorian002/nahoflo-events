@@ -12,6 +12,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, ItemPresupuesto } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
 import { PresupuestoItemModalComponent } from '../presupuesto-item-modal/presupuesto-item-modal.component';
+import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'app-presupuesto-tracker',
@@ -25,6 +26,7 @@ import { PresupuestoItemModalComponent } from '../presupuesto-item-modal/presupu
     ProgressBarModule,
     InputTextModule,
     DropdownModule,
+    BadgeModule,
   ],
   templateUrl: './presupuesto-tracker.component.html',
   styleUrl: './presupuesto-tracker.component.scss',
@@ -70,17 +72,13 @@ export class PresupuestoTrackerComponent {
     this.items().reduce((acc, i) => acc + (Number(i.costoEstimado) || 0), 0),
   );
 
-  totalReal = computed(() =>
-    this.items().reduce((acc, i) => acc + (Number(i.costoReal) || 0), 0),
-  );
+  totalReal = computed(() => this.items().reduce((acc, i) => acc + (Number(i.costoReal) || 0), 0));
 
   totalPagado = computed(() =>
     this.items().reduce((acc, i) => acc + (Number(i.montoPagado) || 0), 0),
   );
 
-  saldoPendiente = computed(() =>
-    Math.max(0, this.totalReal() - this.totalPagado()),
-  );
+  saldoPendiente = computed(() => Math.max(0, this.totalReal() - this.totalPagado()));
 
   porcentajePagado = computed(() => {
     const tot = this.totalReal();
@@ -90,7 +88,6 @@ export class PresupuestoTrackerComponent {
   variacionPresupuesto = computed(() => this.totalReal() - this.totalEstimado());
 
   variacionAbsoluta = computed(() => Math.abs(this.variacionPresupuesto()));
-
 
   categoriasFiltro = [
     { label: 'Todas las Categorías', value: 'todas' },
@@ -148,7 +145,7 @@ export class PresupuestoTrackerComponent {
       acceptLabel: 'Sí, eliminar',
       rejectLabel: 'Cancelar',
       acceptButtonStyleClass: 'p-button-danger',
-      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      rejectButtonStyleClass: 'p-button-secondary p-button-text',
       accept: () => {
         const nuevaLista = this.items().filter((i) => i.id !== item.id);
         this.guardarPresupuesto(nuevaLista, 'Partida eliminada correctamente.');
@@ -159,7 +156,8 @@ export class PresupuestoTrackerComponent {
   cargarPlantillaBoda(): void {
     this.confirmationService.confirm({
       header: 'Cargar Presupuesto Base de Bodas',
-      message: '¿Deseas cargar una estructura predefinida de rubros presupuestarios (Banquete, DJ, Flores, Fotografía, Vestido, etc.)?',
+      message:
+        '¿Deseas cargar una estructura predefinida de rubros presupuestarios (Banquete, DJ, Flores, Fotografía, Vestido, etc.)?',
       icon: 'pi pi-wallet text-amber-500',
       acceptLabel: 'Sí, cargar plantilla',
       rejectLabel: 'Cancelar',
