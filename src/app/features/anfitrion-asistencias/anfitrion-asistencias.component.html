@@ -89,6 +89,18 @@
                     <i class="pi pi-th-large text-xs"></i>
                     <span>Croquis Mesas</span>
                   </button>
+
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('whatsapp')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'whatsapp'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'whatsapp'"
+                    [class.font-semibold]="pestanaActiva() === 'whatsapp'"
+                    [class.text-gray-600]="pestanaActiva() !== 'whatsapp'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i class="pi pi-whatsapp text-xs text-emerald-500"></i>
+                    <span>Mensajes WA</span>
+                  </button>
                 }
 
                 @if (tieneRecepcionOPuerta()) {
@@ -637,6 +649,16 @@
             </div>
           }
 
+          <!-- 1.8 PESTAÑA: CENTRO DE MENSAJERÍA WHATSAPP & PLANTILLAS INTELIGENTES -->
+          @if (pestanaActiva() === 'whatsapp') {
+            <div class="mb-8">
+              <app-whatsapp-messaging-center
+                [evento]="ev"
+                [invitados]="invitados()">
+              </app-whatsapp-messaging-center>
+            </div>
+          }
+
           <!-- 2. PESTAÑA: CENTRO DE RECEPCIÓN Y CONTROL TOTAL VIP (TARJETA PREMIUM ENVOLVENTE) -->
           @if (pestanaActiva() === 'recepcion') {
             <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
@@ -886,6 +908,16 @@
                   [class.text-gray-400]="pestanaActiva() !== 'croquis'">
                   <i class="pi pi-th-large text-lg mb-1"></i>
                   <span class="text-[10px] leading-none font-medium">Croquis</span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="cambiarPestana('whatsapp')"
+                  class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                  [class.text-gold-500]="pestanaActiva() === 'whatsapp'"
+                  [class.text-gray-400]="pestanaActiva() !== 'whatsapp'">
+                  <i class="pi pi-whatsapp text-lg mb-1 text-emerald-500"></i>
+                  <span class="text-[10px] leading-none font-medium">WhatsApp</span>
                 </button>
               }
 

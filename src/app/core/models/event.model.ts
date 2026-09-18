@@ -68,6 +68,8 @@ export interface Evento {
   agenciaNotas?: string;
   // Configuración de Plano / Croquis de Mesas (Croquis Visual):
   mesasLayout?: MesaDiseno[];
+  // Plantillas Personalizadas de WhatsApp:
+  plantillasWhatsapp?: PlantillaWhatsapp[];
 }
 
 export type FormaMesa = 'redonda' | 'rectangular' | 'imperial' | 'cabaret';
@@ -80,6 +82,13 @@ export interface MesaDiseno {
   posX?: number; // Coordenada X relativa en el lienzo (%)
   posY?: number; // Coordenada Y relativa en el lienzo (%)
   notas?: string; // Observaciones
+}
+
+export interface PlantillaWhatsapp {
+  id: string;
+  titulo: string; // ej. "Invitación & RSVP Inicial", "Pase VIP con QR"
+  categoria: 'invitacion' | 'recordatorio' | 'pase_qr' | 'dia_evento' | 'post_evento' | 'personalizado';
+  mensaje: string;
 }
 
 

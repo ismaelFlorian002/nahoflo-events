@@ -33,6 +33,7 @@ import { ProveedoresDirectorioComponent } from './components/proveedores-directo
 import { ChecklistTrackerComponent } from './components/checklist-tracker/checklist-tracker.component';
 import { AgenciaBrandingModalComponent } from './components/agencia-branding-modal/agencia-branding-modal.component';
 import { CroquisMesasDesignerComponent } from './components/croquis-mesas-designer/croquis-mesas-designer.component';
+import { WhatsappMessagingCenterComponent } from './components/whatsapp-messaging-center/whatsapp-messaging-center.component';
 
 // Modales existentes
 import { QrMesaModalComponent } from '../album-digital/qr-mesa-modal/qr-mesa-modal.component';
@@ -58,6 +59,7 @@ import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitad
     ProveedoresDirectorioComponent,
     ChecklistTrackerComponent,
     CroquisMesasDesignerComponent,
+    WhatsappMessagingCenterComponent,
   ],
   providers: [DialogService],
   templateUrl: './anfitrion-asistencias.component.html',
@@ -148,7 +150,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   // Pestañas del portal anfitrión
   pestanaActiva = signal<
-    'resumen' | 'invitados' | 'croquis' | 'recepcion' | 'minutario' | 'presupuesto' | 'proveedores' | 'checklist' | 'album'
+    'resumen' | 'invitados' | 'croquis' | 'whatsapp' | 'recepcion' | 'minutario' | 'presupuesto' | 'proveedores' | 'checklist' | 'album'
   >('resumen');
 
 
@@ -639,6 +641,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       | 'resumen'
       | 'invitados'
       | 'croquis'
+      | 'whatsapp'
       | 'recepcion'
       | 'minutario'
       | 'presupuesto'
