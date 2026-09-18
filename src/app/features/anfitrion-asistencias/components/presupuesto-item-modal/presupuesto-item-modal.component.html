@@ -121,16 +121,18 @@
   <div class="flex justify-end items-center gap-2 pt-4 border-t border-slate-100">
     <p-button
       type="button"
+      size="small"
       label="Cancelar"
+      text="true"
       icon="pi pi-times"
-      severity="secondary"
-      [outlined]="true"
+      severity="danger"
       (onClick)="cancelar()">
     </p-button>
     <p-button
       type="submit"
       [label]="esEdicion ? 'Actualizar Partida' : 'Guardar Partida'"
       icon="pi pi-check"
+      size="small"
       severity="primary">
     </p-button>
   </div>

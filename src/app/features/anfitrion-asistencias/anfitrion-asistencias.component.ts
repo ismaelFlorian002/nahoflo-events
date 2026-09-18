@@ -472,46 +472,29 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
     ref?.onClose.subscribe((resultado: any) => {
       if (resultado?.accion === 'editar' && resultado.invitado) {
-        this.abrirModalEditar(resultado.invitado);
+        this.abrirModalInvitado(resultado.invitado);
       }
     });
   }
 
-  abrirModalEditar(invitado: InvitadoModel): void {
+  /**
+   * ÚNICO MÉTODO/SERVICIO PARA AGREGAR Y EDITAR INVITADOS VÍA DIALOGSERVICE
+   */
+  abrirModalInvitado(invitado?: InvitadoModel): void {
     const ev = this.evento();
     if (!ev?.id) return;
 
-    const ref = this.dialogService.open(InvitadoFormModalComponent, {
-      header: 'Editar Invitado',
-      width: '680px',
-      breakpoints: { '960px': '80vw', '640px': '94vw' },
-      closable: true,
-      dismissableMask: true,
-      data: {
-        invitado,
-        eventoId: ev.id,
-      },
-    });
-
-    ref?.onClose.subscribe((resultado: any) => {
-      if (resultado?.guardado) {
-        this.cargarInvitados(ev.id!);
-      }
-    });
-  }
-
-  abrirModalCrearInvitado(): void {
-    const ev = this.evento();
-    if (!ev?.id) return;
+    const esEdicion = !!invitado;
 
     const ref = this.dialogService.open(InvitadoFormModalComponent, {
-      header: 'Registrar Nuevo Invitado',
+      header: esEdicion ? `Editar Invitado — ${invitado.nombre}` : 'Registrar Nuevo Invitado',
       width: '1200px',
       breakpoints: { '960px': '80vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: {
         eventoId: ev.id,
+        invitado,
         invitadosExistentes: this.invitados(),
       },
     });
@@ -521,6 +504,15 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
         this.cargarInvitados(ev.id!);
       }
     });
+  }
+
+  // Alias de compatibilidad
+  abrirModalEditar(invitado: InvitadoModel): void {
+    this.abrirModalInvitado(invitado);
+  }
+
+  abrirModalCrearInvitado(): void {
+    this.abrirModalInvitado();
   }
 
   abrirModalCompartir(): void {

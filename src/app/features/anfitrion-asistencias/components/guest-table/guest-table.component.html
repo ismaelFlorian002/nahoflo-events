@@ -271,18 +271,16 @@
         <!-- COLUMNA RESPUESTA (DESKTOP Y TABLET) -->
         <td class="col-respuesta col-desktop-tablet">
           @if (invitado.estado === 'pendiente') {
-            <p-tag
+            <p-badge
               value="Pendiente"
               severity="warning"
-              icon="pi pi-clock"
-              [rounded]="true">
-            </p-tag>
+              icon="pi pi-clock">
+            </p-badge>
           } @else {
-            <p-tag
+            <p-badge
               [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
-              [severity]="invitado.asistira ? 'success' : 'danger'"
-              [rounded]="true">
-            </p-tag>
+              [severity]="invitado.asistira ? 'success' : 'danger'">
+            </p-badge>
           }
         </td>
 
