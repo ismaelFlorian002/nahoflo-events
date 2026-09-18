@@ -88,7 +88,7 @@ export class ChecklistTrackerComponent {
   abrirModalNuevo(): void {
     const ref = this.dialogService.open(ChecklistItemModalComponent, {
       header: 'Añadir Tarea al Checklist',
-      width: '640px',
+      width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,

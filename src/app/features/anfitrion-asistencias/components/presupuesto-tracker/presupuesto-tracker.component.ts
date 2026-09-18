@@ -108,7 +108,7 @@ export class PresupuestoTrackerComponent {
   abrirModalNuevo(): void {
     const ref = this.dialogService.open(PresupuestoItemModalComponent, {
       header: 'Registrar Nueva Partida Presupuestaria',
-      width: '640px',
+      width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
@@ -125,7 +125,7 @@ export class PresupuestoTrackerComponent {
   abrirModalEditar(item: ItemPresupuesto): void {
     const ref = this.dialogService.open(PresupuestoItemModalComponent, {
       header: 'Editar Partida Presupuestaria',
-      width: '640px',
+      width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,

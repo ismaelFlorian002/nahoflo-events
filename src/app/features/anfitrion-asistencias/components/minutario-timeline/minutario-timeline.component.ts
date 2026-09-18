@@ -90,7 +90,7 @@ export class MinutarioTimelineComponent {
 
     const ref = this.dialogService.open(MinutarioItemModalComponent, {
       header: 'Agregar Momento al Minutario',
-      width: '540px',
+      width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '95vw' },
       closable: true,
     });

@@ -74,7 +74,7 @@ export class ProveedoresDirectorioComponent {
   abrirModalNuevo(): void {
     const ref = this.dialogService.open(ProveedorModalComponent, {
       header: 'Añadir Nuevo Proveedor',
-      width: '640px',
+      width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,

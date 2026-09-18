@@ -143,7 +143,7 @@ export class CroquisMesasDesignerComponent implements OnInit {
   abrirModalCrearMesa(): void {
     const ref = this.dialogService.open(MesaFormModalComponent, {
       header: 'Crear Nueva Mesa',
-      width: '560px',
+      width: '1200px',
       breakpoints: { '640px': '94vw' },
       closable: true,
       dismissableMask: true,
@@ -167,7 +167,7 @@ export class CroquisMesasDesignerComponent implements OnInit {
   abrirModalDetalleMesa(mesa: MesaDiseno): void {
     const ref = this.dialogService.open(MesaDetalleModalComponent, {
       header: `Distribución de ${mesa.nombre}`,
-      width: '680px',
+      width: '1200px',
       breakpoints: { '960px': '80vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,

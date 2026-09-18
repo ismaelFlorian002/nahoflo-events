@@ -506,7 +506,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
     const ref = this.dialogService.open(InvitadoFormModalComponent, {
       header: 'Registrar Nuevo Invitado',
-      width: '680px',
+      width: '1200px',
       breakpoints: { '960px': '80vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
