@@ -32,6 +32,7 @@ import { PresupuestoTrackerComponent } from './components/presupuesto-tracker/pr
 import { ProveedoresDirectorioComponent } from './components/proveedores-directorio/proveedores-directorio.component';
 import { ChecklistTrackerComponent } from './components/checklist-tracker/checklist-tracker.component';
 import { AgenciaBrandingModalComponent } from './components/agencia-branding-modal/agencia-branding-modal.component';
+import { CroquisMesasDesignerComponent } from './components/croquis-mesas-designer/croquis-mesas-designer.component';
 
 // Modales existentes
 import { QrMesaModalComponent } from '../album-digital/qr-mesa-modal/qr-mesa-modal.component';
@@ -56,6 +57,7 @@ import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitad
     PresupuestoTrackerComponent,
     ProveedoresDirectorioComponent,
     ChecklistTrackerComponent,
+    CroquisMesasDesignerComponent,
   ],
   providers: [DialogService],
   templateUrl: './anfitrion-asistencias.component.html',
@@ -146,7 +148,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   // Pestañas del portal anfitrión
   pestanaActiva = signal<
-    'resumen' | 'invitados' | 'recepcion' | 'minutario' | 'presupuesto' | 'proveedores' | 'checklist' | 'album'
+    'resumen' | 'invitados' | 'croquis' | 'recepcion' | 'minutario' | 'presupuesto' | 'proveedores' | 'checklist' | 'album'
   >('resumen');
 
 
@@ -204,8 +206,18 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     return !mod || mod.tieneAlbum;
   });
 
+  tienePlannerSuite = computed(() => {
+    const mod = this.evento()?.modulos;
+    return !mod || (mod.tienePlannerSuite ?? true);
+  });
+
+  permiteMarcaBlanca = computed(() => {
+    const mod = this.evento()?.modulos;
+    return !mod || (mod.permiteMarcaBlanca ?? true);
+  });
+
   tieneModulosAsistencias = computed(() => {
-    return this.tieneControlInvitados() || this.tieneAlbum();
+    return this.tieneControlInvitados() || this.tieneAlbum() || this.tienePlannerSuite();
   });
 
   esSoloInvitacion = computed(() => {
@@ -217,12 +229,14 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   });
 
   totalPestanasDisponibles = computed(() => {
-    let count = 2; // Resumen + Minutario (siempre disponibles)
+    let count = 1; // Resumen (siempre disponible)
     if (this.tieneControlInvitados()) count++;
     if (this.tieneRecepcionOPuerta()) count++;
     if (this.tieneAlbum()) count++;
+    if (this.tienePlannerSuite()) count += 4; // Minutario, Presupuesto, Proveedores, Checklist
     return count;
   });
+
 
   urlInvitacionCompleta = computed(() => {
     const ev = this.evento();
@@ -624,6 +638,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     pestana:
       | 'resumen'
       | 'invitados'
+      | 'croquis'
       | 'recepcion'
       | 'minutario'
       | 'presupuesto'

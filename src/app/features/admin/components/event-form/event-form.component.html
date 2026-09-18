@@ -34,7 +34,25 @@
               </label>
             </div>
 
-            <!-- 3. Selector: Tipo de Control de Asistentes -->
+            <!-- 3. Interruptor: Suite de Wedding Planner -->
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <p-inputSwitch formControlName="tienePlannerSuite" inputId="switchPlannerSuite"></p-inputSwitch>
+              <label for="switchPlannerSuite" style="cursor: pointer; display: flex; flex-direction: column;">
+                <span style="font-weight: 600; color: #581c87; font-size: 0.88rem;">Suite de Wedding Planner</span>
+                <span style="font-size: 0.75rem; color: #64748b;">Minutario, Presupuesto, Proveedores y Checklist</span>
+              </label>
+            </div>
+
+            <!-- 4. Interruptor: Marca Blanca de Agencia -->
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <p-inputSwitch formControlName="permiteMarcaBlanca" inputId="switchMarcaBlanca"></p-inputSwitch>
+              <label for="switchMarcaBlanca" style="cursor: pointer; display: flex; flex-direction: column;">
+                <span style="font-weight: 600; color: #a16207; font-size: 0.88rem;">Marca Blanca de Agencia</span>
+                <span style="font-size: 0.75rem; color: #64748b;">Branding de agencia y exportación Dossier PDF</span>
+              </label>
+            </div>
+
+            <!-- 5. Selector: Tipo de Control de Asistentes -->
             <div style="display: flex; flex-direction: column; gap: 0.35rem;">
               <span style="font-weight: 600; color: #1e293b; font-size: 0.82rem;">Control de Invitados:</span>
               <p-selectButton
@@ -47,6 +65,7 @@
 
           </div>
         </div>
+
 
         <!-- 1. NOMBRE INTERNO Y PIN DE ANFITRIÓN -->
         <div class="flex flex-col sm:flex-row gap-6 sm:items-center">

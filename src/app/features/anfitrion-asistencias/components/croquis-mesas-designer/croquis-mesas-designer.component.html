@@ -1,0 +1,283 @@
+<div class="croquis-container bg-white rounded-2xl border border-slate-200/80 shadow-sm p-4 sm:p-6 flex flex-col gap-6">
+
+  <!-- CABECERA Y MÉTRICAS CLAVE -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+    <div>
+      <div class="flex items-center gap-2">
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 m-0 flex items-center gap-2">
+          <i class="pi pi-th-large text-amber-500"></i>
+          Plano Visual & Croquis de Mesas del Salón
+        </h3>
+        <span class="text-xs bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full font-bold border border-amber-200">
+          {{ totalMesas() }} {{ totalMesas() === 1 ? 'mesa' : 'mesas' }}
+        </span>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-500 m-0 mt-1">
+        Diseña la distribución espacial del salón, asigna lugares a tus invitados y monitorea restricciones médicas en tiempo real.
+      </p>
+    </div>
+
+    <!-- BOTONES DE ACCIÓN PRINCIPALES -->
+    <div class="flex flex-wrap items-center gap-2">
+      <p-button
+        label="Nueva Mesa"
+        icon="pi pi-plus"
+        size="small"
+        severity="warning"
+        styleClass="!rounded-xl font-bold shadow-md shadow-amber-500/20"
+        (onClick)="abrirModalCrearMesa()">
+      </p-button>
+
+      <p-button
+        label="Autogenerar Mesas"
+        icon="pi pi-sync"
+        size="small"
+        [outlined]="true"
+        severity="secondary"
+        styleClass="!rounded-xl font-semibold"
+        pTooltip="Crear mesas automáticamente basándose en los nombres asignados a tus invitados"
+        (onClick)="autogenerarMesasIniciales(true)">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- TARJETAS DE MÉTRICAS RÁPIDAS -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+    <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 flex items-center gap-3.5 shadow-sm">
+      <div class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg shrink-0">
+        <i class="pi pi-th-large"></i>
+      </div>
+      <div>
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Mesas</div>
+        <div class="text-xl font-black text-slate-900">{{ totalMesas() }}</div>
+      </div>
+    </div>
+
+    <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 flex items-center gap-3.5 shadow-sm">
+      <div class="w-11 h-11 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+        <i class="pi pi-users"></i>
+      </div>
+      <div>
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Asientos Ocupados</div>
+        <div class="text-xl font-black text-slate-900">
+          {{ totalAsientosOcupados() }} <span class="text-xs font-normal text-slate-400">/ {{ totalCapacidad() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 flex items-center gap-3.5 shadow-sm">
+      <div class="w-11 h-11 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg shrink-0">
+        <i class="pi pi-user-minus"></i>
+      </div>
+      <div>
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Sin Mesa</div>
+        <div class="text-xl font-black text-slate-900">{{ invitadosSinMesa().length }} <span class="text-xs font-normal text-slate-400">invitados</span></div>
+      </div>
+    </div>
+
+    <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/70 flex items-center gap-3.5 shadow-sm">
+      <div class="w-11 h-11 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg shrink-0">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <div>
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Alertas Médicas</div>
+        <div class="text-xl font-black text-rose-600">{{ totalAlergias() }} <span class="text-xs font-normal text-slate-400">alergias</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN PRINCIPAL: CROQUIS Y SIDEBAR SIN MESA -->
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+    <!-- CROQUIS INTERACTIVO DEL SALÓN (3 COLUMNAS) -->
+    <div class="lg:col-span-3 bg-gradient-to-b from-amber-50/40 via-white to-amber-50/20 border-2 border-amber-200/80 rounded-3xl p-5 sm:p-7 relative min-h-[550px] shadow-inner">
+
+      <!-- LEYENDA Y CONTROL SUPERIOR -->
+      <div class="flex items-center justify-between mb-6 pb-3 border-b border-amber-200/40">
+        <span class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1.5">
+          <i class="pi pi-compass text-amber-500"></i> Plano del Salón de Recepción
+        </span>
+        <div class="text-xs font-medium text-slate-500 flex items-center gap-3">
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Disponible</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> Sobrecupo</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Novios / Anfitriones</span>
+        </div>
+      </div>
+
+      <!-- ESCENARIO / PISTA DE BAILE DE REFERENCIA -->
+      <div class="w-full max-w-md mx-auto bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-black font-bold tracking-widest text-xs uppercase shadow-md shadow-amber-500/20 rounded-2xl p-3 text-center mb-8 border border-amber-300 flex items-center justify-center gap-2">
+        <i class="pi pi-star-fill text-amber-200"></i>
+        <span>Pista de Baile / Escenario Principal</span>
+        <i class="pi pi-star-fill text-amber-200"></i>
+      </div>
+
+      <!-- MENSAJE VACÍO SI AÚN NO HAY MESAS -->
+      <div *ngIf="mesas().length === 0" class="text-center py-16 bg-white/80 rounded-2xl border border-amber-200/60 p-8 shadow-sm">
+        <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mx-auto text-3xl mb-3 shadow-sm">
+          <i class="pi pi-th-large"></i>
+        </div>
+        <h3 class="text-base font-bold text-slate-800 mb-1">El croquis aún no tiene mesas configuradas</h3>
+        <p class="text-xs text-slate-500 max-w-sm mx-auto mb-5">
+          Crea tus mesas manualmente o presiona "Autogenerar Mesas" para crearlas según los nombres de mesa asignados a tus invitados.
+        </p>
+        <button
+          pButton
+          type="button"
+          label="Crear Primera Mesa"
+          icon="pi pi-plus"
+          class="p-button-warning p-button-sm !rounded-xl font-bold shadow-md shadow-amber-500/20"
+          (click)="abrirModalCrearMesa()"
+        ></button>
+      </div>
+
+      <!-- GRID DE TARJETAS DE MESAS CON ESTILOS LUXURY -->
+      <div *ngIf="mesas().length > 0" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div
+          *ngFor="let m of mesas()"
+          (click)="abrirModalDetalleMesa(m)"
+          class="bg-white rounded-2xl border-2 transition-all duration-300 shadow-sm hover:shadow-xl cursor-pointer p-4 relative group flex flex-col justify-between hover:-translate-y-0.5"
+          [ngClass]="{
+            'border-amber-400 bg-gradient-to-br from-amber-50/70 via-white to-amber-100/40 ring-2 ring-amber-400/20': m.forma === 'imperial' || m.nombre.toLowerCase().includes('novio'),
+            'border-slate-200 hover:border-amber-400': m.forma !== 'imperial' && !m.nombre.toLowerCase().includes('novio') && obtenerAsientosOcupadosMesa(m.nombre) <= m.capacidad,
+            'border-rose-400 bg-rose-50/30 ring-2 ring-rose-400/20': obtenerAsientosOcupadosMesa(m.nombre) > m.capacidad
+          }"
+        >
+          <!-- Badge de Alerta por Alergias -->
+          <div
+            *ngIf="tieneAlergiasMesa(m.nombre)"
+            class="absolute -top-2.5 -right-2.5 bg-rose-600 text-white p-1 px-2.5 rounded-full text-[10px] font-bold shadow-md flex items-center gap-1 animate-pulse"
+            pTooltip="Mesa con comensales que tienen restricciones alimentarias o alergias"
+          >
+            <i class="pi pi-exclamation-circle"></i> Alergia
+          </div>
+
+          <!-- ENCABEZADO DE LA MESA -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span [ngSwitch]="m.forma" class="text-lg">
+                  <span *ngSwitchCase="'redonda'">🔴</span>
+                  <span *ngSwitchCase="'rectangular'">🟦</span>
+                  <span *ngSwitchCase="'imperial'">👑</span>
+                  <span *ngSwitchCase="'cabaret'">🌙</span>
+                  <span *ngSwitchDefault>🔘</span>
+                </span>
+                <span class="font-extrabold text-slate-900 text-base group-hover:text-amber-600 transition-colors">
+                  {{ m.nombre }}
+                </span>
+              </div>
+
+              <!-- Indicador Numérico de Capacidad -->
+              <span
+                class="px-2.5 py-1 rounded-full text-xs font-black shadow-sm"
+                [ngClass]="{
+                  'bg-emerald-100 text-emerald-800 border border-emerald-300': obtenerAsientosOcupadosMesa(m.nombre) <= m.capacidad && obtenerAsientosOcupadosMesa(m.nombre) > 0,
+                  'bg-slate-100 text-slate-600 border border-slate-200': obtenerAsientosOcupadosMesa(m.nombre) === 0,
+                  'bg-rose-100 text-rose-800 border border-rose-300': obtenerAsientosOcupadosMesa(m.nombre) > m.capacidad
+                }"
+              >
+                {{ obtenerAsientosOcupadosMesa(m.nombre) }} / {{ m.capacidad }}
+              </span>
+            </div>
+
+            <!-- BARRA DE OCUPACIÓN -->
+            <div class="w-full bg-slate-100 rounded-full h-2 mb-3 overflow-hidden border border-slate-200/50">
+              <div
+                class="h-full rounded-full transition-all duration-500"
+                [ngClass]="{
+                  'bg-amber-500': m.forma === 'imperial' || m.nombre.toLowerCase().includes('novio'),
+                  'bg-emerald-500': m.forma !== 'imperial' && obtenerAsientosOcupadosMesa(m.nombre) <= m.capacidad,
+                  'bg-rose-500': obtenerAsientosOcupadosMesa(m.nombre) > m.capacidad
+                }"
+                [style.width.%]="Math.min(100, (obtenerAsientosOcupadosMesa(m.nombre) / m.capacidad) * 100)"
+              ></div>
+            </div>
+
+            <!-- VISTA PREVIA DE COMENSALES SENTADOS -->
+            <div class="flex flex-col gap-1.5 mt-2">
+              <div
+                *ngFor="let inv of obtenerInvitadosMesa(m.nombre).slice(0, 3)"
+                class="text-xs flex items-center justify-between p-1.5 px-2.5 rounded-lg bg-slate-50 text-slate-700 font-medium border border-slate-100"
+              >
+                <span class="truncate max-w-[140px] font-semibold">{{ inv.nombre }}</span>
+                <span class="text-[10px] font-bold text-slate-500">🎟️ {{ inv.pasesConfirmados || 1 }}</span>
+              </div>
+
+              <div
+                *ngIf="obtenerInvitadosMesa(m.nombre).length > 3"
+                class="text-[11px] font-bold text-amber-600 text-center pt-0.5"
+              >
+                + {{ obtenerInvitadosMesa(m.nombre).length - 3 }} invitados más...
+              </div>
+
+              <div
+                *ngIf="obtenerInvitadosMesa(m.nombre).length === 0"
+                class="text-[11px] text-slate-400 text-center py-2 italic font-medium"
+              >
+                Sin invitados asignados
+              </div>
+            </div>
+          </div>
+
+          <!-- PIE DE TARJETA CON ACCIONES -->
+          <div class="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs text-amber-600 font-bold group-hover:translate-x-0.5 transition-transform">
+            <span>Ver y acomodar comensales</span>
+            <i class="pi pi-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL LATERAL: INVITADOS PENDIENTES SIN MESA -->
+    <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+          <h3 class="font-extrabold text-slate-900 text-sm m-0 flex items-center gap-2">
+            <i class="pi pi-user-plus text-amber-500"></i>
+            Sin Mesa ({{ invitadosSinMesa().length }})
+          </h3>
+          <span class="text-[10px] bg-amber-50 text-amber-800 font-bold px-2 py-0.5 rounded-full border border-amber-200">
+            Pendientes
+          </span>
+        </div>
+
+        <p class="text-xs text-slate-500 mb-3 font-medium">
+          Asigna una mesa rápidamente a los invitados que aún no tienen espacio asignado:
+        </p>
+
+        <!-- LISTA CON SELECTOR RÁPIDO DE MESA -->
+        <div class="flex flex-col gap-2.5 max-h-[420px] overflow-y-auto pr-1">
+          <div
+            *ngFor="let inv of invitadosSinMesa()"
+            class="p-3 rounded-xl border border-slate-200/80 bg-slate-50/70 flex flex-col gap-2 shadow-xs"
+          >
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs text-slate-900 truncate max-w-[140px]">{{ inv.nombre }}</span>
+              <span class="text-[10px] font-extrabold bg-amber-100 text-amber-900 px-2 py-0.5 rounded-full">
+                {{ inv.pasesConfirmados || 1 }} {{ (inv.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
+              </span>
+            </div>
+
+            <!-- Selector rápido de mesa -->
+            <select
+              #selectMesa
+              (change)="asignarMesaRapida(inv, selectMesa.value)"
+              class="w-full text-xs p-2 rounded-xl border border-slate-300 bg-white text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 shadow-xs cursor-pointer"
+            >
+              <option value="">-- Seleccionar Mesa --</option>
+              <option *ngFor="let m of mesas()" [value]="m.nombre">
+                {{ m.nombre }} ({{ m.forma }})
+              </option>
+            </select>
+          </div>
+
+          <div *ngIf="invitadosSinMesa().length === 0" class="text-center py-8 text-emerald-600 bg-emerald-50/50 rounded-2xl border border-emerald-200/60 p-4">
+            <i class="pi pi-check-circle text-3xl mb-1 block"></i>
+            <p class="text-xs font-extrabold m-0">¡Excelente!</p>
+            <p class="text-[11px] text-emerald-700 m-0 font-medium">Todos tus invitados tienen mesa asignada.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

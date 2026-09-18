@@ -89,7 +89,10 @@ export class EventFormComponent implements OnInit {
       tieneInvitacion: [true],
       tipoControlInvitados: ['basico'],
       tieneAlbum: [false],
+      tienePlannerSuite: [true],
+      permiteMarcaBlanca: [true],
     }),
+
 
     nombreEvento: ['', Validators.required], // <-- NUEVO: Para uso interno del panel
     pinAnfitrion: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(6)]], // <-- NUEVO

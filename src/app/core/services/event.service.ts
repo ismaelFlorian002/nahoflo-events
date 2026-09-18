@@ -15,7 +15,7 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { Evento, ItemMinutario, ItemPresupuesto, ProveedorEvento, TareaPlaneacion } from '../models/event.model';
+import { Evento, ItemMinutario, ItemPresupuesto, MesaDiseno, ProveedorEvento, TareaPlaneacion } from '../models/event.model';
 import { InvitadoModel } from '../models/invitado.model';
 import { ComentarioModel, RecuerdoModel } from '../models/RecuerdoModel';
 
@@ -494,6 +494,18 @@ export class EventService {
   ): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}`);
     await updateDoc(docRef, { ...datosAgencia });
+  }
+
+  // Actualiza el Plano Visual de Mesas (Croquis) del evento
+  async actualizarMesasLayout(eventoId: string, mesasLayout: MesaDiseno[]): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}`);
+    await updateDoc(docRef, { mesasLayout });
+  }
+
+  // Asigna o cambia la mesa de un invitado específico
+  async asignarMesaInvitado(eventoId: string, invitadoId: string, mesa: string): Promise<void> {
+    const docRef = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
+    await updateDoc(docRef, { mesa });
   }
 }
 

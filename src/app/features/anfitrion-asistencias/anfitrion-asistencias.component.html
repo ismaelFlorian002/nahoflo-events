@@ -77,6 +77,20 @@
                   </button>
                 }
 
+                @if (tieneControlInvitados()) {
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('croquis')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'croquis'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'croquis'"
+                    [class.font-semibold]="pestanaActiva() === 'croquis'"
+                    [class.text-gray-600]="pestanaActiva() !== 'croquis'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i class="pi pi-th-large text-xs"></i>
+                    <span>Croquis Mesas</span>
+                  </button>
+                }
+
                 @if (tieneRecepcionOPuerta()) {
                   <button
                     type="button"
@@ -92,53 +106,56 @@
                   </button>
                 }
 
-                <button
-                  type="button"
-                  (click)="cambiarPestana('minutario')"
-                  [class.bg-pastel-pink-50]="pestanaActiva() === 'minutario'"
-                  [class.text-pastel-pink-500]="pestanaActiva() === 'minutario'"
-                  [class.font-semibold]="pestanaActiva() === 'minutario'"
-                  [class.text-gray-600]="pestanaActiva() !== 'minutario'"
-                  class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                  <i class="pi pi-clock text-xs"></i>
-                  <span>Cronograma</span>
-                </button>
+                @if (tienePlannerSuite()) {
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('minutario')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'minutario'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'minutario'"
+                    [class.font-semibold]="pestanaActiva() === 'minutario'"
+                    [class.text-gray-600]="pestanaActiva() !== 'minutario'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i class="pi pi-clock text-xs"></i>
+                    <span>Cronograma</span>
+                  </button>
 
-                <button
-                  type="button"
-                  (click)="cambiarPestana('presupuesto')"
-                  [class.bg-pastel-pink-50]="pestanaActiva() === 'presupuesto'"
-                  [class.text-pastel-pink-500]="pestanaActiva() === 'presupuesto'"
-                  [class.font-semibold]="pestanaActiva() === 'presupuesto'"
-                  [class.text-gray-600]="pestanaActiva() !== 'presupuesto'"
-                  class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                  <i class="pi pi-dollar text-xs"></i>
-                  <span>Presupuesto</span>
-                </button>
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('presupuesto')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'presupuesto'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'presupuesto'"
+                    [class.font-semibold]="pestanaActiva() === 'presupuesto'"
+                    [class.text-gray-600]="pestanaActiva() !== 'presupuesto'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i class="pi pi-dollar text-xs"></i>
+                    <span>Presupuesto</span>
+                  </button>
 
-                <button
-                  type="button"
-                  (click)="cambiarPestana('proveedores')"
-                  [class.bg-pastel-pink-50]="pestanaActiva() === 'proveedores'"
-                  [class.text-pastel-pink-500]="pestanaActiva() === 'proveedores'"
-                  [class.font-semibold]="pestanaActiva() === 'proveedores'"
-                  [class.text-gray-600]="pestanaActiva() !== 'proveedores'"
-                  class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                  <i class="pi pi-briefcase text-xs"></i>
-                  <span>Proveedores</span>
-                </button>
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('proveedores')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'proveedores'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'proveedores'"
+                    [class.font-semibold]="pestanaActiva() === 'proveedores'"
+                    [class.text-gray-600]="pestanaActiva() !== 'proveedores'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i class="pi pi-briefcase text-xs"></i>
+                    <span>Proveedores</span>
+                  </button>
 
-                <button
-                  type="button"
-                  (click)="cambiarPestana('checklist')"
-                  [class.bg-pastel-pink-50]="pestanaActiva() === 'checklist'"
-                  [class.text-pastel-pink-500]="pestanaActiva() === 'checklist'"
-                  [class.font-semibold]="pestanaActiva() === 'checklist'"
-                  [class.text-gray-600]="pestanaActiva() !== 'checklist'"
-                  class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                  <i class="pi pi-check-square text-xs"></i>
-                  <span>Checklist</span>
-                </button>
+                  <button
+                    type="button"
+                    (click)="cambiarPestana('checklist')"
+                    [class.bg-pastel-pink-50]="pestanaActiva() === 'checklist'"
+                    [class.text-pastel-pink-500]="pestanaActiva() === 'checklist'"
+                    [class.font-semibold]="pestanaActiva() === 'checklist'"
+                    [class.text-gray-600]="pestanaActiva() !== 'checklist'"
+                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
+                    <i class="pi pi-check-square text-xs"></i>
+                    <span>Checklist</span>
+                  </button>
+                }
+
 
 
 
@@ -609,6 +626,17 @@
             </div>
           }
 
+          <!-- 1.5 PESTAÑA: PLANO VISUAL DE MESAS / CROQUIS INTERACTIVO -->
+          @if (pestanaActiva() === 'croquis') {
+            <div class="mb-8">
+              <app-croquis-mesas-designer
+                [evento]="ev"
+                [invitados]="invitados()"
+                (eventoActualizado)="onEventoActualizado($event)">
+              </app-croquis-mesas-designer>
+            </div>
+          }
+
           <!-- 2. PESTAÑA: CENTRO DE RECEPCIÓN Y CONTROL TOTAL VIP (TARJETA PREMIUM ENVOLVENTE) -->
           @if (pestanaActiva() === 'recepcion') {
             <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
@@ -836,49 +864,65 @@
               </button>
             }
 
-            <!-- 3.5. Botón Cronograma / Minutario -->
-            <button
-              type="button"
-              (click)="cambiarPestana('minutario')"
-              class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-              [class.text-gold-500]="pestanaActiva() === 'minutario'"
-              [class.text-gray-400]="pestanaActiva() !== 'minutario'">
-              <i class="pi pi-clock text-lg mb-1"></i>
-              <span class="text-[10px] leading-none font-medium">Minutario</span>
-            </button>
+            @if (tienePlannerSuite()) {
+              <!-- 3.5. Botón Cronograma / Minutario -->
+              <button
+                type="button"
+                (click)="cambiarPestana('minutario')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'minutario'"
+                [class.text-gray-400]="pestanaActiva() !== 'minutario'">
+                <i class="pi pi-clock text-lg mb-1"></i>
+                <span class="text-[10px] leading-none font-medium">Minutario</span>
+              </button>
 
-            <!-- 3.6. Botón Presupuesto -->
-            <button
-              type="button"
-              (click)="cambiarPestana('presupuesto')"
-              class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-              [class.text-gold-500]="pestanaActiva() === 'presupuesto'"
-              [class.text-gray-400]="pestanaActiva() !== 'presupuesto'">
-              <i class="pi pi-dollar text-lg mb-1"></i>
-              <span class="text-[10px] leading-none font-medium">Pagos</span>
-            </button>
+              <!-- 2.5 Botón Croquis Mesas -->
+              @if (tieneControlInvitados()) {
+                <button
+                  type="button"
+                  (click)="cambiarPestana('croquis')"
+                  class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                  [class.text-gold-500]="pestanaActiva() === 'croquis'"
+                  [class.text-gray-400]="pestanaActiva() !== 'croquis'">
+                  <i class="pi pi-th-large text-lg mb-1"></i>
+                  <span class="text-[10px] leading-none font-medium">Croquis</span>
+                </button>
+              }
 
-            <!-- 3.7. Botón Proveedores -->
-            <button
-              type="button"
-              (click)="cambiarPestana('proveedores')"
-              class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-              [class.text-gold-500]="pestanaActiva() === 'proveedores'"
-              [class.text-gray-400]="pestanaActiva() !== 'proveedores'">
-              <i class="pi pi-briefcase text-lg mb-1"></i>
-              <span class="text-[10px] leading-none font-medium">Equipo</span>
-            </button>
+              <!-- 3.6. Botón Presupuesto -->
+              <button
+                type="button"
+                (click)="cambiarPestana('presupuesto')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'presupuesto'"
+                [class.text-gray-400]="pestanaActiva() !== 'presupuesto'">
+                <i class="pi pi-dollar text-lg mb-1"></i>
+                <span class="text-[10px] leading-none font-medium">Pagos</span>
+              </button>
 
-            <!-- 3.8. Botón Checklist -->
-            <button
-              type="button"
-              (click)="cambiarPestana('checklist')"
-              class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-              [class.text-gold-500]="pestanaActiva() === 'checklist'"
-              [class.text-gray-400]="pestanaActiva() !== 'checklist'">
-              <i class="pi pi-check-square text-lg mb-1"></i>
-              <span class="text-[10px] leading-none font-medium">Checklist</span>
-            </button>
+              <!-- 3.7. Botón Proveedores -->
+              <button
+                type="button"
+                (click)="cambiarPestana('proveedores')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'proveedores'"
+                [class.text-gray-400]="pestanaActiva() !== 'proveedores'">
+                <i class="pi pi-briefcase text-lg mb-1"></i>
+                <span class="text-[10px] leading-none font-medium">Equipo</span>
+              </button>
+
+              <!-- 3.8. Botón Checklist -->
+              <button
+                type="button"
+                (click)="cambiarPestana('checklist')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'checklist'"
+                [class.text-gray-400]="pestanaActiva() !== 'checklist'">
+                <i class="pi pi-check-square text-lg mb-1"></i>
+                <span class="text-[10px] leading-none font-medium">Checklist</span>
+              </button>
+            }
+
 
 
 

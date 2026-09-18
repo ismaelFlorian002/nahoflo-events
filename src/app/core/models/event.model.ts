@@ -6,7 +6,10 @@ export interface ModulosEvento {
   tieneInvitacion: boolean; // Activa la página web (/e/:slug)
   tipoControlInvitados: TipoControlInvitados; // 'inactivo' | 'lista_puerta' (Puerta/Recepción) | 'basico' (RSVP) | 'total' (Pases QR y Escáner Web)
   tieneAlbum: boolean; // Activa el álbum colaborativo para mesas (/e/:slug/album)
+  tienePlannerSuite?: boolean; // Activa las herramientas avanzadas de Planner (Minutario, Presupuesto, Proveedores, Checklist)
+  permiteMarcaBlanca?: boolean; // Activa el Branding de Agencia y descarga de Dossier PDF
 }
+
 
 export interface Evento {
   id?: string;
@@ -63,6 +66,20 @@ export interface Evento {
   agenciaLogoUrl?: string;
   agenciaTelefono?: string;
   agenciaNotas?: string;
+  // Configuración de Plano / Croquis de Mesas (Croquis Visual):
+  mesasLayout?: MesaDiseno[];
+}
+
+export type FormaMesa = 'redonda' | 'rectangular' | 'imperial' | 'cabaret';
+
+export interface MesaDiseno {
+  id: string;
+  nombre: string; // ej. "Mesa 1", "Mesa VIP", "Mesa Novios"
+  forma: FormaMesa; // 'redonda' | 'rectangular' | 'imperial' | 'cabaret'
+  capacidad: number; // Capacidad máxima de asientos
+  posX?: number; // Coordenada X relativa en el lienzo (%)
+  posY?: number; // Coordenada Y relativa en el lienzo (%)
+  notas?: string; // Observaciones
 }
 
 
