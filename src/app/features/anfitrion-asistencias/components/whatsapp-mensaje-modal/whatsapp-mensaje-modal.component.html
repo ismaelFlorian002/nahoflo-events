@@ -1,0 +1,111 @@
+<div class="whatsapp-mensaje-modal flex flex-col gap-4 p-1 max-w-full overflow-x-hidden">
+
+  <!-- TARJETA 1: DATOS DEL DESTINATARIO (ESTILO DETALLE DEL EVENTO) -->
+  <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+    <div class="flex items-center justify-between pb-2 mb-3 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <i class="pi pi-user text-gold-500 text-base"></i>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Datos del Destinatario</h4>
+      </div>
+      <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize"
+            [ngClass]="{
+          'bg-emerald-50 text-emerald-700 border border-emerald-100': invitado.estado === 'confirmado' || invitado.asistira,
+          'bg-amber-50 text-amber-700 border border-amber-200': invitado.estado === 'pendiente' || (!invitado.asistira && invitado.estado !== 'declinado'),
+          'bg-red-50 text-red-700 border border-red-200': invitado.estado === 'declinado'
+        }">
+        {{ invitado.estado || 'Pendiente' }}
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div>
+        <span class="block text-xs text-gray-400">Nombre Completo</span>
+        <span class="text-sm font-bold text-gray-900">{{ invitado.nombre }}</span>
+      </div>
+
+      <div>
+        <span class="block text-xs text-gray-400">Teléfono WhatsApp</span>
+        @if (invitado.telefono) {
+          <span class="text-sm font-medium text-gray-800 flex items-center gap-1.5 mt-0.5">
+            <i class="pi pi-phone text-emerald-600 text-xs"></i>
+            {{ invitado.telefono }}
+          </span>
+        } @else {
+          <span class="text-xs text-amber-600 italic">Sin número registrado</span>
+        }
+      </div>
+
+      <div>
+        <span class="block text-xs text-gray-400">Pases Autorizados</span>
+        <span
+          class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 border border-gold-200 inline-block mt-0.5">
+          🎟️ {{ invitado.pasesConfirmados || 1 }} {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
+        </span>
+      </div>
+
+      <div>
+        <span class="block text-xs text-gray-400">Mesa Asignada</span>
+        <span class="text-xs font-medium text-gray-700 inline-block mt-0.5">
+          🪑 {{ invitado.mesa || 'Sin mesa asignada' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TARJETA 2: MENSAJE PERSONALIZADO EDITABLE -->
+  <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+    <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-100">
+      <div class="flex items-center gap-2">
+        <i class="pi pi-whatsapp text-emerald-600 text-base"></i>
+        <h4 class="text-sm font-bold text-gray-800 m-0">Mensaje a Enviar</h4>
+      </div>
+      <span class="text-[11px] text-gray-400 font-medium">Usa *asteriscos* para negrita</span>
+    </div>
+
+    <p class="text-xs text-gray-500 mb-2">
+      Puedes ajustar el texto para este invitado antes de abrir WhatsApp o copiarlo:
+    </p>
+
+    <textarea
+      pInputTextarea
+      [autoResize]="true"
+      rows="7"
+      [(ngModel)]="mensajeTexto"
+      placeholder="Escribe el mensaje..."
+      class="w-full text-xs font-sans p-3 rounded-xl border border-gray-300 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 text-gray-800 bg-gray-50/40 leading-relaxed shadow-xs"
+    ></textarea>
+  </div>
+
+  <!-- PIE DE ACCIONES -->
+  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
+      <p-button
+        type="button"
+        label="Cerrar"
+        icon="pi pi-times"
+        size="small"
+        [text]="true"
+        severity="danger"
+        (onClick)="ref.close()"
+      ></p-button>
+      <p-button
+        type="button"
+        label="Copiar Texto"
+        icon="pi pi-copy"
+        text="true"
+        size="small"
+        severity="secondary"
+        (onClick)="copiarTexto()"
+        styleClass="!rounded-xl font-semibold"
+      ></p-button>
+
+      <p-button
+        type="button"
+        label="Enviar"
+        icon="pi pi-whatsapp"
+        size="small"
+        severity="success"
+        (onClick)="enviarWhatsApp()"
+        styleClass="!rounded-xl font-bold shadow-sm"
+      ></p-button>
+    </div>
+  </div>
