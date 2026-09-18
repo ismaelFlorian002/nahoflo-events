@@ -1,6 +1,9 @@
 import { Component, computed, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { DropdownModule } from 'primeng/dropdown';
+import { TooltipModule } from 'primeng/tooltip';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, MesaDiseno } from '../../../../core/models/event.model';
@@ -12,7 +15,7 @@ import { MesaDetalleModalComponent } from '../mesa-detalle-modal/mesa-detalle-mo
 @Component({
   selector: 'app-croquis-mesas-designer',
   standalone: true,
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, FormsModule, ButtonModule, DropdownModule, TooltipModule],
   templateUrl: './croquis-mesas-designer.component.html',
   styleUrl: './croquis-mesas-designer.component.scss',
 })
@@ -20,6 +23,7 @@ export class CroquisMesasDesignerComponent implements OnInit {
   @Input({ required: true }) evento!: Evento;
   @Input() invitados: InvitadoModel[] = [];
   @Output() eventoActualizado = new EventEmitter<Evento>();
+  @Output() invitadosActualizados = new EventEmitter<void>();
 
   private eventService = inject(EventService);
   private dialogService = inject(DialogService);
@@ -53,6 +57,12 @@ export class CroquisMesasDesignerComponent implements OnInit {
       .reduce((sum, i) => sum + (Number(i.pasesConfirmados) || 1), 0);
   });
 
+  porcentajeOcupacion = computed(() => {
+    const cap = this.totalCapacidad();
+    if (!cap || cap === 0) return 0;
+    return Math.min(100, Math.round((this.totalAsientosOcupados() / cap) * 100));
+  });
+
   invitadosSinMesa = computed(() => {
     return this.invitados.filter((i) => !i.mesa || i.mesa.trim() === '');
   });
@@ -65,6 +75,13 @@ export class CroquisMesasDesignerComponent implements OnInit {
 
   mesasConSobrecupo = computed(() => {
     return this.mesas().filter((m) => this.obtenerAsientosOcupadosMesa(m.nombre) > m.capacidad).length;
+  });
+
+  opcionesMesasDropdown = computed(() => {
+    return this.mesas().map((m) => ({
+      label: `${m.nombre} (${m.forma})`,
+      value: m.nombre,
+    }));
   });
 
   obtenerAsientosOcupadosMesa(nombreMesa: string): number {
@@ -140,25 +157,51 @@ export class CroquisMesasDesignerComponent implements OnInit {
     }
   }
 
-  abrirModalCrearMesa(): void {
+  /**
+   * ÚNICO MÉTODO/SERVICIO PARA AGREGAR Y EDITAR MESAS VÍA DIALOGSERVICE
+   */
+  abrirModalMesa(mesaAEditar?: MesaDiseno): void {
+    const esEdicion = !!mesaAEditar;
     const ref = this.dialogService.open(MesaFormModalComponent, {
-      header: 'Crear Nueva Mesa',
-      width: '1200px',
+      header: esEdicion ? `Editar Mesa — ${mesaAEditar.nombre}` : 'Nueva Mesa',
+      width: '560px',
       breakpoints: { '640px': '94vw' },
       closable: true,
       dismissableMask: true,
-      data: { cantidadMesas: this.mesas().length },
+      data: {
+        mesa: mesaAEditar,
+        cantidadMesas: this.mesas().length,
+      },
     });
 
-    ref?.onClose.subscribe((res: any) => {
+    ref?.onClose.subscribe(async (res: any) => {
       if (res?.guardado && res.mesa) {
-        const nuevas = [...this.mesas(), res.mesa];
-        this.mesas.set(nuevas);
-        this.guardarMesasLayout(nuevas);
+        let actualizadas: MesaDiseno[];
+        if (esEdicion && mesaAEditar) {
+          // Si cambió el nombre de la mesa, actualizar a los invitados sentados en ella
+          const nombreAnterior = mesaAEditar.nombre.trim().toLowerCase();
+          const nuevoNombre = res.mesa.nombre.trim();
+          if (nombreAnterior !== nuevoNombre.toLowerCase()) {
+            this.invitados.forEach((i) => {
+              if (i.mesa && i.mesa.trim().toLowerCase() === nombreAnterior) {
+                i.mesa = nuevoNombre;
+              }
+            });
+            await this.persistirAsignacionesInvitados();
+          }
+          actualizadas = this.mesas().map((m) => (m.id === res.mesa.id ? res.mesa : m));
+        } else {
+          actualizadas = [...this.mesas(), res.mesa];
+        }
+
+        this.mesas.set(actualizadas);
+        await this.guardarMesasLayout(actualizadas);
         this.messageService.add({
           severity: 'success',
-          summary: 'Mesa Creada',
-          detail: `La mesa "${res.mesa.nombre}" fue agregada.`,
+          summary: esEdicion ? 'Mesa Actualizada' : 'Mesa Creada',
+          detail: esEdicion
+            ? `Se guardaron los datos de "${res.mesa.nombre}".`
+            : `La mesa "${res.mesa.nombre}" fue agregada exitosamente.`,
         });
       }
     });
@@ -167,8 +210,8 @@ export class CroquisMesasDesignerComponent implements OnInit {
   abrirModalDetalleMesa(mesa: MesaDiseno): void {
     const ref = this.dialogService.open(MesaDetalleModalComponent, {
       header: `Distribución de ${mesa.nombre}`,
-      width: '1200px',
-      breakpoints: { '960px': '80vw', '640px': '94vw' },
+      width: '780px',
+      breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: {
@@ -179,36 +222,12 @@ export class CroquisMesasDesignerComponent implements OnInit {
 
     ref?.onClose.subscribe(async (res: any) => {
       if (res?.accion === 'editar') {
-        this.abrirModalEditarMesa(res.mesa);
+        this.abrirModalMesa(res.mesa);
       } else if (res?.accion === 'eliminar') {
         this.eliminarMesa(res.mesaId);
       } else if (res?.cambio) {
         // Guardar cambios en asignación de invitados
         await this.persistirAsignacionesInvitados();
-      }
-    });
-  }
-
-  abrirModalEditarMesa(mesa: MesaDiseno): void {
-    const ref = this.dialogService.open(MesaFormModalComponent, {
-      header: `Editar ${mesa.nombre}`,
-      width: '560px',
-      breakpoints: { '640px': '94vw' },
-      closable: true,
-      dismissableMask: true,
-      data: { mesa },
-    });
-
-    ref?.onClose.subscribe((res: any) => {
-      if (res?.guardado && res.mesa) {
-        const actualizadas = this.mesas().map((m) => (m.id === res.mesa.id ? res.mesa : m));
-        this.mesas.set(actualizadas);
-        this.guardarMesasLayout(actualizadas);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Mesa Actualizada',
-          detail: `Se guardaron los datos de ${res.mesa.nombre}.`,
-        });
       }
     });
   }
@@ -223,6 +242,7 @@ export class CroquisMesasDesignerComponent implements OnInit {
         this.eventService.asignarMesaInvitado(evId, i.id!, i.mesa || ''),
       );
       await Promise.all(promesas);
+      this.invitadosActualizados.emit();
       this.messageService.add({
         severity: 'success',
         summary: 'Asignaciones Guardadas',
@@ -261,7 +281,7 @@ export class CroquisMesasDesignerComponent implements OnInit {
         this.messageService.add({
           severity: 'info',
           summary: 'Mesa Eliminada',
-          detail: `La mesa ${mesa.nombre} fue eliminada.`,
+          detail: `La mesa "${mesa.nombre}" fue eliminada.`,
         });
       },
     });
@@ -277,8 +297,9 @@ export class CroquisMesasDesignerComponent implements OnInit {
     }
   }
 
-  asignarMesaRapida(invitado: InvitadoModel, mesaNombre: string): void {
+  async asignarMesaRapida(invitado: InvitadoModel, mesaNombre: string): Promise<void> {
+    if (!mesaNombre) return;
     invitado.mesa = mesaNombre;
-    this.persistirAsignacionesInvitados();
+    await this.persistirAsignacionesInvitados();
   }
 }

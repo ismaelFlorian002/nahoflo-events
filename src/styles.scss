@@ -74,10 +74,83 @@ html body .p-button-lg .p-button.p-button-icon-only {
 }
 
 /* =========================================================
-   3. DORADO NAHOFLO PARA BOTONES PRIMARIOS
-   Excluye severidades y el botón del calendario
+   2.1 SOPORTE PARA PRIMENG BUTTON GROUP
    ========================================================= */
-html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):not(.p-selectbutton *) {
+html body .p-button-group {
+  display: inline-flex;
+  vertical-align: middle;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  p-button,
+  .p-button {
+    margin: 0;
+  }
+
+  p-button .p-button,
+  .p-button {
+    background-color: #cca633 !important;
+    border: 1px solid #b8952d !important;
+    color: #ffffff !important;
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+    padding: 0.45rem 0.85rem !important;
+    font-size: 0.8125rem !important;
+
+    .p-button-icon {
+      color: #ffffff !important;
+      font-size: 0.8125rem !important;
+      margin-right: 0.4rem;
+    }
+
+    &:hover {
+      background-color: #b8952d !important;
+      border-color: #a58021 !important;
+    }
+  }
+
+  p-button:not(:first-of-type):not(:last-of-type) .p-button,
+  .p-button:not(:first-of-type):not(:last-of-type) {
+    border-radius: 0 !important;
+  }
+
+  p-button:first-of-type:not(:only-of-type) .p-button,
+  .p-button:first-of-type:not(:only-of-type) {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-top-left-radius: 8px !important;
+    border-bottom-left-radius: 8px !important;
+  }
+
+  p-button:last-of-type:not(:only-of-type) .p-button,
+  .p-button:last-of-type:not(:only-of-type) {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-top-right-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+  }
+
+  p-button:not(:last-of-type) .p-button,
+  .p-button:not(:last-of-type) {
+    border-right: 1px solid rgba(255, 255, 255, 0.35) !important;
+  }
+
+  /* Estado Activo (Filtro seleccionado) */
+  p-button.btn-group-active .p-button,
+  .p-button.btn-group-active {
+    background-color: #a58021 !important;
+    border-color: #7c5e1b !important;
+    font-weight: 700 !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.28) !important;
+  }
+}
+
+/* =========================================================
+   3. DORADO NAHOFLO PARA BOTONES PRIMARIOS
+   Excluye severidades, el botón del calendario y button groups
+   ========================================================= */
+html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):not(.p-selectbutton *):not(.p-button-group *) {
   background-color: #cca633;
   border-color: #cca633;
   color: #ffffff;

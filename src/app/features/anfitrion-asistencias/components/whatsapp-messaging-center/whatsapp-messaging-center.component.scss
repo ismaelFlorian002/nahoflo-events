@@ -1,3 +1,46 @@
 :host {
   display: block;
 }
+
+:host ::ng-deep {
+  .modern-table {
+    /* Cabeceras minimalistas */
+    .p-datatable-thead > tr > th {
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      border-bottom: 2px solid #f1f5f9;
+      padding: 1rem 0.5rem;
+    }
+
+    /* Filas limpias y espaciadas */
+    .p-datatable-tbody > tr > td {
+      border-bottom: 1px solid #f8fafc;
+      padding: 1rem 0.5rem;
+    }
+
+    /* Hover sutil en la fila entera */
+    .p-datatable-tbody > tr:hover {
+      background: #f8fafc;
+      transition: background 0.2s ease;
+    }
+
+    /* Limpiar el Toolbar nativo */
+    .p-datatable-header {
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+
+    /* Paginador elegante */
+    .p-paginator {
+      background: transparent;
+      border: none;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1.5rem;
+      margin-top: 0.5rem;
+    }
+  }
+}

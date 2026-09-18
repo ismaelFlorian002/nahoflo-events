@@ -28,7 +28,7 @@
 
         <!-- HEADER SUPERIOR CORPORATIVO -->
         <header class="w-full bg-white border-b border-gray-100 px-4 sm:px-8 py-3.5 flex flex-wrap justify-between items-center sticky top-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.02)] gap-4">
-          
+
           <!-- Lado Izquierdo: Título del Evento y Badge -->
           <div class="flex items-center gap-3">
             <div class="flex flex-col">
@@ -644,7 +644,8 @@
               <app-croquis-mesas-designer
                 [evento]="ev"
                 [invitados]="invitados()"
-                (eventoActualizado)="onEventoActualizado($event)">
+                (eventoActualizado)="onEventoActualizado($event)"
+                (invitadosActualizados)="cargarInvitados(ev.id!)">
               </app-croquis-mesas-designer>
             </div>
           }
@@ -834,7 +835,7 @@
         <!-- NAVEGACIÓN INFERIOR EXCLUSIVA PARA MÓVILES (MOBILE BOTTOM NAV) -->
         @if (totalPestanasDisponibles() > 1) {
           <nav class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] z-50 md:hidden flex justify-around items-center px-2 py-3 pb-safe" aria-label="Navegación móvil inferior">
-            
+
             <!-- 1. Botón Resumen -->
             <button
               type="button"

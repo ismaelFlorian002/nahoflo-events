@@ -56,7 +56,7 @@
 
   <!-- LÍNEA DE TIEMPO / TIMELINE DE MOMENTOS -->
   <div class="minutario-timeline-container relative pl-3 sm:pl-6 my-2">
-    
+
     <!-- LÍNEA CONECTORA CENTRAL -->
     <div class="absolute left-6 top-3 bottom-3 w-0.5 bg-slate-200 hidden sm:block"></div>
 
@@ -64,7 +64,7 @@
       <div
         class="timeline-item flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 py-3 px-3 sm:px-4 rounded-xl transition-all duration-200 border border-transparent hover:border-slate-200 hover:bg-slate-50/80 mb-2 relative"
         [class.item-completado]="item.completado">
-        
+
         <!-- CHECKBOX EN VIVO PARA MARCAR CUMPLIDO -->
         <button
           type="button"
@@ -82,7 +82,7 @@
         </button>
 
         <!-- BADGE DE HORA -->
-        <div class="badge-hora flex-shrink-0 bg-slate-900 text-gold-400 font-mono font-bold text-sm px-3 py-1 rounded-lg shadow-xs flex items-center gap-1.5">
+        <div class="badge-hora flex-shrink-0 bg-slate-900 text-gold-400  font-bold text-sm px-3 py-1 rounded-lg shadow-xs flex items-center gap-1.5">
           <i class="pi pi-clock text-xs text-gold-400"></i>
           <span>{{ item.hora }}</span>
         </div>

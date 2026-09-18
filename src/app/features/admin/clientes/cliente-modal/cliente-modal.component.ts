@@ -8,6 +8,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ClienteService } from '../../../../core/services/cliente.service';
 import { ClienteModel } from '../../../../core/models/cliente.model';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-cliente-modal',
@@ -18,6 +19,7 @@ import { ClienteModel } from '../../../../core/models/cliente.model';
     ButtonModule,
     InputTextModule,
     InputTextareaModule,
+    FloatLabelModule,
   ],
   templateUrl: './cliente-modal.component.html',
   styleUrl: './cliente-modal.component.scss',

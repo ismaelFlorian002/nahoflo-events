@@ -24,7 +24,7 @@
             <i class="pi pi-calendar mr-1 text-gray-400"></i>Registrado: {{ formatFecha(cliente.creadoEn) }}
           </span>
           @if (cliente.id) {
-            <span class="inline-flex items-center gap-1 font-mono text-gray-400">
+            <span class="inline-flex items-center gap-1  text-gray-400">
               ID: {{ cliente.id.substring(0, 10) }}...
               <button
                 type="button"
@@ -74,7 +74,7 @@
         }
       </div>
       @if (cliente.telefono) {
-        <a [href]="'tel:' + cliente.telefono" class="text-sm font-semibold text-gray-800 no-underline hover:text-gold-600 font-mono">
+        <a [href]="'tel:' + cliente.telefono" class="text-sm font-semibold text-gray-800 no-underline hover:text-gold-600 ">
           {{ cliente.telefono }}
         </a>
       } @else {
@@ -183,7 +183,7 @@
                     </span>
                   }
                   @if (evento.pinAnfitrion) {
-                    <span class="font-mono text-slate-500">
+                    <span class="text-slate-500">
                       PIN: {{ evento.pinAnfitrion }}
                     </span>
                   }

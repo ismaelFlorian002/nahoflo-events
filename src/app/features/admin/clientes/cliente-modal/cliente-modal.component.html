@@ -1,33 +1,78 @@
-<form [formGroup]="clienteForm" (ngSubmit)="guardarCliente()" class="cliente-form-wrapper">
+<form [formGroup]="clienteForm" (ngSubmit)="guardarCliente()" class="grid grid-cols-12 gap-x-5 gap-y-8 pt-7 pb-2">
+<!--  class="grid grid-cols-12 gap-5 pt-4"-->
+  <!-- Nombre Completo (Fila completa - 12 columnas) -->
+  <div class="col-span-12">
+    <p-floatLabel class="w-full block">
+      <input
+        id="modalNombre"
+        pInputText
+        formControlName="nombreCompleto"
+        class="w-full"
+        autocomplete="off"
+      />
+      <label for="modalNombre">Nombre Completo *</label>
+    </p-floatLabel>
+  </div>
 
-  <!-- Nombre Completo -->
-  <span class="p-float-label">
-    <input id="modalNombre" pInputText formControlName="nombreCompleto" style="width: 100%;" autocomplete="off" />
-    <label for="modalNombre">Nombre Completo *</label>
-  </span>
+  <!-- Teléfono / WhatsApp (Media fila en desktop - 6 columnas) -->
+  <div class="col-span-12 sm:col-span-6">
+    <p-floatLabel class="w-full block">
+      <input
+        id="modalTelefono"
+        pInputText
+        formControlName="telefono"
+        class="w-full"
+        autocomplete="off"
+        placeholder="Ej. 6671234567"
+      />
+      <label for="modalTelefono">Teléfono / WhatsApp *</label>
+    </p-floatLabel>
+  </div>
 
-  <!-- Teléfono -->
-  <span class="p-float-label">
-    <input id="modalTelefono" pInputText formControlName="telefono" style="width: 100%;" autocomplete="off" placeholder="Ej. 6671234567" />
-    <label for="modalTelefono">Teléfono / WhatsApp *</label>
-  </span>
+  <!-- Correo Electrónico (Media fila en desktop - 6 columnas) -->
+  <div class="col-span-12 sm:col-span-6">
+    <p-floatLabel class="w-full block">
+      <input
+        id="modalEmail"
+        pInputText
+        formControlName="email"
+        type="email"
+        class="w-full"
+        autocomplete="off"
+        placeholder="correo@ejemplo.com"
+      />
+      <label for="modalEmail">Correo Electrónico (Opcional)</label>
+    </p-floatLabel>
+  </div>
 
-  <!-- Correo Electrónico -->
-  <span class="p-float-label">
-    <input id="modalEmail" pInputText formControlName="email" type="email" style="width: 100%;" autocomplete="off" placeholder="correo@ejemplo.com" />
-    <label for="modalEmail">Correo Electrónico (Opcional)</label>
-  </span>
+  <!-- Notas internas (Fila completa - 12 columnas) -->
+  <div class="col-span-12">
+    <p-floatLabel class="w-full block">
+      <textarea
+        id="modalNotas"
+        pInputTextarea
+        formControlName="notas"
+        rows="3"
+        class="w-full resize-none"
+      ></textarea>
+      <label for="modalNotas">Notas o preferencias de atención</label>
+    </p-floatLabel>
+  </div>
 
-  <!-- Notas internas -->
-  <span class="p-float-label">
-    <textarea id="modalNotas" pInputTextarea formControlName="notas" rows="3" style="width: 100%; resize: none;"></textarea>
-    <label for="modalNotas">Notas o preferencias de atención</label>
-  </span>
-
-  <!-- Acciones del Modal -->
-  <div class="modal-actions">
-    <p-button type="button" label="Cancelar" severity="secondary" [text]="true" (onClick)="cancelar()"></p-button>
-    <p-button type="submit" [label]="clienteEnEdicion ? 'Actualizar Cliente' : 'Guardar Cliente'" [loading]="guardando"></p-button>
+  <!-- Acciones del Modal (Alineadas al final) -->
+  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
+    <p-button
+      type="button"
+      label="Cancelar"
+      severity="secondary"
+      [text]="true"
+      (onClick)="cancelar()"
+    ></p-button>
+    <p-button
+      type="submit"
+      [label]="clienteEnEdicion ? 'Actualizar Cliente' : 'Guardar Cliente'"
+      [loading]="guardando"
+    ></p-button>
   </div>
 
 </form>

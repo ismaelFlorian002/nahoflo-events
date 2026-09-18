@@ -1,60 +1,58 @@
-<form [formGroup]="eventForm" (ngSubmit)="saveEvent()" style="display: flex; flex-direction: column; height: 100%;">
-
+<form [formGroup]="eventForm" (ngSubmit)="saveEvent()" class="flex flex-col h-full ">
   <p-tabView styleClass="w-full">
 
     <!-- PESTAÑA 1: DATOS BÁSICOS -->
-
     <p-tabPanel header="1. Básico">
-      <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem; padding-bottom: 5rem;">
+      <div class="flex flex-col gap-6 pt-4 pb-16">
 
         <!-- SECCIÓN: MÓDULOS Y SERVICIOS CONTRATADOS (NAHOFLO SUITE) -->
-        <div formGroupName="modulos" style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #cca633; border-radius: 10px; padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
+        <div formGroupName="modulos"
+             class="bg-slate-50 border border-slate-200 border-l-4 border-l-[#cca633] rounded-xl p-5 flex flex-col gap-4">
           <div>
-            <span style="color: #0f172a; font-weight: 700; font-size: 0.95rem;">Servicios Activos para este Evento</span>
-            <p style="margin: 0.2rem 0 0 0; color: #64748b; font-size: 0.8rem;">Define qué módulos tendrá habilitados el cliente según el paquete contratado.</p>
+            <span class="text-slate-900 font-bold text-sm">Servicios Activos para este Evento</span>
+            <p class="m-0 text-slate-500 text-xs mt-0.5">Define qué módulos tendrá habilitados el cliente según el paquete contratado.</p>
           </div>
 
           <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6 sm:items-center justify-between">
-
             <!-- 1. Interruptor: Invitación Web -->
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="flex items-center gap-3">
               <p-inputSwitch formControlName="tieneInvitacion" inputId="switchInvitacion"></p-inputSwitch>
-              <label for="switchInvitacion" style="cursor: pointer; display: flex; flex-direction: column;">
-                <span style="font-weight: 600; color: #1e293b; font-size: 0.88rem;">Invitación Web</span>
-                <span style="font-size: 0.75rem; color: #64748b;">Página pública (/e/:slug)</span>
+              <label for="switchInvitacion" class="cursor-pointer flex flex-col">
+                <span class="font-semibold text-slate-800 text-sm">Invitación Web</span>
+                <span class="text-xs text-slate-500">Página pública (/e/:slug)</span>
               </label>
             </div>
 
             <!-- 2. Interruptor: Álbum Digital en Mesas -->
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="flex items-center gap-3">
               <p-inputSwitch formControlName="tieneAlbum" inputId="switchAlbum"></p-inputSwitch>
-              <label for="switchAlbum" style="cursor: pointer; display: flex; flex-direction: column;">
-                <span style="font-weight: 600; color: #1e293b; font-size: 0.88rem;">Álbum Digital en Mesas</span>
-                <span style="font-size: 0.75rem; color: #64748b;">Subida de fotos por QR (/album)</span>
+              <label for="switchAlbum" class="cursor-pointer flex flex-col">
+                <span class="font-semibold text-slate-800 text-sm">Álbum Digital en Mesas</span>
+                <span class="text-xs text-slate-500">Subida de fotos por QR (/album)</span>
               </label>
             </div>
 
             <!-- 3. Interruptor: Suite de Wedding Planner -->
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="flex items-center gap-3">
               <p-inputSwitch formControlName="tienePlannerSuite" inputId="switchPlannerSuite"></p-inputSwitch>
-              <label for="switchPlannerSuite" style="cursor: pointer; display: flex; flex-direction: column;">
-                <span style="font-weight: 600; color: #581c87; font-size: 0.88rem;">Suite de Wedding Planner</span>
-                <span style="font-size: 0.75rem; color: #64748b;">Minutario, Presupuesto, Proveedores y Checklist</span>
+              <label for="switchPlannerSuite" class="cursor-pointer flex flex-col">
+                <span class="font-semibold text-purple-900 text-sm">Suite de Wedding Planner</span>
+                <span class="text-xs text-slate-500">Minutario, Presupuesto, Proveedores y Checklist</span>
               </label>
             </div>
 
             <!-- 4. Interruptor: Marca Blanca de Agencia -->
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div class="flex items-center gap-3">
               <p-inputSwitch formControlName="permiteMarcaBlanca" inputId="switchMarcaBlanca"></p-inputSwitch>
-              <label for="switchMarcaBlanca" style="cursor: pointer; display: flex; flex-direction: column;">
-                <span style="font-weight: 600; color: #a16207; font-size: 0.88rem;">Marca Blanca de Agencia</span>
-                <span style="font-size: 0.75rem; color: #64748b;">Branding de agencia y exportación Dossier PDF</span>
+              <label for="switchMarcaBlanca" class="cursor-pointer flex flex-col">
+                <span class="font-semibold text-amber-700 text-sm">Marca Blanca de Agencia</span>
+                <span class="text-xs text-slate-500">Branding de agencia y exportación Dossier PDF</span>
               </label>
             </div>
 
             <!-- 5. Selector: Tipo de Control de Asistentes -->
-            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-              <span style="font-weight: 600; color: #1e293b; font-size: 0.82rem;">Control de Invitados:</span>
+            <div class="flex flex-col gap-1">
+              <span class="font-semibold text-slate-800 text-xs">Control de Invitados:</span>
               <p-selectButton
                 [options]="opcionesControlInvitados"
                 formControlName="tipoControlInvitados"
@@ -62,24 +60,26 @@
                 optionValue="value">
               </p-selectButton>
             </div>
-
           </div>
         </div>
 
+        <!-- CUADRÍCULA DE CAMPOS BÁSICOS (SISTEMA DE 12 COLUMNAS) -->
+        <div class="grid grid-cols-12 gap-5 pt-2">
 
-        <!-- 1. NOMBRE INTERNO Y PIN DE ANFITRIÓN -->
-        <div class="flex flex-col sm:flex-row gap-6 sm:items-center">
-          <span class="p-float-label flex-1 sm:flex-[2]">
-            <input id="nombreEvento" pInputText formControlName="nombreEvento" style="width: 100%" autocomplete="off" />
-            <label for="nombreEvento">Nombre del Evento (Control interno)</label>
-          </span>
+          <!-- 1. NOMBRE DEL EVENTO (8 columnas en desktop, 12 en móvil) -->
+          <div class="col-span-12 sm:col-span-8">
+            <p-floatLabel class="w-full block">
+              <input id="nombreEvento" pInputText formControlName="nombreEvento" class="w-full" autocomplete="off" />
+              <label for="nombreEvento">Nombre del Evento (Control interno)</label>
+            </p-floatLabel>
+          </div>
 
-          <div class="flex-1 flex gap-2 items-center">
-            <span class="p-float-label flex-1">
-              <input id="pinAnfitrion" pInputText formControlName="pinAnfitrion" style="width: 100%" maxlength="6"
-                     autocomplete="off" />
+          <!-- 2. PIN DE ANFITRIÓN + BOTÓN (4 columnas en desktop, 12 en móvil) -->
+          <div class="col-span-12 sm:col-span-4 flex items-center gap-2">
+            <p-floatLabel class="w-full block flex-1">
+              <input id="pinAnfitrion" pInputText formControlName="pinAnfitrion" class="w-full" maxlength="6" autocomplete="off" />
               <label for="pinAnfitrion">PIN Anfitrión</label>
-            </span>
+            </p-floatLabel>
             <p-button
               type="button"
               icon="pi pi-refresh"
@@ -91,37 +91,40 @@
               (onClick)="generarPinAleatorio()">
             </p-button>
           </div>
-        </div>
 
-        <!-- 2. TEXTOS PÚBLICOS (Para el diseño de la invitación) -->
-        <div class="flex flex-col sm:flex-row gap-6">
-          <span class="p-float-label flex-1">
-            <input id="preTitulo" pInputText formControlName="preTitulo" style="width: 100%" autocomplete="off" />
-            <label for="preTitulo">Frase (ej. Nuestra Boda, Mis XV Años)</label>
-          </span>
-          <span class="p-float-label flex-1 sm:flex-[2]">
-            <input id="titulo" pInputText formControlName="titulo" style="width: 100%" autocomplete="off" />
-            <label for="titulo">Nombres de Invitación (ej. Alejandra & Felipe)</label>
-          </span>
-        </div>
+          <!-- 3. FRASE / PRE-TÍTULO (4 columnas en desktop) -->
+          <div class="col-span-12 sm:col-span-4">
+            <p-floatLabel class="w-full block">
+              <input id="preTitulo" pInputText formControlName="preTitulo" class="w-full" autocomplete="off" />
+              <label for="preTitulo">Frase (ej. Nuestra Boda, Mis XV Años)</label>
+            </p-floatLabel>
+          </div>
 
-        <!-- ENLACE Y FECHA (Mitad y mitad) -->
-        <div class="flex flex-col sm:flex-row gap-6">
+          <!-- 4. NOMBRES / TÍTULO PÚBLICO (8 columnas en desktop) -->
+          <div class="col-span-12 sm:col-span-8">
+            <p-floatLabel class="w-full block">
+              <input id="titulo" pInputText formControlName="titulo" class="w-full" autocomplete="off" />
+              <label for="titulo">Nombres de Invitación (ej. Alejandra & Felipe)</label>
+            </p-floatLabel>
+          </div>
 
-          <!-- Mitad Izquierda: Enlace -->
-          <span class="p-float-label flex-1">
-            <input id="enlace" pInputText formControlName="enlace" style="width: 100%" autocomplete="off" />
-            <label for="enlace">URL Pública (ej. boda-ale-felipe)</label>
-          </span>
+          <!-- 5. URL PÚBLICA (6 columnas / media fila) -->
+          <div class="col-span-12 sm:col-span-6">
+            <p-floatLabel class="w-full block">
+              <input id="enlace" pInputText formControlName="enlace" class="w-full" autocomplete="off" />
+              <label for="enlace">URL Pública (ej. boda-ale-felipe)</label>
+            </p-floatLabel>
+          </div>
 
-          <!-- Mitad Derecha: Fecha y Hora -->
-          <span class="p-float-label flex-1 relative">
-            <p-calendar id="fecha" formControlName="fecha" [showTime]="true" hourFormat="12" dateFormat="dd/mm/yy"
-                        appendTo="body" [style]="{'width': '100%'}"></p-calendar>
-            <label for="fecha">Fecha y Hora del Evento</label>
-            <i class="pi pi-calendar"
-               style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #9ca3af; pointer-events: none;"></i>
-          </span>
+          <!-- 6. FECHA Y HORA (6 columnas / media fila) -->
+          <div class="col-span-12 sm:col-span-6">
+            <p-floatLabel class="w-full block relative">
+              <p-calendar id="fecha" formControlName="fecha" [showTime]="true" hourFormat="12" dateFormat="dd/mm/yy"
+                          appendTo="body" styleClass="w-full" inputStyleClass="w-full"></p-calendar>
+              <label for="fecha">Fecha y Hora del Evento</label>
+              <i class="pi pi-calendar absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+            </p-floatLabel>
+          </div>
 
         </div>
 
@@ -130,7 +133,7 @@
 
     <!-- PESTAÑA 2: CONTACTO / CLIENTE -->
     <p-tabPanel header="2. Contacto / Cliente">
-      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem; padding-bottom: 5rem;">
+      <div class="flex flex-col gap-6 pt-4 pb-16">
 
         <!-- TARJETA: BUSCADOR EN EL CATÁLOGO DE CLIENTES -->
         <div class="cliente-selector-card">
@@ -160,24 +163,24 @@
                 styleClass="w-full client-dropdown">
 
                 <ng-template pTemplate="selectedItem" let-selected>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;" *ngIf="selected">
-                    <i class="pi pi-user" style="color: #cca633;"></i>
-                    <span style="font-weight: 600; color: #1e293b;">{{ selected.nombreCompleto }}</span>
-                    <span style="color: #64748b; font-size: 0.85rem;" *ngIf="selected.telefono">({{ selected.telefono }})</span>
+                  <div class="flex items-center gap-2" *ngIf="selected">
+                    <i class="pi pi-user text-[#cca633]"></i>
+                    <span class="font-semibold text-slate-800">{{ selected.nombreCompleto }}</span>
+                    <span class="text-slate-500 text-xs" *ngIf="selected.telefono">({{ selected.telefono }})</span>
                   </div>
                 </ng-template>
 
                 <ng-template pTemplate="item" let-cliente>
-                  <div style="display: flex; flex-direction: column; gap: 0.2rem; padding: 0.3rem 0;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                      <span style="font-weight: 600; color: #0f172a;">{{ cliente.nombreCompleto }}</span>
+                  <div class="flex flex-col gap-1 py-1">
+                    <div class="flex items-center justify-between">
+                      <span class="font-semibold text-slate-900">{{ cliente.nombreCompleto }}</span>
                       <span class="badge-eventos" *ngIf="cliente.totalEventos">
                         {{ cliente.totalEventos }} {{ cliente.totalEventos === 1 ? 'evento' : 'eventos' }}
                       </span>
                     </div>
-                    <div style="display: flex; gap: 1rem; color: #64748b; font-size: 0.8rem;">
-                      <span *ngIf="cliente.telefono"><i class="pi pi-phone" style="font-size: 0.75rem; margin-right: 0.25rem;"></i>{{ cliente.telefono }}</span>
-                      <span *ngIf="cliente.email"><i class="pi pi-envelope" style="font-size: 0.75rem; margin-right: 0.25rem;"></i>{{ cliente.email }}</span>
+                    <div class="flex gap-4 text-slate-500 text-xs">
+                      <span *ngIf="cliente.telefono"><i class="pi pi-phone text-xs mr-1"></i>{{ cliente.telefono }}</span>
+                      <span *ngIf="cliente.email"><i class="pi pi-envelope text-xs mr-1"></i>{{ cliente.email }}</span>
                     </div>
                   </div>
                 </ng-template>
@@ -207,39 +210,44 @@
           </div>
         </div>
 
-        <!-- FORMULARIO DE DATOS DE CONTACTO -->
-        <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- FORMULARIO DE DATOS DE CONTACTO (CUADRÍCULA 12 COLUMNAS) -->
+        <div class="grid grid-cols-12 gap-5 pt-2">
 
-          <!-- NOMBRE COMPLETO -->
-          <span class="p-float-label">
-            <input id="contactoNombre" pInputText formControlName="contactoNombre" style="width: 100%" autocomplete="off" />
-            <label for="contactoNombre">Nombre Completo del Cliente / Anfitrión Responsable</label>
-          </span>
-
-          <!-- TELÉFONO Y CORREO -->
-          <div class="flex flex-col sm:flex-row gap-6">
-            <span class="p-float-label flex-1">
-              <input id="contactoTelefono" pInputText formControlName="contactoTelefono" style="width: 100%" autocomplete="off" />
-              <label for="contactoTelefono">Teléfono / WhatsApp (10 dígitos)</label>
-            </span>
-
-            <span class="p-float-label flex-1">
-              <input id="contactoEmail" pInputText formControlName="contactoEmail" type="email" style="width: 100%" autocomplete="off" />
-              <label for="contactoEmail">Correo Electrónico (Opcional)</label>
-            </span>
+          <!-- NOMBRE COMPLETO (12 columnas) -->
+          <div class="col-span-12">
+            <p-floatLabel class="w-full block">
+              <input id="contactoNombre" pInputText formControlName="contactoNombre" class="w-full" autocomplete="off" />
+              <label for="contactoNombre">Nombre Completo del Cliente / Anfitrión Responsable</label>
+            </p-floatLabel>
           </div>
 
-          <!-- NOTAS Y PREFERENCIAS (ETIQUETA ESTÁNDAR PARA EVITAR SUPERPOSICIÓN) -->
-          <div class="flex flex-col gap-1.5">
-            <label for="contactoNotas" class="text-xs font-semibold text-gray-700">
-              Notas internas de atención al cliente (horario preferido para llamadas, canal de contacto, requerimientos especiales)
+          <!-- TELÉFONO (6 columnas) -->
+          <div class="col-span-12 sm:col-span-6">
+            <p-floatLabel class="w-full block">
+              <input id="contactoTelefono" pInputText formControlName="contactoTelefono" class="w-full" autocomplete="off" />
+              <label for="contactoTelefono">Teléfono / WhatsApp (10 dígitos)</label>
+            </p-floatLabel>
+          </div>
+
+          <!-- CORREO (6 columnas) -->
+          <div class="col-span-12 sm:col-span-6">
+            <p-floatLabel class="w-full block">
+              <input id="contactoEmail" pInputText formControlName="contactoEmail" type="email" class="w-full" autocomplete="off" />
+              <label for="contactoEmail">Correo Electrónico (Opcional)</label>
+            </p-floatLabel>
+          </div>
+
+          <!-- NOTAS INTERNAS (12 columnas) -->
+          <div class="col-span-12 flex flex-col gap-1.5">
+            <label for="contactoNotas" class="text-xs font-semibold text-slate-700">
+              Notas internas de atención al cliente (horario preferido para llamadas, requerimientos especiales)
             </label>
             <textarea
               id="contactoNotas"
               pInputTextarea
               formControlName="contactoNotas"
               rows="3"
-              style="width: 100%; resize: none;"
+              class="w-full resize-none"
               placeholder="Escribe notas internas aquí..."></textarea>
           </div>
 
@@ -261,32 +269,40 @@
       </div>
     </p-tabPanel>
 
+    <!-- PESTAÑA 3: UBICACIONES -->
     <p-tabPanel header="3. Ubicaciones" *ngIf="tieneInvitacionActiva">
-      <div style="display: flex; flex-direction: column; gap: 2rem; padding-top: 1.5rem; padding-bottom: 5rem;">
+      <div class="flex flex-col gap-6 pt-4 pb-16">
 
+        <!-- SECCIÓN: CEREMONIA -->
         <div>
-          <h4 style="margin: 0 0 1.5rem 0; color: #cca633;">Ceremonia (Iglesia)</h4>
-          <div style="display: flex; flex-direction: column; gap: 2.5rem;">
-            <span class="p-float-label">
-              <input pInputText formControlName="ceremoniaLugar" style="width: 100%" autocomplete="off" />
-              <label>Lugar (ej. Basílica de Guadalupe)</label>
-            </span>
-            <span class="p-float-label">
-              <input pInputText formControlName="ceremoniaUrl" style="width: 100%" autocomplete="off" />
-              <label>Link de Google Maps</label>
-            </span>
-            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
-              <label style="color: #64748b; font-size: 0.85rem;">Foto de la Fachada</label>
+          <h4 class="m-0 mb-4 text-[#cca633] font-bold text-base">Ceremonia (Iglesia)</h4>
+          <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12 sm:col-span-6">
+              <p-floatLabel class="w-full block">
+                <input id="ceremoniaLugar" pInputText formControlName="ceremoniaLugar" class="w-full" autocomplete="off" />
+                <label for="ceremoniaLugar">Lugar (ej. Basílica de Guadalupe)</label>
+              </p-floatLabel>
+            </div>
 
-              <!-- 1. Si hay una foto ya guardada en Firestore -->
+            <div class="col-span-12 sm:col-span-6">
+              <p-floatLabel class="w-full block">
+                <input id="ceremoniaUrl" pInputText formControlName="ceremoniaUrl" class="w-full" autocomplete="off" />
+                <label for="ceremoniaUrl">Link de Google Maps</label>
+              </p-floatLabel>
+            </div>
+
+            <!-- FOTO CEREMONIA -->
+            <div class="col-span-12 flex flex-col items-flex-start gap-2">
+              <label class="text-slate-500 text-xs font-medium">Foto de la Fachada</label>
+
+              <!-- 1. Foto en nube -->
               <div *ngIf="existingFotoCeremoniaUrl && !fotoCeremoniaFile"
-                   style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; max-width: 420px; background: #f1f5f9;">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <img [src]="existingFotoCeremoniaUrl" width="40" height="40"
-                       style="border-radius: 6px; object-fit: cover;" />
-                  <span style="color: #334155; font-size: 0.85rem; font-weight: 600;">Foto actual en la nube</span>
+                   class="flex items-center justify-between p-2.5 border border-slate-300 rounded-lg w-full max-w-md bg-slate-100">
+                <div class="flex items-center gap-3">
+                  <img [src]="existingFotoCeremoniaUrl" width="40" height="40" class="rounded-md object-cover" />
+                  <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
                 </div>
-                <div style="display: flex; gap: 0.25rem;">
+                <div class="flex gap-1">
                   <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
                             (onClick)="previewExistingUrl(existingFotoCeremoniaUrl)"></p-button>
                   <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
@@ -294,15 +310,14 @@
                 </div>
               </div>
 
-              <!-- 2. Si se acaba de seleccionar un archivo nuevo -->
+              <!-- 2. Archivo nuevo -->
               <div *ngIf="fotoCeremoniaFile"
-                   style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 420px; background: #f8fafc;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <i class="pi pi-image" style="color: #94a3b8; font-size: 1.2rem;"></i>
-                  <span
-                    style="color: #334155; font-weight: 500; font-size: 0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ fotoCeremoniaFile.name }}</span>
+                   class="flex items-center justify-between p-2.5 border border-slate-200 rounded-lg w-full max-w-md bg-slate-50">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-image text-slate-400 text-lg"></i>
+                  <span class="text-slate-700 font-medium text-xs max-w-[200px] truncate">{{ fotoCeremoniaFile.name }}</span>
                 </div>
-                <div style="display: flex; gap: 0.25rem;">
+                <div class="flex gap-1">
                   <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
                             (onClick)="previewImage(fotoCeremoniaFile)"></p-button>
                   <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
@@ -310,7 +325,7 @@
                 </div>
               </div>
 
-              <!-- 3. Botón de subida si no hay foto guardada ni archivo nuevo -->
+              <!-- 3. Botón de subida -->
               <p-fileUpload *ngIf="!existingFotoCeremoniaUrl && !fotoCeremoniaFile" mode="basic"
                             chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
                             (onSelect)="onEstructuralSelected($event, 'ceremonia')"></p-fileUpload>
@@ -318,31 +333,38 @@
           </div>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 1rem 0;">
+        <hr class="border-0 border-t border-slate-200 my-2">
 
+        <!-- SECCIÓN: RECEPCIÓN -->
         <div>
-          <h4 style="margin: 0 0 1.5rem 0; color: #cca633;">Recepción (Salón)</h4>
-          <div style="display: flex; flex-direction: column; gap: 2.5rem;">
-            <span class="p-float-label">
-              <input pInputText formControlName="recepcionLugar" style="width: 100%" autocomplete="off" />
-              <label>Lugar (ej. Salón Los Arcángeles)</label>
-            </span>
-            <span class="p-float-label">
-              <input pInputText formControlName="recepcionUrl" style="width: 100%" autocomplete="off" />
-              <label>Link de Google Maps</label>
-            </span>
-            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
-              <label style="color: #64748b; font-size: 0.85rem;">Foto de la Recepción</label>
+          <h4 class="m-0 mb-4 text-[#cca633] font-bold text-base">Recepción (Salón)</h4>
+          <div class="grid grid-cols-12 gap-5">
+            <div class="col-span-12 sm:col-span-6">
+              <p-floatLabel class="w-full block">
+                <input id="recepcionLugar" pInputText formControlName="recepcionLugar" class="w-full" autocomplete="off" />
+                <label for="recepcionLugar">Lugar (ej. Salón Los Arcángeles)</label>
+              </p-floatLabel>
+            </div>
 
-              <!-- 1. Foto guardada en Firestore -->
+            <div class="col-span-12 sm:col-span-6">
+              <p-floatLabel class="w-full block">
+                <input id="recepcionUrl" pInputText formControlName="recepcionUrl" class="w-full" autocomplete="off" />
+                <label for="recepcionUrl">Link de Google Maps</label>
+              </p-floatLabel>
+            </div>
+
+            <!-- FOTO RECEPCIÓN -->
+            <div class="col-span-12 flex flex-col items-flex-start gap-2">
+              <label class="text-slate-500 text-xs font-medium">Foto de la Recepción</label>
+
+              <!-- 1. Foto en nube -->
               <div *ngIf="existingFotoRecepcionUrl && !fotoRecepcionFile"
-                   style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; max-width: 420px; background: #f1f5f9;">
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <img [src]="existingFotoRecepcionUrl" width="40" height="40"
-                       style="border-radius: 6px; object-fit: cover;" />
-                  <span style="color: #334155; font-size: 0.85rem; font-weight: 600;">Foto actual en la nube</span>
+                   class="flex items-center justify-between p-2.5 border border-slate-300 rounded-lg w-full max-w-md bg-slate-100">
+                <div class="flex items-center gap-3">
+                  <img [src]="existingFotoRecepcionUrl" width="40" height="40" class="rounded-md object-cover" />
+                  <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
                 </div>
-                <div style="display: flex; gap: 0.25rem;">
+                <div class="flex gap-1">
                   <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
                             (onClick)="previewExistingUrl(existingFotoRecepcionUrl)"></p-button>
                   <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
@@ -350,15 +372,14 @@
                 </div>
               </div>
 
-              <!-- 2. Archivo nuevo seleccionado -->
+              <!-- 2. Archivo nuevo -->
               <div *ngIf="fotoRecepcionFile"
-                   style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 420px; background: #f8fafc;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                  <i class="pi pi-image" style="color: #94a3b8; font-size: 1.2rem;"></i>
-                  <span
-                    style="color: #334155; font-weight: 500; font-size: 0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ fotoRecepcionFile.name }}</span>
+                   class="flex items-center justify-between p-2.5 border border-slate-200 rounded-lg w-full max-w-md bg-slate-50">
+                <div class="flex items-center gap-2">
+                  <i class="pi pi-image text-slate-400 text-lg"></i>
+                  <span class="text-slate-700 font-medium text-xs max-w-[200px] truncate">{{ fotoRecepcionFile.name }}</span>
                 </div>
-                <div style="display: flex; gap: 0.25rem;">
+                <div class="flex gap-1">
                   <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
                             (onClick)="previewImage(fotoRecepcionFile)"></p-button>
                   <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
@@ -366,7 +387,7 @@
                 </div>
               </div>
 
-              <!-- 3. Botón de subida si no hay foto -->
+              <!-- 3. Botón de subida -->
               <p-fileUpload *ngIf="!existingFotoRecepcionUrl && !fotoRecepcionFile" mode="basic"
                             chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
                             (onSelect)="onEstructuralSelected($event, 'recepcion')"></p-fileUpload>
@@ -377,70 +398,71 @@
       </div>
     </p-tabPanel>
 
+    <!-- PESTAÑA 4: GALERÍA -->
     <p-tabPanel header="4. Galería">
-      <div style="display: flex; flex-direction: column; gap: 2.5rem; padding-top: 1.5rem; padding-bottom: 5rem;">
+      <div class="flex flex-col gap-6 pt-4 pb-16">
 
-        <span class="p-float-label">
-          <textarea pInputTextarea formControlName="mensaje" rows="3" style="width: 100%; resize: none;"></textarea>
-          <label>Frase / Mensaje</label>
-        </span>
-
+        <!-- FRASE / MENSAJE -->
+        <p-floatLabel class="w-full block">
+          <textarea id="mensaje" pInputTextarea formControlName="mensaje" rows="3" class="w-full resize-none"></textarea>
+          <label for="mensaje">Frase / Mensaje</label>
+        </p-floatLabel>
 
         <!-- SECCIÓN: MÚSICA DE FONDO -->
-        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
-          <label style="color: #cca633; font-weight: bold; font-size: 0.9rem;">Música de Fondo (Audio MP3)</label>
-          <p style="margin: 0 0 0.25rem 0; font-size: 0.8rem; color: #64748b;">Pista musical que sonará en bucle de forma sutil en la invitación.</p>
+        <div class="flex flex-col items-start gap-2">
+          <label class="text-[#cca633] font-bold text-sm">Música de Fondo (Audio MP3)</label>
+          <p class="m-0 text-slate-500 text-xs">Pista musical que sonará en bucle de forma sutil en la invitación.</p>
 
-          <!-- 1. Si ya hay una canción guardada en la nube -->
+          <!-- 1. Música en la nube -->
           <div *ngIf="existingMusicaFondoUrl && !musicaFondoFile"
-               style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; max-width: 420px; background: #f1f5f9;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <div style="width: 40px; height: 40px; border-radius: 6px; background: #e2e8f0; display: flex; align-items: center; justify-content: center;">
-                <i class="pi pi-volume-up" style="font-size: 1.3rem; color: #cca633;"></i>
+               class="flex items-center justify-between p-2.5 border border-slate-300 rounded-lg w-full max-w-md bg-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-md bg-slate-200 flex items-center justify-center">
+                <i class="pi pi-volume-up text-[#cca633] text-lg"></i>
               </div>
-              <div style="display: flex; flex-direction: column;">
-                <span style="color: #334155; font-size: 0.85rem; font-weight: 600;">Pista musical activa</span>
-                <span style="color: #64748b; font-size: 0.75rem;">Guardada en Firebase Storage</span>
+              <div class="flex flex-col">
+                <span class="text-slate-700 text-xs font-semibold">Pista musical activa</span>
+                <span class="text-slate-500 text-[11px]">Guardada en Firebase Storage</span>
               </div>
             </div>
             <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
                       (onClick)="removeExistingMusica()" pTooltip="Eliminar música"></p-button>
           </div>
 
-          <!-- 2. Si se seleccionó un nuevo archivo de audio -->
+          <!-- 2. Archivo nuevo de música -->
           <div *ngIf="musicaFondoFile"
-               style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 420px; background: #f8fafc;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <div style="width: 40px; height: 40px; border-radius: 6px; background: #fef08a; display: flex; align-items: center; justify-content: center;">
-                <i class="pi pi-volume-up" style="font-size: 1.3rem; color: #854d0e;"></i>
+               class="flex items-center justify-between p-2.5 border border-slate-200 rounded-lg w-full max-w-md bg-slate-50">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-md bg-amber-100 flex items-center justify-center">
+                <i class="pi pi-volume-up text-amber-700 text-lg"></i>
               </div>
-              <div style="display: flex; flex-direction: column;">
-                <span style="color: #334155; font-weight: 500; font-size: 0.85rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ musicaFondoFile.name }}</span>
-                <span style="color: #94a3b8; font-size: 0.75rem;">{{ (musicaFondoFile.size / 1024 / 1024).toFixed(2) }} MB</span>
+              <div class="flex flex-col">
+                <span class="text-slate-700 font-medium text-xs max-w-[200px] truncate">{{ musicaFondoFile.name }}</span>
+                <span class="text-slate-400 text-[11px]">{{ (musicaFondoFile.size / 1024 / 1024).toFixed(2) }} MB</span>
               </div>
             </div>
             <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
                       (onClick)="removeMusicaFile()"></p-button>
           </div>
 
-          <!-- 3. Botón para subir si no hay música seleccionada ni guardada -->
+          <!-- 3. Botón para subir música -->
           <p-fileUpload *ngIf="!existingMusicaFondoUrl && !musicaFondoFile" mode="basic"
                         chooseLabel="Seleccionar Canción (MP3)" chooseIcon="pi pi-volume-up" accept="audio/*"
                         (onSelect)="onMusicaSelected($event)"></p-fileUpload>
         </div>
 
-        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem;">
-          <label style="color: #cca633; font-weight: bold; font-size: 0.9rem;">Foto Principal (Fondo Gigante)</label>
+        <!-- FOTO PRINCIPAL -->
+        <div class="flex flex-col items-start gap-2">
+          <label class="text-[#cca633] font-bold text-sm">Foto Principal (Fondo Gigante)</label>
 
           <!-- Foto guardada -->
           <div *ngIf="existingFotoPrincipalUrl && !fotoPrincipalFile"
-               style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; max-width: 420px; background: #f1f5f9;">
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <img [src]="existingFotoPrincipalUrl" width="40" height="40"
-                   style="border-radius: 6px; object-fit: cover;" />
-              <span style="color: #334155; font-size: 0.85rem; font-weight: 600;">Foto actual en la nube</span>
+               class="flex items-center justify-between p-2.5 border border-slate-300 rounded-lg w-full max-w-md bg-slate-100">
+            <div class="flex items-center gap-3">
+              <img [src]="existingFotoPrincipalUrl" width="40" height="40" class="rounded-md object-cover" />
+              <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
             </div>
-            <div style="display: flex; gap: 0.25rem;">
+            <div class="flex gap-1">
               <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
                         (onClick)="previewExistingUrl(existingFotoPrincipalUrl)"></p-button>
               <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
@@ -450,13 +472,12 @@
 
           <!-- Archivo nuevo -->
           <div *ngIf="fotoPrincipalFile"
-               style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; width: 100%; max-width: 420px; background: #f8fafc;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-              <i class="pi pi-image" style="color: #94a3b8; font-size: 1.2rem;"></i>
-              <span
-                style="color: #334155; font-weight: 500; font-size: 0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ fotoPrincipalFile.name }}</span>
+               class="flex items-center justify-between p-2.5 border border-slate-200 rounded-lg w-full max-w-md bg-slate-50">
+            <div class="flex items-center gap-2">
+              <i class="pi pi-image text-slate-400 text-lg"></i>
+              <span class="text-slate-700 font-medium text-xs max-w-[200px] truncate">{{ fotoPrincipalFile.name }}</span>
             </div>
-            <div style="display: flex; gap: 0.25rem;">
+            <div class="flex gap-1">
               <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
                         (onClick)="previewImage(fotoPrincipalFile)"></p-button>
               <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
@@ -468,58 +489,49 @@
                         chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
                         (onSelect)="onEstructuralSelected($event, 'principal')"></p-fileUpload>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
-          <label style="color: #0f172a; font-weight: bold; font-size: 0.9rem;">Galería Libre (Varias fotos)</label>
-          <p style="margin: 0 0 0.5rem 0; font-size: 0.8rem; color: #64748b;">Arrastra aquí todas las fotos de la
-            sesión.</p>
 
+        <!-- GALERÍA LIBRE -->
+        <div class="flex flex-col gap-2 mt-2">
+          <label class="text-slate-900 font-bold text-sm">Galería Libre (Varias fotos)</label>
+          <p class="m-0 text-slate-500 text-xs">Arrastra aquí todas las fotos de la sesión.</p>
 
-          <!-- LISTA DE FOTOS QUE YA ESTÁN EN LA NUBE -->
-          <div *ngIf="existingGaleriaUrls.length > 0"
-               style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
-            <span
-              style="font-size: 0.85rem; font-weight: 600; color: #475569;">Fotos guardadas en la galería ({{ existingGaleriaUrls.length }}
-              ):</span>
-
-            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+          <!-- FOTOS EN NUBE -->
+          <div *ngIf="existingGaleriaUrls.length > 0" class="flex flex-col gap-2 mb-2">
+            <span class="text-xs font-semibold text-slate-600">Fotos guardadas ({{ existingGaleriaUrls.length }}):</span>
+            <div class="flex flex-wrap gap-3">
               <div *ngFor="let url of existingGaleriaUrls"
-                   style="position: relative; width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <img [src]="url" style="width: 100%; height: 100%; object-fit: cover;" />
-
+                   class="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-300 shadow-sm">
+                <img [src]="url" class="w-full h-full object-cover" />
                 <button type="button" (click)="removeExistingGaleriaFoto(url)"
-                        style="position: absolute; top: 4px; right: 4px; background: rgba(239, 68, 68, 0.85); color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer;">
-                  <i class="pi pi-times" style="font-size: 0.65rem;"></i>
+                        class="absolute top-1 right-1 bg-red-500/85 text-white border-none rounded-full w-5 h-5 flex items-center justify-center cursor-pointer hover:bg-red-600">
+                  <i class="pi pi-times text-[10px]"></i>
                 </button>
               </div>
             </div>
           </div>
-          <!-- AQUI AGREGAMOS #galeriaUploader -->
+
+          <!-- UPLOADER GALERÍA -->
           <p-fileUpload #galeriaUploader [multiple]="true" accept="image/*" maxFileSize="10000000"
                         [showUploadButton]="false" [showCancelButton]="false" chooseLabel="Elegir Fotos"
                         (onSelect)="onGaleriaSelected($event)">
 
             <ng-template pTemplate="empty">
-              <div
-                style="display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 3rem 0; border: 1px dashed #cbd5e1; border-radius: 8px; background: #f8fafc;">
-                <i class="pi pi-cloud-upload" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;"></i>
-                <p style="margin: 0; color: #64748b; font-size: 1.1rem;">Arrastra y suelta tus fotos aquí</p>
+              <div class="flex flex-col items-center justify-center py-10 border border-dashed border-slate-300 rounded-lg bg-slate-50">
+                <i class="pi pi-cloud-upload text-5xl text-slate-300 mb-2"></i>
+                <p class="m-0 text-slate-500 text-sm">Arrastra y suelta tus fotos aquí</p>
               </div>
             </ng-template>
 
-            <!-- AQUI USAMOS NUESTRA FUNCIÓN ABSOLUTA -->
             <ng-template pTemplate="file" let-file let-index="index">
-              <div
-                style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; border-bottom: 1px solid #f1f5f9; width: 100%;">
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                  <img [src]="file.objectURL" width="50" height="50"
-                       style="border-radius: 6px; object-fit: cover; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" />
-                  <div style="display: flex; flex-direction: column;">
-                    <span
-                      style="color: #334155; font-weight: 500; font-size: 0.9rem; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ file.name }}</span>
-                    <span style="color: #94a3b8; font-size: 0.8rem;">{{ (file.size / 1024).toFixed(1) }} KB</span>
+              <div class="flex items-center justify-between p-3 border-b border-slate-100 w-full">
+                <div class="flex items-center gap-3">
+                  <img [src]="file.objectURL" width="50" height="50" class="rounded-md object-cover shadow-sm" />
+                  <div class="flex flex-col">
+                    <span class="text-slate-700 font-medium text-xs max-w-[200px] truncate">{{ file.name }}</span>
+                    <span class="text-slate-400 text-[11px]">{{ (file.size / 1024).toFixed(1) }} KB</span>
                   </div>
                 </div>
-                <div style="display: flex; gap: 0.5rem;">
+                <div class="flex gap-2">
                   <p-button type="button" icon="pi pi-eye" [rounded]="true" [text]="true" severity="info"
                             (onClick)="previewImage(file)"></p-button>
                   <p-button type="button" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
@@ -536,11 +548,10 @@
 
   </p-tabView>
 
-  <div
-    style="position: sticky; bottom: -1.5rem; margin: 1rem -1.5rem -1.5rem -1.5rem; padding: 1.5rem; background: #ffffff; z-index: 100; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid #e2e8f0;">
+  <!-- BOTONES DE ACCIÓN FIJOS AL FINAL -->
+  <div class="sticky bottom-[-1.5rem] -mx-6 -mb-6 p-6 bg-white z-[100] flex justify-end gap-3 border-t border-slate-200">
     <p-button type="button" label="Cancelar" severity="secondary" [text]="true" (onClick)="ref.close()"></p-button>
-    <p-button label="Guardar Evento" type="submit" (onClick)="saveEvent()"
-              [loading]="isSaving"></p-button>
+    <p-button label="Guardar Evento" type="submit" (onClick)="saveEvent()" [loading]="isSaving"></p-button>
   </div>
 
 </form>

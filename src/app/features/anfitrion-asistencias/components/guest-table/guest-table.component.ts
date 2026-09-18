@@ -19,6 +19,7 @@ import { MenuItem } from 'primeng/api';
 import { Evento } from '../../../../core/models/event.model';
 import { InvitadoModel } from '../../../../core/models/invitado.model';
 import { PdfReportService } from '../../services/pdf-report.service';
+import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'app-guest-table',
@@ -33,6 +34,7 @@ import { PdfReportService } from '../../services/pdf-report.service';
     TooltipModule,
     OverlayPanelModule,
     MenuModule,
+    BadgeModule,
   ],
   templateUrl: './guest-table.component.html',
   styleUrl: '../../anfitrion-asistencias.component.scss',

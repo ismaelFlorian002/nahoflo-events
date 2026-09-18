@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -18,6 +18,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
 import { ClienteService } from '../../../../core/services/cliente.service';
 import { ClienteModel } from '../../../../core/models/cliente.model';
+import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-event-form',
@@ -36,6 +37,8 @@ import { ClienteModel } from '../../../../core/models/cliente.model';
     SelectButtonModule,
     DropdownModule,
     TooltipModule,
+    FloatLabelModule,
+    FormsModule,
   ],
   templateUrl: './event-form.component.html',
   styleUrl: './event-form.component.scss',
@@ -92,7 +95,6 @@ export class EventFormComponent implements OnInit {
       tienePlannerSuite: [true],
       permiteMarcaBlanca: [true],
     }),
-
 
     nombreEvento: ['', Validators.required], // <-- NUEVO: Para uso interno del panel
     pinAnfitrion: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(6)]], // <-- NUEVO
@@ -182,8 +184,7 @@ export class EventFormComponent implements OnInit {
       // 2. Retrocompatibilidad para eventos existentes sin PIN o nombreEvento
       const pinRecuperado =
         this.config.data.pinAnfitrion || Math.floor(1000 + Math.random() * 9000).toString();
-      const nombreRecuperado =
-        this.config.data.nombreEvento || this.config.data.titulo || 'Evento';
+      const nombreRecuperado = this.config.data.nombreEvento || this.config.data.titulo || 'Evento';
 
       const clienteIdExistente = this.config.data.clienteId || null;
       const contactoNombre = this.config.data.contactoNombre || '';

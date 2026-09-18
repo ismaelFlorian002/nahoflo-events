@@ -1,4 +1,21 @@
-<div class="table-card">
+<div class="whatsapp-center-container flex flex-col gap-6">
+
+
+
+  <!-- CABECERA DE LA SECCIÓN (IDÉNTICA A RESUMEN Y CROQUIS) -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+    <div>
+      <div class="flex items-center gap-2.5">
+        <h2 class="text-xl font-bold text-gray-900 m-0 flex items-center gap-2">
+          <i class="pi pi-users text-gold text-2xl"></i>
+          Lista de Invitados
+        </h2>
+        <!--        <p-badge value="WhatsApp Direct" severity="success" ></p-badge>-->
+      </div>
+      <p class="text-sm text-gray-500 m-0 mt-0.5">
+        Administra confirmaciones, asignación de mesas y el envío de pases QR personalizados.      </p>
+    </div>
+  </div>
   <!-- MENÚS FLOTANTES RESPONSIVOS (EXPORTAR Y ACCIONES DE INVITADO) -->
   <p-menu #menuExport [popup]="true" [model]="menuExportItems" appendTo="body"></p-menu>
   <p-menu #menuAcciones [popup]="true" [model]="menuInvitadoItems" appendTo="body"></p-menu>
@@ -220,18 +237,16 @@
             <!-- META SÓLO MÓVIL: Estado, pases y mesa limpios debajo del nombre -->
             <div class="guest-meta-mobile">
               @if (invitado.estado === 'pendiente') {
-                <p-tag
+                <p-badge
                   value="Pendiente"
                   severity="warning"
-                  icon="pi pi-clock"
-                  [rounded]="true">
-                </p-tag>
+                  icon="pi pi-clock">
+                </p-badge>
               } @else {
-                <p-tag
+                <p-badge
                   [value]="invitado.asistira ? 'Asistirá' : 'No asiste'"
-                  [severity]="invitado.asistira ? 'success' : 'danger'"
-                  [rounded]="true">
-                </p-tag>
+                  [severity]="invitado.asistira ? 'success' : 'danger'">
+                </p-badge>
               }
 
               @if (invitado.asistira || invitado.estado === 'pendiente') {
@@ -423,4 +438,9 @@
       </tr>
     </ng-template>
   </p-table>
+
+
+
+
 </div>
+
