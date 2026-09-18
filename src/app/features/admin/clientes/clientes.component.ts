@@ -9,6 +9,8 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 
+import { ConfirmationService, MessageService } from 'primeng/api';
+
 import { ClienteService } from '../../../core/services/cliente.service';
 import { EventService } from '../../../core/services/event.service';
 import { ClienteModel } from '../../../core/models/cliente.model';
@@ -35,6 +37,8 @@ export class ClientesComponent implements OnInit {
   private clienteService = inject(ClienteService);
   private eventService = inject(EventService);
   private dialogService = inject(DialogService);
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
   private cdr = inject(ChangeDetectorRef);
 
   clientes: ClienteModel[] = [];
@@ -130,18 +134,43 @@ export class ClientesComponent implements OnInit {
     });
   }
 
-  async eliminarCliente(cliente: ClienteModel) {
+  eliminarCliente(cliente: ClienteModel) {
     if (!cliente.id) return;
 
-    const mensaje = `¿Estás seguro de eliminar a "${cliente.nombreCompleto}" del catálogo de clientes?`;
-    if (confirm(mensaje)) {
-      try {
-        await this.clienteService.deleteCliente(cliente.id);
-        await this.cargarClientes();
-      } catch (error) {
-        console.error('Error al eliminar cliente:', error);
-      }
-    }
+    this.confirmationService.confirm({
+      header: 'Eliminar Cliente',
+      message: `¿Estás seguro de eliminar a "${cliente.nombreCompleto}" del catálogo de clientes? Esta acción no se puede deshacer.`,
+      icon: 'pi pi-trash text-red-500',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: async () => {
+        try {
+          await this.clienteService.deleteCliente(cliente.id!);
+          await this.cargarClientes();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Cliente Eliminado',
+            detail: `"${cliente.nombreCompleto}" fue eliminado del catálogo correctamente.`,
+          });
+        } catch (error) {
+          console.error('Error al eliminar cliente:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudo eliminar el cliente.',
+          });
+        }
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'Eliminación del cliente cancelada',
+        });
+      },
+    });
   }
 
   getWhatsappUrl(telefono?: string): string {

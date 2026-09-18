@@ -11,6 +11,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventService } from '../../core/services/event.service';
 import { Evento } from '../../core/models/event.model';
 import { InvitadoModel } from '../../core/models/invitado.model';
@@ -54,6 +55,8 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private eventService = inject(EventService);
   private dialogService = inject(DialogService);
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
 
   // Servicios inyectados para lógica pesada
   private zipDownloaderService = inject(ZipDownloaderService);
@@ -215,11 +218,35 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   salir(): void {
     const ev = this.evento();
-    if (ev?.id) {
-      sessionStorage.removeItem(`pin_${ev.id}`);
-    }
-    this.qrScannerService.detenerEscaner();
-    this.pinDesbloqueado.set(false);
+
+    this.confirmationService.confirm({
+      header: 'Cerrar Portal de Anfitrión',
+      message: '¿Deseas salir del portal de administración del evento y bloquear el acceso con PIN?',
+      icon: 'pi pi-power-off text-amber-500',
+      acceptLabel: 'Sí, salir',
+      rejectLabel: 'Permanecer',
+      acceptButtonStyleClass: 'p-button-warning',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: () => {
+        if (ev?.id) {
+          sessionStorage.removeItem(`pin_${ev.id}`);
+        }
+        this.qrScannerService.detenerEscaner();
+        this.pinDesbloqueado.set(false);
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Portal Bloqueado',
+          detail: 'Has salido del portal de anfitrión.',
+        });
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'Permaneces en el portal de anfitrión.',
+        });
+      },
+    });
   }
 
   async cargarInvitados(eventoId: string): Promise<void> {
@@ -267,25 +294,47 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     }
   }
 
-  async eliminarRecuerdo(recuerdo: RecuerdoModel): Promise<void> {
+  eliminarRecuerdo(recuerdo: RecuerdoModel): void {
     const ev = this.evento();
     if (!ev?.id || !recuerdo.id) return;
 
-    const seguro = confirm(
-      `¿Estás seguro de eliminar el recuerdo de "${recuerdo.nombreAutor}"? Se retirará del álbum inmediatamente.`,
-    );
-    if (!seguro) return;
-
-    this.eliminandoId.set(recuerdo.id);
-    try {
-      await this.eventService.eliminarRecuerdo(ev.id, recuerdo.id);
-      this.recuerdos.update((lista) => lista.filter((r) => r.id !== recuerdo.id));
-    } catch (error) {
-      console.error('Error al eliminar recuerdo:', error);
-      alert('Ocurrió un error al eliminar la foto. Intenta de nuevo.');
-    } finally {
-      this.eliminandoId.set(null);
-    }
+    this.confirmationService.confirm({
+      header: 'Eliminar Recuerdo del Álbum',
+      message: `¿Estás seguro de eliminar el recuerdo enviado por "${recuerdo.nombreAutor || 'Invitado'}"? Se retirará del álbum inmediatamente.`,
+      icon: 'pi pi-trash text-red-500',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: async () => {
+        this.eliminandoId.set(recuerdo.id!);
+        try {
+          await this.eventService.eliminarRecuerdo(ev.id!, recuerdo.id!);
+          this.recuerdos.update((lista) => lista.filter((r) => r.id !== recuerdo.id));
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Foto Eliminada',
+            detail: 'El recuerdo fue eliminado del álbum correctamente.',
+          });
+        } catch (error) {
+          console.error('Error al eliminar recuerdo:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Ocurrió un error al eliminar la foto. Intenta de nuevo.',
+          });
+        } finally {
+          this.eliminandoId.set(null);
+        }
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'No se eliminó ninguna foto.',
+        });
+      },
+    });
   }
 
   contarFotosTotales(): number {

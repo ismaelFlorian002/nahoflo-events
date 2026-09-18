@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import {
   coincidenNombresInvitados,
   EventService,
@@ -28,6 +29,8 @@ export class InvitadoFormModalComponent implements OnInit {
   private eventService = inject(EventService);
   public config = inject(DynamicDialogConfig);
   public ref = inject(DynamicDialogRef);
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
 
   invitado?: InvitadoModel;
   eventoId!: string;
@@ -124,9 +127,14 @@ export class InvitadoFormModalComponent implements OnInit {
     this.form.patchValue({ pasesConfirmados: nuevo });
   }
 
-  async guardar(): Promise<void> {
+  guardar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Formulario Incompleto',
+        detail: 'Por favor ingresa un nombre válido para el invitado.',
+      });
       return;
     }
 
@@ -135,6 +143,34 @@ export class InvitadoFormModalComponent implements OnInit {
       return;
     }
 
+    const nombre = (this.form.value.nombre || '').trim();
+    const header = this.esEdicion ? 'Confirmar Edición' : 'Confirmar Invitado';
+    const message = this.esEdicion
+      ? `¿Deseas guardar las modificaciones para "${nombre}"?`
+      : `¿Deseas registrar a "${nombre}" en la lista de invitados?`;
+
+    this.confirmationService.confirm({
+      header,
+      message,
+      icon: 'pi pi-user-plus text-gold-500',
+      acceptLabel: this.esEdicion ? 'Guardar Cambios' : 'Registrar Invitado',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'bg-gold-500 hover:bg-gold-600 text-white border-0',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: async () => {
+        await this.ejecutarGuardadoInvitado(nombre);
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'No se guardó el invitado.',
+        });
+      },
+    });
+  }
+
+  private async ejecutarGuardadoInvitado(nombre: string): Promise<void> {
     this.guardando.set(true);
     this.errorMensaje.set(null);
 
@@ -146,7 +182,7 @@ export class InvitadoFormModalComponent implements OnInit {
       if (this.esEdicion && this.invitado?.id) {
         // Actualizar invitado existente
         const datosActualizados: Partial<InvitadoModel> = {
-          nombre: valores.nombre.trim(),
+          nombre: nombre,
           asistira,
           estado,
           pasesConfirmados: Number(valores.pasesConfirmados) || (asistira ? 1 : 0),
@@ -155,11 +191,16 @@ export class InvitadoFormModalComponent implements OnInit {
         };
 
         await this.eventService.actualizarInvitado(this.eventoId, this.invitado.id, datosActualizados);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Invitado Actualizado',
+          detail: `Los datos de "${nombre}" fueron actualizados exitosamente.`,
+        });
         this.ref.close({ guardado: true, datos: datosActualizados });
       } else {
         // Crear nuevo invitado (o actualizar coincidencia si fue detectada)
         const datosInvitado: Partial<InvitadoModel> = {
-          nombre: valores.nombre.trim(),
+          nombre: nombre,
           asistira,
           estado,
           pasesConfirmados: Number(valores.pasesConfirmados) || (asistira ? 1 : 0),
@@ -169,11 +210,21 @@ export class InvitadoFormModalComponent implements OnInit {
         const match = this.coincidenciaExistente();
         if (match?.id) {
           await this.eventService.actualizarInvitado(this.eventoId, match.id, datosInvitado);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Invitado Sincronizado',
+            detail: `Se actualizó el registro existente de "${nombre}".`,
+          });
         } else {
           await this.eventService.agregarInvitado(
             this.eventoId,
             datosInvitado as Omit<InvitadoModel, 'id'>,
           );
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Invitado Registrado',
+            detail: `"${nombre}" fue agregado a la lista de invitados.`,
+          });
         }
 
         this.ref.close({ guardado: true });
@@ -185,6 +236,11 @@ export class InvitadoFormModalComponent implements OnInit {
           ? 'Ocurrió un error al guardar los cambios. Intenta nuevamente.'
           : 'Ocurrió un error al registrar el invitado. Intenta nuevamente.',
       );
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo guardar el invitado.',
+      });
     } finally {
       this.guardando.set(false);
     }

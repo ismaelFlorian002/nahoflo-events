@@ -9,6 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { SidebarModule } from 'primeng/sidebar';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { AuthService } from '../../../core/services/auth';
 
 @Component({
@@ -31,6 +32,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private elementRef = inject(ElementRef);
   private cdr = inject(ChangeDetectorRef);
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
 
   // Control de estado expandido / minimizado (Escritorio)
   sidebarExpandido = true;
@@ -181,8 +184,35 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     this.routerSub?.unsubscribe();
   }
 
-  async logout() {
-    await this.authService.logout();
-    this.router.navigate(['/login']);
+  logout() {
+    this.confirmationService.confirm({
+      header: 'Cerrar Sesión',
+      message: '¿Estás seguro de que deseas cerrar tu sesión en la plataforma?',
+      icon: 'pi pi-power-off text-red-500',
+      acceptLabel: 'Sí, cerrar sesión',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: async () => {
+        try {
+          await this.authService.logout();
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Sesión Finalizada',
+            detail: 'Has cerrado sesión exitosamente.',
+          });
+          this.router.navigate(['/login']);
+        } catch (error) {
+          console.error('Error al cerrar sesión:', error);
+        }
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'Permaneces en tu sesión activa.',
+        });
+      },
+    });
   }
 }

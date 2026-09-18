@@ -10,6 +10,9 @@ import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 import { CalendarModule } from 'primeng/calendar';
 import { TooltipModule } from 'primeng/tooltip';
 import { DockModule } from 'primeng/dock';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
 import { EventService } from '../../../core/services/event.service';
 import { EventFormComponent } from '../components/event-form/event-form.component';
 import { AsistenciasModalComponent } from '../components/asistencias-modal/asistencias-modal.component';
@@ -31,6 +34,8 @@ import { QrMesaModalComponent } from '../../album-digital/qr-mesa-modal/qr-mesa-
     TooltipModule,
     OverlayPanelModule,
     CalendarModule,
+    ConfirmDialogModule,
+    ToastModule,
   ],
   providers: [DialogService],
   templateUrl: './dashboard.component.html',
@@ -40,9 +45,12 @@ export class DashboardComponent implements OnInit {
   private eventService = inject(EventService);
   private cdr = inject(ChangeDetectorRef);
   private dialogService = inject(DialogService);
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
 
   // Lista base reactiva de eventos
   eventos = signal<any[]>([]);
+
 
   // Filtros reactivos
   filtroEstado = signal<'todos' | 'activos' | 'borradores'>('todos');
@@ -243,13 +251,84 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  async toggleEstado(evento: any) {
-    const accion = evento.estaActivo ? 'desactivar (pasar a borrador)' : 'activar';
+  toggleEstado(evento: any) {
+    const nuevoEstado = !evento.estaActivo;
+    const accion = nuevoEstado ? 'activar' : 'desactivar (pasar a borrador)';
+    const titulo = nuevoEstado ? 'Activar Evento' : 'Desactivar Evento';
 
-    if (confirm(`¿Estás seguro de ${accion} este evento?`)) {
-      await this.eventService.updateEvent(evento.id, { estaActivo: !evento.estaActivo });
-      await this.cargarEventos();
-    }
+    this.confirmationService.confirm({
+      header: titulo,
+      message: `¿Estás seguro de ${accion} el evento "${evento.titulo || evento.nombreEvento}"?`,
+      icon: nuevoEstado ? 'pi pi-check-circle text-emerald-500' : 'pi pi-exclamation-triangle text-amber-500',
+      acceptLabel: nuevoEstado ? 'Sí, activar' : 'Sí, desactivar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: nuevoEstado ? 'p-button-success' : 'p-button-warning',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: async () => {
+        try {
+          await this.eventService.updateEvent(evento.id, { estaActivo: nuevoEstado });
+          await this.cargarEventos();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Estado Actualizado',
+            detail: `El evento "${evento.titulo || evento.nombreEvento}" ha sido ${nuevoEstado ? 'activado' : 'desactivado'}.`,
+          });
+        } catch (error) {
+          console.error('Error al cambiar el estado del evento:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudo cambiar el estado del evento.',
+          });
+        }
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'No se realizaron cambios en el evento',
+        });
+      },
+    });
+  }
+
+  eliminarEvento(evento: any) {
+    if (!evento?.id) return;
+
+    this.confirmationService.confirm({
+      header: 'Eliminar Evento',
+      message: `¿Estás seguro de eliminar permanentemente el evento "${evento.titulo || evento.nombreEvento}"? Esta acción no se puede deshacer.`,
+      icon: 'pi pi-trash text-red-500',
+      acceptLabel: 'Sí, eliminar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: async () => {
+        try {
+          await this.eventService.deleteEvent(evento.id);
+          await this.cargarEventos();
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Evento Eliminado',
+            detail: `El evento "${evento.titulo || evento.nombreEvento}" ha sido eliminado correctamente.`,
+          });
+        } catch (error) {
+          console.error('Error al eliminar evento:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'No se pudo eliminar el evento.',
+          });
+        }
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'Eliminación del evento cancelada',
+        });
+      },
+    });
   }
 
   // Abre el modal de vista detalle con DialogService

@@ -11,7 +11,7 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
 import { ImagePreviewComponent } from './image-preview.component';
-import { PrimeNGConfig } from 'primeng/api';
+import { PrimeNGConfig, ConfirmationService, MessageService } from 'primeng/api';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { DropdownModule } from 'primeng/dropdown';
@@ -48,6 +48,8 @@ export class EventFormComponent implements OnInit {
   public config = inject(DynamicDialogConfig);
   private dialogService = inject(DialogService);
   private primengConfig = inject(PrimeNGConfig);
+  private confirmationService = inject(ConfirmationService);
+  private messageService = inject(MessageService);
   previewVisible = false;
   previewUrl = '';
   isEditMode = false;
@@ -218,7 +220,7 @@ export class EventFormComponent implements OnInit {
     this.cargarClientes();
   }
 
-  async saveEvent() {
+  saveEvent() {
     // Si falta PIN, lo generamos de inmediato
     if (!this.eventForm.get('pinAnfitrion')?.value) {
       this.generarPinAleatorio();
@@ -243,17 +245,43 @@ export class EventFormComponent implements OnInit {
     // Si el formulario es inválido, marcamos los campos en rojo y mostramos en consola
     if (this.eventForm.invalid) {
       this.eventForm.markAllAsTouched();
-      console.warn('Formulario inválido. Errores detectados:');
-      Object.keys(this.eventForm.controls).forEach((key) => {
-        const control = this.eventForm.get(key);
-        if (control?.invalid) {
-          console.warn(`Campo '${key}':`, control.errors);
-        }
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Formulario Incompleto',
+        detail: 'Por favor completa los campos obligatorios.',
       });
       return;
     }
 
     if (this.isSaving) return;
+
+    const header = this.isEditMode ? 'Confirmar Guardado' : 'Confirmar Nuevo Evento';
+    const message = this.isEditMode
+      ? `¿Deseas guardar las modificaciones realizadas en "${titulo}"?`
+      : `¿Deseas crear y publicar el nuevo evento "${titulo}"?`;
+
+    this.confirmationService.confirm({
+      header,
+      message,
+      icon: 'pi pi-question-circle text-gold-500',
+      acceptLabel: this.isEditMode ? 'Guardar Cambios' : 'Crear Evento',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'bg-gold-500 hover:bg-gold-600 text-white border-0',
+      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      accept: async () => {
+        await this.ejecutarGuardadoEvento();
+      },
+      reject: () => {
+        this.messageService.add({
+          severity: 'info',
+          summary: 'Cancelado',
+          detail: 'No se realizaron cambios en el evento.',
+        });
+      },
+    });
+  }
+
+  private async ejecutarGuardadoEvento() {
     this.isSaving = true;
 
     try {
@@ -361,16 +389,31 @@ export class EventFormComponent implements OnInit {
       // 5. Guardar en Firestore
       if (this.isEditMode && this.eventId) {
         await this.eventService.updateEvent(this.eventId, eventData);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Evento Actualizado',
+          detail: `Los cambios en "${formVal.titulo}" fueron guardados correctamente.`,
+        });
       } else {
         await this.eventService.createEvent({
           ...eventData,
           estaActivo: true,
+        });
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Evento Creado',
+          detail: `El evento "${formVal.titulo}" ha sido creado y publicado.`,
         });
       }
 
       this.ref.close(true);
     } catch (error) {
       console.error('Error guardando evento:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Ocurrió un problema al guardar el evento. Intenta nuevamente.',
+      });
     } finally {
       this.isSaving = false;
     }

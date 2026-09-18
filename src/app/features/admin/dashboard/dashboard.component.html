@@ -226,7 +226,7 @@
                 <i class="pi pi-whatsapp text-xs"></i>
               </a>
             </div>
-          </td>
+          </td>ev
           <td class="text-gray-600 text-sm font-medium">
             <div class="flex items-center gap-2">
               <i class="pi pi-calendar text-gray-400 text-xs"></i>
@@ -295,10 +295,20 @@
                 [icon]="evento.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"
                 [rounded]="true"
                 [text]="true"
-                [severity]="evento.estaActivo ? 'danger' : 'success'"
+                [severity]="evento.estaActivo ? 'warning' : 'success'"
                 [pTooltip]="evento.estaActivo ? 'Desactivar Evento' : 'Activar Evento'"
                 tooltipPosition="top"
                 (onClick)="toggleEstado(evento)">
+              </p-button>
+
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                [text]="true"
+                severity="danger"
+                pTooltip="Eliminar Evento"
+                tooltipPosition="top"
+                (onClick)="eliminarEvento(evento)">
               </p-button>
             </div>
           </td>
