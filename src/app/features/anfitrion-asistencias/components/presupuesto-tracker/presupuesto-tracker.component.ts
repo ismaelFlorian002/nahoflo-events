@@ -2,7 +2,7 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { InputTextModule } from 'primeng/inputtext';
@@ -13,6 +13,8 @@ import { Evento, ItemPresupuesto } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
 import { PresupuestoItemModalComponent } from '../presupuesto-item-modal/presupuesto-item-modal.component';
 import { BadgeModule } from 'primeng/badge';
+import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-presupuesto-tracker',
@@ -27,6 +29,8 @@ import { BadgeModule } from 'primeng/badge';
     InputTextModule,
     DropdownModule,
     BadgeModule,
+    OverlayPanelModule,
+    TooltipModule,
   ],
   templateUrl: './presupuesto-tracker.component.html',
   styleUrl: './presupuesto-tracker.component.scss',
@@ -52,7 +56,9 @@ export class PresupuestoTrackerComponent {
     const q = this.busqueda().trim().toLowerCase();
 
     if (cat !== 'todas') {
-      lista = lista.filter((i) => i.categoria === cat);
+      lista = lista.filter(
+        (i) => i.categoria === cat || (cat === 'Otros' && i.categoria === 'Otros Servicios'),
+      );
     }
 
     if (q) {
@@ -89,52 +95,90 @@ export class PresupuestoTrackerComponent {
 
   variacionAbsoluta = computed(() => Math.abs(this.variacionPresupuesto()));
 
-  categoriasFiltro = [
-    { label: 'Todas las Categorías', value: 'todas' },
-    { label: '🍷 Banquete & Bebidas', value: 'Banquete & Bebidas' },
-    { label: '🎧 Música & DJ', value: 'Música & DJ' },
-    { label: '🌸 Decoración & Flores', value: 'Decoración & Flores' },
-    { label: '📸 Fotografía & Video', value: 'Fotografía & Video' },
-    { label: '🏰 Salón / Lugar', value: 'Salón / Lugar' },
-    { label: '👗 Vestido & Imagen', value: 'Vestido & Imagen' },
-    { label: '🎁 Recuerdos & Papelería', value: 'Recuerdos & Papelería' },
-    { label: '📋 Coordinación & Planner', value: 'Coordinación & Planner' },
-    { label: '✨ Otros', value: 'Otros' },
+  // Catálogo de categorías con iconos/emojis (Estilo WhatsApp Messaging)
+  categoriasCatalogo = [
+    { label: 'Banquete & Bebidas', value: 'Banquete & Bebidas', emoji: '🍷' },
+    { label: 'Música & DJ', value: 'Música & DJ', emoji: '🎧' },
+    { label: 'Decoración & Flores', value: 'Decoración & Flores', emoji: '🌸' },
+    { label: 'Fotografía & Video', value: 'Fotografía & Video', emoji: '📸' },
+    { label: 'Salón / Lugar', value: 'Salón / Lugar', emoji: '🏰' },
+    { label: 'Vestido & Imagen', value: 'Vestido & Imagen', emoji: '👗' },
+    { label: 'Recuerdos & Papelería', value: 'Recuerdos & Papelería', emoji: '🎁' },
+    { label: 'Coordinación & Planner', value: 'Coordinación & Planner', emoji: '📋' },
+    { label: 'Otros Servicios', value: 'Otros', emoji: '✨' },
   ];
 
-  abrirModalNuevo(): void {
+  conteoPorCategoria = computed(() => {
+    const counts: Record<string, number> = {};
+    for (const item of this.items()) {
+      const c = item.categoria === 'Otros Servicios' ? 'Otros' : item.categoria;
+      if (c) {
+        counts[c] = (counts[c] || 0) + 1;
+      }
+    }
+    return counts;
+  });
+
+  labelFiltroCategoria = computed(() => {
+    const cat = this.categoriaSeleccionada();
+    if (cat === 'todas') return 'Todas';
+    const match = this.categoriasCatalogo.find((c) => c.value === cat);
+    return match ? match.label : cat;
+  });
+
+  conteoFiltroCategoria = computed(() => {
+    const cat = this.categoriaSeleccionada();
+    if (cat === 'todas') return String(this.items().length);
+    return String(this.conteoPorCategoria()[cat] || 0);
+  });
+
+  hayFiltrosActivos = computed(() => {
+    return this.categoriaSeleccionada() !== 'todas' || this.busqueda().trim() !== '';
+  });
+
+  seleccionarCategoria(cat: string, op?: OverlayPanel, dt?: Table): void {
+    this.categoriaSeleccionada.set(cat);
+    dt?.reset();
+    op?.hide();
+  }
+
+  limpiarTodosFiltros(dt?: Table): void {
+    this.categoriaSeleccionada.set('todas');
+    this.busqueda.set('');
+    dt?.reset();
+  }
+
+  // Método único para Agregar / Editar partidas presupuestarias
+  abrirModalPresupuesto(item?: ItemPresupuesto): void {
     const ref = this.dialogService.open(PresupuestoItemModalComponent, {
-      header: 'Registrar Nueva Partida Presupuestaria',
+      header: item ? 'Editar Partida Presupuestaria' : 'Registrar Nueva Partida Presupuestaria',
       width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
+      data: item ? { item } : undefined,
     });
 
     ref?.onClose.subscribe((res: any) => {
       if (res?.item) {
-        const nuevaLista = [...this.items(), res.item];
-        this.guardarPresupuesto(nuevaLista, 'Partida agregada al presupuesto.');
+        let nuevaLista: ItemPresupuesto[];
+        if (item) {
+          nuevaLista = this.items().map((i) => (i.id === res.item.id ? res.item : i));
+          this.guardarPresupuesto(nuevaLista, 'Partida actualizada.');
+        } else {
+          nuevaLista = [...this.items(), res.item];
+          this.guardarPresupuesto(nuevaLista, 'Partida agregada al presupuesto.');
+        }
       }
     });
   }
 
-  abrirModalEditar(item: ItemPresupuesto): void {
-    const ref = this.dialogService.open(PresupuestoItemModalComponent, {
-      header: 'Editar Partida Presupuestaria',
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '94vw' },
-      closable: true,
-      dismissableMask: true,
-      data: { item },
-    });
+  abrirModalNuevo(): void {
+    this.abrirModalPresupuesto();
+  }
 
-    ref?.onClose.subscribe((res: any) => {
-      if (res?.item) {
-        const nuevaLista = this.items().map((i) => (i.id === res.item.id ? res.item : i));
-        this.guardarPresupuesto(nuevaLista, 'Partida actualizada.');
-      }
-    });
+  abrirModalEditar(item: ItemPresupuesto): void {
+    this.abrirModalPresupuesto(item);
   }
 
   eliminarItem(item: ItemPresupuesto): void {

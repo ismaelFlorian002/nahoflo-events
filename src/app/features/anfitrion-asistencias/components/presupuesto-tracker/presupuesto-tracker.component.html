@@ -81,34 +81,92 @@
 
   <!-- Filtros & Barra de Búsqueda -->
   <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-3 justify-between items-center">
-    <div class="w-full sm:w-64">
-      <p-dropdown
-        [options]="categoriasFiltro"
-        [(ngModel)]="categoriaSeleccionada"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full"
-        placeholder="Categoría">
-      </p-dropdown>
+    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+      <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL (ESTILO MENSAJES WA) -->
+      <div class="filtro-dropdown-wrap">
+        <p-button
+          icon="pi pi-filter"
+          [label]="'Categoría: ' + labelFiltroCategoria()"
+          [badge]="conteoFiltroCategoria()"
+          badgeClass="p-badge-secondary"
+          size="small"
+          [outlined]="categoriaSeleccionada() === 'todas'"
+          [severity]="categoriaSeleccionada() !== 'todas' ? 'primary' : 'secondary'"
+          (onClick)="opFiltroCategoria.toggle($event)"
+          title="Filtrar por categoría de gasto">
+        </p-button>
+
+        <p-overlayPanel #opFiltroCategoria styleClass="popover-filtros-invitados">
+          <div class="menu-filtros-popover">
+            <div class="popover-filtros-header">
+              <i class="pi pi-filter"></i>
+              <span>Filtrar por categoría</span>
+            </div>
+
+            <div class="popover-filtros-lista max-h-80 overflow-y-auto pr-1">
+              <button
+                type="button"
+                class="item-filtro-btn"
+                [class.activo]="categoriaSeleccionada() === 'todas'"
+                (click)="seleccionarCategoria('todas', opFiltroCategoria, dt)">
+                <span class="filtro-item-left">
+                  <i class="pi pi-th-large text-slate-500"></i>
+                  <span>Todas las categorías</span>
+                </span>
+                <span class="badge-filtro-cant">{{ items().length }}</span>
+              </button>
+
+              @for (cat of categoriasCatalogo; track cat.value) {
+                <button
+                  type="button"
+                  class="item-filtro-btn"
+                  [class.activo]="categoriaSeleccionada() === cat.value"
+                  (click)="seleccionarCategoria(cat.value, opFiltroCategoria, dt)">
+                  <span class="filtro-item-left">
+                    <span class="text-base leading-none w-[18px] text-center inline-block">{{ cat.emoji }}</span>
+                    <span>{{ cat.label }}</span>
+                  </span>
+                  <span class="badge-filtro-cant">{{ conteoPorCategoria()[cat.value] || 0 }}</span>
+                </button>
+              }
+            </div>
+          </div>
+        </p-overlayPanel>
+      </div>
+
+      <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
+      @if (hayFiltrosActivos()) {
+        <p-button
+          icon="pi pi-filter-slash"
+          label="Limpiar filtros"
+          size="small"
+          [text]="true"
+          severity="secondary"
+          (onClick)="limpiarTodosFiltros(dt)"
+          pTooltip="Restablecer filtros"
+          tooltipPosition="top">
+        </p-button>
+      }
     </div>
 
-
+    <!-- Barra de Búsqueda -->
     <span class="p-input-icon-left w-full md:w-80">
-            <i class="pi pi-search text-gray-400"></i>
-            <input
-              pInputText
-              type="text"
-              class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
-              [ngModel]="busqueda()"
-              (ngModelChange)="busqueda.set($event)"
-              placeholder="Buscar concepto o proveedor..."
-            />
-          </span>
+      <i class="pi pi-search text-gray-400"></i>
+      <input
+        pInputText
+        type="text"
+        class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+        [ngModel]="busqueda()"
+        (ngModelChange)="busqueda.set($event)"
+        placeholder="Buscar concepto o proveedor..."
+      />
+    </span>
   </div>
 
-  <!-- Tabla Dinamica de Presupuesto -->
+  <!-- Tabla Dinámica de Presupuesto -->
   <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
     <p-table
+      #dt
       [value]="itemsFiltrados()"
       [paginator]="true"
       [rows]="10"
