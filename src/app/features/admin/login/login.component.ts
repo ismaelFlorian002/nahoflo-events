@@ -6,14 +6,21 @@ import { Router } from '@angular/router';
 // Módulos de PrimeNG necesarios para esta pantalla
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { PasswordModule } from 'primeng/password';
 import { CardModule } from 'primeng/card';
 import { AuthService } from '../../../core/services/auth';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  // Al ser Standalone, debemos importar estrictamente lo que usaremos
-  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, CardModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    PasswordModule,
+    CardModule,
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -27,6 +34,7 @@ export class LoginComponent {
   password = '';
   loading = false;
   errorMessage = '';
+  currentYear = new Date().getFullYear();
 
   async onLogin() {
     if (!this.email || !this.password) {

@@ -1,69 +1,32 @@
-/* Contenedor que ocupa toda la pantalla y centra la tarjeta */
-.login-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+:host {
+  display: block;
+  width: 100%;
   min-height: 100vh;
-  background-color: #f0f2f5;
-}
 
-/* Modificamos la tarjeta de PrimeNG de forma segura */
-:host ::ng-deep .login-card {
-  width: 100%;
-  max-width: 420px;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  ::ng-deep {
+    .login-password-input {
+      width: 100%;
+      position: relative;
 
-  .p-card-title {
-    text-align: center;
-    font-size: 1.8rem;
-    color: #1a1a1a;
-  }
+      .p-password-input {
+        width: 100%;
+      }
 
-  .p-card-subtitle {
-    text-align: center;
-    color: #6c757d;
-  }
-}
+      .p-password-mask-icon,
+      .p-password-unmask-icon {
+        position: absolute;
+        right: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9ca3af;
+        cursor: pointer;
+        font-size: 0.95rem;
 
-/* Estructura de nuestro formulario interno */
-.form-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  label {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #495057;
-  }
-
-  input {
-    width: 100%;
-    padding: 0.75rem;
-    border-radius: 6px;
+        &:hover {
+          color: #4b5563;
+        }
+      }
+    }
   }
 }
 
-.error-text {
-  color: #e24c4c;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-align: center;
-}
-
-/* Forzamos al botón de PrimeNG a ocupar el 100% del ancho limpiamente */
-:host ::ng-deep p-button .p-button {
-  width: 100%;
-  justify-content: center;
-  padding: 0.8rem;
-  border-radius: 6px;
-  margin-top: 0.5rem;
-}

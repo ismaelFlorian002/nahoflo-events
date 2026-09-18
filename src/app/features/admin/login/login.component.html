@@ -1,29 +1,98 @@
-<div class="login-wrapper">
-  <!-- Tarjeta de PrimeNG -->
-  <p-card header="NahoFlo Studio" subheader="Acceso Restringido" styleClass="login-card">
-    <div class="form-container">
+<div class="min-h-screen w-full bg-slate-950 flex flex-col justify-between items-center relative overflow-hidden select-none p-4 sm:p-6">
 
-      <div class="input-group">
-        <label for="email">Correo Electrónico</label>
-        <input id="email" type="email" pInputText [(ngModel)]="email" placeholder="admin@nahoflo.com" autocomplete="off" />
+  <!-- FONDOS DECORATIVOS AMBIENTALES -->
+  <div class="absolute -top-32 -left-32 w-96 h-96 bg-gold-500/15 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-pastel-pink-300/15 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- ESPACIADOR SUPERIOR PARA CENTRADO VERTICAL -->
+  <div></div>
+
+  <!-- TARJETA PRINCIPAL GLASSMORPHIC DE LOGIN -->
+  <div class="relative z-10 w-full max-w-[420px] bg-white/95 backdrop-blur-2xl border border-white/50 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] rounded-3xl p-6 sm:p-9 transition-all duration-300 my-auto">
+    
+    <!-- CABECERA: LOGO Y TÍTULOS DE MARCA -->
+    <div class="flex flex-col items-center text-center mb-7">
+      <div class="mb-3.5 p-3 rounded-2xl bg-white shadow-xs border border-gray-100 inline-flex items-center justify-center">
+        <img
+          src="logo.png"
+          alt="NahoFlo Creative Studio"
+          class="h-10 sm:h-11 w-auto max-w-[140px] object-contain" />
+      </div>
+      <span class="text-[11px] font-bold text-gold-600 uppercase tracking-widest bg-gold-50 border border-gold-200/60 px-2.5 py-0.5 rounded-full mb-1">
+        Panel Administrativo
+      </span>
+      <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight m-0">
+        Iniciar Sesión
+      </h1>
+      <p class="text-xs text-gray-400 m-0 mt-1">
+        Ingresa tus credenciales para acceder a la gestión de eventos
+      </p>
+    </div>
+
+    <!-- FORMULARIO DE ACCESO -->
+    <form (ngSubmit)="onLogin()" class="flex flex-col gap-4">
+
+      <!-- CAMPO: CORREO ELECTRÓNICO -->
+      <div class="flex flex-col gap-1.5">
+        <label for="email" class="text-xs font-semibold text-gray-700 tracking-wide">
+          Correo Electrónico
+        </label>
+        <div class="relative flex items-center">
+          <i class="pi pi-envelope absolute left-3.5 text-gray-400 text-sm z-10 pointer-events-none"></i>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            pInputText
+            [(ngModel)]="email"
+            placeholder="admin@nahoflo.com"
+            autocomplete="username"
+            class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-100 transition-all bg-gray-50/50 focus:bg-white text-gray-900 outline-none" />
+        </div>
       </div>
 
-      <div class="input-group">
-        <label for="password">Contraseña</label>
-        <input id="password" type="password" pInputText [(ngModel)]="password" placeholder="••••••••" (keyup.enter)="onLogin()" />
+      <!-- CAMPO: CONTRASEÑA CON TOGGLE EYE -->
+      <div class="flex flex-col gap-1.5">
+        <label for="password" class="text-xs font-semibold text-gray-700 tracking-wide">
+          Contraseña
+        </label>
+        <p-password
+          id="password"
+          name="password"
+          [(ngModel)]="password"
+          [toggleMask]="true"
+          [feedback]="false"
+          placeholder="••••••••"
+          styleClass="w-full login-password-input"
+          inputStyleClass="w-full py-2.5 rounded-xl border border-gray-200 text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-100 transition-all bg-gray-50/50 focus:bg-white text-gray-900 outline-none"
+          (keyup.enter)="onLogin()">
+        </p-password>
       </div>
 
-      <!-- Mensaje de error dinámico -->
-      <small class="error-text" *ngIf="errorMessage">{{ errorMessage }}</small>
+      <!-- ALERTA DE ERROR -->
+      <div *ngIf="errorMessage" class="flex items-center gap-2.5 p-3 rounded-xl bg-red-50 border border-red-200/80 text-red-600 text-xs font-medium">
+        <i class="pi pi-exclamation-circle text-base shrink-0"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
 
-      <!-- Botón nativo de PrimeNG -->
+      <!-- BOTÓN DE INGRESO -->
       <p-button
+        type="submit"
         label="Ingresar al Panel"
-        icon="pi pi-lock"
+        icon="pi pi-arrow-right"
+        iconPos="right"
         [loading]="loading"
-        (onClick)="onLogin()">
+        styleClass="w-full bg-gold-500 hover:bg-gold-600 text-white font-semibold py-3 rounded-xl shadow-xs border-0 text-sm transition-all hover:shadow-md hover:scale-[1.01] active:scale-[0.99] cursor-pointer mt-1">
       </p-button>
 
-    </div>
-  </p-card>
+    </form>
+  </div>
+
+  <!-- PIE DE PÁGINA RESTRITO -->
+  <footer class="text-xs text-slate-400 font-medium text-center relative z-10 py-4">
+    &copy; {{ currentYear }} NahoFlo Creative Studio. Todos los derechos reservados.
+  </footer>
+
 </div>
+
