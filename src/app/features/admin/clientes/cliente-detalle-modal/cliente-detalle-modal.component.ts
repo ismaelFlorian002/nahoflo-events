@@ -4,12 +4,13 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
-import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
-import { A11yModule } from '@angular/cdk/a11y';
 
 import { ClienteModel } from '../../../../core/models/cliente.model';
 import { Evento } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
+// import { ClipboardModule } from '@angular/cdk/clipboard';
+import { Clipboard, ClipboardModule } from '@angular/cdk/clipboard';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @Component({
   selector: 'app-cliente-detalle-modal',

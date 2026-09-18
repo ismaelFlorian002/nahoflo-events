@@ -1,0 +1,180 @@
+<p-table
+  [value]="tableRows()"
+  [loading]="loading()"
+  [paginator]="guests().length > 10"
+  [rows]="10"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  responsiveLayout="scroll"
+  styleClass="p-datatable-sm p-datatable-striped"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Nombre / Familia</th>
+      <th>Respuesta</th>
+      <th style="text-align: center;">Pases</th>
+      <th>WhatsApp</th>
+      <th>Mensaje</th>
+      @if (showVipPassActions()) {
+        <th style="text-align: center;">Pase VIP</th>
+      }
+      <th style="text-align: right;">Acciones</th>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="body">
+    @for (guest of guests(); track guest.id ?? guest.nombre) {
+      <tr>
+        <td>
+          <strong>{{ guest.nombre }}</strong>
+        </td>
+
+        <td>
+          <p-tag
+            [value]="getStatusLabel(guest)"
+            [severity]="getStatusSeverity(guest)"
+            [rounded]="true"
+          />
+        </td>
+
+        <td style="text-align: center;">
+          @if (canReceivePass(guest)) {
+            <p-button
+              icon="pi pi-minus"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              [disabled]="(guest.pasesConfirmados || 1) <= 1"
+              (onClick)="emitPassChange(guest, -1)"
+              title="Restar pase"
+            />
+            <p-tag [value]="(guest.pasesConfirmados || 1).toString()" severity="info" />
+            <p-button
+              icon="pi pi-plus"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="emitPassChange(guest, 1)"
+              title="Sumar pase"
+            />
+          } @else {
+            <p-tag value="0" severity="secondary" />
+          }
+        </td>
+
+        <td>
+          @if (guest.telefono) {
+            <p-tag [value]="guest.telefono" severity="success" icon="pi pi-whatsapp" />
+          } @else {
+            <p-tag value="-" severity="secondary" />
+          }
+        </td>
+
+        <td>
+          @if (guest.mensaje) {
+            <span>{{ guest.mensaje }}</span>
+          } @else {
+            <p-tag value="-" severity="secondary" />
+          }
+        </td>
+
+        @if (showVipPassActions()) {
+          <td style="text-align: center;">
+            @if (canReceivePass(guest)) {
+              <p-button
+                icon="pi pi-qrcode"
+                [rounded]="true"
+                [text]="true"
+                severity="warning"
+                (onClick)="showQrPass.emit(guest)"
+                title="Ver Pase QR VIP"
+              />
+            } @else {
+              <p-tag value="-" severity="secondary" />
+            }
+          </td>
+        }
+
+        <td style="text-align: right;">
+          @if (showInvitationActions()) {
+            <p-button
+              icon="pi pi-whatsapp"
+              [rounded]="true"
+              [text]="true"
+              severity="success"
+              (onClick)="sendInvitation.emit(guest)"
+              title="Enviar invitación"
+            />
+          }
+
+          <p-button
+            icon="pi pi-ticket"
+            [rounded]="true"
+            [text]="true"
+            severity="warning"
+            (onClick)="sendVipPass.emit(guest)"
+            title="Enviar pase"
+          />
+
+          @if (guest.haIngresado) {
+            <p-button
+              icon="pi pi-undo"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              (onClick)="revertCheckInGuest.emit(guest)"
+              title="Revertir ingreso"
+            />
+          } @else {
+            <p-button
+              icon="pi pi-check"
+              [rounded]="true"
+              [text]="true"
+              severity="success"
+              (onClick)="checkInGuest.emit(guest)"
+              title="Marcar ingreso"
+            />
+          }
+
+          <p-button
+            icon="pi pi-eye"
+            [rounded]="true"
+            [text]="true"
+            severity="info"
+            (onClick)="viewGuest.emit(guest)"
+            title="Ver detalle"
+          />
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            [text]="true"
+            severity="secondary"
+            (onClick)="editGuest.emit(guest)"
+            title="Editar invitado"
+          />
+          <p-button
+            icon="pi pi-trash"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            (onClick)="deleteGuest.emit(guest)"
+            title="Eliminar invitado"
+          />
+        </td>
+      </tr>
+    }
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td [attr.colspan]="showVipPassActions() ? 7 : 6" style="text-align: center;">
+        @if (loading()) {
+          Cargando invitados...
+        } @else {
+          No se encontraron invitados.
+        }
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

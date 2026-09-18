@@ -1,0 +1,63 @@
+<p-card>
+  <ng-template pTemplate="title">
+    Escáner en Puerta
+  </ng-template>
+
+  <ng-template pTemplate="subtitle">
+    <p-tag [value]="statusLabel()" [severity]="statusSeverity()" [rounded]="true" />
+  </ng-template>
+
+  <p-toolbar>
+    <ng-template pTemplate="start">
+      @if (qrScanner.status() === 'starting' || qrScanner.status() === 'stopping') {
+        <p-progressSpinner
+          strokeWidth="4"
+          animationDuration=".8s"
+          ariaLabel="Procesando cámara"
+          [style]="{ width: '2rem', height: '2rem' }"
+        />
+      } @else {
+        <p-tag
+          [value]="qrScanner.isActive() ? 'Lista para escanear' : 'Cámara inactiva'"
+          [severity]="qrScanner.isActive() ? 'success' : 'secondary'"
+          icon="pi pi-camera"
+        />
+      }
+    </ng-template>
+
+    <ng-template pTemplate="end">
+      <p-button
+        [label]="qrScanner.isActive() ? 'Detener Cámara' : 'Activar Cámara'"
+        [icon]="qrScanner.isActive() ? 'pi pi-power-off' : 'pi pi-video'"
+        [severity]="qrScanner.isActive() ? 'danger' : 'primary'"
+        [disabled]="!canToggleScanner()"
+        (onClick)="toggleScanner()"
+      />
+    </ng-template>
+  </p-toolbar>
+
+  <div style="position: relative; min-height: 18rem; margin-top: 1rem; overflow: hidden;">
+    <div [id]="readerElementId" style="min-height: 18rem; width: 100%;"></div>
+
+    @if (!qrScanner.isActive()) {
+      <div
+        style="position: absolute; inset: 0; display: grid; place-items: center; background: var(--surface-100);"
+      >
+        <p-button
+          label="Encender cámara y escanear pases VIP"
+          icon="pi pi-camera"
+          [disabled]="!canToggleScanner()"
+          (onClick)="startScanner()"
+        />
+      </div>
+    }
+  </div>
+
+  @if (qrScanner.error(); as error) {
+    <p-message severity="error" [text]="error.message" />
+  }
+
+  @if (qrScanner.result(); as result) {
+    <p-message severity="success" text="Pase leído correctamente." />
+  }
+</p-card>
