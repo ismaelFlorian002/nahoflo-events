@@ -1,4 +1,4 @@
-/* Header de Pestañas Fijo (Sticky) en Modal */
+/* Header de Pestañas Fijo (Sticky) sin Scrollbar Visible */
 :host ::ng-deep .p-tabview {
   .p-tabview-nav-container {
     position: sticky;
@@ -9,15 +9,29 @@
     z-index: 50;
     width: auto;
     border-bottom: 1px solid #e2e8f0;
+    overflow: hidden;
   }
+
+  .p-tabview-nav-btn {
+    display: none !important;
+  }
+
   .p-tabview-nav {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
     white-space: nowrap;
     border-bottom: none;
+
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
 
     li .p-tabview-nav-link {
       padding: 0.75rem 1rem;
