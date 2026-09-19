@@ -85,38 +85,27 @@ export class ChecklistTrackerComponent {
     );
   }
 
-  abrirModalNuevo(): void {
+  abrirModalTarea(tarea?: TareaPlaneacion): void {
+    const esEdicion = !!tarea;
     const ref = this.dialogService.open(ChecklistItemModalComponent, {
-      header: 'Añadir Tarea al Checklist',
+      header: esEdicion ? 'Editar Tarea' : 'Añadir Tarea al Checklist',
       width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
+      data: tarea ? { tarea } : undefined,
     });
 
     ref?.onClose.subscribe((res: any) => {
-      if (res?.tarea) {
-        const nuevaLista = [...this.tareas(), res.tarea];
-        this.guardarChecklist(nuevaLista, 'Tarea agregada al checklist.');
-      }
-    });
-  }
+      if (!res?.tarea) return;
 
-  abrirModalEditar(tarea: TareaPlaneacion): void {
-    const ref = this.dialogService.open(ChecklistItemModalComponent, {
-      header: 'Editar Tarea',
-      width: '640px',
-      breakpoints: { '960px': '85vw', '640px': '94vw' },
-      closable: true,
-      dismissableMask: true,
-      data: { tarea },
-    });
+      const nuevaLista = esEdicion
+        ? this.tareas().map((t) => (t.id === res.tarea.id ? res.tarea : t))
+        : [...this.tareas(), res.tarea];
 
-    ref?.onClose.subscribe((res: any) => {
-      if (res?.tarea) {
-        const nuevaLista = this.tareas().map((t) => (t.id === res.tarea.id ? res.tarea : t));
-        this.guardarChecklist(nuevaLista, 'Tarea actualizada.');
-      }
+      const mensaje = esEdicion ? 'Tarea actualizada.' : 'Tarea agregada al checklist.';
+
+      this.guardarChecklist(nuevaLista, mensaje);
     });
   }
 

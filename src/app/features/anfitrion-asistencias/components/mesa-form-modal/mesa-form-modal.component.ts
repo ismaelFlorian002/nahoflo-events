@@ -6,6 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { FloatLabelModule } from 'primeng/floatlabel';
 import { FormaMesa, MesaDiseno } from '../../../../core/models/event.model';
 
 @Component({
@@ -18,6 +19,7 @@ import { FormaMesa, MesaDiseno } from '../../../../core/models/event.model';
     InputTextModule,
     InputNumberModule,
     DropdownModule,
+    FloatLabelModule,
   ],
   templateUrl: './mesa-form-modal.component.html',
   styleUrl: './mesa-form-modal.component.scss',

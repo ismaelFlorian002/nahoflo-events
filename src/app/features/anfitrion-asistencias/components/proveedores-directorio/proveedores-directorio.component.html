@@ -1,9 +1,11 @@
 <div class="space-y-6">
   <!-- Header del Módulo -->
-  <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+  <div
+    class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
     <div>
       <div class="flex items-center gap-2">
-        <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-purple-100 text-purple-700 font-bold">
+        <span
+          class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-purple-100 text-purple-700 font-bold">
           <i class="pi pi-briefcase text-lg"></i>
         </span>
         <h2 class="text-xl font-bold text-slate-800 tracking-tight">Directorio de Proveedores</h2>
@@ -18,45 +20,96 @@
       icon="pi pi-plus"
       severity="primary"
       styleClass="p-button-sm font-semibold"
-      (onClick)="abrirModalNuevo()">
+      (onClick)="abrirModalProveedor()">
     </p-button>
   </div>
 
-  <!-- Filtros & Buscador -->
-  <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-3 justify-between items-center">
-    <div class="w-full sm:w-64">
-      <p-dropdown
-        [options]="categoriasFiltro"
-        [(ngModel)]="categoriaSeleccionada"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full"
-        placeholder="Categoría">
-      </p-dropdown>
+
+    <!-- Filtros & Buscador -->
+  <div
+    class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-3 justify-between items-center">
+
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- BOTÓN DE FILTRO CON OVERLAYPANEL (IDÉNTICO A LISTA DE INVITADOS / MENSAJES WA) -->
+      <div class="filtro-dropdown-wrap">
+        <p-button
+          icon="pi pi-filter"
+          [label]="'Categoría: ' + labelFiltroCategoria()"
+          [badge]="conteoFiltroCategoria().toString()"
+          badgeClass="p-badge-secondary"
+          size="small"
+          [outlined]="categoriaSeleccionada() === 'todas'"
+          [severity]="categoriaSeleccionada() !== 'todas' ? 'primary' : 'secondary'"
+          (onClick)="opFiltrosCategoria.toggle($event)"
+          title="Filtrar por categoría de proveedor">
+        </p-button>
+
+        <p-overlayPanel #opFiltrosCategoria styleClass="popover-filtros-invitados">
+          <div class="menu-filtros-popover">
+            <div class="popover-filtros-header">
+              <i class="pi pi-filter"></i>
+              <span>FILTRAR POR CATEGORÍA</span>
+            </div>
+
+            <div class="popover-filtros-lista">
+              @for (cat of categoriasFiltro; track cat.value) {
+                <button
+                  type="button"
+                  class="item-filtro-btn"
+                  [class.activo]="categoriaSeleccionada() === cat.value"
+                  (click)="seleccionarCategoria(cat.value, opFiltrosCategoria)">
+                  <span class="filtro-item-left">
+                    <span>{{ cat.label }}</span>
+                  </span>
+                  <span class="badge-filtro-cant">{{ conteoPorCategoria(cat.value) }}</span>
+                </button>
+              }
+            </div>
+          </div>
+        </p-overlayPanel>
+      </div>
+
+      <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
+      @if (hayFiltrosActivos()) {
+        <p-button
+          icon="pi pi-filter-slash"
+          label="Limpiar filtros"
+          size="small"
+          [text]="true"
+          severity="secondary"
+          (onClick)="limpiarFiltros()"
+          pTooltip="Restablecer todos los filtros"
+          tooltipPosition="top">
+        </p-button>
+      }
     </div>
 
-    <div class="relative w-full sm:w-72">
-      <i class="pi pi-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+
+    <!-- BÚSQUEDA GLOBAL (A LA DERECHA COMO EN /ADMIN) -->
+    <span class="p-input-icon-left w-full md:w-80">
+      <i class="pi pi-search text-gray-400"></i>
       <input
-        type="text"
         pInputText
+        type="text"
+        class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
         [ngModel]="busqueda()"
         (ngModelChange)="busqueda.set($event)"
-        placeholder="Buscar proveedor o contacto..."
-        class="w-full pl-9 p-inputtext-sm rounded-xl"
-      />
-    </div>
+        placeholder="Buscar por nombre, teléfono o notas..." />
+    </span>
   </div>
+
 
   <!-- Tarjetero de Proveedores -->
   @if (proveedoresFiltrados().length > 0) {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       @for (prov of proveedoresFiltrados(); track prov.id) {
-        <div class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between">
+        <div
+          class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between">
           <div>
             <!-- Categoría Badge -->
             <div class="flex items-center justify-between mb-3">
-              <span class="text-[11px] font-bold tracking-wider uppercase bg-purple-50 text-purple-700 border border-purple-100 px-2.5 py-1 rounded-full">
+              <span
+                class="text-[11px] font-bold tracking-wider uppercase bg-purple-50 text-purple-700 border border-purple-100 px-2.5 py-1 rounded-full">
                 {{ prov.categoria }}
               </span>
 
@@ -66,7 +119,7 @@
                   icon="pi pi-pencil"
                   class="p-button-text p-button-secondary p-button-sm !w-7 !h-7"
                   pTooltip="Editar"
-                  (click)="abrirModalEditar(prov)">
+                  (click)="abrirModalProveedor(prov)">
                 </button>
                 <button
                   pButton
@@ -118,17 +171,16 @@
           </div>
 
           <!-- Botón de Contacto Directo por WhatsApp -->
-          <div class="pt-2 border-t border-slate-100">
+          <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
             @if (prov.telefono) {
-              <button
-                pButton
-                label="Contactar por WhatsApp"
+              <p-button
+                label="Contactar"
+                size="small"
                 icon="pi pi-whatsapp"
                 severity="success"
-                [outlined]="true"
-                styleClass="w-full p-button-sm !rounded-xl"
+                outlined="true"
                 (click)="contactarWhatsApp(prov)">
-              </button>
+              </p-button>
             } @else {
               <span class="text-xs text-slate-400 block text-center py-1">Sin teléfono registrado</span>
             }
@@ -149,7 +201,7 @@
           icon="pi pi-plus"
           severity="primary"
           styleClass="p-button-sm font-semibold"
-          (onClick)="abrirModalNuevo()">
+          (onClick)="abrirModalProveedor()">
         </p-button>
       </div>
     </div>

@@ -9,6 +9,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, ProveedorEvento } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
 import { ProveedorModalComponent } from '../proveedor-modal/proveedor-modal.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { TooltipModule } from 'primeng/tooltip';
+import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'app-proveedores-directorio',
@@ -19,6 +22,9 @@ import { ProveedorModalComponent } from '../proveedor-modal/proveedor-modal.comp
     ButtonModule,
     InputTextModule,
     DropdownModule,
+    OverlayPanelModule,
+    TooltipModule,
+    BadgeModule,
   ],
   templateUrl: './proveedores-directorio.component.html',
   styleUrl: './proveedores-directorio.component.scss',
@@ -71,40 +77,59 @@ export class ProveedoresDirectorioComponent {
     { label: '✨ Otro', value: 'Otro' },
   ];
 
-  abrirModalNuevo(): void {
+  labelFiltroCategoria = computed(() => {
+    const cat = this.categoriaSeleccionada();
+    if (cat === 'todas') return 'Todas';
+    const found = this.categoriasFiltro.find((c) => c.value === cat);
+    return found ? found.label : cat;
+  });
+
+  conteoFiltroCategoria = computed(() => {
+    const cat = this.categoriaSeleccionada();
+    if (cat === 'todas') return this.proveedores().length;
+    return this.proveedores().filter((p) => p.categoria === cat).length;
+  });
+
+  conteoPorCategoria(categoriaVal: string): number {
+    if (categoriaVal === 'todas') return this.proveedores().length;
+    return this.proveedores().filter((p) => p.categoria === categoriaVal).length;
+  }
+
+  seleccionarCategoria(categoriaVal: string, op: any): void {
+    this.categoriaSeleccionada.set(categoriaVal);
+    op?.hide();
+  }
+
+  hayFiltrosActivos = computed(() => {
+    return this.categoriaSeleccionada() !== 'todas' || this.busqueda().trim() !== '';
+  });
+
+  limpiarFiltros(): void {
+    this.categoriaSeleccionada.set('todas');
+    this.busqueda.set('');
+  }
+
+  abrirModalProveedor(proveedor?: ProveedorEvento): void {
+    const esEdicion = !!proveedor;
     const ref = this.dialogService.open(ProveedorModalComponent, {
-      header: 'Añadir Nuevo Proveedor',
+      header: esEdicion ? 'Editar Proveedor' : 'Añadir Nuevo Proveedor',
       width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
+      data: proveedor ? { proveedor } : undefined,
     });
 
     ref?.onClose.subscribe((res: any) => {
-      if (res?.proveedor) {
-        const nuevaLista = [...this.proveedores(), res.proveedor];
-        this.guardarProveedores(nuevaLista, 'Proveedor agregado al directorio.');
-      }
-    });
-  }
+      if (!res?.proveedor) return;
 
-  abrirModalEditar(proveedor: ProveedorEvento): void {
-    const ref = this.dialogService.open(ProveedorModalComponent, {
-      header: 'Editar Proveedor',
-      width: '640px',
-      breakpoints: { '960px': '85vw', '640px': '94vw' },
-      closable: true,
-      dismissableMask: true,
-      data: { proveedor },
-    });
+      const nuevaLista = esEdicion
+        ? this.proveedores().map((p) => (p.id === res.proveedor.id ? res.proveedor : p))
+        : [...this.proveedores(), res.proveedor];
 
-    ref?.onClose.subscribe((res: any) => {
-      if (res?.proveedor) {
-        const nuevaLista = this.proveedores().map((p) =>
-          p.id === res.proveedor.id ? res.proveedor : p,
-        );
-        this.guardarProveedores(nuevaLista, 'Proveedor actualizado.');
-      }
+      const mensaje = esEdicion ? 'Proveedor actualizado.' : 'Proveedor agregado al directorio.';
+
+      this.guardarProveedores(nuevaLista, mensaje);
     });
   }
 

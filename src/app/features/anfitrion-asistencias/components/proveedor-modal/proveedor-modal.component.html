@@ -1,20 +1,27 @@
-<form [formGroup]="form" (ngSubmit)="guardar()" class="p-1 space-y-4">
-  <!-- Empresa & Categoría -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nombre Comercial / Empresa *</label>
-      <input
-        type="text"
-        pInputText
-        formControlName="empresa"
-        placeholder="Ej. AudioVision & DJ Studio"
-        class="w-full p-inputtext-sm"
-      />
-    </div>
+<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-12 gap-x-5 gap-y-7 pt-6">
 
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Categoría del Proveedor *</label>
+  <!-- FILA 1: NOMBRE COMERCIAL (6 COLS) Y CATEGORÍA (6 COLS) -->
+  <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+    <p-floatLabel class="w-full block">
+      <input
+        pInputText
+        id="empresa"
+        type="text"
+        formControlName="empresa"
+        class="w-full"
+        autocomplete="off" />
+      <label for="empresa">Nombre Comercial / Empresa *</label>
+    </p-floatLabel>
+    @if (form.get('empresa')?.touched && form.get('empresa')?.invalid) {
+      <span class="text-xs text-rose-500 font-semibold pl-1">El nombre de la empresa es requerido.</span>
+    }
+  </div>
+
+  <div class="col-span-12 sm:col-span-6">
+    <p-floatLabel class="w-full block">
       <p-dropdown
+        id="categoria"
+        inputId="categoria"
         [options]="categorias"
         formControlName="categoria"
         optionLabel="label"
@@ -22,88 +29,101 @@
         styleClass="w-full"
         placeholder="Seleccionar Categoría">
       </p-dropdown>
-    </div>
+      <label for="categoria">Categoría del Proveedor *</label>
+    </p-floatLabel>
   </div>
 
-  <!-- Contacto Directo & Teléfono -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Nombre de Contacto</label>
+  <!-- FILA 2: NOMBRE DE CONTACTO (6 COLS) Y TELÉFONO / WHATSAPP (6 COLS) -->
+  <div class="col-span-12 sm:col-span-6">
+    <p-floatLabel class="w-full block">
       <input
-        type="text"
         pInputText
+        id="contactoNombre"
+        type="text"
         formControlName="contactoNombre"
-        placeholder="Ej. Ing. Roberto Mendoza"
-        class="w-full p-inputtext-sm"
-      />
-    </div>
-
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Teléfono / WhatsApp</label>
-      <input
-        type="text"
-        pInputText
-        formControlName="telefono"
-        placeholder="Ej. 5512345678"
-        class="w-full p-inputtext-sm"
-      />
-    </div>
+        class="w-full"
+        autocomplete="off" />
+      <label for="contactoNombre">Nombre de Contacto</label>
+    </p-floatLabel>
   </div>
 
-  <!-- Correo & Monto del Contrato -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Correo Electrónico</label>
+  <div class="col-span-12 sm:col-span-6">
+    <p-floatLabel class="w-full block">
       <input
-        type="email"
         pInputText
-        formControlName="email"
-        placeholder="contacto@empresa.com"
-        class="w-full p-inputtext-sm"
-      />
-    </div>
+        id="telefono"
+        type="text"
+        formControlName="telefono"
+        class="w-full"
+        autocomplete="off" />
+      <label for="telefono">Teléfono / WhatsApp</label>
+    </p-floatLabel>
+  </div>
 
-    <div>
-      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Monto Total del Contrato ($)</label>
+  <!-- FILA 3: CORREO ELECTRÓNICO (6 COLS) Y MONTO DEL CONTRATO (6 COLS) -->
+  <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+    <p-floatLabel class="w-full block">
+      <input
+        pInputText
+        id="email"
+        type="email"
+        formControlName="email"
+        class="w-full"
+        autocomplete="off" />
+      <label for="email">Correo Electrónico</label>
+    </p-floatLabel>
+    @if (form.get('email')?.touched && form.get('email')?.invalid) {
+      <span class="text-xs text-rose-500 font-semibold pl-1">Ingresa un correo electrónico válido.</span>
+    }
+  </div>
+
+  <div class="col-span-12 sm:col-span-6">
+    <p-floatLabel class="w-full block">
       <p-inputNumber
+        id="montoContrato"
+        inputId="montoContrato"
         formControlName="montoContrato"
         mode="currency"
         currency="MXN"
         locale="es-MX"
         styleClass="w-full"
-        inputStyleClass="w-full text-sm font-semibold text-slate-800"
+        inputStyleClass="w-full font-semibold text-slate-800"
         [min]="0">
       </p-inputNumber>
-    </div>
+      <label for="montoContrato">Monto Total del Contrato ($)</label>
+    </p-floatLabel>
   </div>
 
-  <!-- Notas Clave -->
-  <div>
-    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Notas del Contrato / Requerimientos</label>
-    <input
-      type="text"
-      pInputText
-      formControlName="notas"
-      placeholder="Ej. Requiere mesa con mantel negro y toma de corriente de 220V"
-      class="w-full p-inputtext-sm"
-    />
+  <!-- FILA 4: NOTAS DEL CONTRATO (12 COLS) -->
+  <div class="col-span-12">
+    <p-floatLabel class="w-full block">
+      <input
+        pInputText
+        id="notas"
+        type="text"
+        formControlName="notas"
+        class="w-full"
+        autocomplete="off" />
+      <label for="notas">Notas del Contrato / Requerimientos</label>
+    </p-floatLabel>
   </div>
 
-  <!-- Botones de Acción -->
-  <div class="flex justify-end items-center gap-2 pt-4 border-t border-slate-100">
+  <!-- BOTONES DE ACCIÓN -->
+  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
     <p-button
       type="button"
       label="Cancelar"
-      icon="pi pi-times"
-      severity="secondary"
-      [outlined]="true"
+      severity="danger"
+      [text]="true"
+      size="small"
       (onClick)="cancelar()">
     </p-button>
+
     <p-button
       type="submit"
       [label]="esEdicion ? 'Actualizar Proveedor' : 'Guardar Proveedor'"
-      icon="pi pi-check"
-      severity="primary">
+      [icon]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"
+      size="small">
     </p-button>
   </div>
 </form>

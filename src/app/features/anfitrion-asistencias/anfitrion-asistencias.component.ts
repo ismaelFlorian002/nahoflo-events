@@ -506,14 +506,6 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Alias de compatibilidad
-  abrirModalEditar(invitado: InvitadoModel): void {
-    this.abrirModalInvitado(invitado);
-  }
-
-  abrirModalCrearInvitado(): void {
-    this.abrirModalInvitado();
-  }
 
   abrirModalCompartir(): void {
     const ev = this.evento();

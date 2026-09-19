@@ -14,7 +14,7 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { Evento, ItemMinutario } from '../../../../core/models/event.model';
+import { Evento, ItemMinutario, ItemPresupuesto } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
 import { copiarAlPortapapeles } from '../../../../core/utils/clipboard.util';
 import { MinutarioItemModalComponent } from '../minutario-item-modal/minutario-item-modal.component';
@@ -22,13 +22,7 @@ import { MinutarioItemModalComponent } from '../minutario-item-modal/minutario-i
 @Component({
   selector: 'app-minutario-timeline',
   standalone: true,
-  imports: [
-    CommonModule,
-    ButtonModule,
-    ProgressBarModule,
-    TagModule,
-    TooltipModule,
-  ],
+  imports: [CommonModule, ButtonModule, ProgressBarModule, TagModule, TooltipModule],
   providers: [DialogService],
   templateUrl: './minutario-timeline.component.html',
   styleUrl: './minutario-timeline.component.scss',
@@ -83,45 +77,29 @@ export class MinutarioTimelineComponent {
     }
   }
 
-  // Abre el modal para agregar un nuevo momento
-  abrirModalAgregar(): void {
+  // Abre el modal para agregar o editar un momento del minutario
+  abrirModalMomento(item?: ItemMinutario): void {
     const ev = this.evento();
     if (!ev?.id) return;
 
+    const esEdicion = !!item;
     const ref = this.dialogService.open(MinutarioItemModalComponent, {
-      header: 'Agregar Momento al Minutario',
+      header: esEdicion ? 'Editar Momento' : 'Agregar Momento al Minutario',
       width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '95vw' },
       closable: true,
+      data: item ? { item } : undefined,
     });
 
     ref?.onClose.subscribe(async (res) => {
       if (res?.guardado && res.item) {
         const minutarioActual = ev.minutario || [];
-        const nuevoMinutario = [...minutarioActual, res.item];
-        await this.guardarListaMinutario(ev.id!, nuevoMinutario, 'Momento agregado al minutario.');
-      }
-    });
-  }
+        const nuevoMinutario = esEdicion
+          ? minutarioActual.map((i) => (i.id === item.id ? res.item : i))
+          : [...minutarioActual, res.item];
 
-  // Abre el modal para editar un momento
-  abrirModalEditar(item: ItemMinutario): void {
-    const ev = this.evento();
-    if (!ev?.id) return;
-
-    const ref = this.dialogService.open(MinutarioItemModalComponent, {
-      header: 'Editar Momento',
-      width: '540px',
-      breakpoints: { '960px': '85vw', '640px': '95vw' },
-      closable: true,
-      data: { item },
-    });
-
-    ref?.onClose.subscribe(async (res) => {
-      if (res?.guardado && res.item) {
-        const minutarioActual = ev.minutario || [];
-        const nuevoMinutario = minutarioActual.map((i) => (i.id === item.id ? res.item : i));
-        await this.guardarListaMinutario(ev.id!, nuevoMinutario, 'Momento actualizado.');
+        const mensaje = esEdicion ? 'Momento actualizado.' : 'Momento agregado al minutario.';
+        await this.guardarListaMinutario(ev.id!, nuevoMinutario, mensaje);
       }
     });
   }
@@ -138,6 +116,8 @@ export class MinutarioTimelineComponent {
       acceptLabel: 'Eliminar',
       rejectLabel: 'Cancelar',
       acceptButtonStyleClass: 'bg-red-600 hover:bg-red-700 text-white border-0',
+      rejectButtonStyleClass: 'p-button-secondary p-button-text',
+
       accept: async () => {
         const minutarioActual = ev.minutario || [];
         const nuevoMinutario = minutarioActual.filter((i) => i.id !== item.id);
@@ -153,23 +133,84 @@ export class MinutarioTimelineComponent {
 
     this.confirmationService.confirm({
       header: 'Cargar Plantilla Estándar',
-      message: '¿Deseas cargar el cronograma sugerido para Bodas / Eventos? Esto añadirá los momentos clave principales.',
+      message:
+        '¿Deseas cargar el cronograma sugerido para Bodas / Eventos? Esto añadirá los momentos clave principales.',
       icon: 'pi pi-sparkles text-gold-500',
       acceptLabel: 'Sí, cargar plantilla',
       rejectLabel: 'Cancelar',
       accept: async () => {
         const plantilla: ItemMinutario[] = [
-          { id: 'p1', hora: '16:00', actividad: 'Ceremonia Religiosa / Civil', responsable: 'Oficiante', detalles: 'Llegada de invitados y encuadre fotográfico.', completado: false },
-          { id: 'p2', hora: '17:30', actividad: 'Recepción y Cóctel de Bienvenida', responsable: 'Banquetero', detalles: 'Bebidas de bienvenida y música ambiental.', completado: false },
-          { id: 'p3', hora: '18:30', actividad: 'Entrada Triunfal de los Novios', responsable: 'DJ / Música', detalles: 'Chisperos fríos y ovación de invitados.', completado: false },
-          { id: 'p4', hora: '19:00', actividad: 'Servicio de Banquete', responsable: 'Banquetero', detalles: 'Cena principal de 3 tiempos.', completado: false },
-          { id: 'p5', hora: '20:30', actividad: 'Vals de los Novios y Padres', responsable: 'DJ / Música', detalles: 'Pista iluminada y vals con papás.', completado: false },
-          { id: 'p6', hora: '21:00', actividad: 'Apertura de Pista y Baile', responsable: 'DJ / Música', detalles: 'Inicio del show de luces y fiesta general.', completado: false },
-          { id: 'p7', hora: '23:30', actividad: 'Brindis y Pastel', responsable: 'Coordinador', detalles: 'Corte de pastel y palabras de agradecimiento.', completado: false },
-          { id: 'p8', hora: '01:00', actividad: 'Cierre de Evento', responsable: 'Staff', detalles: 'Salida gradual de invitados.', completado: false },
+          {
+            id: 'p1',
+            hora: '16:00',
+            actividad: 'Ceremonia Religiosa / Civil',
+            responsable: 'Oficiante',
+            detalles: 'Llegada de invitados y encuadre fotográfico.',
+            completado: false,
+          },
+          {
+            id: 'p2',
+            hora: '17:30',
+            actividad: 'Recepción y Cóctel de Bienvenida',
+            responsable: 'Banquetero',
+            detalles: 'Bebidas de bienvenida y música ambiental.',
+            completado: false,
+          },
+          {
+            id: 'p3',
+            hora: '18:30',
+            actividad: 'Entrada Triunfal de los Novios',
+            responsable: 'DJ / Música',
+            detalles: 'Chisperos fríos y ovación de invitados.',
+            completado: false,
+          },
+          {
+            id: 'p4',
+            hora: '19:00',
+            actividad: 'Servicio de Banquete',
+            responsable: 'Banquetero',
+            detalles: 'Cena principal de 3 tiempos.',
+            completado: false,
+          },
+          {
+            id: 'p5',
+            hora: '20:30',
+            actividad: 'Vals de los Novios y Padres',
+            responsable: 'DJ / Música',
+            detalles: 'Pista iluminada y vals con papás.',
+            completado: false,
+          },
+          {
+            id: 'p6',
+            hora: '21:00',
+            actividad: 'Apertura de Pista y Baile',
+            responsable: 'DJ / Música',
+            detalles: 'Inicio del show de luces y fiesta general.',
+            completado: false,
+          },
+          {
+            id: 'p7',
+            hora: '23:30',
+            actividad: 'Brindis y Pastel',
+            responsable: 'Coordinador',
+            detalles: 'Corte de pastel y palabras de agradecimiento.',
+            completado: false,
+          },
+          {
+            id: 'p8',
+            hora: '01:00',
+            actividad: 'Cierre de Evento',
+            responsable: 'Staff',
+            detalles: 'Salida gradual de invitados.',
+            completado: false,
+          },
         ];
 
-        await this.guardarListaMinutario(ev.id!, plantilla, 'Plantilla de cronograma cargada con éxito.');
+        await this.guardarListaMinutario(
+          ev.id!,
+          plantilla,
+          'Plantilla de cronograma cargada con éxito.',
+        );
       },
     });
   }
@@ -200,7 +241,11 @@ export class MinutarioTimelineComponent {
     });
   }
 
-  private async guardarListaMinutario(eventoId: string, lista: ItemMinutario[], mensajeExito: string): Promise<void> {
+  private async guardarListaMinutario(
+    eventoId: string,
+    lista: ItemMinutario[],
+    mensajeExito: string,
+  ): Promise<void> {
     this.guardando.set(true);
     try {
       await this.eventService.actualizarMinutario(eventoId, lista);
@@ -226,10 +271,14 @@ export class MinutarioTimelineComponent {
 
   getBadgeResponsableClass(responsable?: string): string {
     const r = (responsable || '').toLowerCase();
-    if (r.includes('dj') || r.includes('música')) return 'bg-purple-100 text-purple-800 border-purple-200';
-    if (r.includes('banquete') || r.includes('mesero')) return 'bg-amber-100 text-amber-800 border-amber-200';
-    if (r.includes('fotó') || r.includes('video')) return 'bg-blue-100 text-blue-800 border-blue-200';
-    if (r.includes('novio') || r.includes('anfitr')) return 'bg-pink-100 text-pink-800 border-pink-200';
+    if (r.includes('dj') || r.includes('música'))
+      return 'bg-purple-100 text-purple-800 border-purple-200';
+    if (r.includes('banquete') || r.includes('mesero'))
+      return 'bg-amber-100 text-amber-800 border-amber-200';
+    if (r.includes('fotó') || r.includes('video'))
+      return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (r.includes('novio') || r.includes('anfitr'))
+      return 'bg-pink-100 text-pink-800 border-pink-200';
     return 'bg-slate-100 text-slate-700 border-slate-200';
   }
 }

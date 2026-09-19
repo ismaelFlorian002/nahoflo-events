@@ -6,6 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DropdownModule } from 'primeng/dropdown';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { FloatLabelModule } from 'primeng/floatlabel';
 import { ItemMinutario } from '../../../../core/models/event.model';
 
 @Component({
@@ -18,6 +19,7 @@ import { ItemMinutario } from '../../../../core/models/event.model';
     InputTextModule,
     InputTextareaModule,
     DropdownModule,
+    FloatLabelModule,
   ],
   templateUrl: './minutario-item-modal.component.html',
   styleUrl: './minutario-item-modal.component.scss',
