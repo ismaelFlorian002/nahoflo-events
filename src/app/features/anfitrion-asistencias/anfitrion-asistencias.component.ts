@@ -218,6 +218,42 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     return !mod || (mod.tienePlannerSuite ?? true);
   });
 
+  // Métricas reactivas de Planner Suite (compartidas con la pestaña Resumen)
+  minutarioItems = computed(() => this.evento()?.minutario || []);
+  minutarioTotal = computed(() => this.minutarioItems().length);
+  minutarioCompletados = computed(() => this.minutarioItems().filter((m) => m.completado).length);
+
+  presupuestoItems = computed(() => this.evento()?.presupuesto || []);
+  presupuestoTotalReal = computed(() =>
+    this.presupuestoItems().reduce((acc, i) => acc + (Number(i.costoReal) || 0), 0),
+  );
+  presupuestoTotalPagado = computed(() =>
+    this.presupuestoItems().reduce((acc, i) => acc + (Number(i.montoPagado) || 0), 0),
+  );
+  presupuestoSaldoPendiente = computed(() =>
+    Math.max(0, this.presupuestoTotalReal() - this.presupuestoTotalPagado()),
+  );
+  presupuestoPorcentajePagado = computed(() => {
+    const tot = this.presupuestoTotalReal();
+    return tot > 0 ? Math.min(100, Math.round((this.presupuestoTotalPagado() / tot) * 100)) : 0;
+  });
+
+  proveedoresItems = computed(() => this.evento()?.proveedores || []);
+  proveedoresTotal = computed(() => this.proveedoresItems().length);
+  proveedoresCategoriasCount = computed(() => {
+    const cats = new Set(this.proveedoresItems().map((p) => p.categoria).filter(Boolean));
+    return cats.size;
+  });
+
+  checklistItems = computed(() => this.evento()?.checklist || []);
+  checklistTotal = computed(() => this.checklistItems().length);
+  checklistCompletadas = computed(() => this.checklistItems().filter((t) => t.completada).length);
+  checklistPendientes = computed(() => Math.max(0, this.checklistTotal() - this.checklistCompletadas()));
+  checklistPorcentajeAvance = computed(() => {
+    const tot = this.checklistTotal();
+    return tot > 0 ? Math.min(100, Math.round((this.checklistCompletadas() / tot) * 100)) : 0;
+  });
+
   permiteMarcaBlanca = computed(() => {
     const mod = this.evento()?.modulos;
     return Boolean(mod?.permiteMarcaBlanca);
