@@ -259,6 +259,13 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     return Boolean(mod?.permiteMarcaBlanca);
   });
 
+  whatsappAgenciaUrl = computed(() => {
+    const tel = this.evento()?.agenciaTelefono;
+    if (!tel) return '';
+    const cleanTel = tel.replace(/[^0-9]/g, '');
+    return cleanTel ? `https://wa.me/${cleanTel}` : '';
+  });
+
   tieneModulosAsistencias = computed(() => {
     return this.tieneControlInvitados() || this.tieneAlbum() || this.tienePlannerSuite();
   });
