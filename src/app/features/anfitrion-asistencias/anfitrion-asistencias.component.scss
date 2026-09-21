@@ -2414,3 +2414,56 @@
     font-size: 0.85rem;
   }
 }
+
+/* ==========================================================================
+   BARRAS DE PROGRESO PRIMENG (RESUMEN EJECUTIVO & AFECTO EN TIEMPO REAL)
+   ========================================================================== */
+:host ::ng-deep {
+  .p-progressbar {
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+
+    .p-progressbar-value {
+      border-radius: 9999px !important;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+  }
+
+  .aforo-progressbar {
+    height: 0.625rem !important; // 10px
+    background-color: #e5e7eb !important; // gray-200
+
+    .p-progressbar-value {
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.35);
+    }
+  }
+
+  .confirmacion-progressbar {
+    height: 0.75rem !important; // 12px
+    background-color: #f1f5f9 !important; // slate-100
+
+    .p-progressbar-value {
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+    }
+  }
+
+  .presupuesto-progressbar {
+    height: 0.75rem !important;
+    background-color: #f1f5f9 !important;
+
+    .p-progressbar-value {
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%) !important;
+    }
+  }
+
+  .checklist-progressbar {
+    height: 0.75rem !important;
+    background-color: #f1f5f9 !important;
+
+    .p-progressbar-value {
+      background: linear-gradient(90deg, #a855f7 0%, #7e22ce 100%) !important;
+    }
+  }
+}
+

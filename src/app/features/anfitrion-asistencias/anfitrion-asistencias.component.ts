@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventService } from '../../core/services/event.service';
@@ -49,6 +50,7 @@ import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitad
     CommonModule,
     RouterModule,
     ButtonModule,
+    ProgressBarModule,
     ProgressSpinnerModule,
     DynamicDialogModule,
     PinLoginComponent,
@@ -188,6 +190,12 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     const total = this.invitados().length;
     if (total === 0) return 0;
     return Math.round((this.totalConfirmados() / total) * 100);
+  });
+
+  promedioPasesPorRegistro = computed(() => {
+    const total = this.invitados().length;
+    if (total === 0) return '0';
+    return (this.totalPases() / total).toFixed(1);
   });
 
   // Helpers reactivos para los paquetes y módulos contratados
