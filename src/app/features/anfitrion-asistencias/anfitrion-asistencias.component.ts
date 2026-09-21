@@ -294,6 +294,27 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     return `${window.location.origin}/e/${ev.enlace}`;
   });
 
+  diasRestantesEvento = computed(() => {
+    const f = this.evento()?.fecha;
+    if (!f) return null;
+    const fechaEv = (f as any)?.toDate ? (f as any).toDate() : new Date(f);
+    if (isNaN(fechaEv.getTime())) return null;
+    const hoy = new Date();
+    const f1 = new Date(fechaEv.getFullYear(), fechaEv.getMonth(), fechaEv.getDate());
+    const f2 = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    const diffMs = f1.getTime() - f2.getTime();
+    return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  });
+
+  whatsappShareInvitacionUrl = computed(() => {
+    const url = this.urlInvitacionCompleta();
+    if (!url) return '';
+    const ev = this.evento();
+    const titulo = ev?.titulo || 'nuestro evento';
+    const msg = `¡Hola! ✨ Te invito a ${titulo}. Puedes ver todos los detalles de la invitación aquí:\n${url}`;
+    return `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+  });
+
   async ngOnInit(): Promise<void> {
     const slug = this.route.snapshot.paramMap.get('slug');
 
