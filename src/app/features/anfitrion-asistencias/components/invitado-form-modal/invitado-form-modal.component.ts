@@ -12,6 +12,7 @@ import {
   normalizarTelefonoInvitado,
 } from '../../../../core/services/event.service';
 import { EstadoInvitado, InvitadoModel } from '../../../../core/models/invitado.model';
+import { Evento } from '../../../../core/models/event.model';
 
 import { FloatLabelModule } from 'primeng/floatlabel';
 
@@ -38,6 +39,7 @@ export class InvitadoFormModalComponent implements OnInit {
   private messageService = inject(MessageService);
 
   invitado?: InvitadoModel;
+  evento?: Evento;
   eventoId!: string;
   invitadosExistentes: InvitadoModel[] = [];
 
@@ -58,6 +60,7 @@ export class InvitadoFormModalComponent implements OnInit {
 
   ngOnInit(): void {
     this.invitado = this.config.data?.invitado;
+    this.evento = this.config.data?.evento;
     this.eventoId = this.config.data?.eventoId;
     this.invitadosExistentes = this.config.data?.invitadosExistentes || [];
 

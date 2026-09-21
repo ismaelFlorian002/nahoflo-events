@@ -78,8 +78,8 @@
     </div>
   }
 
-  <!-- DEDICATORIA DEL INVITADO (SOLO SI EL INVITADO LA ESCRIBIÓ EN LA WEB) -->
-  @if (invitado.mensaje) {
+  <!-- DEDICATORIA DEL INVITADO (SOLO SI EL INVITADO LA ESCRIBIÓ EN LA WEB, OMITIDO EN SOLO LISTA PUERTA) -->
+  @if (invitado.mensaje && evento?.modulos?.tipoControlInvitados !== 'lista_puerta') {
     <div class="seccion-mensaje">
       <span class="item-label"><i class="pi pi-heart-fill"></i> Dedicatoria del Invitado</span>
       <div class="caja-mensaje">

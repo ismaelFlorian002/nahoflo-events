@@ -159,8 +159,8 @@
     </p-floatLabel>
   </div>
 
-  <!-- MENSAJE O DEDICATORIA DEL INVITADO (SOLO LECTURA EN MODO EDICIÓN) -->
-  @if (esEdicion && invitado?.mensaje) {
+  <!-- MENSAJE O DEDICATORIA DEL INVITADO (SOLO LECTURA EN MODO EDICIÓN, OMITIDO EN SOLO LISTA PUERTA) -->
+  @if (esEdicion && invitado?.mensaje && evento?.modulos?.tipoControlInvitados !== 'lista_puerta') {
     <div class="col-span-12 dedicatoria-card">
       <div class="dedicatoria-header">
         <i class="pi pi-heart-fill"></i>

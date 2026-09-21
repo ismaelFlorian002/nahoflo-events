@@ -158,11 +158,16 @@ export class GuestTableComponent {
       });
     }
 
-    items.push({
-      label: 'Enviar Pase VIP (WhatsApp)',
-      icon: 'pi pi-ticket',
-      command: () => this.enviarPaseVipWhatsApp(invitado),
-    });
+    if (ev?.modulos?.tipoControlInvitados !== 'lista_puerta') {
+      items.push({
+        label:
+          ev?.modulos?.tipoControlInvitados === 'total'
+            ? 'Enviar Pase VIP (WhatsApp)'
+            : 'Enviar Pase (WhatsApp)',
+        icon: 'pi pi-ticket',
+        command: () => this.enviarPaseVipWhatsApp(invitado),
+      });
+    }
 
     if (
       ev?.modulos?.tipoControlInvitados === 'total' &&

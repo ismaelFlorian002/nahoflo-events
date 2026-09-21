@@ -77,7 +77,7 @@
                   </button>
                 }
 
-                @if (tieneControlInvitados()) {
+                @if (tieneControlInvitados() && ev.modulos?.tipoControlInvitados !== 'lista_puerta') {
                   <button
                     type="button"
                     (click)="cambiarPestana('croquis')"
@@ -411,8 +411,44 @@
               <!-- CASO 2: TIENE MÓDULOS DE ASISTENCIAS / ANFITRIÓN ACTIVOS -->
               @else {
 
-                <!-- RESUMEN DE ASISTENCIA Y PASES (SI EL CONTROL DE INVITADOS ESTÁ ACTIVO) -->
-                @if (tieneControlInvitados()) {
+                <!-- RESUMEN DE LISTA DE INVITADOS (SI ES SOLO LISTA PUERTA) -->
+                @if (ev.modulos?.tipoControlInvitados === 'lista_puerta') {
+                  <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-5 border-b border-gray-100">
+                      <div>
+                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gold-50 text-gold-700 mb-2">
+                          <i class="pi pi-users"></i>
+                          <span>Lista de Puerta</span>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 m-0">Lista Oficial de Invitados</h3>
+                        <p class="text-sm text-gray-500 m-0 mt-0.5">Control general de las personas y pases autorizados para ingresar al evento.</p>
+                      </div>
+
+                      <p-button
+                        label="Ver Lista de Invitados"
+                        icon="pi pi-users"
+                        size="small"
+                        [outlined]="true"
+                        severity="secondary"
+                        (onClick)="cambiarPestana('invitados')">
+                      </p-button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-center">
+                      <div class="p-4 bg-gray-50 rounded-xl">
+                        <span class="block text-2xl font-bold text-gray-900">{{ invitados().length }}</span>
+                        <span class="text-xs font-medium text-gray-500">Familias / Registros</span>
+                      </div>
+                      <div class="p-4 bg-gray-50 rounded-xl">
+                        <span class="block text-2xl font-bold text-gray-900">{{ totalPases() }}</span>
+                        <span class="text-xs font-medium text-gray-500">Total de Pases Autorizados</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- RESUMEN DE ASISTENCIA Y PASES (SI ES CONFIRMACIÓN RSVP O CONTROL TOTAL VIP) -->
+                @if (tieneControlInvitados() && ev.modulos?.tipoControlInvitados !== 'lista_puerta') {
                   <div class="mb-8">
                     <!-- Cabecera de la Sección de Métricas -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -645,7 +681,7 @@
           }
 
           <!-- 1.5 PESTAÑA: PLANO VISUAL DE MESAS / CROQUIS INTERACTIVO -->
-          @if (pestanaActiva() === 'croquis') {
+          @if (pestanaActiva() === 'croquis' && ev.modulos?.tipoControlInvitados !== 'lista_puerta') {
             <div class="mb-8">
               <app-croquis-mesas-designer
                 [evento]="ev"
@@ -657,7 +693,7 @@
           }
 
           <!-- 1.8 PESTAÑA: CENTRO DE MENSAJERÍA WHATSAPP & PLANTILLAS INTELIGENTES -->
-          @if (pestanaActiva() === 'whatsapp') {
+          @if (pestanaActiva() === 'whatsapp' && ev.modulos?.tipoControlInvitados !== 'lista_puerta') {
             <div class="mb-8">
               <app-whatsapp-messaging-center
                 [evento]="ev"
@@ -893,6 +929,29 @@
               </button>
             }
 
+            <!-- 2.5 Botón Croquis Mesas & WhatsApp (Solo si no es lista_puerta) -->
+            @if (tieneControlInvitados() && ev.modulos?.tipoControlInvitados !== 'lista_puerta') {
+              <button
+                type="button"
+                (click)="cambiarPestana('croquis')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'croquis'"
+                [class.text-gray-400]="pestanaActiva() !== 'croquis'">
+                <i class="pi pi-th-large text-lg mb-1"></i>
+                <span class="text-[10px] leading-none font-medium">Croquis</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="cambiarPestana('whatsapp')"
+                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
+                [class.text-gold-500]="pestanaActiva() === 'whatsapp'"
+                [class.text-gray-400]="pestanaActiva() !== 'whatsapp'">
+                <i class="pi pi-whatsapp text-lg mb-1 text-emerald-500"></i>
+                <span class="text-[10px] leading-none font-medium">WhatsApp</span>
+              </button>
+            }
+
             @if (tienePlannerSuite()) {
               <!-- 3.5. Botón Cronograma / Minutario -->
               <button
@@ -904,29 +963,6 @@
                 <i class="pi pi-clock text-lg mb-1"></i>
                 <span class="text-[10px] leading-none font-medium">Minutario</span>
               </button>
-
-              <!-- 2.5 Botón Croquis Mesas -->
-              @if (tieneControlInvitados()) {
-                <button
-                  type="button"
-                  (click)="cambiarPestana('croquis')"
-                  class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                  [class.text-gold-500]="pestanaActiva() === 'croquis'"
-                  [class.text-gray-400]="pestanaActiva() !== 'croquis'">
-                  <i class="pi pi-th-large text-lg mb-1"></i>
-                  <span class="text-[10px] leading-none font-medium">Croquis</span>
-                </button>
-
-                <button
-                  type="button"
-                  (click)="cambiarPestana('whatsapp')"
-                  class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                  [class.text-gold-500]="pestanaActiva() === 'whatsapp'"
-                  [class.text-gray-400]="pestanaActiva() !== 'whatsapp'">
-                  <i class="pi pi-whatsapp text-lg mb-1 text-emerald-500"></i>
-                  <span class="text-[10px] leading-none font-medium">WhatsApp</span>
-                </button>
-              }
 
               <!-- 3.6. Botón Presupuesto -->
               <button

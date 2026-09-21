@@ -13,7 +13,12 @@
         <!--        <p-badge value="WhatsApp Direct" severity="success" ></p-badge>-->
       </div>
       <p class="text-sm text-gray-500 m-0 mt-0.5">
-        Administra confirmaciones, asignación de mesas y el envío de pases QR personalizados.      </p>
+        @if (evento()?.modulos?.tipoControlInvitados === 'lista_puerta') {
+          Administra el registro y acceso de tus invitados en recepción.
+        } @else {
+          Administra confirmaciones, asignación de mesas y el envío de pases QR personalizados.
+        }
+      </p>
     </div>
   </div>
   <!-- MENÚS FLOTANTES RESPONSIVOS (EXPORTAR Y ACCIONES DE INVITADO) -->
@@ -217,9 +222,11 @@
             style="text-align: center;">Pases
           <p-sortIcon field="pasesConfirmados"></p-sortIcon>
         </th>
-        <th pSortableColumn="mesa" class="col-mesa col-desktop">Mesa / Menú
-          <p-sortIcon field="mesa"></p-sortIcon>
-        </th>
+        @if (evento()?.modulos?.tipoControlInvitados !== 'lista_puerta') {
+          <th pSortableColumn="mesa" class="col-mesa col-desktop">Mesa / Menú
+            <p-sortIcon field="mesa"></p-sortIcon>
+          </th>
+        }
         <th class="col-whatsapp col-desktop">WhatsApp</th>
         @if (evento()?.modulos?.tipoControlInvitados === 'total') {
           <th class="col-vip col-desktop" style="text-align: center;">Pase VIP</th>
@@ -258,7 +265,7 @@
                 </span>
               }
 
-              @if (invitado.mesa) {
+              @if (evento()?.modulos?.tipoControlInvitados !== 'lista_puerta' && invitado.mesa) {
                 <span class="pases-badge-mobile" style="background: #fef3c7; color: #92400e;">
                   <i class="pi pi-th-large"></i>
                   <span>{{ invitado.mesa }}</span>
@@ -312,24 +319,26 @@
           }
         </td>
 
-        <!-- COLUMNA MESA Y MENÚ (DESKTOP) -->
-        <td class="col-mesa col-desktop">
-          <div class="flex flex-col gap-0.5">
-            <span class="font-semibold text-slate-800 text-xs">
-              <i class="pi pi-th-large text-amber-600 mr-1"></i>
-              {{ invitado.mesa || 'Sin asignar' }}
-            </span>
-            <span class="text-xs text-slate-500">
-              {{ invitado.tipoMenu || 'Adulto' }}
-            </span>
-            @if (invitado.restriccionesAlimentarias) {
-              <span class="inline-flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-medium max-w-fit mt-0.5" [pTooltip]="invitado.restriccionesAlimentarias" tooltipPosition="top">
-                <i class="pi pi-exclamation-triangle text-[10px]"></i>
-                <span class="truncate max-w-[120px]">{{ invitado.restriccionesAlimentarias }}</span>
+        <!-- COLUMNA MESA Y MENÚ (DESKTOP) (OMITIDO SI ES SOLO LISTA PUERTA) -->
+        @if (evento()?.modulos?.tipoControlInvitados !== 'lista_puerta') {
+          <td class="col-mesa col-desktop">
+            <div class="flex flex-col gap-0.5">
+              <span class="font-semibold text-slate-800 text-xs">
+                <i class="pi pi-th-large text-amber-600 mr-1"></i>
+                {{ invitado.mesa || 'Sin asignar' }}
               </span>
-            }
-          </div>
-        </td>
+              <span class="text-xs text-slate-500">
+                {{ invitado.tipoMenu || 'Adulto' }}
+              </span>
+              @if (invitado.restriccionesAlimentarias) {
+                <span class="inline-flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-medium max-w-fit mt-0.5" [pTooltip]="invitado.restriccionesAlimentarias" tooltipPosition="top">
+                  <i class="pi pi-exclamation-triangle text-[10px]"></i>
+                  <span class="truncate max-w-[120px]">{{ invitado.restriccionesAlimentarias }}</span>
+                </span>
+              }
+            </div>
+          </td>
+        }
 
         <!-- COLUMNA WHATSAPP (SOLO DESKTOP) -->
         <td class="col-whatsapp col-desktop text-secondary">
@@ -392,15 +401,17 @@
               </p-button>
             }
 
-            <!-- BOTÓN ENVIAR PASE VIP -->
-            <p-button
-              icon="pi pi-ticket"
-              [rounded]="true"
-              [text]="true"
-              [pTooltip]="(evento()?.modulos?.tipoControlInvitados === 'total' ? 'Enviar Pase VIP a ' : 'Enviar Pase a ') + invitado.nombre"
-              tooltipPosition="top"
-              (onClick)="enviarPaseVipWhatsApp(invitado)">
-            </p-button>
+            <!-- BOTÓN ENVIAR PASE VIP (OMITIDO SI ES SOLO LISTA PUERTA) -->
+            @if (evento()?.modulos?.tipoControlInvitados !== 'lista_puerta') {
+              <p-button
+                icon="pi pi-ticket"
+                [rounded]="true"
+                [text]="true"
+                [pTooltip]="(evento()?.modulos?.tipoControlInvitados === 'total' ? 'Enviar Pase VIP a ' : 'Enviar Pase a ') + invitado.nombre"
+                tooltipPosition="top"
+                (onClick)="enviarPaseVipWhatsApp(invitado)">
+              </p-button>
+            }
 
             <!-- BOTÓN VER DETALLE -->
             <p-button

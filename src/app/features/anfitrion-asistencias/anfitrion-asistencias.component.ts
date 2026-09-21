@@ -200,7 +200,12 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   tieneRecepcionOPuerta = computed(() => {
     const mod = this.evento()?.modulos;
-    return mod?.tipoControlInvitados === 'total' || mod?.tipoControlInvitados === 'lista_puerta';
+    return (
+      !mod ||
+      mod.tipoControlInvitados === 'total' ||
+      mod.tipoControlInvitados === 'lista_puerta' ||
+      mod.tipoControlInvitados === 'basico'
+    );
   });
 
   tieneAlbum = computed(() => {
@@ -496,6 +501,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
         eventoId: ev.id,
         invitado,
         invitadosExistentes: this.invitados(),
+        evento: ev,
       },
     });
 

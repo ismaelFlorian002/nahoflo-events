@@ -30,7 +30,7 @@
   </div>
 
   <!-- 2. PANEL DUAL: ESCÁNER DE CÁMARA (IZQ) Y BÚSQUEDA MANUAL (DER) -->
-  <div class="grid-puerta" [class.solo-manual]="evento()?.modulos?.tipoControlInvitados === 'lista_puerta'">
+  <div class="grid-puerta" [class.solo-manual]="evento()?.modulos?.tipoControlInvitados !== 'total'">
 
     <!-- COLUMNA A: ESCÁNER DE CÁMARA QR (SOLO EN MODO CONTROL TOTAL VIP) -->
     @if (evento()?.modulos?.tipoControlInvitados === 'total') {
