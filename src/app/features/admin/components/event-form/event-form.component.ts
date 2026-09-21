@@ -212,6 +212,8 @@ export class EventFormComponent implements OnInit {
             tieneInvitacion: true,
             tipoControlInvitados: 'basico',
             tieneAlbum: false,
+            tienePlannerSuite: true,
+            permiteMarcaBlanca: true,
           },
         });
       }
@@ -382,6 +384,8 @@ export class EventFormComponent implements OnInit {
           tieneInvitacion: true,
           tipoControlInvitados: 'basico',
           tieneAlbum: false,
+          tienePlannerSuite: true,
+          permiteMarcaBlanca: true,
         },
         fotoPrincipalUrl: fotoPrincipalUrl || null,
         fotoCeremoniaUrl: fotoCeremoniaUrl || null,

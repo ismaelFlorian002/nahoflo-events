@@ -215,7 +215,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   permiteMarcaBlanca = computed(() => {
     const mod = this.evento()?.modulos;
-    return !mod || (mod.permiteMarcaBlanca ?? true);
+    return Boolean(mod?.permiteMarcaBlanca);
   });
 
   tieneModulosAsistencias = computed(() => {
