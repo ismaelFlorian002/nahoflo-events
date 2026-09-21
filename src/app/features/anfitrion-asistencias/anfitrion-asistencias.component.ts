@@ -87,7 +87,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
     const ref = this.dialogService.open(AgenciaBrandingModalComponent, {
       header: 'Configuración de Marca Blanca / Agencia',
-      width: '620px',
+      width: '1200px',
       breakpoints: { '960px': '85vw', '640px': '94vw' },
       closable: true,
       dismissableMask: true,
