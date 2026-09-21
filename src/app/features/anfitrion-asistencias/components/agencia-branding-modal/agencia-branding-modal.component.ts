@@ -1,8 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { FileUploadModule } from 'primeng/fileupload';
+import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Evento } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
@@ -15,6 +17,8 @@ import { EventService } from '../../../../core/services/event.service';
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
+    FileUploadModule,
+    TooltipModule,
   ],
   templateUrl: './agencia-branding-modal.component.html',
   styleUrl: './agencia-branding-modal.component.scss',
@@ -29,6 +33,9 @@ export class AgenciaBrandingModalComponent implements OnInit {
   evento!: Evento;
   guardando = false;
 
+  logoFile: File | null = null;
+  logoPreviewUrl: string | null = null;
+
   ngOnInit(): void {
     this.evento = this.config.data?.evento;
 
@@ -38,22 +45,49 @@ export class AgenciaBrandingModalComponent implements OnInit {
       agenciaLogoUrl: [this.evento?.agenciaLogoUrl || ''],
       agenciaNotas: [this.evento?.agenciaNotas || ''],
     });
+
+    if (this.evento?.agenciaLogoUrl) {
+      this.logoPreviewUrl = this.evento.agenciaLogoUrl;
+    }
+  }
+
+  onLogoSelected(event: any): void {
+    if (event.files && event.files.length > 0) {
+      const file: File = event.files[0];
+      this.logoFile = file;
+      this.logoPreviewUrl = URL.createObjectURL(file);
+    }
+  }
+
+  removerLogo(): void {
+    this.logoFile = null;
+    this.logoPreviewUrl = null;
+    this.form.patchValue({ agenciaLogoUrl: '' });
   }
 
   async guardar(): Promise<void> {
-
     if (!this.evento?.id) return;
     this.guardando = true;
 
-    const val = this.form.value;
-    const datosAgencia = {
-      agenciaNombre: val.agenciaNombre?.trim() || '',
-      agenciaTelefono: val.agenciaTelefono?.trim() || '',
-      agenciaLogoUrl: val.agenciaLogoUrl?.trim() || '',
-      agenciaNotas: val.agenciaNotas?.trim() || '',
-    };
-
     try {
+      let finalLogoUrl = this.form.value.agenciaLogoUrl || '';
+
+      // Si el usuario subió un archivo nuevo, subirlo a Firebase Storage
+      if (this.logoFile) {
+        finalLogoUrl = await this.eventService.uploadImage(
+          this.logoFile,
+          'eventos/agencias/logos',
+        );
+      }
+
+      const val = this.form.value;
+      const datosAgencia = {
+        agenciaNombre: val.agenciaNombre?.trim() || '',
+        agenciaTelefono: val.agenciaTelefono?.trim() || '',
+        agenciaLogoUrl: finalLogoUrl,
+        agenciaNotas: val.agenciaNotas?.trim() || '',
+      };
+
       await this.eventService.actualizarDatosAgencia(this.evento.id, datosAgencia);
       this.ref.close({ guardado: true, datosAgencia });
     } catch (err) {
@@ -67,3 +101,4 @@ export class AgenciaBrandingModalComponent implements OnInit {
     this.ref.close();
   }
 }
+

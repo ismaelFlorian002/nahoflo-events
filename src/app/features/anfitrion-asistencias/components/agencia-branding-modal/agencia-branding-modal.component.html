@@ -31,17 +31,65 @@
     </div>
   </div>
 
-  <!-- URL del Logo & Notas -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- Logo de la Agencia & Slogan -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
     <div>
-      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">URL del Logo de la Agencia (opcional)</label>
-      <input
-        type="text"
-        pInputText
-        formControlName="agenciaLogoUrl"
-        placeholder="https://..."
-        class="w-full p-inputtext-sm"
-      />
+      <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Logo de la Agencia (opcional)</label>
+
+      @if (logoPreviewUrl) {
+        <!-- Vista previa del logo cargado o seleccionado -->
+        <div class="flex items-center justify-between p-2 px-3 border border-slate-200 rounded-xl bg-slate-50/70">
+          <div class="flex items-center gap-3 min-w-0">
+            <img [src]="logoPreviewUrl" class="w-12 h-12 rounded-lg object-contain bg-white border border-slate-200 shrink-0 p-1" alt="Logo de Agencia" />
+            <div class="min-w-0">
+              <span class="text-xs font-semibold text-slate-800 block truncate">
+                {{ logoFile ? logoFile.name : 'Logo guardado' }}
+              </span>
+              <span class="text-[11px] font-medium" [ngClass]="logoFile ? 'text-emerald-600' : 'text-slate-400'">
+                {{ logoFile ? 'Listo para guardar' : 'Actualmente activo' }}
+              </span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 shrink-0">
+            <p-fileUpload
+              mode="basic"
+              chooseLabel="Cambiar"
+              chooseIcon="pi pi-sync"
+              accept="image/*"
+              [maxFileSize]="5000000"
+              styleClass="p-button-sm p-button-outlined p-button-secondary !rounded-xl text-xs"
+              (onSelect)="onLogoSelected($event)">
+            </p-fileUpload>
+            <p-button
+              type="button"
+              icon="pi pi-trash"
+              [text]="true"
+              [rounded]="true"
+              severity="danger"
+              size="small"
+              pTooltip="Eliminar logo"
+              (onClick)="removerLogo()">
+            </p-button>
+          </div>
+        </div>
+      } @else {
+        <!-- Botón de subida de archivo PrimeNG -->
+        <div class="border border-dashed border-slate-200 rounded-xl p-3 bg-slate-50/50 hover:bg-slate-50 hover:border-gold-300 transition-all flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2 min-w-0 text-slate-500">
+            <i class="pi pi-image text-slate-400 text-lg shrink-0"></i>
+            <span class="text-xs truncate">PNG, JPG, WebP o SVG (máx. 5MB)</span>
+          </div>
+          <p-fileUpload
+            mode="basic"
+            chooseLabel="Subir Logo"
+            chooseIcon="pi pi-upload"
+            accept="image/*"
+            [maxFileSize]="5000000"
+            styleClass="p-button-sm !rounded-xl text-xs font-semibold bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-xs shrink-0"
+            (onSelect)="onLogoSelected($event)">
+          </p-fileUpload>
+        </div>
+      }
     </div>
 
     <div>
