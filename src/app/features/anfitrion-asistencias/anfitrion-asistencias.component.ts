@@ -232,7 +232,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   });
 
   sinServiciosActivos = computed(() => {
-    return !this.tieneInvitacion() && !this.tieneModulosAsistencias();
+    return !this.tieneInvitacion() && !this.tieneModulosAsistencias() && !this.permiteMarcaBlanca();
   });
 
   totalPestanasDisponibles = computed(() => {
