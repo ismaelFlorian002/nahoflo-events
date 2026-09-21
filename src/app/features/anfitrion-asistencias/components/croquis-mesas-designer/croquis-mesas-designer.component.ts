@@ -1,9 +1,24 @@
-import { Component, computed, EventEmitter, inject, Input, OnInit, Output, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  signal,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
+import { Table, TableModule } from 'primeng/table';
+import { InputTextModule } from 'primeng/inputtext';
+import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { BadgeModule } from 'primeng/badge';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, MesaDiseno } from '../../../../core/models/event.model';
@@ -15,11 +30,21 @@ import { MesaDetalleModalComponent } from '../mesa-detalle-modal/mesa-detalle-mo
 @Component({
   selector: 'app-croquis-mesas-designer',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, DropdownModule, TooltipModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    DropdownModule,
+    TooltipModule,
+    TableModule,
+    InputTextModule,
+    OverlayPanelModule,
+    BadgeModule,
+  ],
   templateUrl: './croquis-mesas-designer.component.html',
   styleUrl: './croquis-mesas-designer.component.scss',
 })
-export class CroquisMesasDesignerComponent implements OnInit {
+export class CroquisMesasDesignerComponent implements OnInit, OnChanges {
   @Input({ required: true }) evento!: Evento;
   @Input() invitados: InvitadoModel[] = [];
   @Output() eventoActualizado = new EventEmitter<Evento>();
@@ -35,12 +60,23 @@ export class CroquisMesasDesignerComponent implements OnInit {
   mesas = signal<MesaDiseno[]>([]);
   guardando = signal<boolean>(false);
 
+  // Reactividad y filtros para la tabla de invitados
+  actualizacionesTick = signal<number>(0);
+  filtroEstado = signal<'todos' | 'pendiente' | 'confirmado' | 'sin_mesa'>('todos');
+  busqueda = signal<string>('');
+
   ngOnInit(): void {
     if (this.evento.mesasLayout && this.evento.mesasLayout.length > 0) {
       this.mesas.set(this.evento.mesasLayout);
     } else {
       // Intentar autogenerar desde la lista de invitados si ya tienen números de mesa
       this.autogenerarMesasIniciales(false);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['invitados']) {
+      this.actualizacionesTick.update((v) => v + 1);
     }
   }
 
@@ -52,6 +88,7 @@ export class CroquisMesasDesignerComponent implements OnInit {
   );
 
   totalAsientosOcupados = computed(() => {
+    this.actualizacionesTick();
     return this.invitados
       .filter((i) => i.mesa && i.mesa.trim() !== '')
       .reduce((sum, i) => sum + (Number(i.pasesConfirmados) || 1), 0);
@@ -64,10 +101,12 @@ export class CroquisMesasDesignerComponent implements OnInit {
   });
 
   invitadosSinMesa = computed(() => {
+    this.actualizacionesTick();
     return this.invitados.filter((i) => !i.mesa || i.mesa.trim() === '');
   });
 
   totalAlergias = computed(() => {
+    this.actualizacionesTick();
     return this.invitados.filter(
       (i) => i.restriccionesAlimentarias && i.restriccionesAlimentarias.trim() !== '',
     ).length;
@@ -77,11 +116,113 @@ export class CroquisMesasDesignerComponent implements OnInit {
     return this.mesas().filter((m) => this.obtenerAsientosOcupadosMesa(m.nombre) > m.capacidad).length;
   });
 
+  // Métricas y filtros para la tabla de asignación
+  totalInvitados = computed(() => {
+    this.actualizacionesTick();
+    return this.invitados.length;
+  });
+
+  totalConfirmados = computed(() => {
+    this.actualizacionesTick();
+    return this.invitados.filter((i) => i.estado === 'confirmado' || i.asistira).length;
+  });
+
+  totalPendientes = computed(() => {
+    this.actualizacionesTick();
+    return this.invitados.filter(
+      (i) => (i.estado === 'pendiente' || !i.estado) && !i.asistira,
+    ).length;
+  });
+
+  totalSinMesa = computed(() => {
+    this.actualizacionesTick();
+    return this.invitados.filter((i) => !i.mesa || i.mesa.trim() === '').length;
+  });
+
+  labelFiltroEstado = computed(() => {
+    switch (this.filtroEstado()) {
+      case 'confirmado':
+        return 'Confirmados';
+      case 'pendiente':
+        return 'Pendientes';
+      case 'sin_mesa':
+        return 'Sin Mesa';
+      default:
+        return 'Todos';
+    }
+  });
+
+  conteoFiltroEstado = computed(() => {
+    switch (this.filtroEstado()) {
+      case 'confirmado':
+        return String(this.totalConfirmados());
+      case 'pendiente':
+        return String(this.totalPendientes());
+      case 'sin_mesa':
+        return String(this.totalSinMesa());
+      default:
+        return String(this.totalInvitados());
+    }
+  });
+
+  hayFiltrosActivos = computed(() => {
+    return this.filtroEstado() !== 'todos' || this.busqueda().trim() !== '';
+  });
+
+  seleccionarFiltroEstado(
+    estado: 'todos' | 'pendiente' | 'confirmado' | 'sin_mesa',
+    table?: Table,
+    op?: OverlayPanel,
+  ): void {
+    this.filtroEstado.set(estado);
+    table?.reset();
+    op?.hide();
+  }
+
+  limpiarTodosFiltros(table?: Table): void {
+    this.filtroEstado.set('todos');
+    this.busqueda.set('');
+    table?.reset();
+  }
+
+  onBusquedaChange(valor: string, table?: Table): void {
+    this.busqueda.set(valor);
+    table?.reset();
+  }
+
+  invitadosFiltrados = computed(() => {
+    this.actualizacionesTick();
+    const term = this.busqueda().trim().toLowerCase();
+    const filtro = this.filtroEstado();
+
+    return this.invitados.filter((inv) => {
+      let coincideEstado = true;
+      if (filtro === 'pendiente') {
+        coincideEstado = (inv.estado === 'pendiente' || !inv.estado) && !inv.asistira;
+      } else if (filtro === 'confirmado') {
+        coincideEstado = inv.estado === 'confirmado' || inv.asistira;
+      } else if (filtro === 'sin_mesa') {
+        coincideEstado = !inv.mesa || inv.mesa.trim() === '';
+      }
+
+      const coincideTermino =
+        !term ||
+        (inv.nombre || '').toLowerCase().includes(term) ||
+        (inv.telefono || '').toLowerCase().includes(term) ||
+        (inv.mesa || '').toLowerCase().includes(term);
+
+      return coincideEstado && coincideTermino;
+    });
+  });
+
   opcionesMesasDropdown = computed(() => {
-    return this.mesas().map((m) => ({
-      label: `${m.nombre} (${m.forma})`,
-      value: m.nombre,
-    }));
+    return [
+      { label: 'Sin mesa asignada', value: '' },
+      ...this.mesas().map((m) => ({
+        label: `${m.nombre} (${m.capacidad} asientos)`,
+        value: m.nombre,
+      })),
+    ];
   });
 
   obtenerAsientosOcupadosMesa(nombreMesa: string): number {
@@ -297,9 +438,36 @@ export class CroquisMesasDesignerComponent implements OnInit {
     }
   }
 
-  async asignarMesaRapida(invitado: InvitadoModel, mesaNombre: string): Promise<void> {
-    if (!mesaNombre) return;
-    invitado.mesa = mesaNombre;
-    await this.persistirAsignacionesInvitados();
+  async asignarMesaRapida(invitado: InvitadoModel, mesaNombre: string | null): Promise<void> {
+    const valorMesa = (mesaNombre || '').trim();
+    if ((invitado.mesa || '') === valorMesa) return;
+
+    invitado.mesa = valorMesa;
+    this.actualizacionesTick.update((v) => v + 1);
+
+    const evId = this.evento.id;
+    if (!evId || !invitado.id) return;
+
+    this.guardando.set(true);
+    try {
+      await this.eventService.asignarMesaInvitado(evId, invitado.id, valorMesa);
+      this.invitadosActualizados.emit();
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Mesa Asignada',
+        detail: valorMesa
+          ? `Se asignó "${valorMesa}" a ${invitado.nombre}.`
+          : `Se removió la asignación de mesa a ${invitado.nombre}.`,
+      });
+    } catch (e) {
+      console.error('Error al asignar mesa:', e);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudo guardar la asignación de mesa.',
+      });
+    } finally {
+      this.guardando.set(false);
+    }
   }
 }
