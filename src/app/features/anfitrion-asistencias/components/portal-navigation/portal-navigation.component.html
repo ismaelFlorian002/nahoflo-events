@@ -1,0 +1,118 @@
+<div class="portal-shell" [class.is-collapsed]="collapsed">
+  <aside #desktopMenu
+    class="desktop-sidebar transition-[transform,opacity] duration-[220ms] ease-out motion-reduce:transition-none"
+    [attr.inert]="collapsed ? '' : null"
+    [attr.aria-hidden]="collapsed"
+    aria-label="Menú del evento">
+    <div class="sidebar-brand">
+      <span class="brand-icon"><i class="pi pi-heart" aria-hidden="true"></i></span>
+        <div class="min-w-0">
+          <span class="block text-sm font-semibold text-gray-900">Mi evento</span
+          ><span class="text-xs text-gray-500">Portal de anfitrión</span>
+        </div>
+    </div>
+    <nav
+      id="portal-desktop-navigation"
+      class="sidebar-navigation"
+      aria-label="Navegación del portal"
+    >
+      <ng-container
+        [ngTemplateOutlet]="navigationGroups"
+        [ngTemplateOutletContext]="{ compact: false }"
+      />
+    </nav>
+    <div
+      class="sidebar-footer"
+      [pTooltip]="collapsed ? 'Portal de anfitrión' : ''"
+      tooltipPosition="right"
+    >
+      <i class="pi pi-shield text-emerald-600" aria-hidden="true"></i>
+        <span>Portal de anfitrión</span>
+    </div>
+  </aside>
+  <div class="portal-workspace transition-[margin-left] duration-[220ms] ease-out motion-reduce:transition-none">
+    <header class="portal-topbar">
+      <button
+        #desktopToggle
+        pButton
+        type="button"
+        icon="pi pi-bars"
+        class="desktop-toggle p-button-text p-button-secondary"
+        [attr.aria-label]="collapsed ? 'Abrir menú' : 'Cerrar menú'"
+        [attr.aria-expanded]="!collapsed"
+        aria-controls="portal-desktop-navigation"
+        [pTooltip]="collapsed ? 'Abrir menú' : 'Cerrar menú'"
+        tooltipPosition="bottom"
+        (click)="collapsed = !collapsed"
+      ></button>
+      <button
+        pButton
+        type="button"
+        icon="pi pi-bars"
+        class="mobile-toggle p-button-text p-button-secondary"
+        aria-label="Abrir menú de navegación"
+        aria-haspopup="dialog"
+        [attr.aria-expanded]="drawerVisible"
+        (click)="drawerVisible = true"
+      ></button>
+      <div class="min-w-0 flex-1"><ng-content select="[portalHeader]" /></div>
+    </header>
+    <div class="section-heading">
+      <span class="text-gray-400">Mi evento</span
+      ><i class="pi pi-angle-right text-xs" aria-hidden="true"></i
+      ><span class="font-medium text-gray-700">{{ activeItem()?.label }}</span>
+    </div>
+    <ng-content />
+  </div>
+</div>
+<p-sidebar
+  [(visible)]="drawerVisible"
+  appendTo="body"
+  [blockScroll]="true"
+  [dismissible]="true"
+  transitionOptions="220ms cubic-bezier(0.2, 0, 0, 1)"
+  [style]="{ width: 'min(21rem, 90vw)' }"
+  ariaCloseLabel="Cerrar menú"
+>
+  <ng-template pTemplate="header"
+    ><span class="font-semibold text-gray-800">Mi evento</span></ng-template
+  >
+  <nav aria-label="Navegación móvil del portal">
+    <ng-container
+      [ngTemplateOutlet]="navigationGroups"
+      [ngTemplateOutletContext]="{ compact: false }"
+    />
+  </nav>
+</p-sidebar>
+<ng-template #navigationGroups let-compact="compact">
+  @for (group of groups(); track group.label) {
+    <div class="navigation-group" [class.compact-group]="compact">
+      @if (!compact) {
+        <p class="group-label">{{ group.label }}</p>
+      }
+      @for (item of group.items; track item.id) {
+        <button
+          type="button"
+          class="nav-item"
+          [class.active]="active() === item.id"
+          [class.compact]="compact"
+          [attr.aria-current]="active() === item.id ? 'page' : null"
+          [attr.aria-label]="item.label + (item.badge !== undefined ? ': ' + item.badge : '')"
+          [pTooltip]="
+            compact ? item.label + (item.badge !== undefined ? ' · ' + item.badge : '') : ''
+          "
+          tooltipPosition="right"
+          (click)="select(item.id)"
+        >
+          <i [class]="item.icon" aria-hidden="true"></i>
+          @if (!compact) {
+            <span class="min-w-0 flex-1">{{ item.label }}</span>
+            @if (item.badge !== undefined) {
+              <span class="nav-badge">{{ item.badge }}</span>
+            }
+          }
+        </button>
+      }
+    </div>
+  }
+</ng-template>

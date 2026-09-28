@@ -35,6 +35,7 @@ import { ChecklistTrackerComponent } from './components/checklist-tracker/checkl
 import { AgenciaBrandingModalComponent } from './components/agencia-branding-modal/agencia-branding-modal.component';
 import { CroquisMesasDesignerComponent } from './components/croquis-mesas-designer/croquis-mesas-designer.component';
 import { WhatsappMessagingCenterComponent } from './components/whatsapp-messaging-center/whatsapp-messaging-center.component';
+import { PortalNavigationComponent, PortalNavigationItem } from './components/portal-navigation/portal-navigation.component';
 
 // Modales existentes
 import { QrMesaModalComponent } from '../album-digital/qr-mesa-modal/qr-mesa-modal.component';
@@ -62,6 +63,7 @@ import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitad
     ChecklistTrackerComponent,
     CroquisMesasDesignerComponent,
     WhatsappMessagingCenterComponent,
+    PortalNavigationComponent,
   ],
   providers: [DialogService],
   templateUrl: './anfitrion-asistencias.component.html',
@@ -293,6 +295,37 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     if (this.tieneAlbum()) count++;
     if (this.tienePlannerSuite()) count += 4; // Minutario, Presupuesto, Proveedores, Checklist
     return count;
+  });
+
+  readonly navegacionPortal = computed<PortalNavigationItem[]>(() => {
+    const items: PortalNavigationItem[] = [
+      { id: 'resumen', label: 'Resumen', icon: 'pi pi-chart-pie', group: 'Evento' },
+    ];
+    if (this.tieneControlInvitados()) {
+      items.push({ id: 'invitados', label: 'Invitados', icon: 'pi pi-users', group: 'Invitados', badge: String(this.invitados().length) });
+    }
+    if (this.tieneControlInvitados() && this.evento()?.modulos?.tipoControlInvitados !== 'lista_puerta') {
+      items.push(
+        { id: 'croquis', label: 'Mesas', icon: 'pi pi-th-large', group: 'Invitados' },
+        { id: 'whatsapp', label: 'Mensajes WA', icon: 'pi pi-whatsapp', group: 'Invitados' },
+      );
+    }
+    if (this.tieneRecepcionOPuerta()) {
+      const total = this.evento()?.modulos?.tipoControlInvitados === 'total';
+      items.push({ id: 'recepcion', label: total ? 'Recepción & Escáner' : 'Recepción', icon: total ? 'pi pi-qrcode' : 'pi pi-id-card', group: 'Invitados', badge: this.totalIngresados() + '/' + this.totalPases() });
+    }
+    if (this.tienePlannerSuite()) {
+      items.push(
+        { id: 'minutario', label: 'Cronograma', icon: 'pi pi-clock', group: 'Organización' },
+        { id: 'presupuesto', label: 'Presupuesto', icon: 'pi pi-dollar', group: 'Organización' },
+        { id: 'proveedores', label: 'Proveedores', icon: 'pi pi-briefcase', group: 'Organización' },
+        { id: 'checklist', label: 'Checklist', icon: 'pi pi-check-square', group: 'Organización' },
+      );
+    }
+    if (this.tieneAlbum()) {
+      items.push({ id: 'album', label: 'Álbum', icon: 'pi pi-camera', group: 'Recuerdos', badge: this.recuerdos().length > 0 ? String(this.recuerdos().length) : undefined });
+    }
+    return items;
   });
 
 

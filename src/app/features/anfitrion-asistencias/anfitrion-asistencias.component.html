@@ -24,20 +24,23 @@
 
     <!-- 2. PANEL DESBLOQUEADO (VISTA CORPORATIVA PREMIUM DEL CLIENTE) -->
     @else {
-      <div class="w-full flex flex-col min-h-screen">
+      <app-portal-navigation
+        [items]="navegacionPortal()"
+        [active]="pestanaActiva()"
+        (sectionSelected)="cambiarPestana($event)">
 
         <!-- HEADER SUPERIOR CORPORATIVO -->
-        <header class="w-full bg-white border-b border-gray-100 px-4 sm:px-8 py-3.5 flex flex-wrap justify-between items-center sticky top-0 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.02)] gap-4">
+        <div portalHeader class="w-full flex flex-wrap justify-between items-center gap-3">
 
           <!-- Lado Izquierdo: Título del Evento y Badge -->
-          <div class="flex items-center gap-3">
-            <div class="flex flex-col">
+          <div class="flex min-w-0 items-center gap-3">
+            <div class="flex min-w-0 flex-col">
               @if (ev.preTitulo || ev.tipo) {
                 <span class="text-xs uppercase tracking-wider font-semibold text-gold-500">
                   {{ ev.preTitulo || ev.tipo }}
                 </span>
               }
-              <h1 class="text-xl font-bold text-gray-800 tracking-tight m-0 leading-tight">
+              <h1 class="text-xl font-bold text-gray-800 m-0 leading-tight break-words">
                 {{ ev.titulo }}
               </h1>
             </div>
@@ -46,154 +49,11 @@
             </span>
           </div>
 
-          <!-- Lado Derecho: Navegación Corporativa con Hover Rosa Pastel y Acciones -->
+          <!-- Acciones del evento -->
           <div class="flex items-center flex-wrap gap-2">
-            @if (totalPestanasDisponibles() > 1) {
-              <nav class="hidden md:flex items-center gap-1" aria-label="Navegación del portal">
-                <button
-                  type="button"
-                  (click)="cambiarPestana('resumen')"
-                  [class.bg-pastel-pink-50]="pestanaActiva() === 'resumen'"
-                  [class.text-pastel-pink-500]="pestanaActiva() === 'resumen'"
-                  [class.font-semibold]="pestanaActiva() === 'resumen'"
-                  [class.text-gray-600]="pestanaActiva() !== 'resumen'"
-                  class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                  <i class="pi pi-chart-pie text-xs"></i>
-                  <span>Resumen</span>
-                </button>
-
-                @if (tieneControlInvitados()) {
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('invitados')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'invitados'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'invitados'"
-                    [class.font-semibold]="pestanaActiva() === 'invitados'"
-                    [class.text-gray-600]="pestanaActiva() !== 'invitados'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i class="pi pi-users text-xs"></i>
-                    <span>Lista de Invitados</span>
-                    <span class="px-1.5 py-0.2 rounded-full text-[11px] bg-gray-100 text-gray-600 font-semibold">{{ invitados().length }}</span>
-                  </button>
-                }
-
-                @if (tieneControlInvitados() && ev.modulos?.tipoControlInvitados !== 'lista_puerta') {
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('croquis')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'croquis'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'croquis'"
-                    [class.font-semibold]="pestanaActiva() === 'croquis'"
-                    [class.text-gray-600]="pestanaActiva() !== 'croquis'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i class="pi pi-th-large text-xs"></i>
-                    <span>Croquis Mesas</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('whatsapp')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'whatsapp'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'whatsapp'"
-                    [class.font-semibold]="pestanaActiva() === 'whatsapp'"
-                    [class.text-gray-600]="pestanaActiva() !== 'whatsapp'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i class="pi pi-whatsapp text-xs text-emerald-500"></i>
-                    <span>Mensajes WA</span>
-                  </button>
-                }
-
-                @if (tieneRecepcionOPuerta()) {
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('recepcion')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'recepcion'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'recepcion'"
-                    [class.font-semibold]="pestanaActiva() === 'recepcion'"
-                    [class.text-gray-600]="pestanaActiva() !== 'recepcion'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode text-xs' : 'pi pi-id-card text-xs'"></i>
-                    <span>{{ ev.modulos?.tipoControlInvitados === 'total' ? 'Recepción & Escáner' : 'Recepción' }}</span>
-                    <span class="px-1.5 py-0.2 rounded-full text-[11px] bg-blue-50 text-blue-600 font-semibold">{{ totalIngresados() }}/{{ totalPases() }}</span>
-                  </button>
-                }
-
-                @if (tienePlannerSuite()) {
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('minutario')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'minutario'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'minutario'"
-                    [class.font-semibold]="pestanaActiva() === 'minutario'"
-                    [class.text-gray-600]="pestanaActiva() !== 'minutario'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i class="pi pi-clock text-xs"></i>
-                    <span>Cronograma</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('presupuesto')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'presupuesto'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'presupuesto'"
-                    [class.font-semibold]="pestanaActiva() === 'presupuesto'"
-                    [class.text-gray-600]="pestanaActiva() !== 'presupuesto'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i class="pi pi-dollar text-xs"></i>
-                    <span>Presupuesto</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('proveedores')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'proveedores'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'proveedores'"
-                    [class.font-semibold]="pestanaActiva() === 'proveedores'"
-                    [class.text-gray-600]="pestanaActiva() !== 'proveedores'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i class="pi pi-briefcase text-xs"></i>
-                    <span>Proveedores</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('checklist')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'checklist'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'checklist'"
-                    [class.font-semibold]="pestanaActiva() === 'checklist'"
-                    [class.text-gray-600]="pestanaActiva() !== 'checklist'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i class="pi pi-check-square text-xs"></i>
-                    <span>Checklist</span>
-                  </button>
-                }
-
-
-
-
-                @if (tieneAlbum()) {
-                  <button
-                    type="button"
-                    (click)="cambiarPestana('album')"
-                    [class.bg-pastel-pink-50]="pestanaActiva() === 'album'"
-                    [class.text-pastel-pink-500]="pestanaActiva() === 'album'"
-                    [class.font-semibold]="pestanaActiva() === 'album'"
-                    [class.text-gray-600]="pestanaActiva() !== 'album'"
-                    class="px-3.5 py-2 rounded-xl text-sm font-medium transition-colors duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 focus:outline-none cursor-pointer border-0 bg-transparent flex items-center gap-2">
-                    <i class="pi pi-camera text-xs"></i>
-                    <span>Álbum</span>
-                    @if (recuerdos().length > 0) {
-                      <span class="px-1.5 py-0.2 rounded-full text-[11px] bg-gray-100 text-gray-600 font-semibold">{{ recuerdos().length }}</span>
-                    }
-                  </button>
-                }
-              </nav>
-            }
-
-            <div class="h-5 w-px bg-gray-200 mx-1 hidden md:block"></div>
 
             <!-- Acciones Rápidas (Copiar Enlace, Ver Invitación, Salir) -->
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
               @if (tieneInvitacion()) {
                 <p-button
                   [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
@@ -229,10 +89,10 @@
               </p-button>
             </div>
           </div>
-        </header>
+        </div>
 
         <!-- CONTENIDO PRINCIPAL CENTRADO -->
-        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:pb-8 w-full flex-1">
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 w-full flex-1">
 
           <!-- 0. PESTAÑA: RESUMEN GENERAL -->
           @if (pestanaActiva() === 'resumen') {
@@ -1605,161 +1465,12 @@
         </main>
 
         <!-- MINI FOOTER MINIMALISTA -->
-        <footer class="text-center text-xs text-gray-400 mt-8 pb-24 md:pb-4">
+        <footer class="text-center text-xs text-gray-400 mt-8 pb-4">
           Portal de Gestión &bull; Nahoflo Events
         </footer>
 
-        <!-- NAVEGACIÓN INFERIOR EXCLUSIVA PARA MÓVILES (MOBILE BOTTOM NAV) -->
-        @if (totalPestanasDisponibles() > 1) {
-          <nav class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 shadow-[0_-4px_10px_rgba(0,0,0,0.03)] z-50 md:hidden flex justify-around items-center px-2 py-3 pb-safe" aria-label="Navegación móvil inferior">
 
-            <!-- 1. Botón Resumen -->
-            <button
-              type="button"
-              (click)="cambiarPestana('resumen')"
-              class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-              [class.text-gold-500]="pestanaActiva() === 'resumen'"
-              [class.text-gray-400]="pestanaActiva() !== 'resumen'">
-              <i class="pi pi-chart-pie text-lg mb-1"></i>
-              <span class="text-[10px] leading-none font-medium">Resumen</span>
-            </button>
-
-            <!-- 2. Botón Invitados (con badge de cantidad) -->
-            @if (tieneControlInvitados()) {
-              <button
-                type="button"
-                (click)="cambiarPestana('invitados')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'invitados'"
-                [class.text-gray-400]="pestanaActiva() !== 'invitados'">
-                <div class="relative flex items-center justify-center">
-                  <i class="pi pi-users text-lg mb-1"></i>
-                  @if (invitados().length > 0) {
-                    <span class="absolute -top-1.5 -right-3 min-w-[15px] h-3.5 px-1 rounded-full text-[9px] font-bold flex items-center justify-center bg-gray-100 text-gray-700">
-                      {{ invitados().length }}
-                    </span>
-                  }
-                </div>
-                <span class="text-[10px] leading-none font-medium">Invitados</span>
-              </button>
-            }
-
-            <!-- 3. Botón Escáner / Recepción (con badge x/y) -->
-            @if (tieneRecepcionOPuerta()) {
-              <button
-                type="button"
-                (click)="cambiarPestana('recepcion')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'recepcion'"
-                [class.text-gray-400]="pestanaActiva() !== 'recepcion'">
-                <div class="relative flex items-center justify-center">
-                  <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode text-lg mb-1' : 'pi pi-id-card text-lg mb-1'"></i>
-                  <span class="absolute -top-1.5 -right-4.5 px-1 h-3.5 rounded-full text-[9px] font-bold flex items-center justify-center bg-blue-50 text-blue-600">
-                    {{ totalIngresados() }}/{{ totalPases() }}
-                  </span>
-                </div>
-                <span class="text-[10px] leading-none font-medium">
-                  {{ ev.modulos?.tipoControlInvitados === 'total' ? 'Escáner' : 'Puerta' }}
-                </span>
-              </button>
-            }
-
-            <!-- 2.5 Botón Croquis Mesas & WhatsApp (Solo si no es lista_puerta) -->
-            @if (tieneControlInvitados() && ev.modulos?.tipoControlInvitados !== 'lista_puerta') {
-              <button
-                type="button"
-                (click)="cambiarPestana('croquis')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'croquis'"
-                [class.text-gray-400]="pestanaActiva() !== 'croquis'">
-                <i class="pi pi-th-large text-lg mb-1"></i>
-                <span class="text-[10px] leading-none font-medium">Croquis</span>
-              </button>
-
-              <button
-                type="button"
-                (click)="cambiarPestana('whatsapp')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'whatsapp'"
-                [class.text-gray-400]="pestanaActiva() !== 'whatsapp'">
-                <i class="pi pi-whatsapp text-lg mb-1 text-emerald-500"></i>
-                <span class="text-[10px] leading-none font-medium">WhatsApp</span>
-              </button>
-            }
-
-            @if (tienePlannerSuite()) {
-              <!-- 3.5. Botón Cronograma / Minutario -->
-              <button
-                type="button"
-                (click)="cambiarPestana('minutario')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'minutario'"
-                [class.text-gray-400]="pestanaActiva() !== 'minutario'">
-                <i class="pi pi-clock text-lg mb-1"></i>
-                <span class="text-[10px] leading-none font-medium">Minutario</span>
-              </button>
-
-              <!-- 3.6. Botón Presupuesto -->
-              <button
-                type="button"
-                (click)="cambiarPestana('presupuesto')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'presupuesto'"
-                [class.text-gray-400]="pestanaActiva() !== 'presupuesto'">
-                <i class="pi pi-dollar text-lg mb-1"></i>
-                <span class="text-[10px] leading-none font-medium">Pagos</span>
-              </button>
-
-              <!-- 3.7. Botón Proveedores -->
-              <button
-                type="button"
-                (click)="cambiarPestana('proveedores')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'proveedores'"
-                [class.text-gray-400]="pestanaActiva() !== 'proveedores'">
-                <i class="pi pi-briefcase text-lg mb-1"></i>
-                <span class="text-[10px] leading-none font-medium">Equipo</span>
-              </button>
-
-              <!-- 3.8. Botón Checklist -->
-              <button
-                type="button"
-                (click)="cambiarPestana('checklist')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'checklist'"
-                [class.text-gray-400]="pestanaActiva() !== 'checklist'">
-                <i class="pi pi-check-square text-lg mb-1"></i>
-                <span class="text-[10px] leading-none font-medium">Checklist</span>
-              </button>
-            }
-
-
-
-
-            <!-- 4. Botón Álbum (con badge de fotos) -->
-            @if (tieneAlbum()) {
-              <button
-                type="button"
-                (click)="cambiarPestana('album')"
-                class="flex flex-col items-center justify-center flex-1 py-1 focus:outline-none border-0 bg-transparent transition-colors duration-150 cursor-pointer"
-                [class.text-gold-500]="pestanaActiva() === 'album'"
-                [class.text-gray-400]="pestanaActiva() !== 'album'">
-                <div class="relative flex items-center justify-center">
-                  <i class="pi pi-camera text-lg mb-1"></i>
-                  @if (recuerdos().length > 0) {
-                    <span class="absolute -top-1.5 -right-3 min-w-[15px] h-3.5 px-1 rounded-full text-[9px] font-bold flex items-center justify-center bg-gray-100 text-gray-700">
-                      {{ recuerdos().length }}
-                    </span>
-                  }
-                </div>
-                <span class="text-[10px] leading-none font-medium">Álbum</span>
-              </button>
-            }
-
-          </nav>
-        }
-
-      </div>
+      </app-portal-navigation>
     }
 
   }
