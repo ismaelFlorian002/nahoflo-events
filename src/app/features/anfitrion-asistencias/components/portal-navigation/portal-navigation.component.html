@@ -1,15 +1,32 @@
 <div class="portal-shell" [class.is-collapsed]="collapsed">
   <aside #desktopMenu
-    class="desktop-sidebar transition-[transform,opacity] duration-[220ms] ease-out motion-reduce:transition-none"
-    [attr.inert]="collapsed ? '' : null"
-    [attr.aria-hidden]="collapsed"
+    class="desktop-sidebar transition-[width] duration-[220ms] ease-out motion-reduce:transition-none"
     aria-label="Menú del evento">
-    <div class="sidebar-brand">
-      <span class="brand-icon"><i class="pi pi-heart" aria-hidden="true"></i></span>
+    <div class="sidebar-brand" [class.collapsed-brand]="collapsed">
+      @if (!collapsed) {
+        @if (brandLogoUrl()) {
+          <img [src]="brandLogoUrl()" alt="Logo" class="brand-logo" />
+        } @else {
+          <span class="brand-icon"><i class="pi pi-heart" aria-hidden="true"></i></span>
+        }
         <div class="min-w-0">
-          <span class="block text-sm font-semibold text-gray-900">Mi evento</span
-          ><span class="text-xs text-gray-500">Portal de anfitrión</span>
+          <span class="block text-sm font-semibold text-gray-900 leading-tight">{{ brandName() }}</span>
+          <span class="text-xs text-gray-500">{{ brandSlogan() }}</span>
         </div>
+      }
+      <button
+        #desktopToggle
+        pButton
+        type="button"
+        icon="pi pi-bars"
+        class="collapse-toggle p-button-text p-button-secondary p-button-sm"
+        [attr.aria-label]="collapsed ? 'Expandir menú' : 'Contraer menú'"
+        [attr.aria-expanded]="!collapsed"
+        aria-controls="portal-desktop-navigation"
+        [pTooltip]="collapsed ? 'Expandir menú' : 'Contraer menú'"
+        tooltipPosition="right"
+        (click)="collapsed = !collapsed"
+      ></button>
     </div>
     <nav
       id="portal-desktop-navigation"
@@ -18,33 +35,18 @@
     >
       <ng-container
         [ngTemplateOutlet]="navigationGroups"
-        [ngTemplateOutletContext]="{ compact: false }"
+        [ngTemplateOutletContext]="{ compact: collapsed }"
       />
     </nav>
-    <div
-      class="sidebar-footer"
-      [pTooltip]="collapsed ? 'Portal de anfitrión' : ''"
-      tooltipPosition="right"
-    >
-      <i class="pi pi-shield text-emerald-600" aria-hidden="true"></i>
+    @if (!collapsed) {
+      <div class="sidebar-footer">
+        <i class="pi pi-shield text-emerald-600" aria-hidden="true"></i>
         <span>Portal de anfitrión</span>
-    </div>
+      </div>
+    }
   </aside>
   <div class="portal-workspace transition-[margin-left] duration-[220ms] ease-out motion-reduce:transition-none">
     <header class="portal-topbar">
-      <button
-        #desktopToggle
-        pButton
-        type="button"
-        icon="pi pi-bars"
-        class="desktop-toggle p-button-text p-button-secondary"
-        [attr.aria-label]="collapsed ? 'Abrir menú' : 'Cerrar menú'"
-        [attr.aria-expanded]="!collapsed"
-        aria-controls="portal-desktop-navigation"
-        [pTooltip]="collapsed ? 'Abrir menú' : 'Cerrar menú'"
-        tooltipPosition="bottom"
-        (click)="collapsed = !collapsed"
-      ></button>
       <button
         pButton
         type="button"

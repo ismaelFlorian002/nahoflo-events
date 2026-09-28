@@ -5,6 +5,7 @@
 }
 .portal-shell {
   --sidebar-width: 264px;
+  --sidebar-collapsed-width: 68px;
   min-height: 100dvh;
 }
 .desktop-sidebar {
@@ -27,7 +28,7 @@
   background: #fff;
   border-bottom: 1px solid #e5e7eb;
 }
-.desktop-toggle {
+.collapse-toggle {
   display: none;
 }
 .mobile-toggle {
@@ -118,21 +119,44 @@
   width: 44px;
   height: 44px;
   padding: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.compact-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .compact-group + .compact-group {
   border-top: 1px solid #e5e7eb;
   margin-top: 12px;
   padding-top: 12px;
 }
+
+/* ========== Desktop (≥1024px) ========== */
 @media (min-width: 1024px) {
+  /* Collapsed state: sidebar shrinks to icon-only width */
   .portal-shell.is-collapsed {
-    --sidebar-width: 0px;
+    --sidebar-width: var(--sidebar-collapsed-width);
   }
   .portal-shell.is-collapsed .desktop-sidebar {
-    transform: translateX(-100%);
-    opacity: 0;
-    pointer-events: none;
+    width: var(--sidebar-collapsed-width);
   }
+  .portal-shell.is-collapsed .sidebar-brand {
+    justify-content: center;
+    padding: 20px 8px;
+    min-height: auto;
+  }
+  .collapsed-brand {
+    justify-content: center;
+  }
+  .portal-shell.is-collapsed .sidebar-navigation {
+    padding: 16px 10px;
+  }
+  .portal-shell.is-collapsed .sidebar-footer {
+    display: none;
+  }
+
   .desktop-sidebar {
     display: flex;
     flex-direction: column;
@@ -140,10 +164,10 @@
     inset: 0 auto 0 0;
     z-index: 40;
     width: 264px;
-    transform: translateX(0);
-    opacity: 1;
     background: #fff;
     border-right: 1px solid #e5e7eb;
+    overflow: hidden;
+    transition: width 220ms ease-out;
   }
   .sidebar-brand {
     display: flex;
@@ -162,6 +186,24 @@
     border-radius: 8px;
     background: #fff1f2;
     color: #be123c;
+  }
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    object-fit: contain;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+  }
+  .collapse-toggle {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  /* When collapsed, center the toggle button */
+  .portal-shell.is-collapsed .collapse-toggle {
+    margin-left: 0;
   }
   .sidebar-navigation {
     flex: 1;
@@ -185,10 +227,6 @@
     align-items: center;
     padding: 16px 24px;
     min-height: 84px;
-  }
-  .desktop-toggle {
-    display: inline-flex;
-    flex-shrink: 0;
   }
   .mobile-toggle {
     display: none;

@@ -27,6 +27,9 @@
       <app-portal-navigation
         [items]="navegacionPortal()"
         [active]="pestanaActiva()"
+        [brandLogoUrl]="permiteMarcaBlanca() ? evento()?.agenciaLogoUrl : null"
+        [brandName]="permiteMarcaBlanca() && evento()?.agenciaNombre ? evento()!.agenciaNombre! : 'NahoFlo Creative Studio'"
+        [brandSlogan]="permiteMarcaBlanca() ? 'Portal de anfitrión' : 'CreativeStudio'"
         (sectionSelected)="cambiarPestana($event)">
 
         <!-- HEADER SUPERIOR CORPORATIVO -->

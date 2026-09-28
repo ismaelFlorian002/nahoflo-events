@@ -36,17 +36,22 @@ export interface PortalNavigationItem {
 export class PortalNavigationComponent {
   readonly items = input.required<PortalNavigationItem[]>();
   readonly active = input.required<PortalSection>();
+  readonly brandLogoUrl = input<string | null | undefined>(undefined);
+  readonly brandName = input<string>('NahoFlo Creative Studio');
+  readonly brandSlogan = input<string>('CreativeStudio');
   readonly sectionSelected = output<PortalSection>();
   drawerVisible = false;
-  collapsed = false;
+  collapsed = true;
+
   private readonly desktopMenu = viewChild<ElementRef<HTMLElement>>('desktopMenu');
   private readonly desktopToggle = viewChild<ElementRef<HTMLButtonElement>>('desktopToggle');
 
   closeOnOutsideClick(event: MouseEvent): void {
+    if (this.collapsed) return;
     const path = event.composedPath();
     const menu = this.desktopMenu()?.nativeElement;
     const toggle = this.desktopToggle()?.nativeElement;
-    if (!this.collapsed && menu && toggle && !path.includes(menu) && !path.includes(toggle)) {
+    if (menu && !path.includes(menu) && (!toggle || !path.includes(toggle))) {
       this.collapsed = true;
     }
   }
