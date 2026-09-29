@@ -1,0 +1,13 @@
+@let ev = vm.evento()!;
+<div
+  class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8"
+>
+  <app-scanner-view
+    [evento]="ev"
+    [invitados]="vm.invitados()"
+    [totalPases]="vm.totalPases()"
+    (checkIn)="vm.onCheckIn($event.invitado, $event.pases)"
+    (revertir)="vm.revertirCheckIn($event)"
+  >
+  </app-scanner-view>
+</div>

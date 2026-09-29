@@ -1,0 +1,5 @@
+@let ev = vm.evento()!;
+<div class="mb-8">
+  <app-proveedores-directorio [evento]="ev" (eventoActualizado)="vm.onEventoActualizado($event)">
+  </app-proveedores-directorio>
+</div>

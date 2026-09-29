@@ -3,6 +3,7 @@ import { PublicLayout } from './shared/layouts/public-layout/public-layout.compo
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout.component';
 import { EventLayout } from './shared/layouts/event-layout/event-layout.component';
 import { authGuard } from './core/guards/auth-guard';
+import { PortalEventAccess, portalSectionGuard } from './features/anfitrion-asistencias/portal-access';
 
 export const routes: Routes = [
   {
@@ -52,6 +53,9 @@ export const routes: Routes = [
       // Panel privado para los novios/anfitriones
       {
         path: 'asistencias',
+        providers: [PortalEventAccess],
+        canActivateChild: [portalSectionGuard],
+        loadChildren: () => import('./features/anfitrion-asistencias/portal.routes').then(m => m.PORTAL_ROUTES),
         loadComponent: () =>
           import('./features/anfitrion-asistencias/anfitrion-asistencias.component').then(
             (m) => m.AnfitrionAsistenciasComponent,

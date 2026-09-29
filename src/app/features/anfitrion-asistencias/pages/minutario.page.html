@@ -1,0 +1,5 @@
+@let ev = vm.evento()!;
+<div class="mb-8">
+  <app-minutario-timeline [eventoInput]="ev" (eventoActualizado)="vm.onEventoActualizado($event)">
+  </app-minutario-timeline>
+</div>

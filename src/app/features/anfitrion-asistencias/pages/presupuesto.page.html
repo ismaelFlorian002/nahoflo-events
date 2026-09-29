@@ -1,0 +1,5 @@
+@let ev = vm.evento()!;
+<div class="mb-8">
+  <app-presupuesto-tracker [evento]="ev" (eventoActualizado)="vm.onEventoActualizado($event)">
+  </app-presupuesto-tracker>
+</div>

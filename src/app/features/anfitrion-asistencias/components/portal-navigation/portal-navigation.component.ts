@@ -3,18 +3,9 @@ import { NgTemplateOutlet } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { SidebarModule } from 'primeng/sidebar';
-
-export type PortalSection =
-  | 'resumen'
-  | 'invitados'
-  | 'croquis'
-  | 'whatsapp'
-  | 'recepcion'
-  | 'minutario'
-  | 'presupuesto'
-  | 'proveedores'
-  | 'checklist'
-  | 'album';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { PORTAL_PATHS, PortalSection } from '../../portal-sections';
+export type { PortalSection } from '../../portal-sections';
 
 export interface PortalNavigationItem {
   id: PortalSection;
@@ -27,13 +18,14 @@ export interface PortalNavigationItem {
 @Component({
   selector: 'app-portal-navigation',
   standalone: true,
-  imports: [NgTemplateOutlet, ButtonModule, TooltipModule, SidebarModule],
+  imports: [NgTemplateOutlet, ButtonModule, TooltipModule, SidebarModule, RouterLink, RouterLinkActive],
   templateUrl: './portal-navigation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './portal-navigation.component.scss',
   host: { '(document:click)': 'closeOnOutsideClick($event)' },
 })
 export class PortalNavigationComponent {
+  readonly paths = PORTAL_PATHS;
   readonly items = input.required<PortalNavigationItem[]>();
   readonly active = input.required<PortalSection>();
   readonly brandLogoUrl = input<string | null | undefined>(undefined);

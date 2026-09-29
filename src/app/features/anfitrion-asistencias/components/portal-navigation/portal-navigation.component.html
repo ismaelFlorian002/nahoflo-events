@@ -98,10 +98,11 @@
         <span class="nav-group-label">{{ group.label }}</span>
       }
       @for (item of group.items; track item.id) {
-        <button
-          type="button"
+        <a
+          [routerLink]="[paths[item.id]]"
+          routerLinkActive="nav-item--active"
+          [routerLinkActiveOptions]="{ exact: true }"
           class="nav-item"
-          [class.nav-item--active]="active() === item.id"
           [class.nav-item--compact]="compact"
           [attr.aria-current]="active() === item.id ? 'page' : null"
           [attr.aria-label]="item.label + (item.badge !== undefined ? ': ' + item.badge : '')"
@@ -116,7 +117,7 @@
               <span class="nav-badge">{{ item.badge }}</span>
             }
           }
-        </button>
+        </a>
       }
     </div>
   }

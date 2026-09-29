@@ -1,5 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { Component } from '@angular/core';
+import { provideRouter } from '@angular/router';
+
+@Component({ template: '' })
+class NavigationTestPage {}
 import {
   PortalNavigationComponent,
   PortalNavigationItem,
@@ -22,11 +27,12 @@ describe('PortalNavigationComponent', () => {
   async function setup(active: PortalSection = 'resumen') {
     await TestBed.configureTestingModule({
       imports: [PortalNavigationComponent],
-      providers: [provideNoopAnimations()],
+      providers: [provideNoopAnimations(), provideRouter([{ path: '**', component: NavigationTestPage }])],
     }).compileComponents();
     const fixture = TestBed.createComponent(PortalNavigationComponent);
     fixture.componentRef.setInput('items', items);
     fixture.componentRef.setInput('active', active);
+    fixture.componentInstance.collapsed = false;
     fixture.detectChanges();
     return fixture;
   }
@@ -35,16 +41,17 @@ describe('PortalNavigationComponent', () => {
     const fixture = await setup();
     const selected: PortalSection[] = [];
     fixture.componentInstance.sectionSelected.subscribe((value) => selected.push(value));
-    const buttons = fixture.nativeElement.querySelectorAll('nav button');
+    const buttons = fixture.nativeElement.querySelectorAll('nav a');
     buttons[1].click();
     expect(selected).toEqual(['recepcion']);
     expect(buttons[1].textContent).toContain('2/24');
+    expect(buttons[1].getAttribute('href')).toBe('/recepcion');
   });
 
   it('keeps the active selection accessible when collapsed and closes the mobile drawer', async () => {
     const fixture = await setup('album');
     const component = fixture.componentInstance;
-    fixture.nativeElement.querySelector('.desktop-toggle').click();
+    fixture.nativeElement.querySelector('.sidebar-toggle').click();
     fixture.detectChanges();
     expect(component.collapsed).toBe(true);
     const active = fixture.nativeElement.querySelector('nav [aria-current="page"]');
@@ -61,7 +68,7 @@ describe('PortalNavigationComponent', () => {
     const fixture = await setup();
     fixture.componentRef.setInput('items', [items[0]]);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelectorAll('nav button').length).toBe(1);
+    expect(fixture.nativeElement.querySelectorAll('nav a').length).toBe(1);
     expect(
       fixture.componentInstance
         .groups()
@@ -77,7 +84,7 @@ describe('PortalNavigationComponent', () => {
     expect(component.collapsed).toBe(false);
     document.body.click();
     expect(component.collapsed).toBe(true);
-    fixture.nativeElement.querySelector('.desktop-toggle .p-button-icon').click();
+    fixture.nativeElement.querySelector('.sidebar-toggle .pi').click();
     expect(component.collapsed).toBe(false);
   });
 });

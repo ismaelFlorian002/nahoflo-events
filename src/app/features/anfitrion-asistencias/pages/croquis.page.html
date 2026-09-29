@@ -1,0 +1,10 @@
+@let ev = vm.evento()!;
+<div class="mb-8">
+  <app-croquis-mesas-designer
+    [evento]="ev"
+    [invitados]="vm.invitados()"
+    (eventoActualizado)="vm.onEventoActualizado($event)"
+    (invitadosActualizados)="vm.cargarInvitados(ev.id!)"
+  >
+  </app-croquis-mesas-designer>
+</div>

@@ -1,0 +1,1554 @@
+@let ev = vm.evento()!;
+<div class="w-full">
+  <!-- CASO VACÍO: NINGÚN SERVICIO O MÓDULO ACTIVO -->
+  @if (vm.sinServiciosActivos()) {
+    <div
+      class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8"
+    >
+      <div class="flex items-start gap-4 pb-4 mb-4 border-b border-gray-100">
+        <div
+          class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"
+        >
+          <i class="pi pi-exclamation-circle text-lg"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 m-0">Evento sin Servicios Activos</h3>
+          <p class="text-sm text-gray-500 m-0 mt-1">
+            Actualmente este evento no cuenta con módulos o paquetes habilitados. Para activar la
+            Invitación Web, el Control de Invitados, la Planner Suite o el Álbum Digital, comunícate
+            con tu administrador o soporte técnico.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3">
+          <i class="pi pi-globe text-gray-400 text-lg"></i>
+          <div>
+            <span class="block text-sm font-semibold text-gray-700">Invitación Web</span>
+            <span class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"
+              ><i class="pi pi-times text-[10px]"></i> Inactiva</span
+            >
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3">
+          <i class="pi pi-users text-gray-400 text-lg"></i>
+          <div>
+            <span class="block text-sm font-semibold text-gray-700">Control de Invitados</span>
+            <span class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"
+              ><i class="pi pi-times text-[10px]"></i> Inactivo</span
+            >
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3">
+          <i class="pi pi-qrcode text-gray-400 text-lg"></i>
+          <div>
+            <span class="block text-sm font-semibold text-gray-700">Recepción / Escáner</span>
+            <span class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"
+              ><i class="pi pi-times text-[10px]"></i> Inactivo</span
+            >
+          </div>
+        </div>
+        <div class="p-4 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-3">
+          <i class="pi pi-camera text-gray-400 text-lg"></i>
+          <div>
+            <span class="block text-sm font-semibold text-gray-700">Álbum Digital</span>
+            <span class="text-xs text-gray-400 flex items-center gap-1 mt-0.5"
+              ><i class="pi pi-times text-[10px]"></i> Inactivo</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- 1. BANNER DE MARCA BLANCA / AGENCIA DE COORDINACIÓN & DOSSIER PDF -->
+    @if (vm.permiteMarcaBlanca()) {
+      <div
+        class="relative overflow-hidden bg-gradient-to-br from-white via-white to-gold-50/40 rounded-3xl shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-gold-200/70 p-6 sm:p-7 mb-8"
+      >
+        <!-- Efecto de luz ambiental decorativa -->
+        <div
+          class="absolute -right-10 -top-10 w-48 h-48 bg-gradient-to-br from-gold-100/50 to-transparent rounded-full blur-2xl pointer-events-none"
+        ></div>
+
+        <div
+          class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6"
+        >
+          <!-- Columna Izquierda: Identidad y Datos de la Agencia -->
+          <div class="flex items-start sm:items-center gap-5">
+            <!-- Contenedor del Logo con Borde Dorado y Sombra -->
+            <div class="relative shrink-0">
+              @if (ev.agenciaLogoUrl) {
+                <div
+                  class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white border border-gold-200/90 p-2 shadow-sm flex items-center justify-center"
+                >
+                  <img
+                    [src]="ev.agenciaLogoUrl"
+                    class="w-full h-full object-contain"
+                    alt="Logo de Agencia"
+                  />
+                </div>
+              } @else {
+                <div
+                  class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-gold-50 to-gold-100/80 border border-gold-200 flex items-center justify-center text-gold-600 text-3xl shadow-sm"
+                >
+                  <i class="pi pi-crown"></i>
+                </div>
+              }
+              <span
+                class="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-white text-[10px] shadow-xs"
+                title="Marca Blanca Activa"
+              >
+                <i class="pi pi-check text-[9px]"></i>
+              </span>
+            </div>
+
+            <!-- Información y Badges -->
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                <span
+                  class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wide uppercase bg-gold-100/70 text-gold-800 border border-gold-200/60"
+                >
+                  <i class="pi pi-shield text-[11px] text-gold-600"></i> Coordinación Profesional
+                </span>
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Marca Blanca Activa
+                </span>
+              </div>
+
+              <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 m-0">
+                {{ ev.agenciaNombre || 'NahoFlo Event Studio · Coordinación & Planning' }}
+              </h2>
+
+              <p class="text-sm text-gray-500 mt-1 m-0 max-w-xl leading-relaxed">
+                {{
+                  ev.agenciaNotas ||
+                    'Gestión técnica minuto a minuto, control financiero y recepción VIP del evento.'
+                }}
+              </p>
+
+              <!-- Micro-características / Highlights -->
+              <div
+                class="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-gray-100/80 text-xs text-gray-500"
+              >
+                <span class="flex items-center gap-1.5 font-medium text-gray-700">
+                  <i class="pi pi-file-pdf text-gold-600"></i> Dossier Técnico Oficial
+                </span>
+                <span class="text-gray-300">•</span>
+                <span class="flex items-center gap-1.5 font-medium text-gray-700">
+                  <i class="pi pi-check-circle text-emerald-600"></i> Reportes Sin Marca Plataforma
+                </span>
+                @if (ev.agenciaTelefono) {
+                  <span class="text-gray-300">•</span>
+                  <span class="flex items-center gap-1.5 font-medium text-emerald-700">
+                    <i class="pi pi-whatsapp text-emerald-500"></i> {{ ev.agenciaTelefono }}
+                  </span>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Acciones Corporativas -->
+          <div
+            class="flex flex-wrap items-center gap-3 w-full lg:w-auto shrink-0 pt-3 lg:pt-0 border-t lg:border-t-0 border-gray-100"
+          >
+            @if (vm.whatsappAgenciaUrl()) {
+              <a
+                [href]="vm.whatsappAgenciaUrl()"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors no-underline"
+              >
+                <i class="pi pi-whatsapp text-sm"></i>
+                <span>WhatsApp Planner</span>
+              </a>
+            }
+
+            <p-button
+              [label]="vm.descargandoDossier() ? 'Generando Dossier...' : 'Descargar Dossier PDF'"
+              [icon]="vm.descargandoDossier() ? 'pi pi-spin pi-spinner' : 'pi pi-file-pdf'"
+              severity="warning"
+              styleClass="p-button-sm font-semibold !rounded-xl !bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white shadow-sm"
+              [disabled]="vm.descargandoDossier()"
+              (onClick)="vm.descargarDossierPdf()"
+            >
+            </p-button>
+
+            <p-button
+              label="Configurar Agencia"
+              icon="pi pi-cog"
+              severity="secondary"
+              [outlined]="true"
+              styleClass="p-button-sm font-semibold text-gray-700 hover:bg-gray-50 !rounded-xl border-gray-200"
+              (onClick)="vm.abrirModalBrandingAgencia()"
+            >
+            </p-button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- 2. RESUMEN DE INVITACIÓN WEB -->
+    @if (vm.tieneInvitacion()) {
+      <div
+        class="relative overflow-hidden bg-gradient-to-br from-white via-white to-blue-50/40 rounded-3xl shadow-[0_4px_25px_rgba(0,0,0,0.03)] border border-blue-200/70 p-6 sm:p-7 mb-8"
+      >
+        <!-- Efecto de luz ambiental decorativa -->
+        <div
+          class="absolute -right-10 -top-10 w-48 h-48 bg-gradient-to-br from-blue-100/40 to-transparent rounded-full blur-2xl pointer-events-none"
+        ></div>
+
+        <!-- Cabecera de la Invitación Web -->
+        <div
+          class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-gray-100"
+        >
+          <div>
+            <div class="flex flex-wrap items-center gap-2 mb-1.5">
+              <span
+                class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold tracking-wide uppercase bg-blue-100/70 text-blue-800 border border-blue-200/60"
+              >
+                <i class="pi pi-globe text-[11px] text-blue-600"></i> Invitación Web Oficial
+              </span>
+              @if (ev.estaActivo) {
+                <span
+                  class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  En Línea & Activa
+                </span>
+              }
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-gray-900 m-0">
+              {{
+                ev.preTitulo
+                  ? ev.preTitulo + ' · ' + ev.titulo
+                  : ev.titulo || 'Invitación Digital Oficial'
+              }}
+            </h2>
+            <p class="text-sm text-gray-500 mt-1 m-0">
+              Página web interactiva con itinerario, mapas GPS interactivos, dedicatoria y
+              confirmación en vivo.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <p-button
+              label="Ver Invitación"
+              icon="pi pi-external-link"
+              size="small"
+              text="true"
+              severity="primary"
+              (onClick)="vm.abrirInvitacion()"
+              aria-label="Ver invitación en pestaña nueva"
+            >
+            </p-button>
+
+            <p-button
+              label="Guía Compartir"
+              icon="pi pi-share-alt"
+              size="small"
+              text="true"
+              severity="secondary"
+              styleClass="!rounded-xl font-semibold"
+              (onClick)="vm.abrirModalCompartir()"
+              aria-label="Guía para compartir invitaciones"
+            >
+            </p-button>
+          </div>
+        </div>
+
+        <!-- CAJA PREMIUM DE ENLACE OFICIAL Y COMPARTIR -->
+        <div
+          class="p-4 sm:p-5 bg-white rounded-2xl border border-blue-100/80 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6"
+        >
+          <div class="flex items-center gap-3.5 min-w-0">
+            <div
+              class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"
+            >
+              <i class="pi pi-link text-base"></i>
+            </div>
+            <div class="min-w-0">
+              <span class="block text-[11px] font-bold uppercase tracking-wider text-gray-400"
+                >Enlace Público de tu Invitación</span
+              >
+              <span class="text-sm font-semibold text-gray-800 break-all select-all">{{
+                vm.urlInvitacionCompleta()
+              }}</span>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <p-button
+              [label]="vm.copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
+              [icon]="vm.copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
+              size="small"
+              [severity]="vm.copiadoGeneral() ? 'success' : 'secondary'"
+              [outlined]="!vm.copiadoGeneral()"
+              styleClass="!rounded-xl font-semibold"
+              (onClick)="vm.copiarEnlaceGeneral()"
+              aria-label="Copiar enlace de invitación"
+            >
+            </p-button>
+
+            @if (vm.whatsappShareInvitacionUrl()) {
+              <a
+                [href]="vm.whatsappShareInvitacionUrl()"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors no-underline shrink-0 shadow-2xs"
+              >
+                <i class="pi pi-whatsapp text-sm"></i>
+                <span>Enviar por WA</span>
+              </a>
+            }
+          </div>
+        </div>
+
+        <!-- 3 TARJETAS KPIS DE FECHA & UBICACIONES CON ACCIONES GPS -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- 1. Fecha del Evento & Cuenta Regresiva -->
+          <div
+            class="p-5 rounded-2xl border border-gray-100 bg-white shadow-2xs flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Fecha del Evento</span
+                >
+                <div
+                  class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-calendar text-sm"></i>
+                </div>
+              </div>
+              <span class="block text-sm font-bold text-gray-900 mt-3 leading-snug">
+                {{ vm.formatearFechaEvento(ev.fecha) | titlecase }}
+              </span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              @if (vm.diasRestantesEvento() !== null) {
+                @if (vm.diasRestantesEvento()! > 0) {
+                  <span
+                    class="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full"
+                  >
+                    <i class="pi pi-clock text-[10px]"></i> Faltan
+                    {{ vm.diasRestantesEvento() }} días
+                  </span>
+                } @else if (vm.diasRestantesEvento() === 0) {
+                  <span
+                    class="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full"
+                  >
+                    <i class="pi pi-sparkles text-[10px]"></i> ¡El evento es hoy!
+                  </span>
+                } @else {
+                  <span
+                    class="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full"
+                  >
+                    <i class="pi pi-check text-[10px]"></i> Evento Concluido
+                  </span>
+                }
+              }
+            </div>
+          </div>
+
+          <!-- 2. Ceremonia -->
+          <div
+            class="p-5 rounded-2xl border border-gray-100 bg-white shadow-2xs flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Ceremonia</span
+                >
+                <div
+                  class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-map-marker text-sm"></i>
+                </div>
+              </div>
+              <span
+                class="block text-sm font-bold text-gray-900 mt-3 truncate"
+                [title]="ev.ceremoniaLugar || 'Por definir'"
+              >
+                {{ ev.ceremoniaLugar || 'Por definir' }}
+              </span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              @if (ev.ceremoniaUrl) {
+                <a
+                  [href]="ev.ceremoniaUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 no-underline"
+                >
+                  <i class="pi pi-directions text-[11px]"></i>
+                  <span>Abrir Mapa GPS</span>
+                  <i class="pi pi-external-link text-[9px]"></i>
+                </a>
+              } @else {
+                <span class="text-xs text-gray-400">Sin enlace a mapa</span>
+              }
+            </div>
+          </div>
+
+          <!-- 3. Recepción -->
+          <div
+            class="p-5 rounded-2xl border border-gray-100 bg-white shadow-2xs flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Recepción / Salón</span
+                >
+                <div
+                  class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-compass text-sm"></i>
+                </div>
+              </div>
+              <span
+                class="block text-sm font-bold text-gray-900 mt-3 truncate"
+                [title]="ev.recepcionLugar || 'Por definir'"
+              >
+                {{ ev.recepcionLugar || 'Por definir' }}
+              </span>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              @if (ev.recepcionUrl) {
+                <a
+                  [href]="ev.recepcionUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 no-underline"
+                >
+                  <i class="pi pi-directions text-[11px]"></i>
+                  <span>Abrir Mapa GPS</span>
+                  <i class="pi pi-external-link text-[9px]"></i>
+                </a>
+              } @else {
+                <span class="text-xs text-gray-400">Sin enlace a mapa</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- BARRA DE SERVICIOS ADICIONALES ACTIVOS EN LA INVITACIÓN -->
+        @if (ev.mensaje || ev.musicaFondoUrl) {
+          <div
+            class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mt-5 pt-4 border-t border-gray-100/80 text-xs text-gray-500"
+          >
+            @if (ev.mensaje) {
+              <div class="flex items-start gap-2.5 flex-1 min-w-0">
+                <i class="pi pi-comment text-gold-500/80 mt-0.5 shrink-0 text-sm"></i>
+                <p class="m-0 italic text-gray-600 leading-relaxed break-words text-xs">
+                  "{{ ev.mensaje }}"
+                </p>
+              </div>
+            }
+            @if (ev.musicaFondoUrl) {
+              <div
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 font-medium text-xs self-start sm:self-start shrink-0 border border-emerald-100/60"
+              >
+                <span class="relative flex h-2 w-2">
+                  <span
+                    class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                  ></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <i class="pi pi-volume-up text-xs"></i>
+                <span>Música de fondo activa</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- 3. RESUMEN DE CONTROL DE INVITADOS -->
+    @if (vm.tieneControlInvitados()) {
+      <!-- CASO 3.1: SOLO LISTA PUERTA -->
+      @if (ev.modulos?.tipoControlInvitados === 'lista_puerta') {
+        <div
+          class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 sm:p-7 mb-8"
+        >
+          <!-- Cabecera -->
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-100"
+          >
+            <div>
+              <div
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-gold-50 text-gold-700 mb-2 border border-gold-100/60"
+              >
+                <i class="pi pi-id-card text-xs"></i>
+                <span>Modalidad: Solo Lista de Puerta</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 m-0">Lista Oficial de Invitados</h3>
+              <p class="text-sm text-gray-500 m-0 mt-1">
+                Control nominal y autorización de accesos gestionado por los anfitriones.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <p-button
+                label="Registrar Invitado"
+                icon="pi pi-user-plus"
+                size="small"
+                severity="primary"
+                (onClick)="vm.abrirModalInvitado()"
+              >
+              </p-button>
+
+              <p-button
+                label="Ver Lista de Invitados"
+                icon="pi pi-users"
+                size="small"
+                [outlined]="true"
+                severity="secondary"
+                (onClick)="vm.cambiarPestana('invitados')"
+              >
+              </p-button>
+            </div>
+          </div>
+
+          <!-- 4 TARJETAS KPIS EJECUTIVAS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- 1. Familias / Registros -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Familias / Registros</span
+                >
+                <div
+                  class="w-9 h-9 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-users text-sm"></i>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span class="text-3xl font-extrabold text-gray-900 tracking-tight">{{
+                  vm.invitados().length
+                }}</span>
+                <p class="text-xs text-gray-500 mt-1">Registros en el padrón</p>
+              </div>
+            </div>
+
+            <!-- 2. Total Pases Autorizados -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Pases Autorizados</span
+                >
+                <div
+                  class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-ticket text-sm"></i>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span class="text-3xl font-extrabold text-gray-900 tracking-tight">{{
+                  vm.totalPases()
+                }}</span>
+                <p class="text-xs text-emerald-600 font-medium mt-1">Aforo nominal autorizado</p>
+              </div>
+            </div>
+
+            <!-- 3. Promedio por Grupo -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Promedio por Grupo</span
+                >
+                <div
+                  class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-chart-pie text-sm"></i>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span class="text-3xl font-extrabold text-gray-900 tracking-tight">{{
+                  vm.promedioPasesPorRegistro()
+                }}</span>
+                <p class="text-xs text-gray-500 mt-1">Pases por registro</p>
+              </div>
+            </div>
+
+            <!-- 4. Estado del Padrón -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Control Operativo</span
+                >
+                <div
+                  class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-shield-check text-sm"></i>
+                </div>
+              </div>
+              <div class="mt-4">
+                <div class="flex items-center gap-1.5">
+                  <span
+                    class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
+                  ></span>
+                  <span class="text-base font-bold text-gray-900">Padrón Activo</span>
+                </div>
+                <p class="text-xs text-purple-700 font-medium mt-1">Listo para acceso en puerta</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PIE INFORMATIVO CON CARACTERÍSTICAS -->
+          <div
+            class="p-4 rounded-xl bg-gray-50/70 border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs text-gray-600"
+          >
+            <div class="flex items-center gap-2">
+              <i class="pi pi-info-circle text-gold-600 text-sm shrink-0"></i>
+              <span
+                >Lista nominal gestionada por los anfitriones para validación rápida en puerta sin
+                necesidad de confirmación previa por web.</span
+              >
+            </div>
+            <div class="flex items-center gap-4 text-xs font-medium text-gray-500 shrink-0">
+              <span class="inline-flex items-center gap-1"
+                ><i class="pi pi-check text-emerald-500"></i> Búsqueda nominal rápida</span
+              >
+              <span class="inline-flex items-center gap-1"
+                ><i class="pi pi-check text-emerald-500"></i> Control de aforo en vivo</span
+              >
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- CASO 3.2: CONFIRMACIÓN RSVP O CONTROL TOTAL VIP -->
+      @else {
+        <div
+          class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 sm:p-7 mb-8"
+        >
+          <!-- Cabecera de la Sección de Métricas -->
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-100"
+          >
+            <div>
+              <div
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 mb-2 border border-emerald-100/60"
+              >
+                <i class="pi pi-check-circle text-xs"></i>
+                <span>{{
+                  ev.modulos?.tipoControlInvitados === 'total'
+                    ? 'Control Total VIP · Confirmación RSVP'
+                    : 'Confirmación RSVP Oficial'
+                }}</span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 m-0">
+                Métricas de Confirmación & Asistencia
+              </h3>
+              <p class="text-sm text-gray-500 m-0 mt-1">
+                Monitoreo en tiempo real de respuestas, pases reservados y balance de aforo del
+                evento.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <p-button
+                label="Registrar Invitado"
+                icon="pi pi-user-plus"
+                size="small"
+                severity="primary"
+                (onClick)="vm.abrirModalInvitado()"
+              >
+              </p-button>
+
+              <p-button
+                label="Ver Lista de Invitados"
+                icon="pi pi-users"
+                size="small"
+                [outlined]="true"
+                severity="secondary"
+                (onClick)="vm.cambiarPestana('invitados')"
+              >
+              </p-button>
+            </div>
+          </div>
+
+          <!-- GRID DE 4 KPIS EJECUTIVOS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- 1. Pases Totales -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Pases Totales</span
+                >
+                <div
+                  class="w-9 h-9 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-ticket text-sm"></i>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span class="text-3xl font-extrabold text-gray-900 tracking-tight">{{
+                  vm.totalPases()
+                }}</span>
+                <p class="text-xs text-gray-500 mt-1">
+                  {{ vm.invitados().length }} registros nominales
+                </p>
+              </div>
+            </div>
+
+            <!-- 2. Confirmados (Sí) -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Confirmados (Sí)</span
+                >
+                <div
+                  class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-check-circle text-sm"></i>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span class="text-3xl font-extrabold text-emerald-600 tracking-tight">{{
+                  vm.totalConfirmados()
+                }}</span>
+                <p class="text-xs text-emerald-700 font-medium mt-1">
+                  {{ vm.porcentajeConfirmacion() }}% de confirmación
+                </p>
+              </div>
+            </div>
+
+            <!-- 3. Pendientes -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Pendientes</span
+                >
+                <div
+                  class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center"
+                >
+                  <i class="pi pi-clock text-sm"></i>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span class="text-3xl font-extrabold text-amber-600 tracking-tight">{{
+                  vm.totalPendientesConfirmacion()
+                }}</span>
+                <p class="text-xs text-amber-700 font-medium mt-1">Por responder invitación</p>
+              </div>
+            </div>
+
+            <!-- 4. No asistirán -->
+            <div
+              class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >No asistirán</span
+                >
+                <div
+                  class="w-9 h-9 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center"
+                >
+                  <i class="pi pi-times-circle text-sm"></i>
+                </div>
+              </div>
+              <div class="mt-4">
+                <span class="text-3xl font-extrabold text-gray-500 tracking-tight">{{
+                  vm.totalCancelados()
+                }}</span>
+                <p class="text-xs text-rose-600 font-medium mt-1">Declinaron invitación</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PANEL DE DESGLOSE & EFECTIVIDAD DE RESPUESTA -->
+          <div class="p-5 rounded-2xl bg-gray-50/70 border border-gray-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+              <div>
+                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                  >Tasa de Respuesta RSVP</span
+                >
+                <p class="text-sm font-bold text-gray-900 m-0 mt-0.5">
+                  {{ vm.totalConfirmados() }} de {{ vm.invitados().length }} invitados confirmados
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold text-gray-500">Efectividad global:</span>
+                <span
+                  class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"
+                >
+                  {{ vm.porcentajeConfirmacion() }}%
+                </span>
+              </div>
+            </div>
+
+            <p-progressBar
+              [value]="vm.porcentajeConfirmacion()"
+              [showValue]="false"
+              styleClass="confirmacion-progressbar mb-4"
+            >
+            </p-progressBar>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-gray-200/60">
+              <div
+                class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border border-gray-100 shadow-2xs"
+              >
+                <div
+                  class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0"
+                >
+                  <i class="pi pi-check text-xs"></i>
+                </div>
+                <div class="min-w-0">
+                  <span class="block text-xs font-bold text-gray-900 truncate"
+                    >{{ vm.totalConfirmados() }} Familias</span
+                  >
+                  <span class="text-[11px] text-gray-500">Confirmadas</span>
+                </div>
+              </div>
+
+              <div
+                class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border border-gray-100 shadow-2xs"
+              >
+                <div
+                  class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0"
+                >
+                  <i class="pi pi-clock text-xs"></i>
+                </div>
+                <div class="min-w-0">
+                  <span class="block text-xs font-bold text-amber-600 truncate"
+                    >{{ vm.totalPendientesConfirmacion() }} Pendientes</span
+                  >
+                  <span class="text-[11px] text-gray-500">Por responder</span>
+                </div>
+              </div>
+
+              <div
+                class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border border-gray-100 shadow-2xs"
+              >
+                <div
+                  class="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center shrink-0"
+                >
+                  <i class="pi pi-times text-xs"></i>
+                </div>
+                <div class="min-w-0">
+                  <span class="block text-xs font-bold text-rose-600 truncate"
+                    >{{ vm.totalCancelados() }} Declinados</span
+                  >
+                  <span class="text-[11px] text-gray-500">Cancelaciones</span>
+                </div>
+              </div>
+
+              <div
+                class="flex items-center gap-2.5 p-2.5 rounded-xl bg-white border border-gray-100 shadow-2xs"
+              >
+                <div
+                  class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0"
+                >
+                  <i class="pi pi-users text-xs"></i>
+                </div>
+                <div class="min-w-0">
+                  <span class="block text-xs font-bold text-gray-900 truncate"
+                    >{{ vm.promedioPasesPorRegistro() }} pases</span
+                  >
+                  <span class="text-[11px] text-gray-500">Promedio/registro</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- 4. RESUMEN DE RECEPCIÓN EN PUERTA / CONTROL DE AFORO -->
+    @if (vm.tieneRecepcionOPuerta()) {
+      <div
+        class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 sm:p-7 mb-8"
+      >
+        <div
+          class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-100"
+        >
+          <div>
+            <div
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 mb-2 border border-blue-100/60"
+            >
+              <i
+                [class]="
+                  ev.modulos?.tipoControlInvitados === 'total'
+                    ? 'pi pi-qrcode text-xs'
+                    : 'pi pi-id-card text-xs'
+                "
+              ></i>
+              <span>{{
+                ev.modulos?.tipoControlInvitados === 'total'
+                  ? 'Recepción & Escáner VIP'
+                  : 'Recepción en Puerta'
+              }}</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 m-0">Control de Aforo en el Salón</h3>
+            <p class="text-sm text-gray-500 m-0 mt-1">
+              Monitorea la llegada de tus invitados y valida sus accesos en tiempo real.
+            </p>
+          </div>
+
+          <p-button
+            [label]="
+              ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción'
+            "
+            [icon]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"
+            size="small"
+            severity="primary"
+            (onClick)="vm.cambiarPestana('recepcion')"
+          >
+          </p-button>
+        </div>
+
+        <!-- 3 TARJETAS KPIS EJECUTIVAS -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          <!-- 1. Pases en Sala -->
+          <div
+            class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                >Pases en Sala</span
+              >
+              <div
+                class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"
+              >
+                <i class="pi pi-check-circle text-sm"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <span class="text-3xl font-extrabold text-gray-900 tracking-tight">{{
+                vm.totalIngresados()
+              }}</span>
+              <p class="text-xs text-emerald-600 font-medium mt-1">Invitados ya ingresados</p>
+            </div>
+          </div>
+
+          <!-- 2. Pases por Llegar -->
+          <div
+            class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                >Pases por Llegar</span
+              >
+              <div
+                class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center"
+              >
+                <i class="pi pi-clock text-sm"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <span class="text-3xl font-extrabold text-gray-900 tracking-tight">{{
+                vm.totalPendientes()
+              }}</span>
+              <p class="text-xs text-amber-600 font-medium mt-1">Invitados esperados</p>
+            </div>
+          </div>
+
+          <!-- 3. Aforo Ocupado -->
+          <div
+            class="p-5 rounded-2xl bg-gradient-to-br from-gray-50/80 to-white border border-gray-100 flex flex-col justify-between"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider"
+                >Aforo Ocupado</span
+              >
+              <div
+                class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"
+              >
+                <i class="pi pi-chart-bar text-sm"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <span class="text-3xl font-extrabold text-blue-600 tracking-tight"
+                >{{ vm.porcentajeAsistencia() }}%</span
+              >
+              <p class="text-xs text-gray-500 mt-1">Ocupación actual en sala</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- BARRA DE PROGRESO DE AFORO EN VIVO -->
+        <div class="p-4 rounded-xl bg-gray-50/70 border border-gray-100">
+          <div class="flex items-center justify-between text-xs font-medium text-gray-600 mb-2">
+            <span class="flex items-center gap-1.5">
+              <span class="relative flex h-2 w-2">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                ></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span class="font-semibold text-gray-800">Aforo en Tiempo Real</span>
+            </span>
+            <span
+              >{{ vm.totalIngresados() }} de {{ vm.totalPases() }} pases validados ({{
+                vm.porcentajeAsistencia()
+              }}%)</span
+            >
+          </div>
+          <p-progressBar
+            [value]="vm.porcentajeAsistencia()"
+            [showValue]="false"
+            styleClass="aforo-progressbar"
+          >
+          </p-progressBar>
+        </div>
+      </div>
+    }
+
+    <!-- 5. RESUMEN DE COORDINACIÓN / PLANNER SUITE -->
+    @if (vm.tienePlannerSuite()) {
+      <div class="mb-8">
+        <!-- Cabecera de la Sección Planner Suite -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <div
+              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 mb-2"
+            >
+              <i class="pi pi-sparkles"></i>
+              <span>Planner Suite · Coordinación Integral</span>
+            </div>
+            <h2 class="text-xl font-bold text-gray-900 m-0">Herramientas de Coordinación</h2>
+            <p class="text-sm text-gray-500 m-0 mt-0.5">
+              Control logístico y operativo: tiempos en vivo, salud financiera, proveedores y
+              tareas.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <p-button
+              label="Cronograma"
+              icon="pi pi-clock"
+              size="small"
+              [outlined]="true"
+              severity="secondary"
+              (onClick)="vm.cambiarPestana('minutario')"
+            >
+            </p-button>
+            <p-button
+              label="Presupuesto"
+              icon="pi pi-dollar"
+              size="small"
+              [outlined]="true"
+              severity="secondary"
+              (onClick)="vm.cambiarPestana('presupuesto')"
+            >
+            </p-button>
+          </div>
+        </div>
+
+        <!-- 4 TARJETAS KPIS CORPORATIVAS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+          <!-- 1. Cronograma / Minutario -->
+          <div
+            role="button"
+            tabindex="0"
+            (click)="vm.cambiarPestana('minutario')"
+            (keydown.enter)="vm.cambiarPestana('minutario')"
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Cronograma del Día</span>
+              <div
+                class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center"
+              >
+                <i class="pi pi-clock text-lg"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl font-bold text-gray-900 tracking-tight">{{
+                  vm.minutarioTotal()
+                }}</span>
+                <span class="text-xs text-gray-500 font-medium">momentos</span>
+              </div>
+              @if (vm.minutarioCompletados() > 0) {
+                <p class="text-xs text-amber-600 font-medium mt-1 flex items-center gap-1 m-0">
+                  <i class="pi pi-check text-[10px]"></i> {{ vm.minutarioCompletados() }} ejecutados
+                </p>
+              } @else {
+                <p class="text-xs text-gray-400 mt-1 m-0">Horarios y protocolo en orden</p>
+              }
+            </div>
+            <div
+              class="pt-3 mt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-pastel-pink-500 group-hover:text-pastel-pink-600"
+            >
+              <span>Gestionar minutario</span>
+              <i
+                class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"
+              ></i>
+            </div>
+          </div>
+
+          <!-- 2. Presupuesto -->
+          <div
+            role="button"
+            tabindex="0"
+            (click)="vm.cambiarPestana('presupuesto')"
+            (keydown.enter)="vm.cambiarPestana('presupuesto')"
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Presupuesto Real</span>
+              <div
+                class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"
+              >
+                <i class="pi pi-dollar text-lg"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl font-bold text-gray-900 tracking-tight">
+                  {{ vm.presupuestoTotalReal() | currency: 'MXN' : 'symbol-narrow' : '1.0-0' }}
+                </span>
+              </div>
+              <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1 m-0">
+                <i class="pi pi-check-circle text-[10px]"></i>
+                {{ vm.presupuestoPorcentajePagado() }}% liquidado
+              </p>
+            </div>
+            <div
+              class="pt-3 mt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-pastel-pink-500 group-hover:text-pastel-pink-600"
+            >
+              <span>Control de anticipos</span>
+              <i
+                class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"
+              ></i>
+            </div>
+          </div>
+
+          <!-- 3. Directorio Proveedores -->
+          <div
+            role="button"
+            tabindex="0"
+            (click)="vm.cambiarPestana('proveedores')"
+            (keydown.enter)="vm.cambiarPestana('proveedores')"
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Proveedores Clave</span>
+              <div
+                class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"
+              >
+                <i class="pi pi-briefcase text-lg"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl font-bold text-gray-900 tracking-tight">{{
+                  vm.proveedoresTotal()
+                }}</span>
+                <span class="text-xs text-gray-500 font-medium">contratados</span>
+              </div>
+              <p class="text-xs text-blue-600 font-medium mt-1 flex items-center gap-1 m-0">
+                <i class="pi pi-tag text-[10px]"></i> {{ vm.proveedoresCategoriasCount() }} áreas
+                cubiertas
+              </p>
+            </div>
+            <div
+              class="pt-3 mt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-pastel-pink-500 group-hover:text-pastel-pink-600"
+            >
+              <span>Ver directorio</span>
+              <i
+                class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"
+              ></i>
+            </div>
+          </div>
+
+          <!-- 4. Checklist de Tareas -->
+          <div
+            role="button"
+            tabindex="0"
+            (click)="vm.cambiarPestana('checklist')"
+            (keydown.enter)="vm.cambiarPestana('checklist')"
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Checklist de Tareas</span>
+              <div
+                class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center"
+              >
+                <i class="pi pi-check-square text-lg"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl font-bold text-gray-900 tracking-tight"
+                  >{{ vm.checklistPorcentajeAvance() }}%</span
+                >
+                <span class="text-xs text-gray-500 font-medium">avance</span>
+              </div>
+              <p class="text-xs text-purple-600 font-medium mt-1 flex items-center gap-1 m-0">
+                <i class="pi pi-list-check text-[10px]"></i> {{ vm.checklistCompletadas() }} de
+                {{ vm.checklistTotal() }} listas
+              </p>
+            </div>
+            <div
+              class="pt-3 mt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-pastel-pink-500 group-hover:text-pastel-pink-600"
+            >
+              <span>Revisar checklist</span>
+              <i
+                class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"
+              ></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 PANELES DETALLADOS DE BALANCE FINANCIERO Y AVANCE DE TAREAS -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
+          <!-- PANEL A: BALANCE FINANCIERO & ANTICIPOS -->
+          <div
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <h3 class="text-base font-bold text-gray-900 m-0">
+                    Balance Financiero & Anticipos
+                  </h3>
+                  <p class="text-xs text-gray-500 m-0 mt-0.5">
+                    Control de pagos realizados vs saldo pendiente
+                  </p>
+                </div>
+                <span
+                  class="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100"
+                >
+                  {{ vm.presupuestoPorcentajePagado() }}% Pagado
+                </span>
+              </div>
+
+              <p-progressBar
+                [value]="vm.presupuestoPorcentajePagado()"
+                [showValue]="false"
+                styleClass="presupuesto-progressbar my-4"
+              >
+              </p-progressBar>
+
+              <div class="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
+                <div>
+                  <span class="block text-sm sm:text-base font-bold text-gray-900 truncate">
+                    {{ vm.presupuestoTotalReal() | currency: 'MXN' : 'symbol-narrow' : '1.0-0' }}
+                  </span>
+                  <span class="text-[11px] text-gray-500">Costo Total</span>
+                </div>
+                <div>
+                  <span class="block text-sm sm:text-base font-bold text-emerald-600 truncate">
+                    {{ vm.presupuestoTotalPagado() | currency: 'MXN' : 'symbol-narrow' : '1.0-0' }}
+                  </span>
+                  <span class="text-[11px] text-gray-500">Pagado</span>
+                </div>
+                <div>
+                  <span class="block text-sm sm:text-base font-bold text-amber-600 truncate">
+                    {{
+                      vm.presupuestoSaldoPendiente() | currency: 'MXN' : 'symbol-narrow' : '1.0-0'
+                    }}
+                  </span>
+                  <span class="text-[11px] text-gray-500">Pendiente</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-gray-50 flex justify-end">
+              <p-button
+                label="Gestionar Presupuesto"
+                icon="pi pi-dollar"
+                size="small"
+                [outlined]="true"
+                severity="secondary"
+                styleClass="text-xs font-semibold"
+                (onClick)="vm.cambiarPestana('presupuesto')"
+              >
+              </p-button>
+            </div>
+          </div>
+
+          <!-- PANEL B: AVANCE DEL CHECKLIST DE TAREAS -->
+          <div
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <div>
+                  <h3 class="text-base font-bold text-gray-900 m-0">Progreso del Checklist</h3>
+                  <p class="text-xs text-gray-500 m-0 mt-0.5">
+                    Cumplimiento de tareas por fases del evento
+                  </p>
+                </div>
+                <span
+                  class="text-xs font-bold px-2.5 py-1 rounded-full bg-purple-50 text-purple-700 border border-purple-100"
+                >
+                  {{ vm.checklistPorcentajeAvance() }}% Completado
+                </span>
+              </div>
+
+              <p-progressBar
+                [value]="vm.checklistPorcentajeAvance()"
+                [showValue]="false"
+                styleClass="checklist-progressbar my-4"
+              >
+              </p-progressBar>
+
+              <div class="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
+                <div>
+                  <span class="block text-sm sm:text-base font-bold text-gray-900">
+                    {{ vm.checklistTotal() }}
+                  </span>
+                  <span class="text-[11px] text-gray-500">Total Tareas</span>
+                </div>
+                <div>
+                  <span class="block text-sm sm:text-base font-bold text-purple-600">
+                    {{ vm.checklistCompletadas() }}
+                  </span>
+                  <span class="text-[11px] text-gray-500">Completadas</span>
+                </div>
+                <div>
+                  <span class="block text-sm sm:text-base font-bold text-amber-600">
+                    {{ vm.checklistPendientes() }}
+                  </span>
+                  <span class="text-[11px] text-gray-500">Por Realizar</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-gray-50 flex justify-end">
+              <p-button
+                label="Abrir Checklist"
+                icon="pi pi-check-square"
+                size="small"
+                [outlined]="true"
+                severity="secondary"
+                styleClass="text-xs font-semibold"
+                (onClick)="vm.cambiarPestana('checklist')"
+              >
+              </p-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- 6. RESUMEN DEL ÁLBUM DE FOTOS COLABORATIVO -->
+    @if (vm.tieneAlbum()) {
+      <div class="mb-8">
+        <!-- Cabecera de la Sección de Álbum Digital -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <div
+              class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-pastel-pink-50 text-pastel-pink-600 mb-2"
+            >
+              <i class="pi pi-camera"></i>
+              <span>Álbum Digital · Muro Social en Vivo</span>
+            </div>
+            <h2 class="text-xl font-bold text-gray-900 m-0">Muro de Fotos & Recuerdos</h2>
+            <p class="text-sm text-gray-500 m-0 mt-0.5">
+              Espacio colaborativo donde tus invitados capturan y comparten recuerdos únicos en
+              tiempo real.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <p-button
+              label="QR para Mesas"
+              icon="pi pi-qrcode"
+              size="small"
+              severity="warning"
+              styleClass="!bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white font-semibold !rounded-xl shadow-xs"
+              (onClick)="vm.abrirModalQrMesas()"
+            >
+            </p-button>
+
+            <p-button
+              label="Ver Muro en Vivo"
+              icon="pi pi-external-link"
+              size="small"
+              [outlined]="true"
+              severity="secondary"
+              styleClass="!rounded-xl font-semibold"
+              (onClick)="vm.abrirAlbumEnVivo()"
+            >
+            </p-button>
+
+            <p-button
+              label="Moderar Fotos"
+              icon="pi pi-images"
+              size="small"
+              [outlined]="true"
+              severity="secondary"
+              styleClass="!rounded-xl font-semibold"
+              (onClick)="vm.cambiarPestana('album')"
+            >
+            </p-button>
+          </div>
+        </div>
+
+        <!-- 4 TARJETAS KPIS CORPORATIVAS -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+          <!-- 1. Fotos Subidas -->
+          <div
+            role="button"
+            tabindex="0"
+            (click)="vm.cambiarPestana('album')"
+            (keydown.enter)="vm.cambiarPestana('album')"
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Fotos Compartidas</span>
+              <div
+                class="w-10 h-10 rounded-xl bg-pastel-pink-50 text-pastel-pink-500 flex items-center justify-center"
+              >
+                <i class="pi pi-images text-lg"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl font-bold text-gray-900 tracking-tight">{{
+                  vm.contarFotosTotales()
+                }}</span>
+                <span class="text-xs text-gray-500 font-medium">fotos capturadas</span>
+              </div>
+              @if (vm.contarFotosTotales() > 0) {
+                <p
+                  class="text-xs text-pastel-pink-600 font-medium mt-1 flex items-center gap-1 m-0"
+                >
+                  <i class="pi pi-sparkles text-[10px]"></i> Recuerdos del evento en vivo
+                </p>
+              } @else {
+                <p class="text-xs text-gray-400 mt-1 m-0">Esperando primeras fotos</p>
+              }
+            </div>
+            <div
+              class="pt-3 mt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-pastel-pink-500 group-hover:text-pastel-pink-600"
+            >
+              <span>Ver galería completa</span>
+              <i
+                class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"
+              ></i>
+            </div>
+          </div>
+
+          <!-- 2. Publicaciones -->
+          <div
+            role="button"
+            tabindex="0"
+            (click)="vm.cambiarPestana('album')"
+            (keydown.enter)="vm.cambiarPestana('album')"
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Publicaciones</span>
+              <div
+                class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"
+              >
+                <i class="pi pi-comments text-lg"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-3xl font-bold text-gray-900 tracking-tight">{{
+                  vm.recuerdos().length
+                }}</span>
+                <span class="text-xs text-gray-500 font-medium">historias</span>
+              </div>
+              <p class="text-xs text-blue-600 font-medium mt-1 flex items-center gap-1 m-0">
+                <i class="pi pi-heart text-[10px]"></i> Con mensajes y dedicatorias
+              </p>
+            </div>
+            <div
+              class="pt-3 mt-4 border-t border-gray-100 flex items-center justify-between text-xs font-semibold text-pastel-pink-500 group-hover:text-pastel-pink-600"
+            >
+              <span>Moderar publicaciones</span>
+              <i
+                class="pi pi-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"
+              ></i>
+            </div>
+          </div>
+
+          <!-- 3. Almacenamiento Ilimitado -->
+          <div
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Capacidad Cloud</span>
+              <div
+                class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"
+              >
+                <i class="pi pi-cloud text-lg"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <span class="text-3xl font-bold text-gray-900 tracking-tight">Ilimitado</span>
+              <p class="text-xs text-emerald-600 font-medium mt-1 flex items-center gap-1 m-0">
+                <i class="pi pi-shield text-[10px]"></i> Alta definición protegida
+              </p>
+            </div>
+            <div
+              class="pt-3 mt-4 border-t border-gray-100 flex items-center gap-1 text-xs font-semibold text-gray-500"
+            >
+              <i class="pi pi-check text-[10px] text-emerald-500"></i>
+              <span>Sin límite de fotos</span>
+            </div>
+          </div>
+
+          <!-- 4. Descarga en ZIP -->
+          <div
+            class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between"
+          >
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-500">Paquete de Fotos</span>
+              <div
+                class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center"
+              >
+                <i class="pi pi-file-export text-lg"></i>
+              </div>
+            </div>
+            <div class="mt-4">
+              <span class="text-3xl font-bold text-gray-900 tracking-tight">Archivo .ZIP</span>
+              <p class="text-xs text-gold-700 font-medium mt-1 flex items-center gap-1 m-0">
+                <i class="pi pi-download text-[10px]"></i> Descarga masiva en 1 clic
+              </p>
+            </div>
+            <div class="pt-3 mt-4 border-t border-gray-100">
+              @if (vm.recuerdos().length > 0) {
+                <button
+                  type="button"
+                  (click)="vm.descargarTodasLasFotos()"
+                  [disabled]="vm.descargandoTodo()"
+                  class="w-full text-left text-xs font-semibold text-gold-600 hover:text-gold-700 flex items-center justify-between cursor-pointer border-0 bg-transparent p-0 disabled:opacity-60"
+                >
+                  <span>{{
+                    vm.descargandoTodo()
+                      ? vm.progresoDescarga()
+                      : 'Descargar Todo (' + vm.contarFotosTotales() + ')'
+                  }}</span>
+                  <i
+                    [class]="vm.descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"
+                  ></i>
+                </button>
+              } @else {
+                <span class="text-xs text-gray-400">Disponible con fotos subidas</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

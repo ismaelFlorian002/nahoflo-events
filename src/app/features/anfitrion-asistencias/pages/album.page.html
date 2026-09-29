@@ -1,0 +1,141 @@
+<div
+  class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 mb-8"
+>
+  <div
+    class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-6 border-b border-gray-100"
+  >
+    <div>
+      <h3 class="text-lg font-bold text-gray-900 m-0">Galería de Recuerdos</h3>
+      <p class="text-sm text-gray-500 m-0 mt-0.5">
+        Supervisa las fotos subidas por los invitados, descárgalas o elimina cualquier foto
+        indeseada.
+      </p>
+    </div>
+
+    <!-- BOTONES DE ACCIÓN PARA EL ANFITRIÓN -->
+    <div class="flex flex-wrap items-center gap-2">
+      <p-button
+        label="QR para Mesas"
+        icon="pi pi-qrcode"
+        size="small"
+        (onClick)="vm.abrirModalQrMesas()"
+      >
+      </p-button>
+
+      @if (vm.recuerdos().length > 0) {
+        <p-button
+          [label]="
+            vm.descargandoTodo()
+              ? vm.progresoDescarga()
+              : 'Descargar Todo (' + vm.contarFotosTotales() + ')'
+          "
+          [icon]="vm.descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"
+          size="small"
+          [outlined]="true"
+          severity="secondary"
+          [disabled]="vm.descargandoTodo()"
+          (onClick)="vm.descargarTodasLasFotos()"
+        >
+        </p-button>
+      }
+
+      <p-button
+        label="Ver Muro en Vivo"
+        icon="pi pi-external-link"
+        size="small"
+        [outlined]="true"
+        severity="secondary"
+        (onClick)="vm.abrirAlbumEnVivo()"
+      >
+      </p-button>
+    </div>
+  </div>
+
+  @if (vm.recuerdos().length === 0) {
+    <div class="text-center py-12">
+      <i class="pi pi-images text-4xl text-gray-300 mb-3 block"></i>
+      <h4 class="text-base font-semibold text-gray-700 m-0 mb-1">Aún no hay fotos en el álbum</h4>
+      <p class="text-sm text-gray-400 m-0">
+        Las fotos que los invitados tomen o suban aparecerán aquí para que puedas moderarlas.
+      </p>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      @for (recuerdo of vm.recuerdos(); track recuerdo.id) {
+        <article
+          class="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col justify-between"
+        >
+          <!-- 1. FOTO / MINIATURA DEL RECUERDO -->
+          <div class="relative w-full aspect-square bg-gray-50 overflow-hidden">
+            <img
+              [src]="recuerdo.fotoUrl"
+              [alt]="'Foto de ' + recuerdo.nombreAutor"
+              class="w-full h-full object-cover"
+            />
+            @if (recuerdo.fotosUrls && recuerdo.fotosUrls.length > 1) {
+              <span
+                class="absolute top-2 right-2 bg-black/60 text-white text-[11px] font-medium px-2 py-0.5 rounded-full flex items-center gap-1"
+              >
+                <i class="pi pi-clone text-[10px]"></i> {{ recuerdo.fotosUrls.length }} fotos
+              </span>
+            }
+          </div>
+
+          <!-- 2. INFORMACIÓN Y BOTONES -->
+          <div class="p-4 flex flex-col gap-2 flex-1 justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2">
+                <strong class="text-sm font-bold text-gray-900 truncate">{{
+                  recuerdo.nombreAutor
+                }}</strong>
+                <span class="text-[11px] text-gray-400 shrink-0">{{
+                  vm.formatearFecha(recuerdo.creadoEn)
+                }}</span>
+              </div>
+
+              @if (recuerdo.mensaje) {
+                <p class="text-xs text-gray-600 m-0 mt-1 italic line-clamp-2">
+                  "{{ recuerdo.mensaje }}"
+                </p>
+              }
+
+              <div class="flex items-center gap-3 text-xs text-gray-400 my-2">
+                <span class="flex items-center gap-1"
+                  ><i class="pi pi-heart-fill text-red-500"></i> {{ recuerdo.meGusta || 0 }}</span
+                >
+                <span class="flex items-center gap-1"
+                  ><i class="pi pi-comment text-blue-500"></i>
+                  {{ recuerdo.comentarios?.length || 0 }}</span
+                >
+              </div>
+            </div>
+
+            <!-- BOTONES: DESCARGAR + ELIMINAR -->
+            <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
+              <p-button
+                label="Descargar"
+                icon="pi pi-download"
+                size="small"
+                [outlined]="true"
+                severity="secondary"
+                (onClick)="vm.descargarRecuerdo(recuerdo, $event)"
+              >
+              </p-button>
+
+              <p-button
+                label="Eliminar"
+                [icon]="vm.eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"
+                size="small"
+                [outlined]="true"
+                severity="danger"
+                [disabled]="vm.eliminandoId() === recuerdo.id"
+                (onClick)="vm.eliminarRecuerdo(recuerdo)"
+              >
+              </p-button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

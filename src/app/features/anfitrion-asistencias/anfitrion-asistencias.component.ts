@@ -5,12 +5,18 @@ import {
   inject,
   OnInit,
   signal,
+  forwardRef,
+  DestroyRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule, NavigationEnd } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+import { PORTAL_CONTEXT } from './portal-context';
+import { PORTAL_PATHS, PortalSection } from './portal-sections';
+import { PortalEventAccess, initialPortalSection } from './portal-access';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventService } from '../../core/services/event.service';
@@ -26,15 +32,7 @@ import { PdfReportService } from './services/pdf-report.service';
 
 // Componentes Visuales Extraídos (Fase 2, 3, 4 & 5)
 import { PinLoginComponent } from './components/pin-login/pin-login.component';
-import { GuestTableComponent } from './components/guest-table/guest-table.component';
-import { ScannerViewComponent } from './components/scanner-view/scanner-view.component';
-import { MinutarioTimelineComponent } from './components/minutario-timeline/minutario-timeline.component';
-import { PresupuestoTrackerComponent } from './components/presupuesto-tracker/presupuesto-tracker.component';
-import { ProveedoresDirectorioComponent } from './components/proveedores-directorio/proveedores-directorio.component';
-import { ChecklistTrackerComponent } from './components/checklist-tracker/checklist-tracker.component';
 import { AgenciaBrandingModalComponent } from './components/agencia-branding-modal/agencia-branding-modal.component';
-import { CroquisMesasDesignerComponent } from './components/croquis-mesas-designer/croquis-mesas-designer.component';
-import { WhatsappMessagingCenterComponent } from './components/whatsapp-messaging-center/whatsapp-messaging-center.component';
 import { PortalNavigationComponent, PortalNavigationItem } from './components/portal-navigation/portal-navigation.component';
 
 // Modales existentes
@@ -51,21 +49,12 @@ import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitad
     CommonModule,
     RouterModule,
     ButtonModule,
-    ProgressBarModule,
     ProgressSpinnerModule,
     DynamicDialogModule,
     PinLoginComponent,
-    GuestTableComponent,
-    ScannerViewComponent,
-    MinutarioTimelineComponent,
-    PresupuestoTrackerComponent,
-    ProveedoresDirectorioComponent,
-    ChecklistTrackerComponent,
-    CroquisMesasDesignerComponent,
-    WhatsappMessagingCenterComponent,
     PortalNavigationComponent,
   ],
-  providers: [DialogService],
+  providers: [DialogService, { provide: PORTAL_CONTEXT, useExisting: forwardRef(() => AnfitrionAsistenciasComponent) }],
   templateUrl: './anfitrion-asistencias.component.html',
   styleUrl: './anfitrion-asistencias.component.scss',
 })
@@ -73,6 +62,26 @@ import { InvitadoQrModalComponent } from './components/invitado-qr-modal/invitad
 
 export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private portalAccess = inject(PortalEventAccess);
+  private destroyRef = inject(DestroyRef);
+
+  readonly rutaPermitida = signal(false);
+
+  private sincronizarRuta(): void {
+    if (!this.evento()) return;
+    const section = this.route.firstChild?.snapshot.data['section'] as PortalSection | undefined;
+    const allowed = section && this.navegacionPortal().some(item => item.id === section);
+    this.rutaPermitida.set(!!allowed);
+    if (!allowed) {
+      const ev = this.evento()!;
+      const initial = initialPortalSection(ev);
+      void this.router.navigate([PORTAL_PATHS[initial]], { relativeTo: this.route, replaceUrl: true });
+      return;
+    }
+    if (this.pestanaActiva() !== section) this.qrScannerService.detenerEscaner();
+    this.pestanaActiva.set(section);
+  }
   private eventService = inject(EventService);
   private dialogService = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
@@ -147,15 +156,15 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   onEventoActualizado(ev: Evento): void {
     this.evento.set(ev);
+    this.portalAccess.update(ev);
+    this.sincronizarRuta();
   }
 
   // Control de PIN
   pinDesbloqueado = signal<boolean>(false);
 
   // Pestañas del portal anfitrión
-  pestanaActiva = signal<
-    'resumen' | 'invitados' | 'croquis' | 'whatsapp' | 'recepcion' | 'minutario' | 'presupuesto' | 'proveedores' | 'checklist' | 'album'
-  >('resumen');
+  pestanaActiva = signal<PortalSection>('resumen');
 
 
 
@@ -357,7 +366,9 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   });
 
   async ngOnInit(): Promise<void> {
-    const slug = this.route.snapshot.paramMap.get('slug');
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.sincronizarRuta());
+    const slug = this.route.snapshot.pathFromRoot.map(part => part.paramMap.get('slug')).find(Boolean);
 
     if (!slug) {
       this.notFound.set(true);
@@ -366,13 +377,11 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const ev = await this.eventService.getEventBySlug(slug);
+      const ev = await this.portalAccess.load(slug);
       if (ev) {
         this.evento.set(ev);
 
-        if (ev.modulos?.tipoControlInvitados === 'inactivo' && ev.modulos?.tieneAlbum) {
-          this.pestanaActiva.set('album');
-        }
+        this.sincronizarRuta();
 
         const pinSesion = sessionStorage.getItem(`pin_${ev.id}`);
         if (pinSesion && pinSesion === ev.pinAnfitrion && ev.id) {
@@ -744,8 +753,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       | 'checklist'
       | 'album',
   ): void {
-    this.pestanaActiva.set(pestana);
-    this.qrScannerService.detenerEscaner();
+    void this.router.navigate([PORTAL_PATHS[pestana]], { relativeTo: this.route });
   }
 
 
@@ -854,6 +862,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.portalAccess.clear();
     this.qrScannerService.detenerEscaner();
   }
 }
