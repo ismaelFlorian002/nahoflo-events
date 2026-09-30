@@ -17,17 +17,17 @@
       @if (tareas().length === 0) {
         <button pButton severity="secondary"
           [outlined]="true"
-          class="p-button-sm"
+         
           (click)="cargarPlantillaBoda()">
-  <i pButtonIcon class="pi pi-list-check"></i>
-  <span pButtonLabel>Cargar Plantilla Boda</span>
+  <i class="pi pi-list-check"></i>
+  <span>Cargar Plantilla Boda</span>
 </button>
       }
       <button pButton severity="primary"
-        class="p-button-sm font-semibold"
+       
         (click)="abrirModalTarea()">
-  <i pButtonIcon class="pi pi-plus"></i>
-  <span pButtonLabel>Añadir Tarea</span>
+  <i class="pi pi-plus"></i>
+  <span>Añadir Tarea</span>
 </button>
     </div>
   </div>
@@ -52,12 +52,12 @@
           <div class="bg-slate-50 p-4 border-b border-slate-200/80 flex items-center justify-between">
             <div class="flex items-center gap-2">
               <h3 class="text-sm font-bold text-slate-800 m-0 uppercase tracking-wider">{{ faseGroup.fase }}</h3>
-              <span class="text-xs font-semibold text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
+              <span>
                 {{ faseGroup.completadas }}/{{ faseGroup.total }}
               </span>
             </div>
 
-            <span class="text-xs font-bold" [ngClass]="faseGroup.completadas === faseGroup.total ? 'text-emerald-600' : 'text-slate-400'">
+            <span [ngClass]="faseGroup.completadas === faseGroup.total ? 'text-emerald-600' : 'text-slate-400'">
               {{ faseGroup.completadas === faseGroup.total ? '¡Etapa Lista!' : 'En Proceso' }}
             </span>
           </div>
@@ -117,19 +117,17 @@
 
                 <!-- Botones Acción Tarea -->
                 <div class="flex items-center gap-1 shrink-0">
-                  <button
-                    pButton
-                    icon="pi pi-pencil"
-                    class="p-button-text p-button-secondary p-button-sm !w-7 !h-7"
+                  <button pButton
+                   
+                   
                     pTooltip="Editar"
-                    (click)="abrirModalTarea(tarea)">
+                    (click)="abrirModalTarea(tarea)"><i class="pi pi-check-square text-4xl text-slate-300 block mb-3"></i>
                   </button>
-                  <button
-                    pButton
-                    icon="pi pi-trash"
-                    class="p-button-text p-button-danger p-button-sm !w-7 !h-7"
+                  <button pButton
+                   
+                   
                     pTooltip="Eliminar"
-                    (click)="eliminarTarea(tarea)">
+                    (click)="eliminarTarea(tarea)"><i class="pi pi-list-check"></i>
                   </button>
                 </div>
               </div>
@@ -143,16 +141,16 @@
   @if (tareas().length === 0) {
     <div class="bg-white rounded-2xl p-12 border border-slate-200 text-center">
       <i class="pi pi-check-square text-4xl text-slate-300 block mb-3"></i>
-      <h4 class="text-base font-bold text-slate-700">El checklist está vacío</h4>
+      <h4>El checklist está vacío</h4>
       <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
         Puedes cargar la plantilla inteligente de bodas con más de 20 tareas esenciales organizadas por etapas.
       </p>
       <div class="mt-4">
         <button pButton severity="primary"
-          class="p-button-sm font-semibold"
+         
           (click)="cargarPlantillaBoda()">
-  <i pButtonIcon class="pi pi-list-check"></i>
-  <span pButtonLabel>Cargar Plantilla Boda</span>
+  <i class="pi pi-check-square text-4xl text-slate-300 block mb-3"></i>
+  <span>Cargar Plantilla Boda</span>
 </button>
       </div>
     </div>

@@ -29,7 +29,7 @@
       <button pButton [severity]="qrScanner.isActive() ? 'danger' : 'primary'"
         [disabled]="!canToggleScanner()"
         (click)="toggleScanner()"
-      ><i pButtonIcon [class]="qrScanner.isActive() ? 'pi pi-power-off' : 'pi pi-video'"></i><span pButtonLabel>{{ qrScanner.isActive() ? 'Detener Cámara' : 'Activar Cámara' }}</span></button>
+      ><i [class]="qrScanner.isActive() ? 'pi pi-power-off' : 'pi pi-video'"></i><span>{{ qrScanner.isActive() ? 'Detener Cámara' : 'Activar Cámara' }}</span></button>
     </ng-template>
   </p-toolbar>
 
@@ -42,7 +42,7 @@
       >
         <button pButton [disabled]="!canToggleScanner()"
           (click)="startScanner()"
-        ><i pButtonIcon class="pi pi-camera"></i><span pButtonLabel>Encender cámara y escanear pases VIP</span></button>
+        ><i class="pi pi-camera"></i><span>Encender cámara y escanear pases VIP</span></button>
       </div>
     }
   </div>

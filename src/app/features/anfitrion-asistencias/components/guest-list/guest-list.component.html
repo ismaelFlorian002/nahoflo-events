@@ -45,7 +45,7 @@
               [disabled]="(guest.pasesConfirmados || 1) <= 1"
               (click)="emitPassChange(guest, -1)"
               title="Restar pase"
-            ><i pButtonIcon class="pi pi-minus"></i></button>
+            ><i class="pi pi-minus"></i></button>
             <p-tag [value]="(guest.pasesConfirmados || 1).toString()" severity="info" />
             <button pButton rounded
               [text]="true"
@@ -53,7 +53,7 @@
               size="small"
               (click)="emitPassChange(guest, 1)"
               title="Sumar pase"
-            ><i pButtonIcon class="pi pi-plus"></i></button>
+            ><i class="pi pi-plus"></i></button>
           } @else {
             <p-tag value="0" severity="secondary" />
           }
@@ -83,7 +83,7 @@
                 severity="warn"
                 (click)="showQrPass.emit(guest)"
                 title="Ver Pase QR VIP"
-              ><i pButtonIcon class="pi pi-qrcode"></i></button>
+              ><i class="pi pi-qrcode"></i></button>
             } @else {
               <p-tag value="-" severity="secondary" />
             }
@@ -97,7 +97,7 @@
               severity="success"
               (click)="sendInvitation.emit(guest)"
               title="Enviar invitación"
-            ><i pButtonIcon class="pi pi-whatsapp"></i></button>
+            ><i class="pi pi-whatsapp"></i></button>
           }
 
           <button pButton rounded
@@ -105,7 +105,7 @@
             severity="warn"
             (click)="sendVipPass.emit(guest)"
             title="Enviar pase"
-          ><i pButtonIcon class="pi pi-ticket"></i></button>
+          ><i class="pi pi-ticket"></i></button>
 
           @if (guest.haIngresado) {
             <button pButton rounded
@@ -113,14 +113,14 @@
               severity="danger"
               (click)="revertCheckInGuest.emit(guest)"
               title="Revertir ingreso"
-            ><i pButtonIcon class="pi pi-undo"></i></button>
+            ><i class="pi pi-undo"></i></button>
           } @else {
             <button pButton rounded
               [text]="true"
               severity="success"
               (click)="checkInGuest.emit(guest)"
               title="Marcar ingreso"
-            ><i pButtonIcon class="pi pi-check"></i></button>
+            ><i class="pi pi-check"></i></button>
           }
 
           <button pButton rounded
@@ -128,19 +128,19 @@
             severity="info"
             (click)="viewGuest.emit(guest)"
             title="Ver detalle"
-          ><i pButtonIcon class="pi pi-eye"></i></button>
+          ><i class="pi pi-eye"></i></button>
           <button pButton rounded
             [text]="true"
             severity="secondary"
             (click)="editGuest.emit(guest)"
             title="Editar invitado"
-          ><i pButtonIcon class="pi pi-pencil"></i></button>
+          ><i class="pi pi-pencil"></i></button>
           <button pButton rounded
             [text]="true"
             severity="danger"
             (click)="deleteGuest.emit(guest)"
             title="Eliminar invitado"
-          ><i pButtonIcon class="pi pi-trash"></i></button>
+          ><i class="pi pi-trash"></i></button>
         </td>
       </tr>
     }

@@ -8,7 +8,7 @@
           <i class="pi pi-clock text-gold-500"></i>
           Minutario & Cronograma Técnico del Evento
         </h3>
-        <span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-semibold">
+        <span>
           {{ totalItems() }} {{ totalItems() === 1 ? 'momento' : 'momentos' }}
         </span>
       </div>
@@ -25,15 +25,15 @@
           (click)="copiarMinutarioWhatsApp()"
           pTooltip="Copiar cronograma para enviar por WhatsApp"
           tooltipPosition="top">
-  <i pButtonIcon class="pi pi-whatsapp"></i>
-  <span pButtonLabel>WhatsApp Staff</span>
+  <i class="pi pi-whatsapp"></i>
+  <span>WhatsApp Staff</span>
 </button>
       }
 
       <button pButton size="small"
         (click)="abrirModalMomento()">
-  <i pButtonIcon class="pi pi-plus"></i>
-  <span pButtonLabel>Agregar Momento</span>
+  <i class="pi pi-plus"></i>
+  <span>Agregar Momento</span>
 </button>
     </div>
   </div>
@@ -46,7 +46,7 @@
           <i class="pi pi-chart-line text-gold-500"></i>
           Progreso del Evento en Vivo
         </span>
-        <span class="text-gold-600 font-bold">{{ completadosCount() }} de {{ totalItems() }} completados ({{ porcentajeCompletado() }}%)</span>
+        <span>{{ completadosCount() }} de {{ totalItems() }} completados ({{ porcentajeCompletado() }}%)</span>
       </div>
       <p-progressbar [value]="porcentajeCompletado()" [showValue]="false" styleClass="h-2 rounded-full"></p-progressbar>
     </div>
@@ -66,7 +66,7 @@
         <!-- CHECKBOX EN VIVO PARA MARCAR CUMPLIDO -->
         <button
           type="button"
-          class="btn-check-live flex-shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors duration-200"
+          class="btn-check-live flex-shrink-0 w-8 h-8 flex items-center justify-center cursor-pointer duration-200"
           [class.border-emerald-500]="item.completado"
           [class.bg-emerald-500]="item.completado"
           [class.text-white]="item.completado"
@@ -114,7 +114,7 @@
             size="small"
             (click)="abrirModalMomento(item)"
             pTooltip="Editar momento">
-  <i pButtonIcon class="pi pi-pencil"></i>
+  <i class="pi pi-pencil"></i>
 </button>
           <button pButton [rounded]="true"
             [text]="true"
@@ -122,7 +122,7 @@
             size="small"
             (click)="eliminarItem(item)"
             pTooltip="Eliminar momento">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
         </div>
 
@@ -144,14 +144,14 @@
           <button pButton size="small"
             severity="warn"
             (click)="cargarPlantillaEstandar()">
-  <i pButtonIcon class="pi pi-sparkles"></i>
-  <span pButtonLabel>Cargar Plantilla Estándar</span>
+  <i class="pi pi-sparkles"></i>
+  <span>Cargar Plantilla Estándar</span>
 </button>
           <button pButton size="small"
             [outlined]="true"
             (click)="abrirModalMomento()">
-  <i pButtonIcon class="pi pi-plus"></i>
-  <span pButtonLabel>Agregar Momento Manual</span>
+  <i class="pi pi-plus"></i>
+  <span>Agregar Momento Manual</span>
 </button>
         </div>
       </div>

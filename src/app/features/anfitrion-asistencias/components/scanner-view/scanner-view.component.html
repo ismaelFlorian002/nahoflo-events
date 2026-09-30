@@ -43,8 +43,8 @@
               [severity]="escanerActivo() ? 'danger' : 'primary'"
               size="small"
               (click)="toggleEscaner()">
-  <i pButtonIcon [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
-  <span pButtonLabel>{{ escanerActivo() ? 'Detener Cámara' : 'Activar Cámara' }}</span>
+  <i [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
+  <span>{{ escanerActivo() ? 'Detener Cámara' : 'Activar Cámara' }}</span>
  </button>
           </div>
 
@@ -97,8 +97,8 @@
                       [text]="true"
                       severity="secondary"
                       (click)="revertirCheckIn(inv)">
-  <i pButtonIcon class="pi pi-undo"></i>
-  <span pButtonLabel>Deshacer ingreso</span>
+  <i class="pi pi-undo"></i>
+  <span>Deshacer ingreso</span>
 </button>
                   }
                 }
@@ -166,13 +166,13 @@
                     pTooltip="Revertir ingreso"
                     tooltipPosition="left"
                     (click)="revertirCheckIn(inv)">
-  <i pButtonIcon class="pi pi-undo"></i>
+  <i class="pi pi-undo"></i>
 </button>
                 } @else {
                   <button pButton size="small"
                     (click)="hacerCheckIn(inv)">
-  <i pButtonIcon class="pi pi-sign-in"></i>
-  <span pButtonLabel>Dar Acceso</span>
+  <i class="pi pi-sign-in"></i>
+  <span>Dar Acceso</span>
 </button>
                 }
               </div>

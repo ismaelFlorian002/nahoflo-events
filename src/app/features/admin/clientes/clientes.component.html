@@ -32,15 +32,14 @@
     </div>
 
     <!-- Botón Nuevo Cliente -->
-    <button
-      pButton
+    <button pButton
       type="button"
       size="small"
       (click)="openDialog()"
-      class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
+     >
 
-      <i pButtonIcon class="pi pi-user-plus"></i>
-      <span pButtonLabel>Nuevo Cliente</span>
+      <i class="pi pi-user-plus"></i>
+      <span>Nuevo Cliente</span>
     </button>
   </div>
 
@@ -98,7 +97,7 @@
                     [class]="filtroEquipo === 'todos'
                       ? 'bg-white text-gray-900 font-bold shadow-xs'
                       : 'text-gray-500 hover:text-gray-800 font-medium'"
-                    class="px-2.5 py-1.5 rounded-lg text-xs transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5">
+                    class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5">
                     <i class="pi pi-building text-xs"></i>
                     <span>Todo el Estudio</span>
                     <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gray-200/80 text-gray-700 font-bold">{{ totalDirectos }}</span>
@@ -110,7 +109,7 @@
                     [class]="filtroEquipo === 'mios'
                       ? 'bg-white text-gold-700 font-bold shadow-xs'
                       : 'text-gray-500 hover:text-gray-800 font-medium'"
-                    class="px-2.5 py-1.5 rounded-lg text-xs transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5">
+                    class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5">
                     <i class="pi pi-user text-xs"></i>
                     <span>Solo los míos</span>
                     <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gold-100 text-gold-800 font-bold">{{ totalMios }}</span>
@@ -160,14 +159,14 @@
         <tr>
 
           <!-- CLIENTE -->
-          <td class="font-medium text-gray-900">
+          <td>
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded-full bg-gold-50 border border-gold-200/60 flex items-center justify-center text-gold-700 font-bold text-xs shrink-0 select-none">
                 {{ cliente.nombreCompleto ? cliente.nombreCompleto.substring(0, 2).toUpperCase() : 'CL' }}
               </div>
               <div>
                 <div class="flex items-center gap-1.5 flex-wrap">
-                  <span class="text-sm font-semibold text-gray-900 leading-tight">{{ cliente.nombreCompleto }}</span>
+                  <span>{{ cliente.nombreCompleto }}</span>
                   <!-- Badge de Creador en Vista Directos (Opción A) -->
                   @if (esAdmin() && vistaAdmin === 'directos') {
                     @if (esClienteMio(cliente)) {
@@ -212,7 +211,7 @@
             <div class="flex flex-col gap-0.5 text-xs text-gray-600">
               <div class="flex items-center gap-1.5">
                 <i class="pi pi-phone text-gray-400 text-[11px]"></i>
-                <span class="font-medium">{{ cliente.telefono }}</span>
+                <span>{{ cliente.telefono }}</span>
                 <a
                   *ngIf="cliente.telefono"
                   [href]="getWhatsappUrl(cliente.telefono)"
@@ -240,7 +239,7 @@
           </td>
 
           <!-- FECHA DE REGISTRO -->
-          <td class="text-gray-500 text-sm">
+          <td>
             {{ formatFecha(cliente.creadoEn) }}
           </td>
 
@@ -253,7 +252,7 @@
                 pTooltip="Ver Expediente"
                 tooltipPosition="top"
                 (click)="verDetalle(cliente)">
-  <i pButtonIcon class="pi pi-folder-open"></i>
+  <i class="pi pi-folder-open"></i>
 </button>
 
               <button pButton [rounded]="true"
@@ -262,7 +261,7 @@
                 pTooltip="Editar Cliente"
                 tooltipPosition="top"
                 (click)="openDialog(cliente)">
-  <i pButtonIcon class="pi pi-pencil"></i>
+  <i class="pi pi-pencil"></i>
 </button>
 
               <button pButton [rounded]="true"
@@ -271,7 +270,7 @@
                 pTooltip="Eliminar Cliente"
                 tooltipPosition="top"
                 (click)="eliminarCliente(cliente)">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
             </div>
           </td>

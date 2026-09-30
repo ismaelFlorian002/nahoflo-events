@@ -16,10 +16,10 @@
     </div>
 
     <button pButton severity="primary"
-      class="p-button-sm font-semibold"
+     
       (click)="abrirModalProveedor()">
-  <i pButtonIcon class="pi pi-plus"></i>
-  <span pButtonLabel>Agregar Proveedor</span>
+  <i class="pi pi-plus"></i>
+  <span>Agregar Proveedor</span>
 </button>
   </div>
 
@@ -39,10 +39,10 @@
           [severity]="categoriaSeleccionada() !== 'todas' ? 'primary' : 'secondary'"
           (click)="opFiltrosCategoria.toggle($event)"
           title="Filtrar por categoría de proveedor">
-  <span pButtonLabel>{{ 'Categoría: ' + labelFiltroCategoria() }}</span>
-  <span pButtonBadge>{{ conteoFiltroCategoria().toString() }}</span>
+  <span>{{ 'Categoría: ' + labelFiltroCategoria() }}</span>
+  <span>{{ conteoFiltroCategoria().toString() }}</span>
 
-  <i pButtonIcon class="pi pi-filter"></i>
+  <i class="pi pi-filter"></i>
  </button>
 
         <p-popover #opFiltrosCategoria styleClass="popover-filtros-invitados">
@@ -78,8 +78,8 @@
           (click)="limpiarFiltros()"
           pTooltip="Restablecer todos los filtros"
           tooltipPosition="top">
-  <i pButtonIcon class="pi pi-filter-slash"></i>
-  <span pButtonLabel>Limpiar filtros</span>
+  <i class="pi pi-filter-slash"></i>
+  <span>Limpiar filtros</span>
 </button>
       }
     </div>
@@ -114,19 +114,17 @@
               </span>
 
               <div class="flex items-center gap-1">
-                <button
-                  pButton
-                  icon="pi pi-pencil"
-                  class="p-button-text p-button-secondary p-button-sm !w-7 !h-7"
+                <button pButton
+                 
+                 
                   pTooltip="Editar"
-                  (click)="abrirModalProveedor(prov)">
+                  (click)="abrirModalProveedor(prov)"><i class="pi pi-user text-slate-400 text-xs"></i>
                 </button>
-                <button
-                  pButton
-                  icon="pi pi-trash"
-                  class="p-button-text p-button-danger p-button-sm !w-7 !h-7"
+                <button pButton
+                 
+                 
                   pTooltip="Eliminar"
-                  (click)="eliminarProveedor(prov)">
+                  (click)="eliminarProveedor(prov)"><i class="pi pi-phone text-emerald-600"></i>
                 </button>
               </div>
             </div>
@@ -136,7 +134,7 @@
 
             @if (prov.contactoNombre) {
               <div class="text-xs font-medium text-slate-600 flex items-center gap-1.5 mb-2">
-                <i class="pi pi-user text-slate-400 text-xs"></i>
+                <i class="pi pi-envelope text-slate-400"></i>
                 <span>{{ prov.contactoNombre }}</span>
               </div>
             }
@@ -145,19 +143,19 @@
             <div class="space-y-1.5 border-t border-slate-100 pt-3 my-3 text-xs text-slate-600">
               @if (prov.telefono) {
                 <div class="flex items-center gap-2">
-                  <i class="pi pi-phone text-emerald-600"></i>
+                  <i class="pi pi-tag text-amber-500"></i>
                   <span>{{ prov.telefono }}</span>
                 </div>
               }
               @if (prov.email) {
                 <div class="flex items-center gap-2">
-                  <i class="pi pi-envelope text-slate-400"></i>
+                  <i class="pi pi-whatsapp"></i>
                   <span class="truncate">{{ prov.email }}</span>
                 </div>
               }
               @if (prov.montoContrato && prov.montoContrato > 0) {
                 <div class="flex items-center gap-2 font-semibold text-slate-800 pt-1">
-                  <i class="pi pi-tag text-amber-500"></i>
+                  <i class="pi pi-briefcase text-4xl text-slate-300 block mb-3"></i>
                   <span>Contrato: ${{ prov.montoContrato | number:'1.0-0' }} MXN</span>
                 </div>
               }
@@ -178,8 +176,8 @@
                 severity="success"
                 outlined="true"
                 (click)="contactarWhatsApp(prov)">
-  <i pButtonIcon class="pi pi-whatsapp"></i>
-  <span pButtonLabel>Contactar</span>
+  <i class="pi pi-plus"></i>
+  <span>Contactar</span>
 </button>
             } @else {
               <span class="text-xs text-slate-400 block text-center py-1">Sin teléfono registrado</span>
@@ -191,16 +189,16 @@
   } @else {
     <div class="bg-white rounded-2xl p-12 border border-slate-200 text-center">
       <i class="pi pi-briefcase text-4xl text-slate-300 block mb-3"></i>
-      <h4 class="text-base font-bold text-slate-700">No hay proveedores registrados</h4>
+      <h4>No hay proveedores registrados</h4>
       <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
         Agrega al DJ, fotógrafo, banquetera, florista y salón para mantener todo tu equipo de trabajo organizado.
       </p>
       <div class="mt-4">
         <button pButton severity="primary"
-          class="p-button-sm font-semibold"
+         
           (click)="abrirModalProveedor()">
-  <i pButtonIcon class="pi pi-plus"></i>
-  <span pButtonLabel>Agregar Primer Proveedor</span>
+  <i class="pi pi-briefcase text-4xl text-slate-300 block mb-3"></i>
+  <span>Agregar Primer Proveedor</span>
 </button>
       </div>
     </div>

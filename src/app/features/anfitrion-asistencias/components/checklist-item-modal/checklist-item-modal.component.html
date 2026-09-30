@@ -105,15 +105,15 @@
       [text]="true"
       size="small"
       (click)="cancelar()">
-  <span pButtonLabel>Cancelar</span>
+  <span>Cancelar</span>
 </button>
 
     <button pButton type="submit"
      
      
       size="small">
-  <i pButtonIcon [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
-  <span pButtonLabel>{{ esEdicion ? 'Actualizar Tarea' : 'Guardar Tarea' }}</span>
+  <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+  <span>{{ esEdicion ? 'Actualizar Tarea' : 'Guardar Tarea' }}</span>
  </button>
   </div>
 </form>

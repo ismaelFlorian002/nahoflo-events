@@ -68,7 +68,7 @@
               size="small"
               pTooltip="Eliminar logo"
               (click)="removerLogo()">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
           </div>
         </div>
@@ -112,17 +112,17 @@
       text="true"
       severity="danger"
       (click)="cancelar()">
-  <i pButtonIcon class="pi pi-times"></i>
-  <span pButtonLabel>Cancelar</span>
+  <i class="pi pi-times"></i>
+  <span>Cancelar</span>
 </button>
     <button pButton type="submit"
      
      
       severity="primary"
       [disabled]="guardando">
-  <i pButtonIcon [class]="guardando ? 'pi pi-spin pi-spinner' : 'pi pi-check'"></i>
+  <i [class]="guardando ? 'pi pi-spin pi-spinner' : 'pi pi-check'"></i>
 
-  <span pButtonLabel>Guardar Marca Blanca</span>
+  <span>Guardar Marca Blanca</span>
  </button>
   </div>
 </form>

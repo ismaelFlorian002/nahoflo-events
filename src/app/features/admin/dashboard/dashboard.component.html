@@ -39,9 +39,9 @@
     <!-- Botón Nuevo Evento -->
     <button pButton size="small"
       (click)="openDialog()"
-      class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
-  <i pButtonIcon class="pi pi-plus"></i>
-  <span pButtonLabel>Nuevo Evento</span>
+     >
+  <i class="pi pi-plus"></i>
+  <span>Nuevo Evento</span>
 </button>
   </div>
 
@@ -95,7 +95,7 @@
                   [class]="filtroEquipo() === 'todos'
                     ? 'bg-white text-gray-900 font-bold shadow-xs'
                     : 'text-gray-500 hover:text-gray-800 font-medium'"
-                  class="px-2.5 py-1.5 rounded-lg text-xs transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5">
+                  class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5">
                   <i class="pi pi-building text-xs"></i>
                   <span>Todo el Estudio</span>
                   <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gray-200/80 text-gray-700 font-bold">{{ totalDirectos() }}</span>
@@ -107,7 +107,7 @@
                   [class]="filtroEquipo() === 'mios'
                     ? 'bg-white text-gold-700 font-bold shadow-xs'
                     : 'text-gray-500 hover:text-gray-800 font-medium'"
-                  class="px-2.5 py-1.5 rounded-lg text-xs transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5">
+                  class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5">
                   <i class="pi pi-user text-xs"></i>
                   <span>Solo los míos</span>
                   <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gold-100 text-gold-800 font-bold">{{ totalMios() }}</span>
@@ -131,10 +131,10 @@
                 [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
                 (click)="opFiltrosEstado.toggle($event)"
                 title="Filtrar por estado del evento">
-  <span pButtonLabel>{{ 'Estado: ' + labelFiltroEstado() }}</span>
-  <span pButtonBadge>{{ conteoFiltroEstado() }}</span>
+  <span>{{ 'Estado: ' + labelFiltroEstado() }}</span>
+  <span>{{ conteoFiltroEstado() }}</span>
 
-  <i pButtonIcon class="pi pi-filter"></i>
+  <i class="pi pi-filter"></i>
  </button>
 
               <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
@@ -195,10 +195,10 @@
                 [severity]="filtroFecha() ? 'primary' : 'secondary'"
                 (click)="opFiltroFecha.toggle($event)"
                 title="Filtrar por fecha de evento">
-  <span pButtonLabel>{{ labelFiltroFecha() }}</span>
-  <span pButtonBadge>{{ filtroFecha() ? '1' : undefined }}</span>
+  <span>{{ labelFiltroFecha() }}</span>
+  <span>{{ filtroFecha() ? '1' : undefined }}</span>
 
-  <i pButtonIcon class="pi pi-calendar"></i>
+  <i class="pi pi-calendar"></i>
  </button>
 
               <p-popover #opFiltroFecha styleClass="popover-filtros-invitados">
@@ -242,7 +242,7 @@
                       <button
                         type="button"
                         (click)="seleccionarFecha(null, dt, opFiltroFecha)"
-                        class="text-xs text-red-600 hover:text-red-700 font-medium py-1 px-2.5 rounded-lg hover:bg-red-50 border-0 bg-transparent cursor-pointer flex items-center gap-1 transition-colors">
+                        class="hover:text-red-700 cursor-pointer flex items-center gap-1">
                         <i class="pi pi-times text-[10px]"></i>
                         <span>Quitar filtro de fecha</span>
                       </button>
@@ -262,8 +262,8 @@
               (click)="limpiarTodosFiltros(dt)"
               pTooltip="Restablecer todos los filtros"
               tooltipPosition="top">
-  <i pButtonIcon class="pi pi-filter-slash"></i>
-  <span pButtonLabel>Limpiar filtros</span>
+  <i class="pi pi-filter-slash"></i>
+  <span>Limpiar filtros</span>
 </button>
           </div>
 
@@ -303,7 +303,7 @@
         <tr>
           <td class="fw-medium">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm font-semibold text-gray-900 leading-tight">{{ evento.titulo }}</span>
+              <span>{{ evento.titulo }}</span>
 
               <!-- Badge de Creador en Vista Directos (Opción A) -->
               @if (esAdmin() && vistaAdmin() === 'directos') {
@@ -350,14 +350,14 @@
               </a>
             </div>
           </td>
-          <td class="text-gray-600 text-sm font-medium">
+          <td>
             <div class="flex items-center gap-2">
               <i class="pi pi-calendar text-gray-400 text-xs"></i>
               <span>{{ evento.fechaFormateada }}</span>
             </div>
           </td>
-          <td class="text-gray-500 text-sm">
-            <span class="px-2.5 py-1 rounded-md bg-gray-50 text-gray-600 text-xs  border border-gray-100">
+          <td>
+            <span>
               /e/{{ evento.enlace }}
             </span>
           </td>
@@ -377,7 +377,7 @@
                 pTooltip="Ver Detalle del Evento"
                 tooltipPosition="top"
                 (click)="verDetalleEvento(evento)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
 
               <!-- BOTÓN QR PARA MESAS (Solo si tiene Álbum contratado) -->
@@ -389,7 +389,7 @@
                 pTooltip="Código QR para Mesas (Álbum)"
                 tooltipPosition="top"
                 (click)="abrirQrMesas(evento)">
-  <i pButtonIcon class="pi pi-qrcode"></i>
+  <i class="pi pi-qrcode"></i>
 </button>
 
               <button pButton *ngIf="tieneControlInvitados(evento)"
@@ -400,7 +400,7 @@
                 pTooltip="Ver Asistencias / Invitados"
                 tooltipPosition="top"
                 (click)="verAsistencias(evento)">
-  <i pButtonIcon class="pi pi-users"></i>
+  <i class="pi pi-users"></i>
 </button>
 
               <button pButton [rounded]="true"
@@ -409,7 +409,7 @@
                 pTooltip="Editar Evento"
                 tooltipPosition="top"
                 (click)="openDialog(evento)">
-  <i pButtonIcon class="pi pi-pencil"></i>
+  <i class="pi pi-pencil"></i>
 </button>
 
               <button pButton
@@ -419,7 +419,7 @@
                 [pTooltip]="evento.estaActivo ? 'Desactivar Evento' : 'Activar Evento'"
                 tooltipPosition="top"
                 (click)="toggleEstado(evento)">
-  <i pButtonIcon [class]="evento.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"></i>
+  <i [class]="evento.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"></i>
  </button>
 
               <!-- ELIMINAR: solo Admin puede borrar definitivamente -->
@@ -430,7 +430,7 @@
                   pTooltip="Eliminar Evento"
                   tooltipPosition="top"
                   (click)="eliminarEvento(evento)">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
               }
             </div>
@@ -459,7 +459,7 @@
               <button
                 type="button"
                 (click)="limpiarTodosFiltros(dt)"
-                class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-gold-600 hover:text-gold-700 bg-gold-50 hover:bg-gold-100 px-3 py-1.5 rounded-lg border-0 cursor-pointer transition-colors">
+                class="mt-2 inline-flex items-center gap-1.5 hover:text-gold-700 cursor-pointer">
                 <i class="pi pi-filter-slash text-xs"></i>
                 <span>Restablecer filtros</span>
               </button>

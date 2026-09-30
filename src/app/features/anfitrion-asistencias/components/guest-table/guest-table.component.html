@@ -65,10 +65,10 @@
               [severity]="filtroRespuesta() !== 'todos' ? 'primary' : 'secondary'"
               (click)="opFiltros.toggle($event)"
               title="Filtrar por estado de respuesta">
-  <span pButtonLabel>{{ labelFiltroActivo() }}</span>
-  <span pButtonBadge>{{ conteoFiltroActivo() }}</span>
+  <span>{{ labelFiltroActivo() }}</span>
+  <span>{{ conteoFiltroActivo() }}</span>
 
-  <i pButtonIcon class="pi pi-filter"></i>
+  <i class="pi pi-filter"></i>
  </button>
 
             <p-popover #opFiltros styleClass="popover-filtros-invitados">
@@ -141,8 +141,8 @@
               [disabled]="invitadosFiltrados().length === 0"
               (click)="exportarExcel()"
               title="Descargar lista filtrada en Excel">
-  <i pButtonIcon class="pi pi-file-excel"></i>
-  <span pButtonLabel>Excel</span>
+  <i class="pi pi-file-excel"></i>
+  <span>Excel</span>
 </button>
 
             <button pButton size="small"
@@ -151,8 +151,8 @@
               [disabled]="invitadosFiltrados().length === 0"
               (click)="exportarPdf()"
               title="Descargar reporte filtrado en PDF">
-  <i pButtonIcon class="pi pi-file-pdf"></i>
-  <span pButtonLabel>PDF</span>
+  <i class="pi pi-file-pdf"></i>
+  <span>PDF</span>
 </button>
           </div>
 
@@ -164,8 +164,8 @@
               [disabled]="invitadosFiltrados().length === 0"
               (click)="menuExport.toggle($event)"
               title="Exportar lista en Excel o PDF">
-  <i pButtonIcon class="pi pi-download"></i>
-  <span pButtonLabel>Exportar</span>
+  <i class="pi pi-download"></i>
+  <span>Exportar</span>
 </button>
           </div>
         </div>
@@ -179,8 +179,8 @@
               class="btn-compartir-desktop"
               (click)="abrirModalCompartir()"
               title="Cómo compartir invitación">
-  <i pButtonIcon class="pi pi-info-circle"></i>
-  <span pButtonLabel>Cómo compartir invitación</span>
+  <i class="pi pi-info-circle"></i>
+  <span>Cómo compartir invitación</span>
 </button>
 
             <!-- Versión compacta para móvil -->
@@ -190,15 +190,15 @@
               class="btn-compartir-mobile"
               (click)="abrirModalCompartir()"
               title="Cómo compartir invitación">
-  <i pButtonIcon class="pi pi-info-circle"></i>
+  <i class="pi pi-info-circle"></i>
 </button>
           }
 
           <button pButton size="small"
             (click)="abrirModalCrearInvitado()"
             title="Registrar nuevo invitado manualmente">
-  <i pButtonIcon class="pi pi-user-plus"></i>
-  <span pButtonLabel>Agregar</span>
+  <i class="pi pi-user-plus"></i>
+  <span>Agregar</span>
 </button>
         </div>
 
@@ -319,11 +319,11 @@
         @if (evento()?.modulos?.tipoControlInvitados !== 'lista_puerta') {
           <td class="col-mesa col-desktop">
             <div class="flex flex-col gap-0.5">
-              <span class="font-semibold text-slate-800 text-xs">
+              <span>
                 <i class="pi pi-th-large text-amber-600 mr-1"></i>
                 {{ invitado.mesa || 'Sin asignar' }}
               </span>
-              <span class="text-xs text-slate-500">
+              <span>
                 {{ invitado.tipoMenu || 'Adulto' }}
               </span>
               @if (invitado.restriccionesAlimentarias) {
@@ -358,7 +358,7 @@
                 pTooltip="Ver Pase QR VIP"
                 tooltipPosition="top"
                 (click)="abrirModalQr(invitado)">
-  <i pButtonIcon class="pi pi-qrcode"></i>
+  <i class="pi pi-qrcode"></i>
 </button>
             } @else {
               <span style="color: #cbd5e1;">-</span>
@@ -376,7 +376,7 @@
               size="small"
               (click)="abrirMenuAcciones($event, invitado, menuAcciones)"
               [title]="'Acciones para ' + invitado.nombre">
-  <i pButtonIcon class="pi pi-ellipsis-v"></i>
+  <i class="pi pi-ellipsis-v"></i>
 </button>
           </div>
 
@@ -390,7 +390,7 @@
                 [pTooltip]="'Enviar invitación personalizada a ' + invitado.nombre"
                 tooltipPosition="top"
                 (click)="enviarInvitacionWhatsApp(invitado)">
-  <i pButtonIcon class="pi pi-whatsapp"></i>
+  <i class="pi pi-whatsapp"></i>
 </button>
             }
 
@@ -401,7 +401,7 @@
                 [pTooltip]="(evento()?.modulos?.tipoControlInvitados === 'total' ? 'Enviar Pase VIP a ' : 'Enviar Pase a ') + invitado.nombre"
                 tooltipPosition="top"
                 (click)="enviarPaseVipWhatsApp(invitado)">
-  <i pButtonIcon class="pi pi-ticket"></i>
+  <i class="pi pi-ticket"></i>
 </button>
             }
 
@@ -412,7 +412,7 @@
               pTooltip="Ver Detalle"
               tooltipPosition="top"
               (click)="abrirModalDetalle(invitado)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
 
             <!-- BOTÓN EDITAR INVITADO -->
@@ -422,7 +422,7 @@
               pTooltip="Editar Invitado"
               tooltipPosition="top"
               (click)="abrirModalEditar(invitado)">
-  <i pButtonIcon class="pi pi-pencil"></i>
+  <i class="pi pi-pencil"></i>
 </button>
           </div>
         </td>

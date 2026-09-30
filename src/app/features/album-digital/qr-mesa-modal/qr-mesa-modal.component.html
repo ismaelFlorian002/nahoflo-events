@@ -50,8 +50,8 @@
           severity="secondary"
           [outlined]="true"
           (click)="copiarEnlace()">
-  <i pButtonIcon [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
-  <span pButtonLabel>{{ copiado() ? '¡Copiado!' : 'Copiar Link' }}</span>
+  <i [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span>{{ copiado() ? '¡Copiado!' : 'Copiar Link' }}</span>
  </button>
 
         @if (qrDataUrl()) {
@@ -62,8 +62,8 @@
             <button pButton size="small"
               severity="secondary"
               [outlined]="true">
-  <i pButtonIcon class="pi pi-download"></i>
-  <span pButtonLabel>Descargar PNG</span>
+  <i class="pi pi-download"></i>
+  <span>Descargar PNG</span>
 </button>
           </a>
         }
@@ -71,8 +71,8 @@
 
       <button pButton size="small"
         (click)="imprimir()">
-  <i pButtonIcon class="pi pi-print"></i>
-  <span pButtonLabel>Imprimir Tarjeta</span>
+  <i class="pi pi-print"></i>
+  <span>Imprimir Tarjeta</span>
 </button>
     </footer>
 

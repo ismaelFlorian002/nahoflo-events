@@ -5,7 +5,7 @@
     <div>
       <div class="flex items-center gap-2.5">
         <h2 class="text-xl font-bold text-gray-900 m-0">Plano Visual & Croquis de Mesas</h2>
-        <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-50 text-gold-700 border border-gold-200">
+        <span>
           {{ totalMesas() }} {{ totalMesas() === 1 ? 'mesa' : 'mesas' }}
         </span>
       </div>
@@ -22,15 +22,15 @@
         pTooltip="Crear mesas automáticamente según los nombres asignados a los invitados"
         tooltipPosition="bottom"
         (click)="autogenerarMesasIniciales(true)">
-  <i pButtonIcon class="pi pi-sync"></i>
-  <span pButtonLabel>Autogenerar Mesas</span>
+  <i class="pi pi-sync"></i>
+  <span>Autogenerar Mesas</span>
 </button>
 
       <button pButton size="small"
-        class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl"
+       
         (click)="abrirModalMesa()">
-  <i pButtonIcon class="pi pi-plus"></i>
-  <span pButtonLabel>Nueva Mesa</span>
+  <i class="pi pi-plus"></i>
+  <span>Nueva Mesa</span>
 </button>
     </div>
   </div>
@@ -46,7 +46,7 @@
       <div class="min-w-0 flex-1">
         <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block truncate">Total Mesas</span>
         <div class="flex items-baseline gap-1.5 mt-0.5">
-          <span class="text-xl font-bold text-gray-900 leading-none">{{ totalMesas() }}</span>
+          <span>{{ totalMesas() }}</span>
           <span class="text-xs text-gray-400 font-normal truncate">({{ totalCapacidad() }} asientos)</span>
         </div>
       </div>
@@ -60,7 +60,7 @@
       <div class="min-w-0 flex-1">
         <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block truncate">Asientos Ocupados</span>
         <div class="flex items-baseline gap-1.5 mt-0.5">
-          <span class="text-xl font-bold text-gray-900 leading-none">{{ totalAsientosOcupados() }}</span>
+          <span>{{ totalAsientosOcupados() }}</span>
           <span class="text-xs font-medium text-emerald-600 truncate">/ {{ totalCapacidad() }} ({{ porcentajeOcupacion() }}%)</span>
         </div>
       </div>
@@ -74,7 +74,7 @@
       <div class="min-w-0 flex-1">
         <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block truncate">Sin Mesa</span>
         <div class="flex items-baseline gap-1.5 mt-0.5">
-          <span class="text-xl font-bold text-gray-900 leading-none">{{ invitadosSinMesa().length }}</span>
+          <span>{{ invitadosSinMesa().length }}</span>
           <span class="text-xs font-medium truncate" [ngClass]="invitadosSinMesa().length > 0 ? 'text-amber-600' : 'text-gray-400'">
             {{ invitadosSinMesa().length === 1 ? '1 por ubicar' : 'por ubicar' }}
           </span>
@@ -90,7 +90,7 @@
       <div class="min-w-0 flex-1">
         <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block truncate">Alertas Médicas</span>
         <div class="flex items-baseline gap-1.5 mt-0.5">
-          <span class="text-xl font-bold leading-none" [ngClass]="totalAlergias() > 0 ? 'text-red-500' : 'text-gray-900'">
+          <span [ngClass]="totalAlergias() > 0 ? 'text-red-500' : 'text-gray-900'">
             {{ totalAlergias() }}
           </span>
           <span class="text-xs font-medium truncate" [ngClass]="totalAlergias() > 0 ? 'text-red-500' : 'text-gray-400'">
@@ -138,11 +138,11 @@
           Crea tus mesas manualmente o presiona "Autogenerar Mesas" para crearlas según los nombres de mesa asignados a tus invitados.
         </p>
         <button pButton size="small"
-          class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl"
+         
           (click)="abrirModalMesa()"
         >
-  <i pButtonIcon class="pi pi-plus"></i>
-  <span pButtonLabel>Crear Primera Mesa</span>
+  <i class="pi pi-plus"></i>
+  <span>Crear Primera Mesa</span>
 </button>
       </div>
     } @else {
@@ -273,10 +273,10 @@
                 [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
                 (click)="opFiltrosEstado.toggle($event)"
                 title="Filtrar por estado del invitado">
-  <span pButtonLabel>{{ 'Estado: ' + labelFiltroEstado() }}</span>
-  <span pButtonBadge>{{ conteoFiltroEstado() }}</span>
+  <span>{{ 'Estado: ' + labelFiltroEstado() }}</span>
+  <span>{{ conteoFiltroEstado() }}</span>
 
-  <i pButtonIcon class="pi pi-filter"></i>
+  <i class="pi pi-filter"></i>
  </button>
 
               <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
@@ -347,8 +347,8 @@
                 (click)="limpiarTodosFiltros(dt)"
                 pTooltip="Restablecer todos los filtros"
                 tooltipPosition="top">
-  <i pButtonIcon class="pi pi-filter-slash"></i>
-  <span pButtonLabel>Limpiar filtros</span>
+  <i class="pi pi-filter-slash"></i>
+  <span>Limpiar filtros</span>
 </button>
             }
           </div>
@@ -428,7 +428,7 @@
 
           <!-- Pases -->
           <td style="text-align: center;">
-            <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-gold-50 text-gold-700 border border-gold-200">
+            <span>
               {{ inv.pasesConfirmados || 1 }} {{ (inv.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
             </span>
           </td>
@@ -455,7 +455,7 @@
                       <span class="truncate">{{ selectedOption.value }}</span>
                     </div>
                   } @else {
-                    <span class="text-gray-400">Sin mesa</span>
+                    <span>Sin mesa</span>
                   }
                 </ng-template>
                 <ng-template let-option pTemplate="item">
@@ -475,7 +475,7 @@
           <td colspan="5" class="text-center py-10 text-gray-400">
             <div class="flex flex-col items-center justify-center gap-2">
               <i class="pi pi-search text-2xl text-gray-300"></i>
-              <span class="text-xs font-medium">No se encontraron invitados con los filtros seleccionados</span>
+              <span>No se encontraron invitados con los filtros seleccionados</span>
             </div>
           </td>
         </tr>

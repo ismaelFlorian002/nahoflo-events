@@ -80,14 +80,14 @@
       severity="secondary"
       [text]="true"
       (click)="ref.close(false)">
-  <span pButtonLabel>Cancelar</span>
+  <span>Cancelar</span>
 </button>
 
     <button pButton type="submit"
       [loading]="subiendo()"
       [disabled]="formRecuerdo.invalid || archivosFotos().length === 0 || subiendo()">
-      <i pButtonIcon class="pi pi-send"></i>
-      <span pButtonLabel>{{ previewsUrls().length > 1 ? 'Publicar Carrusel (' + previewsUrls().length + ')' : 'Publicar Foto' }}</span>
+      <i class="pi pi-send"></i>
+      <span>{{ previewsUrls().length > 1 ? 'Publicar Carrusel (' + previewsUrls().length + ')' : 'Publicar Foto' }}</span>
 </button>
   </div>
 

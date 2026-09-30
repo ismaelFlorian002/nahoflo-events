@@ -29,7 +29,7 @@
               <button
                 type="button"
                 (click)="copiarDato(cliente.id, 'id')"
-                class="bg-transparent border-0 text-gray-400 hover:text-gray-700 p-0 cursor-pointer inline-flex items-center"
+                class="hover:text-gray-700 p-0 cursor-pointer inline-flex items-center"
                 [pTooltip]="copiadoId ? '¡Copiado!' : 'Copiar ID completo'"
                 tooltipPosition="top">
                 <i [class]="copiadoId ? 'pi pi-check text-emerald-600' : 'pi pi-copy'"></i>
@@ -66,7 +66,7 @@
           <button
             type="button"
             (click)="copiarDato(cliente.telefono, 'telefono')"
-            class="bg-transparent border-0 text-gray-400 hover:text-gray-600 p-0 cursor-pointer inline-flex items-center"
+            class="hover:text-gray-600 p-0 cursor-pointer inline-flex items-center"
             [pTooltip]="copiadoTelefono ? '¡Copiado!' : 'Copiar'"
             tooltipPosition="top">
             <i [class]="copiadoTelefono ? 'pi pi-check text-emerald-600' : 'pi pi-copy text-xs'"></i>
@@ -92,7 +92,7 @@
           <button
             type="button"
             (click)="copiarDato(cliente.email, 'email')"
-            class="bg-transparent border-0 text-gray-400 hover:text-gray-600 p-0 cursor-pointer inline-flex items-center"
+            class="hover:text-gray-600 p-0 cursor-pointer inline-flex items-center"
             [pTooltip]="copiadoEmail ? '¡Copiado!' : 'Copiar'"
             tooltipPosition="top">
             <i [class]="copiadoEmail ? 'pi pi-check text-emerald-600' : 'pi pi-copy text-xs'"></i>
@@ -125,7 +125,7 @@
       <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">
         Historial de Eventos
       </span>
-      <span class="text-xs text-gray-400 font-medium">
+      <span>
         @if (cargandoEventos) {
           <i class="pi pi-spin pi-spinner text-xs mr-1 text-gold-500"></i>Cargando...
         } @else {
@@ -138,7 +138,7 @@
     @if (cargandoEventos) {
       <div class="py-8 text-center text-gray-400 flex flex-col items-center justify-center gap-2 bg-gray-50/50 rounded-xl border border-dashed border-gray-200">
         <i class="pi pi-spin pi-spinner text-xl text-gold-500"></i>
-        <span class="text-xs">Consultando eventos asociados...</span>
+        <span>Consultando eventos asociados...</span>
       </div>
     } @else if (eventosAsociados.length > 0) {
       <!-- LISTA DE EVENTOS LIMPIA Y ELEGANTE -->
@@ -183,7 +183,7 @@
                     </span>
                   }
                   @if (evento.pinAnfitrion) {
-                    <span class="text-slate-500">
+                    <span>
                       PIN: {{ evento.pinAnfitrion }}
                     </span>
                   }
@@ -198,8 +198,8 @@
                   [text]="true"
                   severity="secondary"
                   (click)="abrirInvitacion(evento)">
-  <i pButtonIcon class="pi pi-external-link"></i>
-  <span pButtonLabel>Ver Invitación</span>
+  <i class="pi pi-external-link"></i>
+  <span>Ver Invitación</span>
 </button>
               </div>
             }
@@ -222,8 +222,8 @@
       [text]="true"
       severity="secondary"
       (click)="cerrar()">
-  <i pButtonIcon class="pi pi-times"></i>
-  <span pButtonLabel>Cerrar</span>
+  <i class="pi pi-times"></i>
+  <span>Cerrar</span>
 </button>
 
   </div>

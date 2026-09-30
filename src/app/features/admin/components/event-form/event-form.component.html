@@ -16,7 +16,7 @@
           <div formGroupName="modulos"
                class="bg-slate-50 border border-slate-200 border-l-4 border-l-[#cca633] rounded-xl p-5 flex flex-col gap-4">
             <div>
-              <span class="text-slate-900 font-bold text-sm">Servicios Activos para este Evento</span>
+              <span>Servicios Activos para este Evento</span>
               <p class="m-0 text-slate-500 text-xs mt-0.5">Define qué módulos tendrá habilitados el cliente según el paquete contratado.</p>
             </div>
 
@@ -25,8 +25,8 @@
               <div class="flex items-center gap-3">
                 <p-toggleswitch formControlName="tieneInvitacion" inputId="switchInvitacion"></p-toggleswitch>
                 <label for="switchInvitacion" class="cursor-pointer flex flex-col">
-                  <span class="font-semibold text-slate-800 text-sm">Invitación Web</span>
-                  <span class="text-xs text-slate-500">Página pública (/e/:slug)</span>
+                  <span>Invitación Web</span>
+                  <span>Página pública (/e/:slug)</span>
                 </label>
               </div>
 
@@ -34,8 +34,8 @@
               <div class="flex items-center gap-3">
                 <p-toggleswitch formControlName="tieneAlbum" inputId="switchAlbum"></p-toggleswitch>
                 <label for="switchAlbum" class="cursor-pointer flex flex-col">
-                  <span class="font-semibold text-slate-800 text-sm">Álbum Digital en Mesas</span>
-                  <span class="text-xs text-slate-500">Subida de fotos por QR (/album)</span>
+                  <span>Álbum Digital en Mesas</span>
+                  <span>Subida de fotos por QR (/album)</span>
                 </label>
               </div>
 
@@ -44,7 +44,7 @@
                 <p-toggleswitch formControlName="tienePlannerSuite" inputId="switchPlannerSuite"></p-toggleswitch>
                 <label for="switchPlannerSuite" class="cursor-pointer flex flex-col">
                   <span class="font-semibold text-purple-900 text-sm">Suite de Wedding Planner</span>
-                  <span class="text-xs text-slate-500">Minutario, Presupuesto, Proveedores y Checklist</span>
+                  <span>Minutario, Presupuesto, Proveedores y Checklist</span>
                 </label>
               </div>
 
@@ -53,13 +53,13 @@
                 <p-toggleswitch formControlName="permiteMarcaBlanca" inputId="switchMarcaBlanca"></p-toggleswitch>
                 <label for="switchMarcaBlanca" class="cursor-pointer flex flex-col">
                   <span class="font-semibold text-amber-700 text-sm">Marca Blanca de Agencia</span>
-                  <span class="text-xs text-slate-500">Branding de agencia y exportación Dossier PDF</span>
+                  <span>Branding de agencia y exportación Dossier PDF</span>
                 </label>
               </div>
 
             <!-- 5. Selector: Tipo de Control de Asistentes -->
             <div class="flex flex-col gap-1">
-              <span class="font-semibold text-slate-800 text-xs">Control de Invitados:</span>
+              <span>Control de Invitados:</span>
               <p-selectbutton
                 [options]="opcionesControlInvitados"
                 formControlName="tipoControlInvitados"
@@ -95,7 +95,7 @@
               pTooltip="Generar PIN aleatorio"
               tooltipPosition="top"
               (click)="generarPinAleatorio()">
-  <i pButtonIcon class="pi pi-refresh"></i>
+  <i class="pi pi-refresh"></i>
 </button>
           </div>
 
@@ -182,15 +182,15 @@
                 <ng-template pTemplate="selectedItem" let-selected>
                   <div class="flex items-center gap-2" *ngIf="selected">
                     <i class="pi pi-user text-[#cca633]"></i>
-                    <span class="font-semibold text-slate-800">{{ selected.nombreCompleto }}</span>
-                    <span class="text-slate-500 text-xs" *ngIf="selected.telefono">({{ selected.telefono }})</span>
+                    <span>{{ selected.nombreCompleto }}</span>
+                    <span *ngIf="selected.telefono">({{ selected.telefono }})</span>
                   </div>
                 </ng-template>
 
                 <ng-template pTemplate="item" let-cliente>
                   <div class="flex flex-col gap-1 py-1">
                     <div class="flex items-center justify-between">
-                      <span class="font-semibold text-slate-900">{{ cliente.nombreCompleto }}</span>
+                      <span>{{ cliente.nombreCompleto }}</span>
                       <span class="badge-eventos" *ngIf="cliente.totalEventos">
                         {{ cliente.totalEventos }} {{ cliente.totalEventos === 1 ? 'evento' : 'eventos' }}
                       </span>
@@ -256,7 +256,7 @@
 
           <!-- NOTAS INTERNAS (12 columnas) -->
           <div class="col-span-12 flex flex-col gap-1.5">
-            <label for="contactoNotas" class="text-xs font-semibold text-slate-700">
+            <label for="contactoNotas">
               Notas internas de atención al cliente (horario preferido para llamadas, requerimientos especiales)
             </label>
             <textarea
@@ -310,23 +310,23 @@
 
             <!-- FOTO CEREMONIA -->
             <div class="col-span-12 flex flex-col items-flex-start gap-2">
-              <label class="text-slate-500 text-xs font-medium">Foto de la Fachada</label>
+              <label>Foto de la Fachada</label>
 
               <!-- 1. Foto en nube -->
               <div *ngIf="existingFotoCeremoniaUrl && !fotoCeremoniaFile"
                    class="flex items-center justify-between p-2.5 border border-slate-300 rounded-lg w-full max-w-md bg-slate-100">
                 <div class="flex items-center gap-3">
                   <img [src]="existingFotoCeremoniaUrl" width="40" height="40" class="rounded-md object-cover" />
-                  <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
+                  <span>Foto actual en la nube</span>
                 </div>
                 <div class="flex gap-1">
                   <button pButton type="button" [text]="true" [rounded]="true" severity="info"
                             (click)="previewExistingUrl(existingFotoCeremoniaUrl)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
                   <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
                             (click)="removeExistingFoto('ceremonia')">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
                 </div>
               </div>
@@ -341,11 +341,11 @@
                 <div class="flex gap-1">
                   <button pButton type="button" [text]="true" [rounded]="true" severity="info"
                             (click)="previewImage(fotoCeremoniaFile)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
                   <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
                             (click)="removeEstructuralFile('ceremonia')">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
                 </div>
               </div>
@@ -380,23 +380,23 @@
 
             <!-- FOTO RECEPCIÓN -->
             <div class="col-span-12 flex flex-col items-flex-start gap-2">
-              <label class="text-slate-500 text-xs font-medium">Foto de la Recepción</label>
+              <label>Foto de la Recepción</label>
 
               <!-- 1. Foto en nube -->
               <div *ngIf="existingFotoRecepcionUrl && !fotoRecepcionFile"
                    class="flex items-center justify-between p-2.5 border border-slate-300 rounded-lg w-full max-w-md bg-slate-100">
                 <div class="flex items-center gap-3">
                   <img [src]="existingFotoRecepcionUrl" width="40" height="40" class="rounded-md object-cover" />
-                  <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
+                  <span>Foto actual en la nube</span>
                 </div>
                 <div class="flex gap-1">
                   <button pButton type="button" [text]="true" [rounded]="true" severity="info"
                             (click)="previewExistingUrl(existingFotoRecepcionUrl)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
                   <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
                             (click)="removeExistingFoto('recepcion')">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
                 </div>
               </div>
@@ -411,11 +411,11 @@
                 <div class="flex gap-1">
                   <button pButton type="button" [text]="true" [rounded]="true" severity="info"
                             (click)="previewImage(fotoRecepcionFile)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
                   <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
                             (click)="removeEstructuralFile('recepcion')">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
                 </div>
               </div>
@@ -456,13 +456,13 @@
                 <i class="pi pi-volume-up text-[#cca633] text-lg"></i>
               </div>
               <div class="flex flex-col">
-                <span class="text-slate-700 text-xs font-semibold">Pista musical activa</span>
+                <span>Pista musical activa</span>
                 <span class="text-slate-500 text-[11px]">Guardada en Firebase Storage</span>
               </div>
             </div>
             <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
                       (click)="removeExistingMusica()" pTooltip="Eliminar música">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
           </div>
 
@@ -480,7 +480,7 @@
             </div>
             <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
                       (click)="removeMusicaFile()">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
           </div>
 
@@ -499,16 +499,16 @@
                class="flex items-center justify-between p-2.5 border border-slate-300 rounded-lg w-full max-w-md bg-slate-100">
             <div class="flex items-center gap-3">
               <img [src]="existingFotoPrincipalUrl" width="40" height="40" class="rounded-md object-cover" />
-              <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
+              <span>Foto actual en la nube</span>
             </div>
             <div class="flex gap-1">
               <button pButton type="button" [text]="true" [rounded]="true" severity="info"
                         (click)="previewExistingUrl(existingFotoPrincipalUrl)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
               <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
                         (click)="removeExistingFoto('principal')">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
             </div>
           </div>
@@ -523,11 +523,11 @@
             <div class="flex gap-1">
               <button pButton type="button" [text]="true" [rounded]="true" severity="info"
                         (click)="previewImage(fotoPrincipalFile)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
               <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
                         (click)="removeEstructuralFile('principal')">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
             </div>
           </div>
@@ -539,18 +539,18 @@
 
         <!-- GALERÍA LIBRE -->
         <div class="flex flex-col gap-2 mt-2">
-          <label class="text-slate-900 font-bold text-sm">Galería Libre (Varias fotos)</label>
+          <label>Galería Libre (Varias fotos)</label>
           <p class="m-0 text-slate-500 text-xs">Arrastra aquí todas las fotos de la sesión.</p>
 
           <!-- FOTOS EN NUBE -->
           <div *ngIf="existingGaleriaUrls.length > 0" class="flex flex-col gap-2 mb-2">
-            <span class="text-xs font-semibold text-slate-600">Fotos guardadas ({{ existingGaleriaUrls.length }}):</span>
+            <span>Fotos guardadas ({{ existingGaleriaUrls.length }}):</span>
             <div class="flex flex-wrap gap-3">
               <div *ngFor="let url of existingGaleriaUrls"
                    class="relative w-20 h-20 rounded-lg overflow-hidden border border-slate-300 shadow-sm">
                 <img [src]="url" class="w-full h-full object-cover" />
                 <button type="button" (click)="removeExistingGaleriaFoto(url)"
-                        class="absolute top-1 right-1 bg-red-500/85 text-white border-none rounded-full w-5 h-5 flex items-center justify-center cursor-pointer hover:bg-red-600">
+                        class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center cursor-pointer">
                   <i class="pi pi-times text-[10px]"></i>
                 </button>
               </div>
@@ -581,11 +581,11 @@
                 <div class="flex gap-2">
                   <button pButton type="button" [rounded]="true" [text]="true" severity="info"
                             (click)="previewImage(file)">
-  <i pButtonIcon class="pi pi-eye"></i>
+  <i class="pi pi-eye"></i>
 </button>
                   <button pButton type="button" [rounded]="true" [text]="true" severity="danger"
                             (click)="removeGaleriaFoto($event, file, galeriaUploader)">
-  <i pButtonIcon class="pi pi-trash"></i>
+  <i class="pi pi-trash"></i>
 </button>
                 </div>
               </div>
@@ -603,10 +603,10 @@
   <!-- BOTONES DE ACCIÓN FIJOS AL FINAL -->
   <div class="sticky bottom-[-1.5rem] -mx-6 -mb-6 p-6 bg-white z-[100] flex justify-end gap-3 border-t border-slate-200">
     <button pButton type="button" severity="secondary" [text]="true" (click)="ref.close()">
-  <span pButtonLabel>Cancelar</span>
+  <span>Cancelar</span>
 </button>
     <button pButton type="submit" (click)="saveEvent()" [loading]="isSaving">
-  <span pButtonLabel>Guardar Evento</span>
+  <span>Guardar Evento</span>
 </button>
   </div>
 

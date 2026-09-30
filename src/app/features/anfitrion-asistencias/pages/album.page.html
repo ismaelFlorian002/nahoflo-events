@@ -17,8 +17,8 @@
       <button pButton size="small"
         (click)="vm.abrirModalQrMesas()"
       >
-  <i pButtonIcon class="pi pi-qrcode"></i>
-  <span pButtonLabel>QR para Mesas</span>
+  <i class="pi pi-qrcode"></i>
+  <span>QR para Mesas</span>
 </button>
 
       @if (vm.recuerdos().length > 0) {
@@ -30,8 +30,8 @@
           [disabled]="vm.descargandoTodo()"
           (click)="vm.descargarTodasLasFotos()"
         >
-  <i pButtonIcon [class]="vm.descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"></i>
-  <span pButtonLabel>{{ 
+  <i [class]="vm.descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"></i>
+  <span>{{ 
             vm.descargandoTodo()
               ? vm.progresoDescarga()
               : 'Descargar Todo (' + vm.contarFotosTotales() + ')'
@@ -44,8 +44,8 @@
         severity="secondary"
         (click)="vm.abrirAlbumEnVivo()"
       >
-  <i pButtonIcon class="pi pi-external-link"></i>
-  <span pButtonLabel>Ver Muro en Vivo</span>
+  <i class="pi pi-external-link"></i>
+  <span>Ver Muro en Vivo</span>
 </button>
     </div>
   </div>
@@ -116,8 +116,8 @@
                 severity="secondary"
                 (click)="vm.descargarRecuerdo(recuerdo, $event)"
               >
-  <i pButtonIcon class="pi pi-download"></i>
-  <span pButtonLabel>Descargar</span>
+  <i class="pi pi-download"></i>
+  <span>Descargar</span>
 </button>
 
               <button pButton
@@ -127,9 +127,9 @@
                 [disabled]="vm.eliminandoId() === recuerdo.id"
                 (click)="vm.eliminarRecuerdo(recuerdo)"
               >
-  <i pButtonIcon [class]="vm.eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"></i>
+  <i [class]="vm.eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"></i>
 
-  <span pButtonLabel>Eliminar</span>
+  <span>Eliminar</span>
  </button>
             </div>
           </div>

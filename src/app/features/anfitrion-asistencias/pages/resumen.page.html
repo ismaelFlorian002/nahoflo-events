@@ -137,12 +137,12 @@
                 <span class="flex items-center gap-1.5 font-medium text-gray-700">
                   <i class="pi pi-file-pdf text-gold-600"></i> Dossier Técnico Oficial
                 </span>
-                <span class="text-gray-300">•</span>
+                <span>•</span>
                 <span class="flex items-center gap-1.5 font-medium text-gray-700">
                   <i class="pi pi-check-circle text-emerald-600"></i> Reportes Sin Marca Plataforma
                 </span>
                 @if (ev.agenciaTelefono) {
-                  <span class="text-gray-300">•</span>
+                  <span>•</span>
                   <span class="flex items-center gap-1.5 font-medium text-emerald-700">
                     <i class="pi pi-whatsapp text-emerald-500"></i> {{ ev.agenciaTelefono }}
                   </span>
@@ -170,21 +170,21 @@
             <button pButton
              
               severity="warn"
-              class="p-button-sm font-semibold !rounded-xl !bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white shadow-sm"
+              class="hover:!from-gold-600 hover:!to-gold-700"
               [disabled]="vm.descargandoDossier()"
               (click)="vm.descargarDossierPdf()"
             >
-  <i pButtonIcon [class]="vm.descargandoDossier() ? 'pi pi-spin pi-spinner' : 'pi pi-file-pdf'"></i>
-  <span pButtonLabel>{{ vm.descargandoDossier() ? 'Generando Dossier...' : 'Descargar Dossier PDF' }}</span>
+  <i [class]="vm.descargandoDossier() ? 'pi pi-spin pi-spinner' : 'pi pi-file-pdf'"></i>
+  <span>{{ vm.descargandoDossier() ? 'Generando Dossier...' : 'Descargar Dossier PDF' }}</span>
  </button>
 
             <button pButton severity="secondary"
               [outlined]="true"
-              class="p-button-sm font-semibold text-gray-700 hover:bg-gray-50 !rounded-xl border-gray-200"
+             
               (click)="vm.abrirModalBrandingAgencia()"
             >
-  <i pButtonIcon class="pi pi-cog"></i>
-  <span pButtonLabel>Configurar Agencia</span>
+  <i class="pi pi-cog"></i>
+  <span>Configurar Agencia</span>
 </button>
           </div>
         </div>
@@ -241,19 +241,19 @@
               (click)="vm.abrirInvitacion()"
               aria-label="Ver invitación en pestaña nueva"
             >
-  <i pButtonIcon class="pi pi-external-link"></i>
-  <span pButtonLabel>Ver Invitación</span>
+  <i class="pi pi-external-link"></i>
+  <span>Ver Invitación</span>
 </button>
 
             <button pButton size="small"
               text="true"
               severity="secondary"
-              class="!rounded-xl font-semibold"
+             
               (click)="vm.abrirModalCompartir()"
               aria-label="Guía para compartir invitaciones"
             >
-  <i pButtonIcon class="pi pi-share-alt"></i>
-  <span pButtonLabel>Guía Compartir</span>
+  <i class="pi pi-share-alt"></i>
+  <span>Guía Compartir</span>
 </button>
           </div>
         </div>
@@ -284,12 +284,12 @@
               size="small"
               [severity]="vm.copiadoGeneral() ? 'success' : 'secondary'"
               [outlined]="!vm.copiadoGeneral()"
-              class="!rounded-xl font-semibold"
+             
               (click)="vm.copiarEnlaceGeneral()"
               aria-label="Copiar enlace de invitación"
             >
-  <i pButtonIcon [class]="vm.copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"></i>
-  <span pButtonLabel>{{ vm.copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace' }}</span>
+  <i [class]="vm.copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span>{{ vm.copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace' }}</span>
  </button>
 
             @if (vm.whatsappShareInvitacionUrl()) {
@@ -388,7 +388,7 @@
                   <i class="pi pi-external-link text-[9px]"></i>
                 </a>
               } @else {
-                <span class="text-xs text-gray-400">Sin enlace a mapa</span>
+                <span>Sin enlace a mapa</span>
               }
             </div>
           </div>
@@ -428,7 +428,7 @@
                   <i class="pi pi-external-link text-[9px]"></i>
                 </a>
               } @else {
-                <span class="text-xs text-gray-400">Sin enlace a mapa</span>
+                <span>Sin enlace a mapa</span>
               }
             </div>
           </div>
@@ -495,8 +495,8 @@
                 severity="primary"
                 (click)="vm.abrirModalInvitado()"
               >
-  <i pButtonIcon class="pi pi-user-plus"></i>
-  <span pButtonLabel>Registrar Invitado</span>
+  <i class="pi pi-user-plus"></i>
+  <span>Registrar Invitado</span>
 </button>
 
               <button pButton size="small"
@@ -504,8 +504,8 @@
                 severity="secondary"
                 (click)="vm.cambiarPestana('invitados')"
               >
-  <i pButtonIcon class="pi pi-users"></i>
-  <span pButtonLabel>Ver Lista de Invitados</span>
+  <i class="pi pi-users"></i>
+  <span>Ver Lista de Invitados</span>
 </button>
             </div>
           </div>
@@ -597,7 +597,7 @@
                   <span
                     class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"
                   ></span>
-                  <span class="text-base font-bold text-gray-900">Padrón Activo</span>
+                  <span>Padrón Activo</span>
                 </div>
                 <p class="text-xs text-purple-700 font-medium mt-1">Listo para acceso en puerta</p>
               </div>
@@ -661,8 +661,8 @@
                 severity="primary"
                 (click)="vm.abrirModalInvitado()"
               >
-  <i pButtonIcon class="pi pi-user-plus"></i>
-  <span pButtonLabel>Registrar Invitado</span>
+  <i class="pi pi-user-plus"></i>
+  <span>Registrar Invitado</span>
 </button>
 
               <button pButton size="small"
@@ -670,8 +670,8 @@
                 severity="secondary"
                 (click)="vm.cambiarPestana('invitados')"
               >
-  <i pButtonIcon class="pi pi-users"></i>
-  <span pButtonLabel>Ver Lista de Invitados</span>
+  <i class="pi pi-users"></i>
+  <span>Ver Lista de Invitados</span>
 </button>
             </div>
           </div>
@@ -783,7 +783,7 @@
                 </p>
               </div>
               <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold text-gray-500">Efectividad global:</span>
+                <span>Efectividad global:</span>
                 <span
                   class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"
                 >
@@ -906,8 +906,8 @@
             severity="primary"
             (click)="vm.cambiarPestana('recepcion')"
           >
-  <i pButtonIcon [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"></i>
-  <span pButtonLabel>{{ 
+  <i [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"></i>
+  <span>{{ 
               ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción'
              }}</span>
  </button>
@@ -992,7 +992,7 @@
                 ></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span class="font-semibold text-gray-800">Aforo en Tiempo Real</span>
+              <span>Aforo en Tiempo Real</span>
             </span>
             <span
               >{{ vm.totalIngresados() }} de {{ vm.totalPases() }} pases validados ({{
@@ -1035,16 +1035,16 @@
               severity="secondary"
               (click)="vm.cambiarPestana('minutario')"
             >
-  <i pButtonIcon class="pi pi-clock"></i>
-  <span pButtonLabel>Cronograma</span>
+  <i class="pi pi-clock"></i>
+  <span>Cronograma</span>
 </button>
             <button pButton size="small"
               [outlined]="true"
               severity="secondary"
               (click)="vm.cambiarPestana('presupuesto')"
             >
-  <i pButtonIcon class="pi pi-dollar"></i>
-  <span pButtonLabel>Presupuesto</span>
+  <i class="pi pi-dollar"></i>
+  <span>Presupuesto</span>
 </button>
           </div>
         </div>
@@ -1060,7 +1060,7 @@
             class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
           >
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-500">Cronograma del Día</span>
+              <span>Cronograma del Día</span>
               <div
                 class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center"
               >
@@ -1072,7 +1072,7 @@
                 <span class="text-3xl font-bold text-gray-900 tracking-tight">{{
                   vm.minutarioTotal()
                 }}</span>
-                <span class="text-xs text-gray-500 font-medium">momentos</span>
+                <span>momentos</span>
               </div>
               @if (vm.minutarioCompletados() > 0) {
                 <p class="text-xs text-amber-600 font-medium mt-1 flex items-center gap-1 m-0">
@@ -1101,7 +1101,7 @@
             class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
           >
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-500">Presupuesto Real</span>
+              <span>Presupuesto Real</span>
               <div
                 class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"
               >
@@ -1138,7 +1138,7 @@
             class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
           >
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-500">Proveedores Clave</span>
+              <span>Proveedores Clave</span>
               <div
                 class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"
               >
@@ -1150,7 +1150,7 @@
                 <span class="text-3xl font-bold text-gray-900 tracking-tight">{{
                   vm.proveedoresTotal()
                 }}</span>
-                <span class="text-xs text-gray-500 font-medium">contratados</span>
+                <span>contratados</span>
               </div>
               <p class="text-xs text-blue-600 font-medium mt-1 flex items-center gap-1 m-0">
                 <i class="pi pi-tag text-[10px]"></i> {{ vm.proveedoresCategoriasCount() }} áreas
@@ -1176,7 +1176,7 @@
             class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
           >
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-500">Checklist de Tareas</span>
+              <span>Checklist de Tareas</span>
               <div
                 class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center"
               >
@@ -1188,7 +1188,7 @@
                 <span class="text-3xl font-bold text-gray-900 tracking-tight"
                   >{{ vm.checklistPorcentajeAvance() }}%</span
                 >
-                <span class="text-xs text-gray-500 font-medium">avance</span>
+                <span>avance</span>
               </div>
               <p class="text-xs text-purple-600 font-medium mt-1 flex items-center gap-1 m-0">
                 <i class="pi pi-list-check text-[10px]"></i> {{ vm.checklistCompletadas() }} de
@@ -1264,11 +1264,11 @@
               <button pButton size="small"
                 [outlined]="true"
                 severity="secondary"
-                class="text-xs font-semibold"
+               
                 (click)="vm.cambiarPestana('presupuesto')"
               >
-  <i pButtonIcon class="pi pi-dollar"></i>
-  <span pButtonLabel>Gestionar Presupuesto</span>
+  <i class="pi pi-dollar"></i>
+  <span>Gestionar Presupuesto</span>
 </button>
             </div>
           </div>
@@ -1325,11 +1325,11 @@
               <button pButton size="small"
                 [outlined]="true"
                 severity="secondary"
-                class="text-xs font-semibold"
+               
                 (click)="vm.cambiarPestana('checklist')"
               >
-  <i pButtonIcon class="pi pi-check-square"></i>
-  <span pButtonLabel>Abrir Checklist</span>
+  <i class="pi pi-check-square"></i>
+  <span>Abrir Checklist</span>
 </button>
             </div>
           </div>
@@ -1359,31 +1359,31 @@
           <div class="flex flex-wrap items-center gap-2">
             <button pButton size="small"
               severity="warn"
-              class="!bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white font-semibold !rounded-xl shadow-xs"
+              class="hover:!from-gold-600 hover:!to-gold-700"
               (click)="vm.abrirModalQrMesas()"
             >
-  <i pButtonIcon class="pi pi-qrcode"></i>
-  <span pButtonLabel>QR para Mesas</span>
+  <i class="pi pi-qrcode"></i>
+  <span>QR para Mesas</span>
 </button>
 
             <button pButton size="small"
               [outlined]="true"
               severity="secondary"
-              class="!rounded-xl font-semibold"
+             
               (click)="vm.abrirAlbumEnVivo()"
             >
-  <i pButtonIcon class="pi pi-external-link"></i>
-  <span pButtonLabel>Ver Muro en Vivo</span>
+  <i class="pi pi-external-link"></i>
+  <span>Ver Muro en Vivo</span>
 </button>
 
             <button pButton size="small"
               [outlined]="true"
               severity="secondary"
-              class="!rounded-xl font-semibold"
+             
               (click)="vm.cambiarPestana('album')"
             >
-  <i pButtonIcon class="pi pi-images"></i>
-  <span pButtonLabel>Moderar Fotos</span>
+  <i class="pi pi-images"></i>
+  <span>Moderar Fotos</span>
 </button>
           </div>
         </div>
@@ -1399,7 +1399,7 @@
             class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
           >
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-500">Fotos Compartidas</span>
+              <span>Fotos Compartidas</span>
               <div
                 class="w-10 h-10 rounded-xl bg-pastel-pink-50 text-pastel-pink-500 flex items-center justify-center"
               >
@@ -1411,7 +1411,7 @@
                 <span class="text-3xl font-bold text-gray-900 tracking-tight">{{
                   vm.contarFotosTotales()
                 }}</span>
-                <span class="text-xs text-gray-500 font-medium">fotos capturadas</span>
+                <span>fotos capturadas</span>
               </div>
               @if (vm.contarFotosTotales() > 0) {
                 <p
@@ -1442,7 +1442,7 @@
             class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md hover:border-gray-200 transition-all cursor-pointer group"
           >
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-500">Publicaciones</span>
+              <span>Publicaciones</span>
               <div
                 class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"
               >
@@ -1454,7 +1454,7 @@
                 <span class="text-3xl font-bold text-gray-900 tracking-tight">{{
                   vm.recuerdos().length
                 }}</span>
-                <span class="text-xs text-gray-500 font-medium">historias</span>
+                <span>historias</span>
               </div>
               <p class="text-xs text-blue-600 font-medium mt-1 flex items-center gap-1 m-0">
                 <i class="pi pi-heart text-[10px]"></i> Con mensajes y dedicatorias
@@ -1475,7 +1475,7 @@
             class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between"
           >
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-500">Capacidad Cloud</span>
+              <span>Capacidad Cloud</span>
               <div
                 class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"
               >
@@ -1501,7 +1501,7 @@
             class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-6 flex flex-col justify-between"
           >
             <div class="flex items-center justify-between">
-              <span class="text-sm font-medium text-gray-500">Paquete de Fotos</span>
+              <span>Paquete de Fotos</span>
               <div
                 class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center"
               >
@@ -1520,7 +1520,7 @@
                   type="button"
                   (click)="vm.descargarTodasLasFotos()"
                   [disabled]="vm.descargandoTodo()"
-                  class="w-full text-left text-xs font-semibold text-gold-600 hover:text-gold-700 flex items-center justify-between cursor-pointer border-0 bg-transparent p-0 disabled:opacity-60"
+                  class="w-full text-left hover:text-gold-700 flex items-center justify-between cursor-pointer p-0 disabled:opacity-60"
                 >
                   <span>{{
                     vm.descargandoTodo()
@@ -1532,7 +1532,7 @@
                   ></i>
                 </button>
               } @else {
-                <span class="text-xs text-gray-400">Disponible con fotos subidas</span>
+                <span>Disponible con fotos subidas</span>
               }
             </div>
           </div>

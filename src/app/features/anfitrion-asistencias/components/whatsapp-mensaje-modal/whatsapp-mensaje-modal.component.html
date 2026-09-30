@@ -20,7 +20,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <span class="block text-xs text-gray-400">Nombre Completo</span>
-        <span class="text-sm font-bold text-gray-900">{{ invitado.nombre }}</span>
+        <span>{{ invitado.nombre }}</span>
       </div>
 
       <div>
@@ -86,8 +86,8 @@
         severity="danger"
         (click)="ref.close()"
       >
-  <i pButtonIcon class="pi pi-times"></i>
-  <span pButtonLabel>Cerrar</span>
+  <i class="pi pi-times"></i>
+  <span>Cerrar</span>
 </button>
       <button pButton type="button"
        
@@ -96,10 +96,10 @@
         size="small"
         severity="secondary"
         (click)="copiarTexto()"
-        class="!rounded-xl font-semibold"
+       
       >
-  <i pButtonIcon class="pi pi-copy"></i>
-  <span pButtonLabel>Copiar Texto</span>
+  <i class="pi pi-copy"></i>
+  <span>Copiar Texto</span>
 </button>
 
       <button pButton type="button"
@@ -108,10 +108,10 @@
         size="small"
         severity="success"
         (click)="enviarWhatsApp()"
-        class="!rounded-xl font-bold shadow-sm"
+       
       >
-  <i pButtonIcon class="pi pi-whatsapp"></i>
-  <span pButtonLabel>Enviar</span>
+  <i class="pi pi-whatsapp"></i>
+  <span>Enviar</span>
 </button>
     </div>
   </div>

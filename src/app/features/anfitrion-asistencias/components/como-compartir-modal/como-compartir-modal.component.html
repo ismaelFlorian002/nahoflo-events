@@ -29,8 +29,8 @@
             text="true"
             severity="contrast"
             (click)="copiarEnlace()">
-  <i pButtonIcon [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
-  <span pButtonLabel>{{ copiado() ? '¡Copiado!' : 'Copiar Enlace' }}</span>
+  <i [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span>{{ copiado() ? '¡Copiado!' : 'Copiar Enlace' }}</span>
  </button>
 
           @if (puedeCompartirNativo()) {
@@ -39,7 +39,7 @@
               severity="secondary"
               (click)="compartirNativo()"
               title="Compartir mediante el menú de tu dispositivo">
-  <i pButtonIcon class="pi pi-share-alt"></i>
+  <i class="pi pi-share-alt"></i>
 </button>
           }
         </div>
@@ -76,8 +76,8 @@
     <button pButton size="small"
       severity="secondary"
       (click)="cerrar()">
-  <i pButtonIcon class="pi pi-check"></i>
-  <span pButtonLabel>Entendido, volver a la lista</span>
+  <i class="pi pi-check"></i>
+  <span>Entendido, volver a la lista</span>
 </button>
   </div>
 

@@ -126,8 +126,8 @@
           severity="secondary"
           (click)="copiarTextoProcesado()"
         >
-  <i pButtonIcon class="pi pi-copy"></i>
-  <span pButtonLabel>Copiar Texto de Vista Previa</span>
+  <i class="pi pi-copy"></i>
+  <span>Copiar Texto de Vista Previa</span>
 </button>
       </div>
 
@@ -163,10 +163,10 @@
                 [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
                 (click)="opFiltrosEstado.toggle($event)"
                 title="Filtrar por estado del invitado">
-  <span pButtonLabel>{{ 'Estado: ' + labelFiltroEstado() }}</span>
-  <span pButtonBadge>{{ conteoFiltroEstado() }}</span>
+  <span>{{ 'Estado: ' + labelFiltroEstado() }}</span>
+  <span>{{ conteoFiltroEstado() }}</span>
 
-  <i pButtonIcon class="pi pi-filter"></i>
+  <i class="pi pi-filter"></i>
  </button>
 
               <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
@@ -239,8 +239,8 @@
               (click)="limpiarTodosFiltros(dt)"
               pTooltip="Restablecer todos los filtros"
               tooltipPosition="top">
-  <i pButtonIcon class="pi pi-filter-slash"></i>
-  <span pButtonLabel>Limpiar filtros</span>
+  <i class="pi pi-filter-slash"></i>
+  <span>Limpiar filtros</span>
 </button>
           </div>
 
@@ -313,7 +313,7 @@
           <!-- Pases -->
           <td style="text-align: center;">
             <span
-              class="text-sm px-2 py-0.5 rounded-full  font-semibold bg-gold-50 text-gold-700 border border-gold-200">
+             >
               {{ inv.pasesConfirmados || 1 }} {{ (inv.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
             </span>
           </td>
@@ -326,7 +326,7 @@
                 {{ inv.mesa }}
               </span>
             } @else {
-              <span class=" text-sm text-gray-400">Sin mesa</span>
+              <span>Sin mesa</span>
             }
           </td>
 
@@ -342,7 +342,7 @@
                 tooltipPosition="top"
                 (click)="copiarTextoInvitado(inv)"
               >
-  <i pButtonIcon class="pi pi-copy"></i>
+  <i class="pi pi-copy"></i>
 </button>
 
               <!-- Botón Ver/Personalizar en Modal DialogService -->
@@ -354,20 +354,20 @@
                 tooltipPosition="top"
                 (click)="abrirModalMensajeInvitado(inv)"
               >
-  <i pButtonIcon class="pi pi-pencil"></i>
+  <i class="pi pi-pencil"></i>
 </button>
 
               <!-- Botón Enviar Directo -->
               <button pButton size="small"
                 text
                 severity="success"
-                class="font-semibold shadow-xs"
+               
                 pTooltip="Abrir WhatsApp con mensaje personalizado"
                 tooltipPosition="top"
                 (click)="lanzarWhatsApp(inv)"
               >
-  <i pButtonIcon class="pi pi-whatsapp"></i>
-  <span pButtonLabel>Enviar</span>
+  <i class="pi pi-whatsapp"></i>
+  <span>Enviar</span>
 </button>
             </div>
           </td>

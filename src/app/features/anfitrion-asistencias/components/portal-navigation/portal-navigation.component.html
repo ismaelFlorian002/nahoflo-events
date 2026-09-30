@@ -46,16 +46,15 @@
 
   <div class="portal-workspace">
     <header class="portal-topbar">
-      <button
-        pButton
+      <button pButton
         type="button"
-        icon="pi pi-bars"
-        class="mobile-toggle p-button-text p-button-secondary"
+       
+        class="mobile-toggle"
         aria-label="Abrir menú"
         aria-haspopup="dialog"
         [attr.aria-expanded]="drawerVisible"
         (click)="drawerVisible = true"
-      ></button>
+      ><i class="pi pi-angle-right crumb-sep"></i></button>
       <div class="min-w-0 flex-1"><ng-content select="[portalHeader]" /></div>
     </header>
     <div class="section-heading">

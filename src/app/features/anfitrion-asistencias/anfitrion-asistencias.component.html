@@ -65,8 +65,8 @@
                   [text]="!copiadoGeneral()"
                   (click)="copiarEnlaceGeneral()"
                   aria-label="Copiar enlace general del evento">
-  <i pButtonIcon [class]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"></i>
-  <span pButtonLabel>{{ copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace' }}</span>
+  <i [class]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span>{{ copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace' }}</span>
  </button>
 
                 <button pButton size="small"
@@ -75,8 +75,8 @@
                   [text]="true"
                   (click)="abrirInvitacion()"
                   aria-label="Abrir invitación en nueva pestaña">
-  <i pButtonIcon class="pi pi-external-link"></i>
-  <span pButtonLabel>Ver Invitación</span>
+  <i class="pi pi-external-link"></i>
+  <span>Ver Invitación</span>
 </button>
               }
 
@@ -85,8 +85,8 @@
                 severity="danger"
                 (click)="salir()"
                 aria-label="Cerrar sesión de anfitrión">
-  <i pButtonIcon class="pi pi-sign-out"></i>
-  <span pButtonLabel>Salir</span>
+  <i class="pi pi-sign-out"></i>
+  <span>Salir</span>
 </button>
             </div>
           </div>

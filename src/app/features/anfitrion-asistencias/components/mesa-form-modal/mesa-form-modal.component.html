@@ -27,7 +27,7 @@
         <button
           type="button"
           (click)="usarSugerencia(sug)"
-          class="px-3 py-1 rounded-xl text-xs font-semibold bg-white text-slate-700 hover:bg-purple-600 hover:text-white transition-all shadow-xs border border-purple-200 cursor-pointer active:scale-95">
+          class="hover:text-white cursor-pointer">
           {{ sug }}
         </button>
       }
@@ -88,7 +88,7 @@
       [text]="true"
       size="small"
       (click)="ref.close()">
-  <span pButtonLabel>Cancelar</span>
+  <span>Cancelar</span>
 </button>
 
     <button pButton type="submit"
@@ -96,8 +96,8 @@
      
       size="small"
       [disabled]="form.invalid">
-  <i pButtonIcon [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
-  <span pButtonLabel>{{ esEdicion ? 'Guardar Cambios' : 'Crear Mesa' }}</span>
+  <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+  <span>{{ esEdicion ? 'Guardar Cambios' : 'Crear Mesa' }}</span>
  </button>
   </div>
 </form>

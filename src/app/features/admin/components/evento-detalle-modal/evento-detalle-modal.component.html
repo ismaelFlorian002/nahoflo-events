@@ -68,7 +68,7 @@
           <button
             type="button"
             (click)="copiarPin()"
-            class="text-xs px-2.5 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white border-0 cursor-pointer transition-colors flex items-center gap-1 shrink-0"
+            class="cursor-pointer flex items-center gap-1 shrink-0"
             [pTooltip]="copiadoPin ? '¡Copiado!' : 'Copiar PIN'"
             tooltipPosition="top">
             <i [class]="copiadoPin ? 'pi pi-check text-emerald-400' : 'pi pi-copy'"></i>
@@ -100,16 +100,16 @@
         [severity]="copiadoEnlace ? 'success' : 'secondary'"
         [outlined]="!copiadoEnlace"
         (click)="copiarEnlace()">
-  <i pButtonIcon [class]="copiadoEnlace ? 'pi pi-check' : 'pi pi-copy'"></i>
-  <span pButtonLabel>{{ copiadoEnlace ? '¡Copiado!' : 'Copiar Enlace' }}</span>
+  <i [class]="copiadoEnlace ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span>{{ copiadoEnlace ? '¡Copiado!' : 'Copiar Enlace' }}</span>
  </button>
 
       <button pButton size="small"
         severity="secondary"
         [outlined]="true"
         (click)="abrirInvitacion()">
-  <i pButtonIcon class="pi pi-external-link"></i>
-  <span pButtonLabel>Abrir</span>
+  <i class="pi pi-external-link"></i>
+  <span>Abrir</span>
 </button>
     </div>
   </div>
@@ -136,7 +136,7 @@
           @if (formatearHora(evento.fecha); as hora) {
             <div>
               <span class="block text-xs text-gray-400">Hora Programada</span>
-              <span class="text-sm font-semibold text-gray-800">
+              <span>
                 <i class="pi pi-clock text-xs text-slate-400 mr-1"></i>{{ hora }}
               </span>
             </div>
@@ -155,7 +155,7 @@
           <div class="space-y-2.5">
             <div>
               <span class="block text-xs text-gray-400">Nombre</span>
-              <span class="text-sm font-semibold text-gray-900">{{ evento.contactoNombre }}</span>
+              <span>{{ evento.contactoNombre }}</span>
             </div>
 
             @if (evento.contactoTelefono) {
@@ -377,7 +377,7 @@
           <i class="pi pi-images text-gold-500 text-base"></i>
           <h4 class="text-sm font-bold text-gray-800 m-0">Galería de Imágenes</h4>
         </div>
-        <span class="text-xs text-gray-400 font-semibold">{{ evento.galeriaUrls.length }} fotos</span>
+        <span>{{ evento.galeriaUrls.length }} fotos</span>
       </div>
 
       <div class="flex flex-wrap items-center gap-2.5 pb-1">
@@ -396,8 +396,8 @@
       [text]="true"
       severity="secondary"
       (click)="cerrar()">
-  <i pButtonIcon class="pi pi-times"></i>
-  <span pButtonLabel>Cerrar</span>
+  <i class="pi pi-times"></i>
+  <span>Cerrar</span>
 </button>
   </div>
 </div>
