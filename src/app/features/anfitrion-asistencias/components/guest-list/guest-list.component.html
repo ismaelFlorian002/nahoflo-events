@@ -7,7 +7,7 @@
   responsiveLayout="scroll"
   styleClass="p-datatable-sm p-datatable-striped"
 >
-  <ng-template pTemplate="header">
+  <ng-template #header>
     <tr>
       <th>Nombre / Familia</th>
       <th>Respuesta</th>
@@ -21,7 +21,7 @@
     </tr>
   </ng-template>
 
-  <ng-template pTemplate="body">
+  <ng-template #body>
     @for (guest of guests(); track guest.id ?? guest.nombre) {
       <tr>
         <td>
@@ -86,7 +86,7 @@
                 icon="pi pi-qrcode"
                 [rounded]="true"
                 [text]="true"
-                severity="warning"
+                severity="warn"
                 (onClick)="showQrPass.emit(guest)"
                 title="Ver Pase QR VIP"
               />
@@ -112,7 +112,7 @@
             icon="pi pi-ticket"
             [rounded]="true"
             [text]="true"
-            severity="warning"
+            severity="warn"
             (onClick)="sendVipPass.emit(guest)"
             title="Enviar pase"
           />
@@ -166,7 +166,7 @@
     }
   </ng-template>
 
-  <ng-template pTemplate="emptymessage">
+  <ng-template #emptymessage>
     <tr>
       <td [attr.colspan]="showVipPassActions() ? 7 : 6" style="text-align: center;">
         @if (loading()) {

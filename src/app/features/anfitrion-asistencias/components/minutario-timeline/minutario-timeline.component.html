@@ -50,7 +50,7 @@
         </span>
         <span class="text-gold-600 font-bold">{{ completadosCount() }} de {{ totalItems() }} completados ({{ porcentajeCompletado() }}%)</span>
       </div>
-      <p-progressBar [value]="porcentajeCompletado()" [showValue]="false" styleClass="h-2 rounded-full"></p-progressBar>
+      <p-progressbar [value]="porcentajeCompletado()" [showValue]="false" styleClass="h-2 rounded-full"></p-progressbar>
     </div>
   }
 
@@ -149,7 +149,7 @@
             label="Cargar Plantilla Estándar"
             icon="pi pi-sparkles"
             size="small"
-            severity="warning"
+            severity="warn"
             (onClick)="cargarPlantillaEstandar()">
           </p-button>
           <p-button

@@ -75,7 +75,7 @@
         <span class="text-slate-600">Progreso de Liquidación del Evento</span>
         <span class="text-emerald-700 font-bold">${{ totalPagado() | number:'1.0-0' }} de ${{ totalReal() | number:'1.0-0' }} ({{ porcentajePagado() }}%)</span>
       </div>
-      <p-progressBar [value]="porcentajePagado()" [showValue]="false" styleClass="h-2 rounded-full"></p-progressBar>
+      <p-progressbar [value]="porcentajePagado()" [showValue]="false" styleClass="h-2 rounded-full"></p-progressbar>
     </div>
   }
 
@@ -96,7 +96,7 @@
           title="Filtrar por categoría de gasto">
         </p-button>
 
-        <p-overlayPanel #opFiltroCategoria styleClass="popover-filtros-invitados">
+        <p-popover #opFiltroCategoria styleClass="popover-filtros-invitados">
           <div class="menu-filtros-popover">
             <div class="popover-filtros-header">
               <i class="pi pi-filter"></i>
@@ -131,7 +131,7 @@
               }
             </div>
           </div>
-        </p-overlayPanel>
+        </p-popover>
       </div>
 
       <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
@@ -171,22 +171,21 @@
       [paginator]="true"
       [rows]="10"
       [rowsPerPageOptions]="[10, 20, 50]"
-      styleClass="p-datatable-sm p-datatable-gridlines"
-      [responsiveLayout]="'scroll'">
+      styleClass="p-datatable-sm p-datatable-gridlines">
 
-      <ng-template pTemplate="header">
+      <ng-template #header>
         <tr class="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider">
-          <th pSortableColumn="categoria" style="width: 18%">Categoría <p-sortIcon field="categoria"></p-sortIcon></th>
-          <th pSortableColumn="concepto">Concepto / Servicio <p-sortIcon field="concepto"></p-sortIcon></th>
-          <th pSortableColumn="costoEstimado" style="width: 12%" class="text-right">Meta ($) <p-sortIcon field="costoEstimado"></p-sortIcon></th>
-          <th pSortableColumn="costoReal" style="width: 12%" class="text-right">Real ($) <p-sortIcon field="costoReal"></p-sortIcon></th>
-          <th pSortableColumn="montoPagado" style="width: 12%" class="text-right">Pagado ($) <p-sortIcon field="montoPagado"></p-sortIcon></th>
-          <th pSortableColumn="estadoPago" style="width: 12%" class="text-center">Estatus <p-sortIcon field="estadoPago"></p-sortIcon></th>
+          <th pSortableColumn="categoria" style="width: 18%">Categoría <p-sort-icon field="categoria"></p-sort-icon></th>
+          <th pSortableColumn="concepto">Concepto / Servicio <p-sort-icon field="concepto"></p-sort-icon></th>
+          <th pSortableColumn="costoEstimado" style="width: 12%" class="text-right">Meta ($) <p-sort-icon field="costoEstimado"></p-sort-icon></th>
+          <th pSortableColumn="costoReal" style="width: 12%" class="text-right">Real ($) <p-sort-icon field="costoReal"></p-sort-icon></th>
+          <th pSortableColumn="montoPagado" style="width: 12%" class="text-right">Pagado ($) <p-sort-icon field="montoPagado"></p-sort-icon></th>
+          <th pSortableColumn="estadoPago" style="width: 12%" class="text-center">Estatus <p-sort-icon field="estadoPago"></p-sort-icon></th>
           <th style="width: 10%" class="text-center">Acciones</th>
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="body" let-item>
+      <ng-template #body let-item>
         <tr class="hover:bg-slate-50/80 transition-colors text-sm">
           <td>
             <span class="font-medium text-slate-700 bg-slate-100 text-xs px-2 py-1 rounded-md">
@@ -248,7 +247,7 @@
         </tr>
       </ng-template>
 
-      <ng-template pTemplate="emptymessage">
+      <ng-template #emptymessage>
         <tr>
           <td colspan="7" class="text-center py-8 text-slate-500">
             <i class="pi pi-wallet text-3xl text-slate-300 block mb-2"></i>

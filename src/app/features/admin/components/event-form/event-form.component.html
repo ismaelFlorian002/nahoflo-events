@@ -1,64 +1,71 @@
 <form [formGroup]="eventForm" (ngSubmit)="saveEvent()" class="flex flex-col h-full ">
-  <p-tabView styleClass="w-full">
+  <p-tabs [value]="'basico'" class="w-full">
+    <p-tablist>
+      <p-tab value="basico">1. Básico</p-tab>
+      <p-tab value="contacto">2. Contacto / Cliente</p-tab>
+      <p-tab value="ubicaciones" *ngIf="tieneInvitacionActiva">3. Ubicaciones</p-tab>
+      <p-tab value="galeria">4. Galería</p-tab>
+    </p-tablist>
 
-    <!-- PESTAÑA 1: DATOS BÁSICOS -->
-    <p-tabPanel header="1. Básico">
-      <div class="flex flex-col gap-6 pt-4 pb-16">
+    <p-tabpanels>
+      <!-- PESTAÑA 1: DATOS BÁSICOS -->
+      <p-tabpanel value="basico">
+        <div class="flex flex-col gap-6 pt-4 pb-16">
 
-        <!-- SECCIÓN: MÓDULOS Y SERVICIOS CONTRATADOS (NAHOFLO SUITE) -->
-        <div formGroupName="modulos"
-             class="bg-slate-50 border border-slate-200 border-l-4 border-l-[#cca633] rounded-xl p-5 flex flex-col gap-4">
-          <div>
-            <span class="text-slate-900 font-bold text-sm">Servicios Activos para este Evento</span>
-            <p class="m-0 text-slate-500 text-xs mt-0.5">Define qué módulos tendrá habilitados el cliente según el paquete contratado.</p>
-          </div>
-
-          <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6 sm:items-center justify-between">
-            <!-- 1. Interruptor: Invitación Web -->
-            <div class="flex items-center gap-3">
-              <p-inputSwitch formControlName="tieneInvitacion" inputId="switchInvitacion"></p-inputSwitch>
-              <label for="switchInvitacion" class="cursor-pointer flex flex-col">
-                <span class="font-semibold text-slate-800 text-sm">Invitación Web</span>
-                <span class="text-xs text-slate-500">Página pública (/e/:slug)</span>
-              </label>
+          <!-- SECCIÓN: MÓDULOS Y SERVICIOS CONTRATADOS (NAHOFLO SUITE) -->
+          <div formGroupName="modulos"
+               class="bg-slate-50 border border-slate-200 border-l-4 border-l-[#cca633] rounded-xl p-5 flex flex-col gap-4">
+            <div>
+              <span class="text-slate-900 font-bold text-sm">Servicios Activos para este Evento</span>
+              <p class="m-0 text-slate-500 text-xs mt-0.5">Define qué módulos tendrá habilitados el cliente según el paquete contratado.</p>
             </div>
 
-            <!-- 2. Interruptor: Álbum Digital en Mesas -->
-            <div class="flex items-center gap-3">
-              <p-inputSwitch formControlName="tieneAlbum" inputId="switchAlbum"></p-inputSwitch>
-              <label for="switchAlbum" class="cursor-pointer flex flex-col">
-                <span class="font-semibold text-slate-800 text-sm">Álbum Digital en Mesas</span>
-                <span class="text-xs text-slate-500">Subida de fotos por QR (/album)</span>
-              </label>
-            </div>
+            <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4 sm:gap-6 sm:items-center justify-between">
+              <!-- 1. Interruptor: Invitación Web -->
+              <div class="flex items-center gap-3">
+                <p-toggleswitch formControlName="tieneInvitacion" inputId="switchInvitacion"></p-toggleswitch>
+                <label for="switchInvitacion" class="cursor-pointer flex flex-col">
+                  <span class="font-semibold text-slate-800 text-sm">Invitación Web</span>
+                  <span class="text-xs text-slate-500">Página pública (/e/:slug)</span>
+                </label>
+              </div>
 
-            <!-- 3. Interruptor: Suite de Wedding Planner -->
-            <div class="flex items-center gap-3">
-              <p-inputSwitch formControlName="tienePlannerSuite" inputId="switchPlannerSuite"></p-inputSwitch>
-              <label for="switchPlannerSuite" class="cursor-pointer flex flex-col">
-                <span class="font-semibold text-purple-900 text-sm">Suite de Wedding Planner</span>
-                <span class="text-xs text-slate-500">Minutario, Presupuesto, Proveedores y Checklist</span>
-              </label>
-            </div>
+              <!-- 2. Interruptor: Álbum Digital en Mesas -->
+              <div class="flex items-center gap-3">
+                <p-toggleswitch formControlName="tieneAlbum" inputId="switchAlbum"></p-toggleswitch>
+                <label for="switchAlbum" class="cursor-pointer flex flex-col">
+                  <span class="font-semibold text-slate-800 text-sm">Álbum Digital en Mesas</span>
+                  <span class="text-xs text-slate-500">Subida de fotos por QR (/album)</span>
+                </label>
+              </div>
 
-            <!-- 4. Interruptor: Marca Blanca de Agencia -->
-            <div class="flex items-center gap-3">
-              <p-inputSwitch formControlName="permiteMarcaBlanca" inputId="switchMarcaBlanca"></p-inputSwitch>
-              <label for="switchMarcaBlanca" class="cursor-pointer flex flex-col">
-                <span class="font-semibold text-amber-700 text-sm">Marca Blanca de Agencia</span>
-                <span class="text-xs text-slate-500">Branding de agencia y exportación Dossier PDF</span>
-              </label>
-            </div>
+              <!-- 3. Interruptor: Suite de Wedding Planner -->
+              <div class="flex items-center gap-3">
+                <p-toggleswitch formControlName="tienePlannerSuite" inputId="switchPlannerSuite"></p-toggleswitch>
+                <label for="switchPlannerSuite" class="cursor-pointer flex flex-col">
+                  <span class="font-semibold text-purple-900 text-sm">Suite de Wedding Planner</span>
+                  <span class="text-xs text-slate-500">Minutario, Presupuesto, Proveedores y Checklist</span>
+                </label>
+              </div>
+
+              <!-- 4. Interruptor: Marca Blanca de Agencia -->
+              <div class="flex items-center gap-3">
+                <p-toggleswitch formControlName="permiteMarcaBlanca" inputId="switchMarcaBlanca"></p-toggleswitch>
+                <label for="switchMarcaBlanca" class="cursor-pointer flex flex-col">
+                  <span class="font-semibold text-amber-700 text-sm">Marca Blanca de Agencia</span>
+                  <span class="text-xs text-slate-500">Branding de agencia y exportación Dossier PDF</span>
+                </label>
+              </div>
 
             <!-- 5. Selector: Tipo de Control de Asistentes -->
             <div class="flex flex-col gap-1">
               <span class="font-semibold text-slate-800 text-xs">Control de Invitados:</span>
-              <p-selectButton
+              <p-selectbutton
                 [options]="opcionesControlInvitados"
                 formControlName="tipoControlInvitados"
                 optionLabel="label"
                 optionValue="value">
-              </p-selectButton>
+              </p-selectbutton>
             </div>
           </div>
         </div>
@@ -68,18 +75,18 @@
 
           <!-- 1. NOMBRE DEL EVENTO (8 columnas en desktop, 12 en móvil) -->
           <div class="col-span-12 sm:col-span-8">
-            <p-floatLabel class="w-full block">
+            <p-floatlabel variant="on" class="w-full block">
               <input id="nombreEvento" pInputText formControlName="nombreEvento" class="w-full" autocomplete="off" />
               <label for="nombreEvento">Nombre del Evento (Control interno)</label>
-            </p-floatLabel>
+            </p-floatlabel>
           </div>
 
           <!-- 2. PIN DE ANFITRIÓN + BOTÓN (4 columnas en desktop, 12 en móvil) -->
           <div class="col-span-12 sm:col-span-4 flex items-center gap-2">
-            <p-floatLabel class="w-full block flex-1">
+            <p-floatlabel variant="on" class="w-full block flex-1">
               <input id="pinAnfitrion" pInputText formControlName="pinAnfitrion" class="w-full" maxlength="6" autocomplete="off" />
               <label for="pinAnfitrion">PIN Anfitrión</label>
-            </p-floatLabel>
+            </p-floatlabel>
             <p-button
               type="button"
               icon="pi pi-refresh"
@@ -94,32 +101,32 @@
 
           <!-- 3. FRASE / PRE-TÍTULO (4 columnas en desktop) -->
           <div class="col-span-12 sm:col-span-4">
-            <p-floatLabel class="w-full block">
+            <p-floatlabel variant="on" class="w-full block">
               <input id="preTitulo" pInputText formControlName="preTitulo" class="w-full" autocomplete="off" />
               <label for="preTitulo">Frase (ej. Nuestra Boda, Mis XV Años)</label>
-            </p-floatLabel>
+            </p-floatlabel>
           </div>
 
           <!-- 4. NOMBRES / TÍTULO PÚBLICO (8 columnas en desktop) -->
           <div class="col-span-12 sm:col-span-8">
-            <p-floatLabel class="w-full block">
+            <p-floatlabel variant="on" class="w-full block">
               <input id="titulo" pInputText formControlName="titulo" class="w-full" autocomplete="off" />
               <label for="titulo">Nombres de Invitación (ej. Alejandra & Felipe)</label>
-            </p-floatLabel>
+            </p-floatlabel>
           </div>
 
           <!-- 5. URL PÚBLICA (6 columnas / media fila) -->
           <div class="col-span-12 sm:col-span-6">
-            <p-floatLabel class="w-full block">
+            <p-floatlabel variant="on" class="w-full block">
               <input id="enlace" pInputText formControlName="enlace" class="w-full" autocomplete="off" />
               <label for="enlace">URL Pública (ej. boda-ale-felipe)</label>
-            </p-floatLabel>
+            </p-floatlabel>
           </div>
 
           <!-- 6. FECHA Y HORA (6 columnas / media fila) -->
           <div class="col-span-12 sm:col-span-6">
-            <p-floatLabel class="w-full block">
-              <p-calendar
+            <p-floatlabel variant="on" class="w-full block">
+              <p-datepicker
                 id="fecha"
                 inputId="fecha"
                 formControlName="fecha"
@@ -131,18 +138,18 @@
                 appendTo="body"
                 styleClass="w-full"
                 inputStyleClass="w-full">
-              </p-calendar>
+              </p-datepicker>
               <label for="fecha">Fecha y Hora del Evento</label>
-            </p-floatLabel>
+            </p-floatlabel>
           </div>
 
         </div>
 
       </div>
-    </p-tabPanel>
+    </p-tabpanel>
 
     <!-- PESTAÑA 2: CONTACTO / CLIENTE -->
-    <p-tabPanel header="2. Contacto / Cliente">
+    <p-tabpanel value="contacto">
       <div class="flex flex-col gap-6 pt-4 pb-16">
 
         <!-- TARJETA: BUSCADOR EN EL CATÁLOGO DE CLIENTES -->
@@ -159,7 +166,7 @@
 
           <div class="dropdown-action-row">
             <div class="dropdown-container">
-              <p-dropdown
+              <p-select
                 [options]="clientes"
                 optionLabel="nombreCompleto"
                 optionValue="id"
@@ -195,7 +202,7 @@
                   </div>
                 </ng-template>
 
-              </p-dropdown>
+              </p-select>
             </div>
 
             <button
@@ -225,26 +232,26 @@
 
           <!-- NOMBRE COMPLETO (12 columnas) -->
           <div class="col-span-12">
-            <p-floatLabel class="w-full block">
+            <p-floatlabel variant="on" class="w-full block">
               <input id="contactoNombre" pInputText formControlName="contactoNombre" class="w-full" autocomplete="off" />
               <label for="contactoNombre">Nombre Completo del Cliente / Anfitrión Responsable</label>
-            </p-floatLabel>
+            </p-floatlabel>
           </div>
 
           <!-- TELÉFONO (6 columnas) -->
           <div class="col-span-12 sm:col-span-6">
-            <p-floatLabel class="w-full block">
+            <p-floatlabel variant="on" class="w-full block">
               <input id="contactoTelefono" pInputText formControlName="contactoTelefono" class="w-full" autocomplete="off" />
               <label for="contactoTelefono">Teléfono / WhatsApp (10 dígitos)</label>
-            </p-floatLabel>
+            </p-floatlabel>
           </div>
 
           <!-- CORREO (6 columnas) -->
           <div class="col-span-12 sm:col-span-6">
-            <p-floatLabel class="w-full block">
+            <p-floatlabel variant="on" class="w-full block">
               <input id="contactoEmail" pInputText formControlName="contactoEmail" type="email" class="w-full" autocomplete="off" />
               <label for="contactoEmail">Correo Electrónico (Opcional)</label>
-            </p-floatLabel>
+            </p-floatlabel>
           </div>
 
           <!-- NOTAS INTERNAS (12 columnas) -->
@@ -254,7 +261,7 @@
             </label>
             <textarea
               id="contactoNotas"
-              pInputTextarea
+              pTextarea
               formControlName="contactoNotas"
               rows="3"
               class="w-full resize-none"
@@ -266,7 +273,7 @@
         <!-- BANNER / SWITCH: GUARDAR EN CATÁLOGO (Solo si no hay cliente seleccionado) -->
         <div class="guardar-catalogo-banner" *ngIf="!clienteSeleccionado">
           <div class="switch-container">
-            <p-inputSwitch formControlName="guardarEnCatalogo" inputId="switchGuardarCatalogo"></p-inputSwitch>
+            <p-toggleswitch formControlName="guardarEnCatalogo" inputId="switchGuardarCatalogo"></p-toggleswitch>
             <label for="switchGuardarCatalogo" class="switch-label">
               <span class="switch-title">Guardar automáticamente en el Catálogo de Clientes</span>
               <span class="switch-description">
@@ -277,10 +284,10 @@
         </div>
 
       </div>
-    </p-tabPanel>
+    </p-tabpanel>
 
     <!-- PESTAÑA 3: UBICACIONES -->
-    <p-tabPanel header="3. Ubicaciones" *ngIf="tieneInvitacionActiva">
+    <p-tabpanel value="ubicaciones" *ngIf="tieneInvitacionActiva">
       <div class="flex flex-col gap-6 pt-4 pb-16">
 
         <!-- SECCIÓN: CEREMONIA -->
@@ -288,17 +295,17 @@
           <h4 class="m-0 mb-4 text-[#cca633] font-bold text-base">Ceremonia (Iglesia)</h4>
           <div class="grid grid-cols-12 gap-x-5 gap-y-8 pt-3">
             <div class="col-span-12 sm:col-span-6">
-              <p-floatLabel class="w-full block">
+              <p-floatlabel variant="on" class="w-full block">
                 <input id="ceremoniaLugar" pInputText formControlName="ceremoniaLugar" class="w-full" autocomplete="off" />
                 <label for="ceremoniaLugar">Lugar (ej. Basílica de Guadalupe)</label>
-              </p-floatLabel>
+              </p-floatlabel>
             </div>
 
             <div class="col-span-12 sm:col-span-6">
-              <p-floatLabel class="w-full block">
+              <p-floatlabel variant="on" class="w-full block">
                 <input id="ceremoniaUrl" pInputText formControlName="ceremoniaUrl" class="w-full" autocomplete="off" />
                 <label for="ceremoniaUrl">Link de Google Maps</label>
-              </p-floatLabel>
+              </p-floatlabel>
             </div>
 
             <!-- FOTO CEREMONIA -->
@@ -336,9 +343,9 @@
               </div>
 
               <!-- 3. Botón de subida -->
-              <p-fileUpload *ngIf="!existingFotoCeremoniaUrl && !fotoCeremoniaFile" mode="basic"
+              <p-fileupload *ngIf="!existingFotoCeremoniaUrl && !fotoCeremoniaFile" mode="basic"
                             chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
-                            (onSelect)="onEstructuralSelected($event, 'ceremonia')"></p-fileUpload>
+                            (onSelect)="onEstructuralSelected($event, 'ceremonia')"></p-fileupload>
             </div>
           </div>
         </div>
@@ -350,17 +357,17 @@
           <h4 class="m-0 mb-4 text-[#cca633] font-bold text-base">Recepción (Salón)</h4>
           <div class="grid grid-cols-12 gap-x-5 gap-y-8 pt-3">
             <div class="col-span-12 sm:col-span-6">
-              <p-floatLabel class="w-full block">
+              <p-floatlabel variant="on" class="w-full block">
                 <input id="recepcionLugar" pInputText formControlName="recepcionLugar" class="w-full" autocomplete="off" />
                 <label for="recepcionLugar">Lugar (ej. Salón Los Arcángeles)</label>
-              </p-floatLabel>
+              </p-floatlabel>
             </div>
 
             <div class="col-span-12 sm:col-span-6">
-              <p-floatLabel class="w-full block">
+              <p-floatlabel variant="on" class="w-full block">
                 <input id="recepcionUrl" pInputText formControlName="recepcionUrl" class="w-full" autocomplete="off" />
                 <label for="recepcionUrl">Link de Google Maps</label>
-              </p-floatLabel>
+              </p-floatlabel>
             </div>
 
             <!-- FOTO RECEPCIÓN -->
@@ -398,26 +405,26 @@
               </div>
 
               <!-- 3. Botón de subida -->
-              <p-fileUpload *ngIf="!existingFotoRecepcionUrl && !fotoRecepcionFile" mode="basic"
+              <p-fileupload *ngIf="!existingFotoRecepcionUrl && !fotoRecepcionFile" mode="basic"
                             chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
-                            (onSelect)="onEstructuralSelected($event, 'recepcion')"></p-fileUpload>
+                            (onSelect)="onEstructuralSelected($event, 'recepcion')"></p-fileupload>
             </div>
           </div>
         </div>
 
       </div>
-    </p-tabPanel>
+    </p-tabpanel>
 
     <!-- PESTAÑA 4: GALERÍA -->
-    <p-tabPanel header="4. Galería">
+    <p-tabpanel value="galeria">
       <div class="flex flex-col gap-6 pt-4 pb-16">
 
         <!-- FRASE / MENSAJE -->
         <div class="pt-4">
-          <p-floatLabel class="w-full block">
-            <textarea id="mensaje" pInputTextarea formControlName="mensaje" rows="3" class="w-full resize-none"></textarea>
+          <p-floatlabel variant="on" class="w-full block">
+            <textarea id="mensaje" pTextarea formControlName="mensaje" rows="3" class="w-full resize-none"></textarea>
             <label for="mensaje">Frase / Mensaje</label>
-          </p-floatLabel>
+          </p-floatlabel>
         </div>
 
         <!-- SECCIÓN: MÚSICA DE FONDO -->
@@ -458,9 +465,9 @@
           </div>
 
           <!-- 3. Botón para subir música -->
-          <p-fileUpload *ngIf="!existingMusicaFondoUrl && !musicaFondoFile" mode="basic"
+          <p-fileupload *ngIf="!existingMusicaFondoUrl && !musicaFondoFile" mode="basic"
                         chooseLabel="Seleccionar Canción (MP3)" chooseIcon="pi pi-volume-up" accept="audio/*"
-                        (onSelect)="onMusicaSelected($event)"></p-fileUpload>
+                        (onSelect)="onMusicaSelected($event)"></p-fileupload>
         </div>
 
         <!-- FOTO PRINCIPAL -->
@@ -497,9 +504,9 @@
             </div>
           </div>
 
-          <p-fileUpload *ngIf="!existingFotoPrincipalUrl && !fotoPrincipalFile" mode="basic"
+          <p-fileupload *ngIf="!existingFotoPrincipalUrl && !fotoPrincipalFile" mode="basic"
                         chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
-                        (onSelect)="onEstructuralSelected($event, 'principal')"></p-fileUpload>
+                        (onSelect)="onEstructuralSelected($event, 'principal')"></p-fileupload>
         </div>
 
         <!-- GALERÍA LIBRE -->
@@ -523,7 +530,7 @@
           </div>
 
           <!-- UPLOADER GALERÍA -->
-          <p-fileUpload #galeriaUploader [multiple]="true" accept="image/*" maxFileSize="10000000"
+          <p-fileupload #galeriaUploader [multiple]="true" accept="image/*" maxFileSize="10000000"
                         [showUploadButton]="false" [showCancelButton]="false" chooseLabel="Elegir Fotos"
                         (onSelect)="onGaleriaSelected($event)">
 
@@ -552,13 +559,14 @@
               </div>
             </ng-template>
 
-          </p-fileUpload>
+          </p-fileupload>
         </div>
 
       </div>
-    </p-tabPanel>
+    </p-tabpanel>
 
-  </p-tabView>
+  </p-tabpanels>
+</p-tabs>
 
   <!-- BOTONES DE ACCIÓN FIJOS AL FINAL -->
   <div class="sticky bottom-[-1.5rem] -mx-6 -mb-6 p-6 bg-white z-[100] flex justify-end gap-3 border-t border-slate-200">

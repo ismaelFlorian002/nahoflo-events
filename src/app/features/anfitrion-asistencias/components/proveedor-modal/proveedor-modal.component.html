@@ -2,7 +2,7 @@
 
   <!-- FILA 1: NOMBRE COMERCIAL (6 COLS) Y CATEGORÍA (6 COLS) -->
   <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="empresa"
@@ -11,15 +11,15 @@
         class="w-full"
         autocomplete="off" />
       <label for="empresa">Nombre Comercial / Empresa *</label>
-    </p-floatLabel>
+    </p-floatlabel>
     @if (form.get('empresa')?.touched && form.get('empresa')?.invalid) {
       <span class="text-xs text-rose-500 font-semibold pl-1">El nombre de la empresa es requerido.</span>
     }
   </div>
 
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-dropdown
+    <p-floatlabel variant="on" class="w-full block">
+      <p-select
         id="categoria"
         inputId="categoria"
         [options]="categorias"
@@ -28,14 +28,14 @@
         optionValue="value"
         styleClass="w-full"
         placeholder="Seleccionar Categoría">
-      </p-dropdown>
+      </p-select>
       <label for="categoria">Categoría del Proveedor *</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- FILA 2: NOMBRE DE CONTACTO (6 COLS) Y TELÉFONO / WHATSAPP (6 COLS) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="contactoNombre"
@@ -44,11 +44,11 @@
         class="w-full"
         autocomplete="off" />
       <label for="contactoNombre">Nombre de Contacto</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="telefono"
@@ -57,12 +57,12 @@
         class="w-full"
         autocomplete="off" />
       <label for="telefono">Teléfono / WhatsApp</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- FILA 3: CORREO ELECTRÓNICO (6 COLS) Y MONTO DEL CONTRATO (6 COLS) -->
   <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="email"
@@ -71,15 +71,15 @@
         class="w-full"
         autocomplete="off" />
       <label for="email">Correo Electrónico</label>
-    </p-floatLabel>
+    </p-floatlabel>
     @if (form.get('email')?.touched && form.get('email')?.invalid) {
       <span class="text-xs text-rose-500 font-semibold pl-1">Ingresa un correo electrónico válido.</span>
     }
   </div>
 
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-inputNumber
+    <p-floatlabel variant="on" class="w-full block">
+      <p-inputnumber
         id="montoContrato"
         inputId="montoContrato"
         formControlName="montoContrato"
@@ -89,14 +89,14 @@
         styleClass="w-full"
         inputStyleClass="w-full font-semibold text-slate-800"
         [min]="0">
-      </p-inputNumber>
+      </p-inputnumber>
       <label for="montoContrato">Monto Total del Contrato ($)</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- FILA 4: NOTAS DEL CONTRATO (12 COLS) -->
   <div class="col-span-12">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="notas"
@@ -105,7 +105,7 @@
         class="w-full"
         autocomplete="off" />
       <label for="notas">Notas del Contrato / Requerimientos</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- BOTONES DE ACCIÓN -->

@@ -4,14 +4,14 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { EventService } from '../../../core/services/event.service';
 import { comprimirImagen } from '../../../core/utils/image-compresor';
 
 @Component({
   selector: 'app-subir-foto-modal',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, InputTextareaModule],
+  imports: [CommonModule, ReactiveFormsModule, ButtonModule, InputTextModule, TextareaModule],
   templateUrl: './subir-foto-modal.component.html',
   styleUrl: './subir-foto-modal.component.scss',
 })

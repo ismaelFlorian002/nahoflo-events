@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, ProveedorEvento } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
 import { ProveedorModalComponent } from '../proveedor-modal/proveedor-modal.component';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
 import { BadgeModule } from 'primeng/badge';
 
@@ -21,8 +21,8 @@ import { BadgeModule } from 'primeng/badge';
     FormsModule,
     ButtonModule,
     InputTextModule,
-    DropdownModule,
-    OverlayPanelModule,
+    SelectModule,
+    PopoverModule,
     TooltipModule,
     BadgeModule,
   ],

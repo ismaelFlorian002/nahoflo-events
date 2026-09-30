@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, computed, input, output
 import { NgTemplateOutlet } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
-import { SidebarModule } from 'primeng/sidebar';
+import { DrawerModule } from 'primeng/drawer';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { PORTAL_PATHS, PortalSection } from '../../portal-sections';
 export type { PortalSection } from '../../portal-sections';
@@ -18,7 +18,7 @@ export interface PortalNavigationItem {
 @Component({
   selector: 'app-portal-navigation',
   standalone: true,
-  imports: [NgTemplateOutlet, ButtonModule, TooltipModule, SidebarModule, RouterLink, RouterLinkActive],
+  imports: [NgTemplateOutlet, ButtonModule, TooltipModule, DrawerModule, RouterLink, RouterLinkActive],
   templateUrl: './portal-navigation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './portal-navigation.component.scss',

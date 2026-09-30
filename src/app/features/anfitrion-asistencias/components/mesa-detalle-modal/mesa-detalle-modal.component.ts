@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormsModule } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -11,7 +11,7 @@ import { InvitadoModel } from '../../../../core/models/invitado.model';
 @Component({
   selector: 'app-mesa-detalle-modal',
   standalone: true,
-  imports: [CommonModule, ButtonModule, DropdownModule, TooltipModule, FormsModule],
+  imports: [CommonModule, ButtonModule, SelectModule, TooltipModule, FormsModule],
   templateUrl: './mesa-detalle-modal.component.html',
   styleUrl: './mesa-detalle-modal.component.scss',
 })

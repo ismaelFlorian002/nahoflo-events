@@ -51,7 +51,7 @@
             </div>
           </div>
           <div class="flex items-center gap-1 shrink-0">
-            <p-fileUpload
+            <p-fileupload
               mode="basic"
               chooseLabel="Cambiar"
               chooseIcon="pi pi-sync"
@@ -59,7 +59,7 @@
               [maxFileSize]="5000000"
               styleClass="p-button-sm p-button-outlined p-button-secondary !rounded-xl text-xs"
               (onSelect)="onLogoSelected($event)">
-            </p-fileUpload>
+            </p-fileupload>
             <p-button
               type="button"
               icon="pi pi-trash"
@@ -79,7 +79,7 @@
             <i class="pi pi-image text-slate-400 text-lg shrink-0"></i>
             <span class="text-xs truncate">PNG, JPG, WebP o SVG (máx. 5MB)</span>
           </div>
-          <p-fileUpload
+          <p-fileupload
             mode="basic"
             chooseLabel="Subir Logo"
             chooseIcon="pi pi-upload"
@@ -87,7 +87,7 @@
             [maxFileSize]="5000000"
             styleClass="p-button-sm !rounded-xl text-xs font-semibold bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-xs shrink-0"
             (onSelect)="onLogoSelected($event)">
-          </p-fileUpload>
+          </p-fileupload>
         </div>
       }
     </div>

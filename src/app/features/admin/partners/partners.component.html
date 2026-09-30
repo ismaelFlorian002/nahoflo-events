@@ -22,7 +22,6 @@
       icon="pi pi-user-plus"
       size="small"
       (onClick)="openDialog()"
-      [rounded]="true"
       styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
     </p-button>
   </div>
@@ -40,7 +39,7 @@
         styleClass="p-datatable-borderless modern-table w-full min-w-[700px]">
 
         <!-- TOOLBAR DE LA TABLA (Filtros corporativos y Buscador) -->
-        <ng-template pTemplate="caption">
+        <ng-template #caption>
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-4">
 
             <!-- FILTROS CORPORATIVOS (ESTADO, ROL Y FECHA) -->
@@ -60,7 +59,7 @@
                   title="Filtrar por estado del usuario">
                 </p-button>
 
-                <p-overlayPanel #opFiltrosEstado styleClass="popover-filtros-invitados">
+                <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
                   <div class="menu-filtros-popover">
                     <div class="popover-filtros-header">
                       <i class="pi pi-filter"></i>
@@ -105,10 +104,10 @@
                       </button>
                     </div>
                   </div>
-                </p-overlayPanel>
+                </p-popover>
               </div>
 
-              <!-- 2. FILTRO DE ROL (BOTÓN + OVERLAYPANEL) -->
+              <!-- 2. FILTRO DE ROL (BOTÓN + POPOVER) -->
               <div class="filtro-dropdown-wrap">
                 <p-button
                   icon="pi pi-shield"
@@ -122,7 +121,7 @@
                   title="Filtrar por rol de usuario">
                 </p-button>
 
-                <p-overlayPanel #opFiltrosRol styleClass="popover-filtros-invitados">
+                <p-popover #opFiltrosRol styleClass="popover-filtros-invitados">
                   <div class="menu-filtros-popover">
                     <div class="popover-filtros-header">
                       <i class="pi pi-shield"></i>
@@ -167,10 +166,10 @@
                       </button>
                     </div>
                   </div>
-                </p-overlayPanel>
+                </p-popover>
               </div>
 
-              <!-- 3. FILTRO DE FECHA DE REGISTRO (BOTÓN + OVERLAYPANEL CALENDARIO) -->
+              <!-- 3. FILTRO DE FECHA DE REGISTRO (BOTÓN + POPOVER DATEPICKER) -->
               <div class="filtro-dropdown-wrap">
                 <p-button
                   icon="pi pi-calendar"
@@ -184,7 +183,7 @@
                   title="Filtrar por fecha de registro">
                 </p-button>
 
-                <p-overlayPanel #opFiltroFecha styleClass="popover-filtros-invitados">
+                <p-popover #opFiltroFecha styleClass="popover-filtros-invitados">
                   <div class="menu-filtros-popover" style="min-width: 290px;">
                     <div class="popover-filtros-header">
                       <i class="pi pi-calendar"></i>
@@ -205,7 +204,7 @@
                       </button>
 
                       <div class="pt-2 pb-1 border-t border-gray-100 mt-1">
-                        <p-calendar
+                        <p-datepicker
                           [inline]="true"
                           [ngModel]="filtroFecha()"
                           (onSelect)="seleccionarFecha($event, dt, opFiltroFecha)"
@@ -219,7 +218,7 @@
                               }
                             </span>
                           </ng-template>
-                        </p-calendar>
+                        </p-datepicker>
                       </div>
 
                       @if (filtroFecha()) {
@@ -235,7 +234,7 @@
                       }
                     </div>
                   </div>
-                </p-overlayPanel>
+                </p-popover>
               </div>
 
               <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
@@ -270,34 +269,34 @@
         </ng-template>
 
         <!-- CABECERAS MINIMALISTAS Y ORDENABLES -->
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
             <th pSortableColumn="displayName">
               Usuario / Nombre
-              <p-sortIcon field="displayName"></p-sortIcon>
+              <p-sort-icon field="displayName"></p-sort-icon>
             </th>
             <th pSortableColumn="rol">
               Rol
-              <p-sortIcon field="rol"></p-sortIcon>
+              <p-sort-icon field="rol"></p-sort-icon>
             </th>
             <th pSortableColumn="agenciaNombre">
               Agencia / Marca
-              <p-sortIcon field="agenciaNombre"></p-sortIcon>
+              <p-sort-icon field="agenciaNombre"></p-sort-icon>
             </th>
             <th pSortableColumn="fechaTimestamp">
               Fecha de Registro
-              <p-sortIcon field="fechaTimestamp"></p-sortIcon>
+              <p-sort-icon field="fechaTimestamp"></p-sort-icon>
             </th>
             <th pSortableColumn="estaActivo">
               Estado
-              <p-sortIcon field="estaActivo"></p-sortIcon>
+              <p-sort-icon field="estaActivo"></p-sort-icon>
             </th>
             <th style="text-align: right;">Acciones</th>
           </tr>
         </ng-template>
 
         <!-- CUERPO DE LA TABLA -->
-        <ng-template pTemplate="body" let-usuario>
+        <ng-template #body let-usuario>
           <tr>
 
             <!-- COLUMNA: NOMBRE Y CONTACTO -->
@@ -376,7 +375,7 @@
             <td>
               <p-tag
                 [value]="usuario.estaActivo ? 'Activo' : 'Inactivo'"
-                [severity]="usuario.estaActivo ? 'success' : 'warning'"
+                [severity]="usuario.estaActivo ? 'success' : 'warn'"
                 [rounded]="true">
               </p-tag>
             </td>
@@ -401,7 +400,7 @@
                   [icon]="usuario.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"
                   [rounded]="true"
                   [text]="true"
-                  [severity]="usuario.estaActivo ? 'warning' : 'success'"
+                  [severity]="usuario.estaActivo ? 'warn' : 'success'"
                   [pTooltip]="usuario.estaActivo ? 'Desactivar Cuenta' : 'Activar Cuenta'"
                   tooltipPosition="top"
                   (onClick)="toggleEstado(usuario)">
@@ -414,7 +413,7 @@
         </ng-template>
 
         <!-- ESTADO VACÍO ELEGANTE -->
-        <ng-template pTemplate="emptymessage">
+        <ng-template #emptymessage>
           <tr>
             <td colspan="6" class="py-12 text-center text-gray-400">
               <i

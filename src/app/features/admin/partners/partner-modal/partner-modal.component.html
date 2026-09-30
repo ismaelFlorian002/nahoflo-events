@@ -44,7 +44,7 @@
 
     <!-- NOMBRE COMPLETO -->
     <div class="flex flex-col gap-1.5">
-      <p-floatLabel>
+      <p-floatlabel variant="on">
         <input
           id="displayName"
           type="text"
@@ -52,7 +52,7 @@
           formControlName="displayName"
           class="w-full text-sm" />
         <label for="displayName">Nombre Completo *</label>
-      </p-floatLabel>
+      </p-floatlabel>
       <small
         *ngIf="partnerForm.get('displayName')?.invalid && partnerForm.get('displayName')?.touched"
         class="text-red-500 text-xs pl-1">
@@ -62,7 +62,7 @@
 
     <!-- CORREO ELECTRÓNICO -->
     <div class="flex flex-col gap-1.5">
-      <p-floatLabel>
+      <p-floatlabel variant="on">
         <input
           id="email"
           type="email"
@@ -70,7 +70,7 @@
           formControlName="email"
           class="w-full text-sm" />
         <label for="email">Correo Electrónico (Acceso al panel) *</label>
-      </p-floatLabel>
+      </p-floatlabel>
       <small
         *ngIf="partnerForm.get('email')?.invalid && partnerForm.get('email')?.touched"
         class="text-red-500 text-xs pl-1">
@@ -86,7 +86,7 @@
 
       <!-- NOMBRE DE LA AGENCIA -->
       <div class="flex flex-col gap-1.5">
-        <p-floatLabel>
+        <p-floatlabel variant="on">
           <input
             id="agenciaNombre"
             type="text"
@@ -94,7 +94,7 @@
             formControlName="agenciaNombre"
             class="w-full text-sm" />
           <label for="agenciaNombre">Nombre de la Agencia / Marca *</label>
-        </p-floatLabel>
+        </p-floatlabel>
         <small
           *ngIf="partnerForm.get('agenciaNombre')?.invalid && partnerForm.get('agenciaNombre')?.touched"
           class="text-red-500 text-xs pl-1">
@@ -104,7 +104,7 @@
 
       <!-- TELÉFONO / WHATSAPP -->
       <div class="flex flex-col gap-1.5">
-        <p-floatLabel>
+        <p-floatlabel variant="on">
           <input
             id="agenciaTelefono"
             type="tel"
@@ -112,7 +112,7 @@
             formControlName="agenciaTelefono"
             class="w-full text-sm" />
           <label for="agenciaTelefono">Teléfono de Contacto (WhatsApp)</label>
-        </p-floatLabel>
+        </p-floatlabel>
       </div>
 
     </div>
@@ -121,7 +121,7 @@
   <!-- TELÉFONO PARA ADMIN -->
   @if (partnerForm.get('rol')?.value === 'admin') {
     <div class="flex flex-col gap-1.5">
-      <p-floatLabel>
+      <p-floatlabel variant="on">
         <input
           id="agenciaTelefonoAdmin"
           type="tel"
@@ -129,7 +129,7 @@
           formControlName="agenciaTelefono"
           class="w-full text-sm" />
         <label for="agenciaTelefonoAdmin">Teléfono de Contacto (Opcional)</label>
-      </p-floatLabel>
+      </p-floatlabel>
     </div>
   }
 

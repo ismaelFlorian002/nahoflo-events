@@ -2,8 +2,8 @@
 
   <!-- FILA 1: ETAPA / FASE (6 COLS) Y TÍTULO DE LA TAREA (6 COLS) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-dropdown
+    <p-floatlabel variant="on" class="w-full block">
+      <p-select
         id="fase"
         inputId="fase"
         [options]="fases"
@@ -12,13 +12,13 @@
         optionValue="value"
         styleClass="w-full"
         placeholder="Seleccionar Etapa">
-      </p-dropdown>
+      </p-select>
       <label for="fase">Etapa / Fase del Evento *</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="titulo"
@@ -27,7 +27,7 @@
         class="w-full"
         autocomplete="off" />
       <label for="titulo">Título de la Tarea *</label>
-    </p-floatLabel>
+    </p-floatlabel>
     @if (form.get('titulo')?.touched && form.get('titulo')?.invalid) {
       <span class="text-xs text-rose-500 font-semibold pl-1">El título es requerido (mínimo 3 caracteres).</span>
     }
@@ -35,8 +35,8 @@
 
   <!-- FILA 2: RESPONSABLE (6 COLS) Y PRIORIDAD (6 COLS) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-dropdown
+    <p-floatlabel variant="on" class="w-full block">
+      <p-select
         id="responsable"
         inputId="responsable"
         [options]="responsables"
@@ -45,14 +45,14 @@
         optionValue="value"
         styleClass="w-full"
         placeholder="Responsable">
-      </p-dropdown>
+      </p-select>
       <label for="responsable">Responsable Asignado</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-dropdown
+    <p-floatlabel variant="on" class="w-full block">
+      <p-select
         id="prioridad"
         inputId="prioridad"
         [options]="prioridades"
@@ -61,15 +61,15 @@
         optionValue="value"
         styleClass="w-full"
         placeholder="Prioridad">
-      </p-dropdown>
+      </p-select>
       <label for="prioridad">Nivel de Prioridad</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- FILA 3: FECHA LÍMITE (6 COLS) Y NOTAS (6 COLS) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-calendar
+    <p-floatlabel variant="on" class="w-full block">
+      <p-datepicker
         id="fechaLimite"
         inputId="fechaLimite"
         formControlName="fechaLimite"
@@ -79,13 +79,13 @@
         appendTo="body"
         styleClass="w-full"
         inputStyleClass="w-full">
-      </p-calendar>
+      </p-datepicker>
       <label for="fechaLimite">Fecha Límite Sugerida</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="notas"
@@ -94,7 +94,7 @@
         class="w-full"
         autocomplete="off" />
       <label for="notas">Notas / Instrucciones</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- BOTONES DE ACCIÓN -->

@@ -260,7 +260,7 @@
       responsiveLayout="scroll"
     >
       <!-- TOOLBAR DE LA TABLA (Filtros a la izquierda, Buscador a la derecha como en WA y Admin) -->
-      <ng-template pTemplate="caption">
+      <ng-template #caption>
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-2">
 
           <!-- FILTROS CORPORATIVOS (ESTADO) -->
@@ -279,7 +279,7 @@
                 title="Filtrar por estado del invitado">
               </p-button>
 
-              <p-overlayPanel #opFiltrosEstado styleClass="popover-filtros-invitados">
+              <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
                 <div class="menu-filtros-popover">
                   <div class="popover-filtros-header">
                     <i class="pi pi-filter"></i>
@@ -336,7 +336,7 @@
                     </button>
                   </div>
                 </div>
-              </p-overlayPanel>
+              </p-popover>
             </div>
 
             <!-- BOTÓN RESTABLECER FILTROS -->
@@ -370,26 +370,26 @@
       </ng-template>
 
       <!-- CABECERAS MINIMALISTAS CON SORT -->
-      <ng-template pTemplate="header">
+      <ng-template #header>
         <tr>
           <th pSortableColumn="nombre">Invitado / Familia
-            <p-sortIcon field="nombre"></p-sortIcon>
+            <p-sort-icon field="nombre"></p-sort-icon>
           </th>
           <th>Teléfono WhatsApp</th>
           <th pSortableColumn="estado">Estado
-            <p-sortIcon field="estado"></p-sortIcon>
+            <p-sort-icon field="estado"></p-sort-icon>
           </th>
           <th pSortableColumn="pasesConfirmados" style="text-align: center;">Pases
-            <p-sortIcon field="pasesConfirmados"></p-sortIcon>
+            <p-sort-icon field="pasesConfirmados"></p-sort-icon>
           </th>
           <th pSortableColumn="mesa">Mesa
-            <p-sortIcon field="mesa"></p-sortIcon>
+            <p-sort-icon field="mesa"></p-sort-icon>
           </th>
         </tr>
       </ng-template>
 
       <!-- FILAS DE LA TABLA -->
-      <ng-template pTemplate="body" let-inv>
+      <ng-template #body let-inv>
         <tr>
           <!-- Nombre y alertas -->
           <td>
@@ -437,7 +437,7 @@
           <!-- Asignación de Mesa vía Dropdown PrimeNG -->
           <td>
             <div class="w-full max-w-[240px]">
-              <p-dropdown
+              <p-select
                 [options]="opcionesMesasDropdown()"
                 [ngModel]="inv.mesa || ''"
                 placeholder="-- Asignar Mesa --"
@@ -464,14 +464,14 @@
                     <span  >{{ option.label }}</span>
                   </div>
                 </ng-template>
-              </p-dropdown>
+              </p-select>
             </div>
           </td>
         </tr>
       </ng-template>
 
       <!-- EMPTY STATE -->
-      <ng-template pTemplate="emptymessage">
+      <ng-template #emptymessage>
         <tr>
           <td colspan="5" class="text-center py-10 text-gray-400">
             <div class="flex flex-col items-center justify-center gap-2">

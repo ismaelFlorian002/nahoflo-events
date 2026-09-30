@@ -2,7 +2,7 @@
 
   @if (cargando) {
     <div class="loading-state">
-      <p-progressSpinner strokeWidth="4" fill="transparent" animationDuration=".8s"></p-progressSpinner>
+      <p-progressspinner strokeWidth="4" fill="transparent" animationDuration=".8s"></p-progressspinner>
       <p>Cargando lista de asistentes...</p>
     </div>
   } @else {
@@ -22,7 +22,7 @@
         styleClass="p-datatable-borderless modern-table w-full">
 
         <!-- TOOLBAR DE LA TABLA CON BUSCADOR DE PRIMENG -->
-        <ng-template pTemplate="caption">
+        <ng-template #caption>
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-gray-100 mb-3">
             <span class="text-xs font-bold text-gray-500 uppercase tracking-wider">
               Invitados Registrados ({{ invitados.length }})
@@ -41,19 +41,19 @@
         </ng-template>
 
         <!-- CABECERAS -->
-        <ng-template pTemplate="header">
+        <ng-template #header>
           <tr>
-            <th pSortableColumn="nombre">Nombre / Familia <p-sortIcon field="nombre"></p-sortIcon></th>
-            <th pSortableColumn="asistira">Asistencia <p-sortIcon field="asistira"></p-sortIcon></th>
-            <th pSortableColumn="pasesConfirmados" style="text-align: center;">Pases <p-sortIcon field="pasesConfirmados"></p-sortIcon></th>
+            <th pSortableColumn="nombre">Nombre / Familia <p-sort-icon field="nombre"></p-sort-icon></th>
+            <th pSortableColumn="asistira">Asistencia <p-sort-icon field="asistira"></p-sort-icon></th>
+            <th pSortableColumn="pasesConfirmados" style="text-align: center;">Pases <p-sort-icon field="pasesConfirmados"></p-sort-icon></th>
             <th>Teléfono / WhatsApp</th>
             <th>Mensaje</th>
-            <th pSortableColumn="fechaConfirmacion">Fecha <p-sortIcon field="fechaConfirmacion"></p-sortIcon></th>
+            <th pSortableColumn="fechaConfirmacion">Fecha <p-sort-icon field="fechaConfirmacion"></p-sort-icon></th>
           </tr>
         </ng-template>
 
         <!-- CUERPO DE LA TABLA -->
-        <ng-template pTemplate="body" let-invitado>
+        <ng-template #body let-invitado>
           <tr>
             <td>
               <span class="font-bold text-slate-800 text-sm block">{{ invitado.nombre }}</span>
@@ -62,7 +62,7 @@
               @if (invitado.estado === 'pendiente') {
                 <p-tag
                   value="Pendiente"
-                  severity="warning"
+                  severity="warn"
                   icon="pi pi-clock"
                   [rounded]="true">
                 </p-tag>
@@ -106,7 +106,7 @@
         </ng-template>
 
         <!-- ESTADO VACÍO -->
-        <ng-template pTemplate="emptymessage">
+        <ng-template #emptymessage>
           <tr>
             <td colspan="6" style="text-align: center; padding: 3rem 1rem;">
               <div class="empty-state">

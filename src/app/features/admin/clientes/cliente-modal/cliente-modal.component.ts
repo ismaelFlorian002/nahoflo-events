@@ -4,7 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ClienteService } from '../../../../core/services/cliente.service';
 import { ClienteModel } from '../../../../core/models/cliente.model';
@@ -18,7 +18,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
-    InputTextareaModule,
+    TextareaModule,
     FloatLabelModule,
   ],
   templateUrl: './cliente-modal.component.html',

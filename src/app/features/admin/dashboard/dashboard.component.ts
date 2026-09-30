@@ -7,8 +7,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
-import { CalendarModule } from 'primeng/calendar';
+import { Popover, PopoverModule } from 'primeng/popover';
+import { DatePickerModule } from 'primeng/datepicker';
 import { TooltipModule } from 'primeng/tooltip';
 import { DockModule } from 'primeng/dock';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -35,8 +35,8 @@ import { QrMesaModalComponent } from '../../album-digital/qr-mesa-modal/qr-mesa-
     DynamicDialogModule,
     DockModule,
     TooltipModule,
-    OverlayPanelModule,
-    CalendarModule,
+    PopoverModule,
+    DatePickerModule,
     ConfirmDialogModule,
     ToastModule,
   ],
@@ -296,14 +296,14 @@ export class DashboardComponent implements OnInit {
   seleccionarFiltroEstado(
     estado: 'todos' | 'activos' | 'borradores',
     table?: Table,
-    op?: OverlayPanel,
+    op?: Popover,
   ): void {
     this.filtroEstado.set(estado);
     table?.reset();
     op?.hide();
   }
 
-  seleccionarFecha(fecha: Date | null, table?: Table, op?: OverlayPanel): void {
+  seleccionarFecha(fecha: Date | null, table?: Table, op?: Popover): void {
     this.filtroFecha.set(fecha);
     table?.reset();
     op?.hide();

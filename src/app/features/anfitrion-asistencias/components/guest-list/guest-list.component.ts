@@ -55,9 +55,9 @@ export class GuestListComponent {
     return guest.asistira ? 'Asistirá' : 'No asiste';
   }
 
-  protected getStatusSeverity(guest: GuestListGuest): 'success' | 'warning' | 'danger' {
+  protected getStatusSeverity(guest: GuestListGuest): 'success' | 'warn' | 'danger' {
     if (guest.estado === 'pendiente') {
-      return 'warning';
+      return 'warn';
     }
 
     return guest.asistira ? 'success' : 'danger';

@@ -10,7 +10,7 @@
 
   <!-- FILA 1: NOMBRE (7 COLS) Y TELÉFONO (5 COLS) -->
   <div class="col-span-12 sm:col-span-7 flex flex-col gap-1">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="nombre"
@@ -19,14 +19,14 @@
         class="w-full"
         autocomplete="off" />
       <label for="nombre">Nombre Completo o Familia *</label>
-    </p-floatLabel>
+    </p-floatlabel>
     @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
       <span class="text-xs text-rose-500 font-semibold pl-1">El nombre es requerido (mínimo 2 caracteres).</span>
     }
   </div>
 
   <div class="col-span-12 sm:col-span-5">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="telefono"
@@ -35,7 +35,7 @@
         class="w-full"
         autocomplete="off" />
       <label for="telefono">Teléfono (WhatsApp)</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- NOTIFICACIÓN DE COINCIDENCIA CON INVITADO PREVIO (SOLO EN MODO CREAR) -->
@@ -116,7 +116,7 @@
 
   <!-- FILA 2: MESA ASIGNADA (6 COLS) Y TIPO DE MENÚ (6 COLS) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="mesa"
@@ -125,12 +125,12 @@
         class="w-full"
         autocomplete="off" />
       <label for="mesa">Mesa Asignada (ej. Mesa 5)</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-dropdown
+    <p-floatlabel variant="on" class="w-full block">
+      <p-select
         id="tipoMenu"
         appendTo="body"
         inputId="tipoMenu"
@@ -140,14 +140,14 @@
         formControlName="tipoMenu"
         placeholder="Selecciona tipo de menú"
         styleClass="w-full">
-      </p-dropdown>
+      </p-select>
       <label for="tipoMenu">Tipo de Menú</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- FILA 3: ALERGIAS Y RESTRICCIONES ALIMENTARIAS (FILA COMPLETA) -->
   <div class="col-span-12">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="restriccionesAlimentarias"
@@ -156,7 +156,7 @@
         class="w-full"
         autocomplete="off" />
       <label for="restriccionesAlimentarias">Alergias / Restricciones Alimentarias (ej. Sin gluten)</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- MENSAJE O DEDICATORIA DEL INVITADO (SOLO LECTURA EN MODO EDICIÓN, OMITIDO EN SOLO LISTA PUERTA) -->

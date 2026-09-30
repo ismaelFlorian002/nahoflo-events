@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { DropdownModule } from 'primeng/dropdown';
+import { TextareaModule } from 'primeng/textarea';
+import { SelectModule } from 'primeng/select';
 import { Table, TableModule } from 'primeng/table';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -26,12 +26,12 @@ import { BadgeModule } from 'primeng/badge';
     FormsModule,
     ButtonModule,
     InputTextModule,
-    InputTextareaModule,
-    DropdownModule,
+    TextareaModule,
+    SelectModule,
     TableModule,
     TagModule,
     TooltipModule,
-    OverlayPanelModule,
+    PopoverModule,
     FloatLabelModule,
     BadgeModule,
   ],
@@ -149,7 +149,7 @@ export class WhatsappMessagingCenterComponent implements OnInit {
   seleccionarFiltroEstado(
     estado: 'todos' | 'pendiente' | 'confirmado' | 'sin_mesa',
     table?: Table,
-    op?: OverlayPanel,
+    op?: Popover,
   ): void {
     this.filtroEstado.set(estado);
     table?.reset();

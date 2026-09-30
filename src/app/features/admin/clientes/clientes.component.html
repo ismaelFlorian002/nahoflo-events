@@ -32,14 +32,16 @@
     </div>
 
     <!-- Botón Nuevo Cliente -->
-    <p-button
-      label="Nuevo Cliente"
-      icon="pi pi-user-plus"
+    <button
+      pButton
+      type="button"
       size="small"
-      (onClick)="openDialog()"
-      [rounded]="true"
-      styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
-    </p-button>
+      (click)="openDialog()"
+      class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
+
+      <i pButtonIcon class="pi pi-user-plus"></i>
+      <span pButtonLabel>Nuevo Cliente</span>
+    </button>
   </div>
 
   <!-- TARJETA CONTENEDORA DE LA TABLA -->
@@ -56,7 +58,7 @@
         styleClass="p-datatable-borderless modern-table w-full min-w-[700px]"
       >
       <!-- TOOLBAR DE LA TABLA -->
-      <ng-template pTemplate="caption">
+      <ng-template #caption>
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-4">
 
           <!-- SELECTOR DE VISTA PARA ADMINISTRADOR (OPCIÓN A) -->
@@ -137,9 +139,9 @@
       </ng-template>
 
       <!-- CABECERAS -->
-      <ng-template pTemplate="header">
+      <ng-template #header>
         <tr>
-          <th pSortableColumn="nombreCompleto">Cliente <p-sortIcon field="nombreCompleto"></p-sortIcon></th>
+          <th pSortableColumn="nombreCompleto">Cliente <p-sort-icon field="nombreCompleto"></p-sort-icon></th>
 
           <!-- Columna condicional en modo global de Admin -->
           @if (esAdmin() && vistaAdmin === 'todos') {
@@ -147,14 +149,14 @@
           }
 
           <th>Contacto</th>
-          <th pSortableColumn="totalEventos" style="text-align: center;">Eventos <p-sortIcon field="totalEventos"></p-sortIcon></th>
-          <th pSortableColumn="creadoEn">Registrado <p-sortIcon field="creadoEn"></p-sortIcon></th>
+          <th pSortableColumn="totalEventos" style="text-align: center;">Eventos <p-sort-icon field="totalEventos"></p-sort-icon></th>
+          <th pSortableColumn="creadoEn">Registrado <p-sort-icon field="creadoEn"></p-sort-icon></th>
           <th style="text-align: right;">Acciones</th>
         </tr>
       </ng-template>
 
       <!-- CUERPO DE LA TABLA -->
-      <ng-template pTemplate="body" let-cliente>
+      <ng-template #body let-cliente>
         <tr>
 
           <!-- CLIENTE -->
@@ -281,7 +283,7 @@
       </ng-template>
 
       <!-- EMPTY STATE -->
-      <ng-template pTemplate="emptymessage">
+      <ng-template #emptymessage>
         <tr>
           <td [attr.colspan]="esAdmin() && vistaAdmin === 'todos' ? 6 : 5" class="py-12 text-center text-gray-400">
             <i class="pi pi-users text-4xl text-gray-300 mb-2 block"></i>

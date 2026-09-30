@@ -67,16 +67,15 @@
   </div>
 </div>
 
-<p-sidebar
+<p-drawer
   [(visible)]="drawerVisible"
   appendTo="body"
   [blockScroll]="true"
   [dismissible]="true"
-  transitionOptions="200ms cubic-bezier(0.2, 0, 0, 1)"
   [style]="{ width: 'min(20rem, 88vw)' }"
   ariaCloseLabel="Cerrar menú"
 >
-  <ng-template pTemplate="header">
+  <ng-template #header>
     <div class="drawer-header">
       @if (brandLogoUrl()) {
         <img [src]="brandLogoUrl()" alt="Logo" class="brand-logo" />
@@ -89,7 +88,7 @@
   <nav aria-label="Navegación móvil">
     <ng-container [ngTemplateOutlet]="navTpl" [ngTemplateOutletContext]="{ compact: false }" />
   </nav>
-</p-sidebar>
+</p-drawer>
 
 <ng-template #navTpl let-compact="compact">
   @for (group of groups(); track group.label) {

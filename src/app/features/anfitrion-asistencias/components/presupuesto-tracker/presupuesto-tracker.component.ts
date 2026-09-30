@@ -6,14 +6,14 @@ import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, ItemPresupuesto } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
 import { PresupuestoItemModalComponent } from '../presupuesto-item-modal/presupuesto-item-modal.component';
 import { BadgeModule } from 'primeng/badge';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
@@ -27,9 +27,9 @@ import { TooltipModule } from 'primeng/tooltip';
     TagModule,
     ProgressBarModule,
     InputTextModule,
-    DropdownModule,
+    SelectModule,
     BadgeModule,
-    OverlayPanelModule,
+    PopoverModule,
     TooltipModule,
   ],
   templateUrl: './presupuesto-tracker.component.html',
@@ -136,7 +136,7 @@ export class PresupuestoTrackerComponent {
     return this.categoriaSeleccionada() !== 'todas' || this.busqueda().trim() !== '';
   });
 
-  seleccionarCategoria(cat: string, op?: OverlayPanel, dt?: Table): void {
+  seleccionarCategoria(cat: string, op?: Popover, dt?: Table): void {
     this.categoriaSeleccionada.set(cat);
     dt?.reset();
     op?.hide();
@@ -302,12 +302,12 @@ export class PresupuestoTrackerComponent {
     }
   }
 
-  obtenerSeverityEstado(estado: string): 'success' | 'warning' | 'danger' | 'info' {
+  obtenerSeverityEstado(estado: string): 'success' | 'warn' | 'danger' | 'info' {
     switch (estado) {
       case 'pagado':
         return 'success';
       case 'parcial':
-        return 'warning';
+        return 'warn';
       case 'pendiente':
         return 'danger';
       default:

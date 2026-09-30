@@ -1,6 +1,46 @@
-@import "primeng/resources/themes/lara-light-indigo/theme.css";
-@import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2');
+}
+
+@layer app-base, primeng;
+
+/* Inicializa las variables de sombras, transformaciones y filtros de Tailwind 3.
+   Preflight permanece desactivado en tailwind.config.js. */
+@layer app-base {
+  @tailwind base;
+
+  *, ::before, ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
+  }
+
+  html {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #334155;
+  }
+
+  button, input, select, textarea {
+    font: inherit;
+  }
+}
+
+/* Ocultar marca de agua de licencia comercial de PrimeUI */
+#p-license-host {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
 
 /* =========================================================
    1. RESET GLOBAL DE LA APLICACIÓN
@@ -10,7 +50,7 @@ html, body {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #fcfbf9; /* Tu fondo cálido */
+  background-color: #fcfbf9; /* Fondo cálido NahoFlo */
 }
 
 app-root {
@@ -20,59 +60,126 @@ app-root {
 }
 
 /* =========================================================
-   2. TAMAÑO DE BOTONES (Estándar, Small y Large)
+   DIÁLOGOS MODERNOS (PrimeNG v22)
    ========================================================= */
-html body .p-button {
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-html body .p-button .p-button-icon {
-  font-size: 0.875rem;
-}
+.p-dialog {
+  border-radius: 18px !important;
+  box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.2) !important;
+  overflow: hidden;
 
-/* Soporte para PrimeNG size="small" (p-button-sm) */
-html body .p-button.p-button-sm:not(.p-button-icon-only),
-html body .p-button-sm .p-button:not(.p-button-icon-only) {
-  padding: 0.42rem 0.85rem !important;
-  font-size: 0.8125rem !important;
-  border-radius: 8px !important;
+  .p-dialog-header {
+    padding: 1.25rem 1.5rem 1rem !important;
+    border-bottom: 1px solid #f1f5f9;
+    font-weight: 700;
+  }
 
-  .p-button-icon {
-    font-size: 0.8125rem !important;
+  .p-dialog-content {
+    overflow-x: hidden !important;
+    padding: 1.5rem !important;
   }
 }
 
-html body .p-button.p-button-sm.p-button-icon-only,
-html body .p-button-sm .p-button.p-button-icon-only {
-  width: 2rem !important;
-  height: 2rem !important;
-  padding: 0 !important;
-  font-size: 0.8125rem !important;
+/* El tema gestiona foco, valor e invalidación de FloatLabel. */
+.p-floatlabel > :is(.p-inputtext, .p-textarea, .p-select, .p-datepicker, .p-inputnumber, .p-password),
+.p-floatlabel :is(.p-datepicker-input, .p-inputnumber-input, .p-password-input) {
+  width: 100%;
+}
 
-  .p-button-icon {
-    font-size: 0.8125rem !important;
+/* =========================================================
+   TOGGLESWITCH CORPORATIVO (PrimeNG v22)
+   ========================================================= */
+.p-toggleswitch.p-toggleswitch-checked .p-toggleswitch-slider {
+  background-color: #cca633 !important;
+}
+
+/* =========================================================
+   TAGS Y SEVERIDADES CORPORATIVAS (PrimeNG v22)
+   ========================================================= */
+.p-tag {
+  font-weight: 600 !important;
+
+  &.p-tag-warn {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a !important;
+  }
+
+  &.p-tag-success {
+    background-color: #dcfce7 !important;
+    color: #15803d !important;
+    border: 1px solid #bbf7d0 !important;
+  }
+
+  &.p-tag-danger {
+    background-color: #fee2e2 !important;
+    color: #b91c1c !important;
+    border: 1px solid #fecaca !important;
+  }
+
+  &.p-tag-info {
+    background-color: #e0f2fe !important;
+    color: #0369a1 !important;
+    border: 1px solid #bae6fd !important;
+  }
+
+  &.p-tag-secondary {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
   }
 }
 
-/* Soporte para PrimeNG size="large" (p-button-lg) */
-html body .p-button.p-button-lg:not(.p-button-icon-only),
-html body .p-button-lg .p-button:not(.p-button-icon-only) {
-  padding: 0.65rem 1.25rem !important;
-  font-size: 1rem !important;
-  border-radius: 10px !important;
+/* =========================================================
+   TABLAS CORPORATIVAS (PrimeNG v22 p-table)
+   ========================================================= */
+.p-datatable {
+  .p-datatable-header {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 0 1rem 0 !important;
+  }
+
+  .p-datatable-thead > tr > th {
+    background: #f8fafc !important;
+    color: #64748b !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 0.85rem 1rem !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  .p-datatable-tbody > tr {
+    background: #ffffff;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: #fcfbf9 !important;
+    }
+
+    > td {
+      padding: 0.9rem 1rem !important;
+      border-bottom: 1px solid #f1f5f9 !important;
+      font-size: 0.875rem;
+    }
+  }
+
+  .p-paginator {
+    background: transparent !important;
+    border: none !important;
+    border-top: 1px solid #f1f5f9 !important;
+    padding: 1rem 0 0 0 !important;
+    margin-top: 0.5rem;
+
+    .p-paginator-page.p-paginator-page-selected {
+      background-color: #cca633 !important;
+      color: #ffffff !important;
+    }
+  }
 }
 
-html body .p-button.p-button-lg.p-button-icon-only,
-html body .p-button-lg .p-button.p-button-icon-only {
-  width: 2.75rem !important;
-  height: 2.75rem !important;
-  padding: 0 !important;
-  font-size: 1.15rem !important;
-}
-
+/* Tamaños y colores de botones definidos en NahoFloPreset. */
 /* =========================================================
    2.1 SOPORTE PARA PRIMENG BUTTON GROUP
    ========================================================= */
@@ -147,54 +254,15 @@ html body .p-button-group {
 }
 
 /* =========================================================
-   3. DORADO NAHOFLO PARA BOTONES PRIMARIOS
-   Excluye severidades, el botón del calendario y button groups
-   ========================================================= */
-html body .p-button:not(.p-button-secondary):not(.p-button-success):not(.p-button-info):not(.p-button-warning):not(.p-button-help):not(.p-button-danger):not(.p-datepicker-trigger):not(.p-selectbutton *):not(.p-button-group *) {
-  background-color: #cca633;
-  border-color: #cca633;
-  color: #ffffff;
-
-  &:hover {
-    background-color: #b8952d;
-    border-color: #b8952d;
-    color: #ffffff;
-  }
-
-  &.p-button-outlined {
-    background-color: transparent !important;
-    border-color: #cca633 !important;
-    color: #cca633 !important;
-
-    &:hover {
-      background-color: rgba(204, 166, 51, 0.08) !important;
-      border-color: #b8952d !important;
-      color: #b8952d !important;
-    }
-  }
-
-  &.p-button-text {
-    background-color: transparent !important;
-    border-color: transparent !important;
-    color: #cca633 !important;
-
-    &:hover {
-      background-color: rgba(204, 166, 51, 0.08) !important;
-      color: #b8952d !important;
-    }
-  }
-}
-
-/* =========================================================
    4. ESTILO NEUTRAL PARA EL ICONO DEL CALENDARIO
    ========================================================= */
-html body .p-datepicker-trigger {
+html body .p-datepicker-dropdown {
   background-color: #f9fafb;
   border-color: #d1d5db;
   color: #6b7280;
 }
 
-html body .p-datepicker-trigger:hover {
+html body .p-datepicker-dropdown:hover {
   background-color: #f3f4f6;
   border-color: #d1d5db;
   color: #374151;
@@ -203,13 +271,13 @@ html body .p-datepicker-trigger:hover {
 /* =========================================================
    5. CALENDARIO COMPACTO (Para que quepa bien en el modal)
    ========================================================= */
-html body .p-datepicker {
+html body .p-datepicker-panel {
   font-size: 0.85rem;
 }
-html body .p-datepicker table td {
+html body .p-datepicker-panel table td {
   padding: 0.2rem;
 }
-html body .p-datepicker .p-datepicker-header {
+html body .p-datepicker-panel .p-datepicker-header {
   padding: 0.5rem;
 }
 /* =========================================================
@@ -254,8 +322,8 @@ html body .modal-preview-dialog.p-dialog {
 /* =========================================================
    8. POPOVER DE FILTROS DE INVITADOS (PORTAL ANFITRIÓN)
    ========================================================= */
-html body .popover-filtros-invitados.p-overlaypanel,
-html body .p-overlaypanel.popover-filtros-invitados {
+html body .popover-filtros-invitados.p-popover,
+html body .p-popover.popover-filtros-invitados {
   background: #ffffff !important;
   border-radius: 14px !important;
   border: 1px solid #e2e8f0 !important;
@@ -267,7 +335,7 @@ html body .p-overlaypanel.popover-filtros-invitados {
     border-bottom-color: #ffffff !important;
   }
 
-  .p-overlaypanel-content {
+  .p-popover-content {
     padding: 0.5rem !important;
   }
 
@@ -433,7 +501,7 @@ html body .p-overlaypanel.popover-filtros-invitados {
   .mini-admin-calendar {
     width: 100%;
 
-    .p-datepicker {
+    .p-datepicker-panel {
       border: none !important;
       padding: 0 !important;
       width: 100% !important;
@@ -471,7 +539,7 @@ html body .p-overlaypanel.popover-filtros-invitados {
         border-radius: 8px !important;
         font-size: 0.78rem !important;
 
-        &.p-highlight {
+        &.p-datepicker-day-selected {
           background: #cca633 !important;
           color: #ffffff !important;
         }
@@ -496,10 +564,10 @@ html body .p-menu {
   padding: 0.35rem !important;
   min-width: 210px !important;
 
-  .p-menuitem {
+  .p-menu-item {
     margin-bottom: 2px;
 
-    .p-menuitem-link {
+    .p-menu-item-link {
       border-radius: 8px !important;
       padding: 0.55rem 0.75rem !important;
       font-size: 0.835rem !important;
@@ -507,7 +575,7 @@ html body .p-menu {
       color: #334155 !important;
       transition: all 0.15s ease !important;
 
-      .p-menuitem-icon {
+      .p-menu-item-icon {
         margin-right: 0.6rem !important;
         font-size: 0.95rem !important;
         color: #cca633 !important;
@@ -539,10 +607,11 @@ html body .p-menu {
       }
     }
 
-    &.p-menuitem-separator {
+  }
+
+  .p-menu-separator {
       border-top: 1px solid #f1f5f9 !important;
       margin: 0.3rem 0 !important;
-    }
   }
 }
 

@@ -2,7 +2,7 @@
 
   <!-- FILA 1: NOMBRE DE LA MESA (12 COLS) -->
   <div class="col-span-12 flex flex-col gap-1">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="nombre"
@@ -11,7 +11,7 @@
         class="w-full"
         autocomplete="off" />
       <label for="nombre">Nombre de la Mesa * (ej. Mesa 1, Mesa VIP, Mesa Novios)</label>
-    </p-floatLabel>
+    </p-floatlabel>
     @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
       <span class="text-xs text-rose-500 font-semibold pl-1">El nombre de la mesa es obligatorio.</span>
     }
@@ -36,8 +36,8 @@
 
   <!-- FILA 2: FORMA DE LA MESA (6 COLS) Y CAPACIDAD (6 COLS) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-dropdown
+    <p-floatlabel variant="on" class="w-full block">
+      <p-select
         id="forma"
         inputId="forma"
         [options]="opcionesForma"
@@ -46,14 +46,14 @@
         optionValue="value"
         styleClass="w-full"
         placeholder="Forma de la Mesa">
-      </p-dropdown>
+      </p-select>
       <label for="forma">Forma de la Mesa *</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-inputNumber
+    <p-floatlabel variant="on" class="w-full block">
+      <p-inputnumber
         id="capacidad"
         inputId="capacidad"
         formControlName="capacidad"
@@ -61,14 +61,14 @@
         [max]="50"
         styleClass="w-full"
         inputStyleClass="w-full font-semibold text-slate-800">
-      </p-inputNumber>
+      </p-inputnumber>
       <label for="capacidad">Capacidad (Asientos) *</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- FILA 3: NOTAS / UBICACIÓN (12 COLS) -->
   <div class="col-span-12">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="notas"
@@ -77,7 +77,7 @@
         class="w-full"
         autocomplete="off" />
       <label for="notas">Notas / Ubicación (Opcional, ej. Junto a la pista de baile)</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- BOTONES DE ACCIÓN -->

@@ -44,7 +44,7 @@ export class AlbumDigitalComponent implements OnInit {
   private ultimoTapTiempo = 0;
 
   // Modal ref
-  private refModal: DynamicDialogRef | undefined;
+  private refModal: DynamicDialogRef | null | undefined;
 
   async ngOnInit(): Promise<void> {
     const slug = this.route.snapshot.paramMap.get('slug');
@@ -107,7 +107,7 @@ export class AlbumDigitalComponent implements OnInit {
       modal: true,
     });
     // Cuando el modal se cierra exitosamente, recarga el muro en vivo
-    this.refModal.onClose.subscribe((subidaExitosa: boolean) => {
+    this.refModal?.onClose.subscribe((subidaExitosa: boolean) => {
       if (subidaExitosa && ev.id) {
         this.cargarRecuerdos(ev.id);
       }

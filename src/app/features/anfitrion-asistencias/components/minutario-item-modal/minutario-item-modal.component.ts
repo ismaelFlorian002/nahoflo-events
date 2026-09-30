@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
-import { DropdownModule } from 'primeng/dropdown';
+import { TextareaModule } from 'primeng/textarea';
+import { SelectModule } from 'primeng/select';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ItemMinutario } from '../../../../core/models/event.model';
@@ -17,8 +17,8 @@ import { ItemMinutario } from '../../../../core/models/event.model';
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
-    InputTextareaModule,
-    DropdownModule,
+    TextareaModule,
+    SelectModule,
     FloatLabelModule,
   ],
   templateUrl: './minutario-item-modal.component.html',

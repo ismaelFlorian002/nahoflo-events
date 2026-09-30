@@ -13,7 +13,7 @@ import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { PopoverModule } from 'primeng/popover';
 import { MenuModule } from 'primeng/menu';
 import { MenuItem } from 'primeng/api';
 import { Evento } from '../../../../core/models/event.model';
@@ -32,7 +32,7 @@ import { BadgeModule } from 'primeng/badge';
     ButtonModule,
     InputTextModule,
     TooltipModule,
-    OverlayPanelModule,
+    PopoverModule,
     MenuModule,
     BadgeModule,
   ],

@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { TareaPlaneacion } from '../../../../core/models/event.model';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
 
 @Component({
   selector: 'app-checklist-item-modal',
@@ -17,9 +17,9 @@ import { CalendarModule } from 'primeng/calendar';
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
-    DropdownModule,
+    SelectModule,
     FloatLabelModule,
-    CalendarModule,
+    DatePickerModule,
   ],
   templateUrl: './checklist-item-modal.component.html',
   styleUrl: './checklist-item-modal.component.scss',

@@ -2,7 +2,7 @@
   
   <!-- FILA 1: HORA (6 COLS) Y RESPONSABLE (6 COLS) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="hora"
@@ -11,12 +11,12 @@
         class="w-full"
         autocomplete="off" />
       <label for="hora">Hora de Inicio *</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
-      <p-dropdown
+    <p-floatlabel variant="on" class="w-full block">
+      <p-select
         id="responsable"
         inputId="responsable"
         [options]="opcionesResponsables"
@@ -25,14 +25,14 @@
         formControlName="responsable"
         styleClass="w-full"
         placeholder="Seleccionar Responsable">
-      </p-dropdown>
+      </p-select>
       <label for="responsable">Responsable Principal *</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- FILA 2: ACTIVIDAD / MOMENTO CLAVE (12 COLS) -->
   <div class="col-span-12 flex flex-col gap-1">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
         id="actividad"
@@ -41,7 +41,7 @@
         class="w-full"
         autocomplete="off" />
       <label for="actividad">Nombre del Momento / Actividad * (ej. Entrada a la Pista)</label>
-    </p-floatLabel>
+    </p-floatlabel>
     @if (form.get('actividad')?.touched && form.get('actividad')?.invalid) {
       <span class="text-xs text-rose-500 font-semibold pl-1">Por favor indica qué actividad ocurrirá.</span>
     }
@@ -49,16 +49,16 @@
 
   <!-- FILA 3: DETALLES Y REQUERIMIENTOS (12 COLS) -->
   <div class="col-span-12">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <textarea
         id="detalles"
-        pInputTextarea
+        pTextarea
         formControlName="detalles"
         rows="3"
         class="w-full"
         placeholder="Ej. Canción: A Thousand Years. Chisperos fríos encendidos al segundo 45..."></textarea>
       <label for="detalles">Detalles Técnicos / Notas para el Staff</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- BOTONES DE ACCIÓN -->

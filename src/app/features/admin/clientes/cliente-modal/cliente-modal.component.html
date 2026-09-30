@@ -2,7 +2,7 @@
 <!--  class="grid grid-cols-12 gap-5 pt-4"-->
   <!-- Nombre Completo (Fila completa - 12 columnas) -->
   <div class="col-span-12">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         id="modalNombre"
         pInputText
@@ -11,12 +11,12 @@
         autocomplete="off"
       />
       <label for="modalNombre">Nombre Completo *</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- Teléfono / WhatsApp (Media fila en desktop - 6 columnas) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         id="modalTelefono"
         pInputText
@@ -26,12 +26,12 @@
         placeholder="Ej. 6671234567"
       />
       <label for="modalTelefono">Teléfono / WhatsApp *</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- Correo Electrónico (Media fila en desktop - 6 columnas) -->
   <div class="col-span-12 sm:col-span-6">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <input
         id="modalEmail"
         pInputText
@@ -42,21 +42,21 @@
         placeholder="correo@ejemplo.com"
       />
       <label for="modalEmail">Correo Electrónico (Opcional)</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- Notas internas (Fila completa - 12 columnas) -->
   <div class="col-span-12">
-    <p-floatLabel class="w-full block">
+    <p-floatlabel variant="on" class="w-full block">
       <textarea
         id="modalNotas"
-        pInputTextarea
+        pTextarea
         formControlName="notas"
         rows="3"
         class="w-full resize-none"
       ></textarea>
       <label for="modalNotas">Notas o preferencias de atención</label>
-    </p-floatLabel>
+    </p-floatlabel>
   </div>
 
   <!-- Acciones del Modal (Alineadas al final) -->

@@ -21,7 +21,7 @@
       
       <!-- Contenedor OTP con clase para soporte de teclado móvil numérico y margen my-8 -->
       <div class="pin-otp-contenedor my-8 flex justify-center w-full">
-        <p-inputOtp
+        <p-inputotp
           appOtpNumerico
           (caracterInvalido)="mostrarAlertaSoloNumeros()"
           [(ngModel)]="pinIngresado"

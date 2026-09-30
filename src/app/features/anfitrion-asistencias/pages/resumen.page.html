@@ -170,7 +170,7 @@
             <p-button
               [label]="vm.descargandoDossier() ? 'Generando Dossier...' : 'Descargar Dossier PDF'"
               [icon]="vm.descargandoDossier() ? 'pi pi-spin pi-spinner' : 'pi pi-file-pdf'"
-              severity="warning"
+              severity="warn"
               styleClass="p-button-sm font-semibold !rounded-xl !bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white shadow-sm"
               [disabled]="vm.descargandoDossier()"
               (onClick)="vm.descargarDossierPdf()"
@@ -797,12 +797,12 @@
               </div>
             </div>
 
-            <p-progressBar
+            <p-progressbar
               [value]="vm.porcentajeConfirmacion()"
               [showValue]="false"
               styleClass="confirmacion-progressbar mb-4"
             >
-            </p-progressBar>
+            </p-progressbar>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t border-gray-200/60">
               <div
@@ -1004,12 +1004,12 @@
               }}%)</span
             >
           </div>
-          <p-progressBar
+          <p-progressbar
             [value]="vm.porcentajeAsistencia()"
             [showValue]="false"
             styleClass="aforo-progressbar"
           >
-          </p-progressBar>
+          </p-progressbar>
         </div>
       </div>
     }
@@ -1235,12 +1235,12 @@
                 </span>
               </div>
 
-              <p-progressBar
+              <p-progressbar
                 [value]="vm.presupuestoPorcentajePagado()"
                 [showValue]="false"
                 styleClass="presupuesto-progressbar my-4"
               >
-              </p-progressBar>
+              </p-progressbar>
 
               <div class="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
                 <div>
@@ -1299,12 +1299,12 @@
                 </span>
               </div>
 
-              <p-progressBar
+              <p-progressbar
                 [value]="vm.checklistPorcentajeAvance()"
                 [showValue]="false"
                 styleClass="checklist-progressbar my-4"
               >
-              </p-progressBar>
+              </p-progressbar>
 
               <div class="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100 text-center">
                 <div>
@@ -1369,7 +1369,7 @@
               label="QR para Mesas"
               icon="pi pi-qrcode"
               size="small"
-              severity="warning"
+              severity="warn"
               styleClass="!bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white font-semibold !rounded-xl shadow-xs"
               (onClick)="vm.abrirModalQrMesas()"
             >

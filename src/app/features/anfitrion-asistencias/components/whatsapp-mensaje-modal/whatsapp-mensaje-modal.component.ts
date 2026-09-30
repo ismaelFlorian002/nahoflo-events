@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 import { InvitadoModel } from '../../../../core/models/invitado.model';
@@ -12,7 +12,7 @@ import { copiarAlPortapapeles } from '../../../../core/utils/clipboard.util';
 @Component({
   selector: 'app-whatsapp-mensaje-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, InputTextareaModule],
+  imports: [CommonModule, FormsModule, ButtonModule, TextareaModule],
   templateUrl: './whatsapp-mensaje-modal.component.html',
   styleUrl: './whatsapp-mensaje-modal.component.scss',
 })

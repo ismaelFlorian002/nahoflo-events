@@ -10,8 +10,8 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
-import { CalendarModule } from 'primeng/calendar';
+import { Popover, PopoverModule } from 'primeng/popover';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 
@@ -31,8 +31,8 @@ import { PartnerModalComponent } from './partner-modal/partner-modal.component';
     TagModule,
     TooltipModule,
     DynamicDialogModule,
-    OverlayPanelModule,
-    CalendarModule,
+    PopoverModule,
+    DatePickerModule,
     ConfirmDialogModule,
     ToastModule,
   ],
@@ -255,7 +255,7 @@ export class PartnersComponent implements OnInit {
   seleccionarFiltroEstado(
     estado: 'todos' | 'activos' | 'inactivos',
     table?: Table,
-    op?: OverlayPanel,
+    op?: Popover,
   ): void {
     this.filtroEstado.set(estado);
     table?.reset();
@@ -265,14 +265,14 @@ export class PartnersComponent implements OnInit {
   seleccionarFiltroRol(
     rol: 'todos' | 'admin' | 'partner',
     table?: Table,
-    op?: OverlayPanel,
+    op?: Popover,
   ): void {
     this.filtroRol.set(rol);
     table?.reset();
     op?.hide();
   }
 
-  seleccionarFecha(fecha: Date | null, table?: Table, op?: OverlayPanel): void {
+  seleccionarFecha(fecha: Date | null, table?: Table, op?: Popover): void {
     this.filtroFecha.set(fecha);
     table?.reset();
     op?.hide();

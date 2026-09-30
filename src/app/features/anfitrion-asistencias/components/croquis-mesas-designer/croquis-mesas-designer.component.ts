@@ -13,11 +13,11 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { Table, TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { Popover, PopoverModule } from 'primeng/popover';
 import { BadgeModule } from 'primeng/badge';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -34,11 +34,11 @@ import { MesaDetalleModalComponent } from '../mesa-detalle-modal/mesa-detalle-mo
     CommonModule,
     FormsModule,
     ButtonModule,
-    DropdownModule,
+    SelectModule,
     TooltipModule,
     TableModule,
     InputTextModule,
-    OverlayPanelModule,
+    PopoverModule,
     BadgeModule,
   ],
   templateUrl: './croquis-mesas-designer.component.html',
@@ -172,7 +172,7 @@ export class CroquisMesasDesignerComponent implements OnInit, OnChanges {
   seleccionarFiltroEstado(
     estado: 'todos' | 'pendiente' | 'confirmado' | 'sin_mesa',
     table?: Table,
-    op?: OverlayPanel,
+    op?: Popover,
   ): void {
     this.filtroEstado.set(estado);
     table?.reset();

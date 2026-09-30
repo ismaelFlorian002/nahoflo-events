@@ -46,13 +46,13 @@ export class TicketScannerComponent implements OnDestroy {
     return status !== 'starting' && status !== 'stopping';
   });
 
-  protected readonly statusSeverity = computed(() => {
+  protected readonly statusSeverity = computed<'success' | 'warn' | 'danger' | 'secondary'>(() => {
     switch (this.qrScanner.status()) {
       case 'scanning':
         return 'success';
       case 'starting':
       case 'stopping':
-        return 'warning';
+        return 'warn';
       case 'error':
         return 'danger';
       default:

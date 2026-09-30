@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import {
@@ -24,7 +24,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
-    DropdownModule,
+    SelectModule,
     FloatLabelModule,
   ],
   templateUrl: './invitado-form-modal.component.html',

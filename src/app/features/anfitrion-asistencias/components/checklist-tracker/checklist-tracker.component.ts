@@ -205,12 +205,12 @@ export class ChecklistTrackerComponent {
     }
   }
 
-  obtenerSeverityPrioridad(prioridad?: string): 'danger' | 'warning' | 'info' {
+  obtenerSeverityPrioridad(prioridad?: string): 'danger' | 'warn' | 'info' {
     switch (prioridad) {
       case 'alta':
         return 'danger';
       case 'media':
-        return 'warning';
+        return 'warn';
       case 'baja':
         return 'info';
       default:

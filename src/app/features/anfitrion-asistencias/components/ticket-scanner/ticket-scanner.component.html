@@ -10,7 +10,7 @@
   <p-toolbar>
     <ng-template pTemplate="start">
       @if (qrScanner.status() === 'starting' || qrScanner.status() === 'stopping') {
-        <p-progressSpinner
+        <p-progressspinner
           strokeWidth="4"
           animationDuration=".8s"
           ariaLabel="Procesando cámara"
@@ -41,7 +41,7 @@
 
     @if (!qrScanner.isActive()) {
       <div
-        style="position: absolute; inset: 0; display: grid; place-items: center; background: var(--surface-100);"
+        style="position: absolute; inset: 0; display: grid; place-items: center; background: var(--p-surface-100);"
       >
         <p-button
           label="Encender cámara y escanear pases VIP"
@@ -54,10 +54,10 @@
   </div>
 
   @if (qrScanner.error(); as error) {
-    <p-message severity="error" [text]="error.message" />
+    <p-message severity="error">{{ error.message }}</p-message>
   }
 
   @if (qrScanner.result(); as result) {
-    <p-message severity="success" text="Pase leído correctamente." />
+    <p-message severity="success">Pase leído correctamente.</p-message>
   }
 </p-card>

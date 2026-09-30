@@ -5,16 +5,17 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { EventService } from '../../../../core/services/event.service';
-import { CalendarModule } from 'primeng/calendar';
-import { TabViewModule } from 'primeng/tabview';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { DatePickerModule } from 'primeng/datepicker';
+import { TabsModule } from 'primeng/tabs';
+import { TextareaModule } from 'primeng/textarea';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DialogModule } from 'primeng/dialog';
 import { ImagePreviewComponent } from './image-preview.component';
-import { PrimeNGConfig, ConfirmationService, MessageService } from 'primeng/api';
-import { InputSwitchModule } from 'primeng/inputswitch';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { PrimeNG } from 'primeng/config';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { SelectButtonModule } from 'primeng/selectbutton';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { ClienteService } from '../../../../core/services/cliente.service';
 import { ClienteModel } from '../../../../core/models/cliente.model';
@@ -30,14 +31,14 @@ import { firstValueFrom } from 'rxjs';
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
-    CalendarModule,
-    TabViewModule,
-    InputTextareaModule,
+    DatePickerModule,
+    TabsModule,
+    TextareaModule,
     FileUploadModule,
     DialogModule,
-    InputSwitchModule,
+    ToggleSwitchModule,
     SelectButtonModule,
-    DropdownModule,
+    SelectModule,
     TooltipModule,
     FloatLabelModule,
     FormsModule,
@@ -53,7 +54,7 @@ export class EventFormComponent implements OnInit {
   public  ref    = inject(DynamicDialogRef);
   public  config = inject(DynamicDialogConfig);
   private dialogService    = inject(DialogService);
-  private primengConfig    = inject(PrimeNGConfig);
+  private primeng          = inject(PrimeNG);
   private confirmationService = inject(ConfirmationService);
   private messageService      = inject(MessageService);
   previewVisible = false;
@@ -123,7 +124,7 @@ export class EventFormComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.primengConfig.setTranslation({
+    this.primeng.setTranslation({
       firstDayOfWeek: 1,
       dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
       dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],

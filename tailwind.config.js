@@ -8,6 +8,13 @@ module.exports = {
   },
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+      },
+      // Alias usado por las plantillas; Tailwind 3 no incluye shadow-xs.
+      boxShadow: {
+        xs: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+      },
       colors: {
         // Paleta Rosa Pastel Premium (Acentos románticos y hovers sutiles)
         'pastel-pink': {

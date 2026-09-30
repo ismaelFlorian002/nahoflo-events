@@ -38,7 +38,7 @@
     styleClass="p-datatable-borderless modern-table">
 
     <!-- TOOLBAR DE LA TABLA: RESPONSIVA (MÓVIL, TABLET Y DESKTOP) -->
-    <ng-template pTemplate="caption">
+    <ng-template #caption>
       <div class="table-toolbar">
 
         <!-- IZQUIERDA: BUSCADOR + FILTRO POR ESTADO + EXPORTAR -->
@@ -69,7 +69,7 @@
               title="Filtrar por estado de respuesta">
             </p-button>
 
-            <p-overlayPanel #opFiltros styleClass="popover-filtros-invitados">
+            <p-popover #opFiltros styleClass="popover-filtros-invitados">
               <div class="menu-filtros-popover">
                 <div class="popover-filtros-header">
                   <i class="pi pi-filter"></i>
@@ -126,7 +126,7 @@
                   </button>
                 </div>
               </div>
-            </p-overlayPanel>
+            </p-popover>
           </div>
 
           <span class="toolbar-divider col-desktop"></span>
@@ -210,21 +210,21 @@
     </ng-template>
 
     <!-- CABECERAS MINIMALISTAS Y RESPONSIVAS -->
-    <ng-template pTemplate="header">
+    <ng-template #header>
       <tr>
         <th pSortableColumn="nombre" class="col-nombre">Nombre / Familia
-          <p-sortIcon field="nombre"></p-sortIcon>
+          <p-sort-icon field="nombre"></p-sort-icon>
         </th>
         <th pSortableColumn="asistira" class="col-respuesta col-desktop-tablet">Respuesta
-          <p-sortIcon field="asistira"></p-sortIcon>
+          <p-sort-icon field="asistira"></p-sort-icon>
         </th>
         <th pSortableColumn="pasesConfirmados" class="col-pases col-desktop-tablet"
             style="text-align: center;">Pases
-          <p-sortIcon field="pasesConfirmados"></p-sortIcon>
+          <p-sort-icon field="pasesConfirmados"></p-sort-icon>
         </th>
         @if (evento()?.modulos?.tipoControlInvitados !== 'lista_puerta') {
           <th pSortableColumn="mesa" class="col-mesa col-desktop">Mesa / Menú
-            <p-sortIcon field="mesa"></p-sortIcon>
+            <p-sort-icon field="mesa"></p-sort-icon>
           </th>
         }
         <th class="col-whatsapp col-desktop">WhatsApp</th>
@@ -236,7 +236,7 @@
     </ng-template>
 
     <!-- FILAS DE LA TABLA -->
-    <ng-template pTemplate="body" let-invitado>
+    <ng-template #body let-invitado>
       <tr>
         <!-- COLUMNA NOMBRE: En móvil muestra nombre + ficha de estado y pases -->
         <td class="col-nombre fw-medium">
@@ -248,7 +248,7 @@
               @if (invitado.estado === 'pendiente') {
                 <p-badge
                   value="Pendiente"
-                  severity="warning"
+                  severity="warn"
                   icon="pi pi-clock">
                 </p-badge>
               } @else {
@@ -280,7 +280,7 @@
           @if (invitado.estado === 'pendiente') {
             <p-badge
               value="Pendiente"
-              severity="warning"
+              severity="warn"
               icon="pi pi-clock">
             </p-badge>
           } @else {
@@ -360,7 +360,7 @@
                 icon="pi pi-qrcode"
                 [rounded]="true"
                 [text]="true"
-                severity="warning"
+                severity="warn"
                 pTooltip="Ver Pase QR VIP"
                 tooltipPosition="top"
                 (onClick)="abrirModalQr(invitado)">
@@ -440,7 +440,7 @@
     </ng-template>
 
     <!-- ESTADO VACÍO ELEGANTE -->
-    <ng-template pTemplate="emptymessage">
+    <ng-template #emptymessage>
       <tr>
         <td [attr.colspan]="evento()?.modulos?.tipoControlInvitados === 'total' ? 6 : 5" class="empty-state">
           <i class="pi pi-folder-open empty-icon"></i>
