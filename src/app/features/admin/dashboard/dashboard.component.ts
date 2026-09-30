@@ -329,6 +329,7 @@ export class DashboardComponent implements OnInit {
       breakpoints: { '960px': '85vw', '640px': '95vw' },
       closable: true,
       focusOnShow: false,
+      styleClass: 'event-form-dialog',
       data: eventoAEditar,
     });
 

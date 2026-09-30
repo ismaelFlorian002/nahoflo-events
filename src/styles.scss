@@ -109,6 +109,30 @@ app-root {
   }
 }
 
+/* El formulario de evento tiene un único scroll en sus paneles. El contenido
+   del diálogo queda fijo para que sus acciones no desaparezcan al desplazarse. */
+.event-form-dialog {
+  height: 90vh !important;
+  max-height: 90vh !important;
+
+  .p-dialog-content {
+    display: flex;
+    height: calc(90vh - 76px);
+    max-height: calc(90vh - 76px);
+    min-height: 0;
+    overflow: hidden !important;
+    padding: 1.5rem !important;
+    box-sizing: border-box;
+  }
+
+  app-event-form {
+    display: block;
+    width: 100%;
+    min-height: 0;
+    height: 100%;
+  }
+}
+
 /* El tema gestiona foco, valor e invalidación de FloatLabel. */
 .p-floatlabel > :is(.p-inputtext, .p-textarea, .p-select, .p-datepicker, .p-inputnumber, .p-password),
 .p-floatlabel :is(.p-datepicker-input, .p-inputnumber-input, .p-password-input) {

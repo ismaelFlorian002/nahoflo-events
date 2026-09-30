@@ -351,9 +351,18 @@
               </div>
 
               <!-- 3. Botón de subida -->
-              <p-fileupload *ngIf="!existingFotoCeremoniaUrl && !fotoCeremoniaFile" mode="basic"
+              <p-fileupload class="upload-field" *ngIf="!existingFotoCeremoniaUrl && !fotoCeremoniaFile" mode="advanced"
+                            [showUploadButton]="false" [showCancelButton]="false"
                             chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
-                            (onSelect)="onEstructuralSelected($event, 'ceremonia')"></p-fileupload>
+                            (onSelect)="onEstructuralSelected($event, 'ceremonia')">
+                <ng-template #empty>
+                  <div class="upload-empty-state">
+                    <i class="pi pi-cloud-upload"></i>
+                    <strong>Arrastra una foto aquí</strong>
+                    <span>o haz clic para buscarla · JPG, PNG</span>
+                  </div>
+                </ng-template>
+              </p-fileupload>
             </div>
           </div>
         </div>
@@ -421,9 +430,18 @@
               </div>
 
               <!-- 3. Botón de subida -->
-              <p-fileupload *ngIf="!existingFotoRecepcionUrl && !fotoRecepcionFile" mode="basic"
+              <p-fileupload class="upload-field" *ngIf="!existingFotoRecepcionUrl && !fotoRecepcionFile" mode="advanced"
+                            [showUploadButton]="false" [showCancelButton]="false"
                             chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
-                            (onSelect)="onEstructuralSelected($event, 'recepcion')"></p-fileupload>
+                            (onSelect)="onEstructuralSelected($event, 'recepcion')">
+                <ng-template #empty>
+                  <div class="upload-empty-state">
+                    <i class="pi pi-cloud-upload"></i>
+                    <strong>Arrastra una foto aquí</strong>
+                    <span>o haz clic para buscarla · JPG, PNG</span>
+                  </div>
+                </ng-template>
+              </p-fileupload>
             </div>
           </div>
         </div>
@@ -485,9 +503,18 @@
           </div>
 
           <!-- 3. Botón para subir música -->
-          <p-fileupload *ngIf="!existingMusicaFondoUrl && !musicaFondoFile" mode="basic"
+          <p-fileupload class="upload-field" *ngIf="!existingMusicaFondoUrl && !musicaFondoFile" mode="advanced"
+                        [showUploadButton]="false" [showCancelButton]="false"
                         chooseLabel="Seleccionar Canción (MP3)" chooseIcon="pi pi-volume-up" accept="audio/*"
-                        (onSelect)="onMusicaSelected($event)"></p-fileupload>
+                        (onSelect)="onMusicaSelected($event)">
+            <ng-template #empty>
+              <div class="upload-empty-state upload-empty-audio">
+                <i class="pi pi-volume-up"></i>
+                <strong>Arrastra tu canción aquí</strong>
+                <span>o haz clic para buscarla · MP3</span>
+              </div>
+            </ng-template>
+          </p-fileupload>
         </div>
 
         <!-- FOTO PRINCIPAL -->
@@ -532,9 +559,18 @@
             </div>
           </div>
 
-          <p-fileupload *ngIf="!existingFotoPrincipalUrl && !fotoPrincipalFile" mode="basic"
+          <p-fileupload class="upload-field" *ngIf="!existingFotoPrincipalUrl && !fotoPrincipalFile" mode="advanced"
+                        [showUploadButton]="false" [showCancelButton]="false"
                         chooseLabel="Seleccionar Foto" chooseIcon="pi pi-upload" accept="image/*"
-                        (onSelect)="onEstructuralSelected($event, 'principal')"></p-fileupload>
+                        (onSelect)="onEstructuralSelected($event, 'principal')">
+            <ng-template #empty>
+              <div class="upload-empty-state">
+                <i class="pi pi-image"></i>
+                <strong>Arrastra la foto principal aquí</strong>
+                <span>o haz clic para buscarla · JPG, PNG</span>
+              </div>
+            </ng-template>
+          </p-fileupload>
         </div>
 
         <!-- GALERÍA LIBRE -->
@@ -558,11 +594,11 @@
           </div>
 
           <!-- UPLOADER GALERÍA -->
-          <p-fileupload #galeriaUploader [multiple]="true" accept="image/*" maxFileSize="10000000"
+          <p-fileupload #galeriaUploader class="upload-gallery" [multiple]="true" accept="image/*" maxFileSize="10000000"
                         [showUploadButton]="false" [showCancelButton]="false" chooseLabel="Elegir Fotos"
                         (onSelect)="onGaleriaSelected($event)">
 
-            <ng-template pTemplate="empty">
+            <ng-template #empty>
               <div class="flex flex-col items-center justify-center py-10 border border-dashed border-slate-300 rounded-lg bg-slate-50">
                 <i class="pi pi-cloud-upload text-5xl text-slate-300 mb-2"></i>
                 <p class="m-0 text-slate-500 text-sm">Arrastra y suelta tus fotos aquí</p>
@@ -611,3 +647,4 @@
   </div>
 
 </form>
+

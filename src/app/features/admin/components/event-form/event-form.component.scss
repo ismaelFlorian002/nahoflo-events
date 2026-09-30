@@ -2,12 +2,26 @@
 :host {
   display: block;
   width: 100%;
+  height: 100%;
+  min-height: 0;
   overflow-x: hidden;
 }
 
 form {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
   overflow-x: hidden;
+  overflow-y: hidden;
   max-width: 100%;
+}
+
+form > .sticky {
+  position: relative;
+  bottom: auto;
+  z-index: 50;
+  flex-shrink: 0;
 }
 
 /* Header de Pestañas Fijo (Sticky) para PrimeNG v22 (p-tabs) */
@@ -15,8 +29,12 @@ form {
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-height: 0;
+  height: 100%;
 
-  .p-tablist {
+    .p-tablist {
+    flex: 0 0 auto;
+    min-height: 3.25rem;
     position: sticky;
     top: -1.5rem;
     margin: -1.5rem -1.5rem 0 -1.5rem;
@@ -76,6 +94,9 @@ form {
   .p-tabpanels {
     background: transparent;
     padding: 0;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 
@@ -116,6 +137,137 @@ form {
         color: #ffffff !important;
       }
     }
+  }
+}
+
+/* Zonas de carga más claras y fáciles de descubrir */
+:host ::ng-deep .upload-field {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 32rem;
+  padding: 0.85rem 1rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, #fffdf7, #f8fafc);
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover,
+  &:focus-within {
+    border-color: #cca633;
+    background: #fffdf5;
+    box-shadow: 0 0 0 3px rgba(204, 166, 51, 0.12);
+  }
+
+  .p-fileupload-header {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    pointer-events: none;
+  }
+
+  .p-fileupload-content {
+    min-height: 7rem;
+    padding: 0.75rem;
+    border: 1px dashed #dbe4ef;
+    border-radius: 0.65rem;
+    background: rgba(255, 255, 255, 0.65);
+  }
+
+  .p-fileupload-empty {
+    min-height: 0;
+    padding: 0;
+  }
+
+  .p-fileupload-choose-button {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .p-fileupload-content { cursor: pointer; }
+}
+
+.upload-empty-state {
+  min-height: 5.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  color: #64748b;
+  text-align: center;
+
+  i {
+    color: #cca633;
+    font-size: 1.65rem;
+    margin-bottom: 0.15rem;
+  }
+
+  strong {
+    color: #334155;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  span {
+    font-size: 0.72rem;
+  }
+}
+
+.upload-empty-audio i {
+  color: #7c3aed;
+}
+
+:host ::ng-deep .upload-gallery {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.85rem;
+  background: #f8fafc;
+
+  .p-fileupload-header {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    pointer-events: none;
+  }
+
+  .p-fileupload-choose-button {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    color: transparent !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .p-fileupload-content {
+    min-height: 9rem;
+    padding: 0.5rem;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .p-fileupload-empty {
+    min-height: 7rem;
   }
 }
 
