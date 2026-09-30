@@ -1,0 +1,449 @@
+<div class="w-full">
+
+  <!-- ENCABEZADO: TÍTULO Y BOTÓN NUEVO USUARIO -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">
+          Directorio de Usuarios
+        </h1>
+        <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200/80 uppercase tracking-wider">
+          Control de Accesos (RBAC)
+        </span>
+      </div>
+      <p class="text-sm text-gray-500 m-0">
+        Gestiona los usuarios de la plataforma, asigna roles de Administrador o Partner y administra sus permisos
+      </p>
+    </div>
+
+    <!-- Botón Nuevo Usuario -->
+    <p-button
+      label="Nuevo Usuario"
+      icon="pi pi-user-plus"
+      size="small"
+      (onClick)="openDialog()"
+      [rounded]="true"
+      styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
+    </p-button>
+  </div>
+
+  <!-- TARJETA CONTENEDORA PREMIUM DE LA TABLA -->
+  <div class="bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-3.5 sm:p-6">
+    <div class="overflow-x-auto -mx-3.5 sm:mx-0 px-3.5 sm:px-0">
+      <p-table
+        #dt
+        [value]="usuariosFiltrados()"
+        [loading]="cargando()"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[5, 10, 20]"
+        styleClass="p-datatable-borderless modern-table w-full min-w-[700px]">
+
+        <!-- TOOLBAR DE LA TABLA (Filtros corporativos y Buscador) -->
+        <ng-template pTemplate="caption">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-4">
+
+            <!-- FILTROS CORPORATIVOS (ESTADO, ROL Y FECHA) -->
+            <div class="flex flex-wrap items-center gap-2">
+
+              <!-- 1. FILTRO DE ESTADO (BOTÓN + OVERLAYPANEL) -->
+              <div class="filtro-dropdown-wrap">
+                <p-button
+                  icon="pi pi-filter"
+                  [label]="'Estado: ' + labelFiltroEstado()"
+                  [badge]="conteoFiltroEstado()"
+                  badgeClass="p-badge-secondary"
+                  size="small"
+                  [outlined]="filtroEstado() === 'todos'"
+                  [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
+                  (onClick)="opFiltrosEstado.toggle($event)"
+                  title="Filtrar por estado del usuario">
+                </p-button>
+
+                <p-overlayPanel #opFiltrosEstado styleClass="popover-filtros-invitados">
+                  <div class="menu-filtros-popover">
+                    <div class="popover-filtros-header">
+                      <i class="pi pi-filter"></i>
+                      <span>Filtrar por estado</span>
+                    </div>
+
+                    <div class="popover-filtros-lista">
+                      <button
+                        type="button"
+                        class="item-filtro-btn"
+                        [class.activo]="filtroEstado() === 'todos'"
+                        (click)="seleccionarFiltroEstado('todos', dt, opFiltrosEstado)">
+                        <span class="filtro-item-left">
+                          <i class="pi pi-th-large text-slate-500"></i>
+                          <span>Todos los usuarios</span>
+                        </span>
+                        <span class="badge-filtro-cant">{{ totalUsuarios() }}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="item-filtro-btn activo-verde"
+                        [class.activo]="filtroEstado() === 'activos'"
+                        (click)="seleccionarFiltroEstado('activos', dt, opFiltrosEstado)">
+                        <span class="filtro-item-left">
+                          <i class="pi pi-check-circle text-emerald-600"></i>
+                          <span>Activos</span>
+                        </span>
+                        <span class="badge-filtro-cant">{{ totalActivos() }}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="item-filtro-btn activo-ambar"
+                        [class.activo]="filtroEstado() === 'inactivos'"
+                        (click)="seleccionarFiltroEstado('inactivos', dt, opFiltrosEstado)">
+                        <span class="filtro-item-left">
+                          <i class="pi pi-power-off text-amber-500"></i>
+                          <span>Inactivos</span>
+                        </span>
+                        <span class="badge-filtro-cant">{{ totalInactivos() }}</span>
+                      </button>
+                    </div>
+                  </div>
+                </p-overlayPanel>
+              </div>
+
+              <!-- 2. FILTRO DE ROL (BOTÓN + OVERLAYPANEL) -->
+              <div class="filtro-dropdown-wrap">
+                <p-button
+                  icon="pi pi-shield"
+                  [label]="'Rol: ' + labelFiltroRol()"
+                  [badge]="conteoFiltroRol()"
+                  badgeClass="p-badge-secondary"
+                  size="small"
+                  [outlined]="filtroRol() === 'todos'"
+                  [severity]="filtroRol() !== 'todos' ? 'primary' : 'secondary'"
+                  (onClick)="opFiltrosRol.toggle($event)"
+                  title="Filtrar por rol de usuario">
+                </p-button>
+
+                <p-overlayPanel #opFiltrosRol styleClass="popover-filtros-invitados">
+                  <div class="menu-filtros-popover">
+                    <div class="popover-filtros-header">
+                      <i class="pi pi-shield"></i>
+                      <span>Filtrar por rol</span>
+                    </div>
+
+                    <div class="popover-filtros-lista">
+                      <button
+                        type="button"
+                        class="item-filtro-btn"
+                        [class.activo]="filtroRol() === 'todos'"
+                        (click)="seleccionarFiltroRol('todos', dt, opFiltrosRol)">
+                        <span class="filtro-item-left">
+                          <i class="pi pi-users text-slate-500"></i>
+                          <span>Todos los roles</span>
+                        </span>
+                        <span class="badge-filtro-cant">{{ totalUsuarios() }}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="item-filtro-btn activo-ambar"
+                        [class.activo]="filtroRol() === 'admin'"
+                        (click)="seleccionarFiltroRol('admin', dt, opFiltrosRol)">
+                        <span class="filtro-item-left">
+                          <i class="pi pi-shield text-gold-600"></i>
+                          <span>Administradores</span>
+                        </span>
+                        <span class="badge-filtro-cant">{{ totalAdmins() }}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        class="item-filtro-btn activo-verde"
+                        [class.activo]="filtroRol() === 'partner'"
+                        (click)="seleccionarFiltroRol('partner', dt, opFiltrosRol)">
+                        <span class="filtro-item-left">
+                          <i class="pi pi-briefcase text-violet-600"></i>
+                          <span>Partners</span>
+                        </span>
+                        <span class="badge-filtro-cant">{{ totalPartners() }}</span>
+                      </button>
+                    </div>
+                  </div>
+                </p-overlayPanel>
+              </div>
+
+              <!-- 3. FILTRO DE FECHA DE REGISTRO (BOTÓN + OVERLAYPANEL CALENDARIO) -->
+              <div class="filtro-dropdown-wrap">
+                <p-button
+                  icon="pi pi-calendar"
+                  [label]="labelFiltroFecha()"
+                  [badge]="filtroFecha() ? '1' : undefined"
+                  badgeClass="p-badge-secondary"
+                  size="small"
+                  [outlined]="!filtroFecha()"
+                  [severity]="filtroFecha() ? 'primary' : 'secondary'"
+                  (onClick)="opFiltroFecha.toggle($event)"
+                  title="Filtrar por fecha de registro">
+                </p-button>
+
+                <p-overlayPanel #opFiltroFecha styleClass="popover-filtros-invitados">
+                  <div class="menu-filtros-popover" style="min-width: 290px;">
+                    <div class="popover-filtros-header">
+                      <i class="pi pi-calendar"></i>
+                      <span>Filtrar por fecha de registro</span>
+                    </div>
+
+                    <div class="popover-filtros-lista">
+                      <button
+                        type="button"
+                        class="item-filtro-btn"
+                        [class.activo]="!filtroFecha()"
+                        (click)="seleccionarFecha(null, dt, opFiltroFecha)">
+                        <span class="filtro-item-left">
+                          <i class="pi pi-calendar text-slate-500"></i>
+                          <span>Todas las fechas</span>
+                        </span>
+                        <span class="badge-filtro-cant">{{ totalUsuarios() }}</span>
+                      </button>
+
+                      <div class="pt-2 pb-1 border-t border-gray-100 mt-1">
+                        <p-calendar
+                          [inline]="true"
+                          [ngModel]="filtroFecha()"
+                          (onSelect)="seleccionarFecha($event, dt, opFiltroFecha)"
+                          dateFormat="dd/mm/yy"
+                          styleClass="w-full mini-admin-calendar">
+                          <ng-template pTemplate="date" let-date>
+                            <span class="relative flex items-center justify-center w-full h-full">
+                              {{ date.day }}
+                              @if (tieneUsuarioEnFecha(date)) {
+                                <span class="absolute bottom-0.5 w-1.5 h-1.5 rounded-full bg-gold-500"></span>
+                              }
+                            </span>
+                          </ng-template>
+                        </p-calendar>
+                      </div>
+
+                      @if (filtroFecha()) {
+                        <div class="pt-1.5 border-t border-gray-100 flex justify-end">
+                          <button
+                            type="button"
+                            (click)="seleccionarFecha(null, dt, opFiltroFecha)"
+                            class="text-xs text-red-600 hover:text-red-700 font-medium py-1 px-2.5 rounded-lg hover:bg-red-50 border-0 bg-transparent cursor-pointer flex items-center gap-1 transition-colors">
+                            <i class="pi pi-times text-[10px]"></i>
+                            <span>Quitar filtro de fecha</span>
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </p-overlayPanel>
+              </div>
+
+              <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
+              @if (hayFiltrosActivos()) {
+                <p-button
+                  icon="pi pi-filter-slash"
+                  label="Limpiar filtros"
+                  size="small"
+                  [text]="true"
+                  severity="secondary"
+                  (onClick)="limpiarTodosFiltros(dt)"
+                  pTooltip="Restablecer todos los filtros"
+                  tooltipPosition="top">
+                </p-button>
+              }
+
+            </div>
+
+            <!-- BÚSQUEDA GLOBAL -->
+            <span class="p-input-icon-left w-full md:w-80">
+              <i class="pi pi-search text-gray-400"></i>
+              <input
+                pInputText
+                type="text"
+                class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+                [ngModel]="terminoBusqueda()"
+                (input)="onBusquedaChange($any($event.target).value, dt)"
+                placeholder="Buscar por nombre, correo, rol o agencia..." />
+            </span>
+
+          </div>
+        </ng-template>
+
+        <!-- CABECERAS MINIMALISTAS Y ORDENABLES -->
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="displayName">
+              Usuario / Nombre
+              <p-sortIcon field="displayName"></p-sortIcon>
+            </th>
+            <th pSortableColumn="rol">
+              Rol
+              <p-sortIcon field="rol"></p-sortIcon>
+            </th>
+            <th pSortableColumn="agenciaNombre">
+              Agencia / Marca
+              <p-sortIcon field="agenciaNombre"></p-sortIcon>
+            </th>
+            <th pSortableColumn="fechaTimestamp">
+              Fecha de Registro
+              <p-sortIcon field="fechaTimestamp"></p-sortIcon>
+            </th>
+            <th pSortableColumn="estaActivo">
+              Estado
+              <p-sortIcon field="estaActivo"></p-sortIcon>
+            </th>
+            <th style="text-align: right;">Acciones</th>
+          </tr>
+        </ng-template>
+
+        <!-- CUERPO DE LA TABLA -->
+        <ng-template pTemplate="body" let-usuario>
+          <tr>
+
+            <!-- COLUMNA: NOMBRE Y CONTACTO -->
+            <td class="font-medium text-gray-900">
+              <div class="flex items-center gap-3">
+                <div
+                  [class]="usuario.rol === 'admin'
+                    ? 'bg-gold-50 border-gold-200/80 text-gold-700'
+                    : 'bg-violet-50 border-violet-200/80 text-violet-700'"
+                  class="w-9 h-9 rounded-full border flex items-center justify-center font-bold text-xs shrink-0 select-none shadow-xs">
+                  {{ usuario.displayName ? usuario.displayName.substring(0, 2).toUpperCase() : 'US' }}
+                </div>
+                <div>
+                  <div class="text-sm font-semibold text-gray-900 leading-tight">
+                    {{ usuario.displayName }}
+                  </div>
+                  <div class="text-xs text-gray-400 font-normal mt-0.5 flex items-center gap-1.5">
+                    <span>{{ usuario.email }}</span>
+                    @if (usuario.agenciaTelefono) {
+                      <span class="text-gray-300">·</span>
+                      <a
+                        [href]="getWhatsappUrl(usuario.agenciaTelefono)"
+                        target="_blank"
+                        class="inline-flex items-center text-emerald-600 hover:text-emerald-700 no-underline"
+                        pTooltip="Escribir por WhatsApp"
+                        tooltipPosition="top">
+                        <i class="pi pi-whatsapp text-xs mr-0.5"></i>
+                        <span>{{ usuario.agenciaTelefono }}</span>
+                      </a>
+                    }
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <!-- COLUMNA: ROL -->
+            <td>
+              @if (usuario.rol === 'admin') {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold-50 text-gold-700 text-xs font-bold border border-gold-200/60">
+                  <i class="pi pi-shield text-[11px]"></i>
+                  <span>Administrador</span>
+                </span>
+              } @else {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 text-xs font-bold border border-violet-200/60">
+                  <i class="pi pi-briefcase text-[11px]"></i>
+                  <span>Partner</span>
+                </span>
+              }
+            </td>
+
+            <!-- COLUMNA: AGENCIA -->
+            <td>
+              @if (usuario.rol === 'admin') {
+                <span class="text-xs text-gray-500 font-medium flex items-center gap-1">
+                  <i class="pi pi-star text-gold-500 text-[11px]"></i>
+                  <span>NahoFlo Studio</span>
+                </span>
+              } @else if (usuario.agenciaNombre) {
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-50 text-gray-700 text-xs font-medium border border-gray-200/60">
+                  <span>{{ usuario.agenciaNombre }}</span>
+                </span>
+              } @else {
+                <span class="text-xs text-gray-400 italic">Sin agencia asignada</span>
+              }
+            </td>
+
+            <!-- COLUMNA: FECHA -->
+            <td class="text-gray-600 text-sm font-medium">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-calendar text-gray-400 text-xs"></i>
+                <span>{{ usuario.fechaFormateada || '-' }}</span>
+              </div>
+            </td>
+
+            <!-- COLUMNA: ESTADO -->
+            <td>
+              <p-tag
+                [value]="usuario.estaActivo ? 'Activo' : 'Inactivo'"
+                [severity]="usuario.estaActivo ? 'success' : 'warning'"
+                [rounded]="true">
+              </p-tag>
+            </td>
+
+            <!-- COLUMNA: ACCIONES -->
+            <td style="text-align: right;">
+              <div class="flex items-center justify-end gap-1">
+
+                <!-- BOTÓN EDITAR -->
+                <p-button
+                  icon="pi pi-pencil"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  pTooltip="Editar Usuario y Rol"
+                  tooltipPosition="top"
+                  (onClick)="openDialog(usuario)">
+                </p-button>
+
+                <!-- BOTÓN TOGGLE ACTIVAR / DESACTIVAR -->
+                <p-button
+                  [icon]="usuario.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"
+                  [rounded]="true"
+                  [text]="true"
+                  [severity]="usuario.estaActivo ? 'warning' : 'success'"
+                  [pTooltip]="usuario.estaActivo ? 'Desactivar Cuenta' : 'Activar Cuenta'"
+                  tooltipPosition="top"
+                  (onClick)="toggleEstado(usuario)">
+                </p-button>
+
+              </div>
+            </td>
+
+          </tr>
+        </ng-template>
+
+        <!-- ESTADO VACÍO ELEGANTE -->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="py-12 text-center text-gray-400">
+              <i
+                [class]="hayFiltrosActivos() ? 'pi pi-filter-slash text-4xl text-gray-300 mb-2 block' : 'pi pi-users text-4xl text-gray-300 mb-2 block'"></i>
+              @if (!hayFiltrosActivos()) {
+                <p class="text-sm m-0">
+                  No se encontraron usuarios registrados en la plataforma.<br>
+                  Haz clic en "Nuevo Usuario" para dar de alta al primero.
+                </p>
+              } @else {
+                <div>
+                  <p class="text-sm m-0 font-medium text-gray-600">
+                    No se encontraron usuarios con los filtros seleccionados.
+                  </p>
+                  <button
+                    type="button"
+                    (click)="limpiarTodosFiltros(dt)"
+                    class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-gold-600 hover:text-gold-700 bg-gold-50 hover:bg-gold-100 px-3 py-1.5 rounded-lg border-0 cursor-pointer transition-colors">
+                    <i class="pi pi-filter-slash text-xs"></i>
+                    <span>Restablecer filtros</span>
+                  </button>
+                </div>
+              }
+            </td>
+          </tr>
+        </ng-template>
+
+      </p-table>
+    </div>
+  </div>
+
+</div>

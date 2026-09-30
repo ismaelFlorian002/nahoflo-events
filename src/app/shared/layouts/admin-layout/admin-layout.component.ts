@@ -1,7 +1,8 @@
-import { Component, inject, OnInit, OnDestroy, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, HostListener, ElementRef, ChangeDetectorRef, computed, signal, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { User } from '@angular/fire/auth';
 
 // Módulos de PrimeNG
@@ -11,6 +12,7 @@ import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AuthService } from '../../../core/services/auth';
+import { UsuarioService } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -28,12 +30,31 @@ import { AuthService } from '../../../core/services/auth';
   styleUrls: ['./admin-layout.component.scss'],
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private elementRef = inject(ElementRef);
-  private cdr = inject(ChangeDetectorRef);
+  private authService    = inject(AuthService);
+  private usuarioService = inject(UsuarioService);
+  private router         = inject(Router);
+  private elementRef     = inject(ElementRef);
+  private cdr            = inject(ChangeDetectorRef);
+  private ngZone         = inject(NgZone);
   private confirmationService = inject(ConfirmationService);
-  private messageService = inject(MessageService);
+  private messageService      = inject(MessageService);
+
+  // Perfil reactivo del usuario: se actualiza automáticamente al cambiar sesión
+  readonly perfil    = toSignal(this.usuarioService.perfil$, { initialValue: null });
+  readonly esAdmin   = computed(() => this.perfil()?.rol === 'admin');
+  readonly esPartner = computed(() => this.perfil()?.rol === 'partner');
+
+  /** Etiqueta del workspace en la cabecera del sidebar */
+  readonly workspaceLabel = computed(() => {
+    const p = this.perfil();
+    if (!p) return 'Panel';
+    if (p.rol === 'admin')   return 'Panel Admin';
+    if (p.rol === 'partner') return p.agenciaNombre || 'Mi Agencia';
+    return 'Panel';
+  });
+
+  /** Ruta base del workspace para los links del menú lateral */
+  readonly workspaceBase = computed(() => this.esPartner() ? '/partner' : '/admin');
 
   // Control de estado expandido / minimizado (Escritorio)
   sidebarExpandido = true;
@@ -195,13 +216,16 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
       rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
       accept: async () => {
         try {
+          this.usuarioService.setPerfil(null);
           await this.authService.logout();
           this.messageService.add({
             severity: 'info',
             summary: 'Sesión Finalizada',
             detail: 'Has cerrado sesión exitosamente.',
           });
-          this.router.navigate(['/login']);
+          this.ngZone.run(async () => {
+            await this.router.navigate(['/login']);
+          });
         } catch (error) {
           console.error('Error al cerrar sesión:', error);
         }

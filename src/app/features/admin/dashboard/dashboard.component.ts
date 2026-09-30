@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
@@ -14,6 +15,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { EventService } from '../../../core/services/event.service';
+import { UsuarioService } from '../../../core/services/usuario.service';
+import { PartnerService } from '../../../core/services/partner.service';
 import { EventFormComponent } from '../components/event-form/event-form.component';
 import { AsistenciasModalComponent } from '../components/asistencias-modal/asistencias-modal.component';
 import { EventoDetalleModalComponent } from '../components/evento-detalle-modal/evento-detalle-modal.component';
@@ -42,15 +45,32 @@ import { QrMesaModalComponent } from '../../album-digital/qr-mesa-modal/qr-mesa-
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
-  private eventService = inject(EventService);
-  private cdr = inject(ChangeDetectorRef);
-  private dialogService = inject(DialogService);
+  private eventService   = inject(EventService);
+  private usuarioService = inject(UsuarioService);
+  private partnerService = inject(PartnerService);
+  private cdr            = inject(ChangeDetectorRef);
+  private dialogService  = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
-  private messageService = inject(MessageService);
+  private messageService      = inject(MessageService);
+
+  // Signals reactivos de rol — el template los usa para adaptar la UI
+  readonly perfil    = toSignal(this.usuarioService.perfil$, { initialValue: null });
+  readonly esAdmin   = computed(() => this.perfil()?.rol === 'admin');
+  readonly esPartner = computed(() => this.perfil()?.rol === 'partner');
+
+  // Modo de vista para el Administrador (Opción B: 'directos' por defecto)
+  vistaAdmin = signal<'directos' | 'todos'>('directos');
+
+  // Filtro de equipo dentro de Directos (Opción A: 'todos' los del estudio o 'mios' creados por mí)
+  filtroEquipo = signal<'todos' | 'mios'>('todos');
+
+  // Mapa de Partner UID -> Nombre de Agencia para la vista global
+  mapaPartners = new Map<string, string>();
+  // Mapa de Usuario UID -> Nombre para mostrar creador
+  mapaUsuarios = new Map<string, string>();
 
   // Lista base reactiva de eventos
   eventos = signal<any[]>([]);
-
 
   // Filtros reactivos
   filtroEstado = signal<'todos' | 'activos' | 'borradores'>('todos');
@@ -61,6 +81,16 @@ export class DashboardComponent implements OnInit {
   totalEventos = computed(() => this.eventos().length);
   totalActivos = computed(() => this.eventos().filter((e) => e.estaActivo).length);
   totalBorradores = computed(() => this.eventos().filter((e) => !e.estaActivo).length);
+
+  // Contadores para el filtro de equipo (Opción A)
+  totalDirectos = computed(() => this.eventos().length);
+  totalMios = computed(() => {
+    const currentUid = this.perfil()?.uid;
+    if (!currentUid) return 0;
+    return this.eventos().filter(
+      (e) => e.ownerId === currentUid || e.creadoPorUid === currentUid,
+    ).length;
+  });
 
   labelFiltroEstado = computed(() => {
     switch (this.filtroEstado()) {
@@ -94,13 +124,22 @@ export class DashboardComponent implements OnInit {
     return (
       this.filtroEstado() !== 'todos' ||
       this.filtroFecha() !== null ||
-      this.terminoBusqueda().trim() !== ''
+      this.terminoBusqueda().trim() !== '' ||
+      (this.esAdmin() && this.vistaAdmin() === 'directos' && this.filtroEquipo() !== 'todos')
     );
   });
 
   // Lista de eventos computada con los filtros aplicados
   eventosFiltrados = computed(() => {
     let lista = this.eventos();
+
+    // Filtro Opción A (Dentro de Directos: Solo los míos vs Todo el Estudio)
+    if (this.esAdmin() && this.vistaAdmin() === 'directos' && this.filtroEquipo() === 'mios') {
+      const currentUid = this.perfil()?.uid;
+      if (currentUid) {
+        lista = lista.filter((e) => e.ownerId === currentUid || e.creadoPorUid === currentUid);
+      }
+    }
 
     // 1. Filtro por Estado
     const estado = this.filtroEstado();
@@ -133,11 +172,31 @@ export class DashboardComponent implements OnInit {
   });
 
   async ngOnInit() {
+    const perfil = await this.usuarioService.esperarInicializacion();
+    if (perfil?.rol === 'admin') {
+      try {
+        const usuarios = await this.partnerService.getUsuarios();
+        usuarios.forEach((u) => {
+          this.mapaUsuarios.set(u.uid, u.displayName || u.email);
+          if (u.rol === 'partner') {
+            this.mapaPartners.set(u.uid, u.agenciaNombre || u.displayName);
+          }
+        });
+      } catch (e) {
+        console.warn('No se pudo precargar mapa de usuarios en Dashboard:', e);
+      }
+    }
+    await this.cargarEventos();
+  }
+
+  async cambiarVistaAdmin(vista: 'directos' | 'todos') {
+    if (this.vistaAdmin() === vista) return;
+    this.vistaAdmin.set(vista);
     await this.cargarEventos();
   }
 
   async cargarEventos() {
-    const rawEvents = await this.eventService.getEvents();
+    const rawEvents = await this.eventService.getEvents(this.vistaAdmin());
     const parsedEvents = rawEvents.map((evento) => {
       const fechaDate = this.normalizarFecha(evento.fecha);
       return {
@@ -149,6 +208,34 @@ export class DashboardComponent implements OnInit {
     });
     this.eventos.set(parsedEvents);
     this.cdr.detectChanges();
+  }
+
+  getAgenciaEvento(evento: any): string {
+    if (!evento.ownerId) return 'NahoFlo (Directo)';
+    return this.mapaPartners.get(evento.ownerId) || 'Agencia Partner';
+  }
+
+  esEventoDirecto(evento: any): boolean {
+    return !evento.ownerId || !this.mapaPartners.has(evento.ownerId);
+  }
+
+  cambiarFiltroEquipo(modo: 'todos' | 'mios', table?: Table) {
+    this.filtroEquipo.set(modo);
+    table?.reset();
+  }
+
+  esEventoMio(evento: any): boolean {
+    const currentUid = this.perfil()?.uid;
+    if (!currentUid) return false;
+    return evento.ownerId === currentUid || evento.creadoPorUid === currentUid;
+  }
+
+  getCreadorEvento(evento: any): string {
+    if (evento.creadoPorNombre) return evento.creadoPorNombre;
+    if (evento.ownerId && this.mapaUsuarios.has(evento.ownerId)) {
+      return this.mapaUsuarios.get(evento.ownerId)!;
+    }
+    return 'NahoFlo Studio';
   }
 
   // Normaliza fecha de Firestore (Timestamp, seconds, Date o String ISO/YYYY-MM-DD)
@@ -225,6 +312,7 @@ export class DashboardComponent implements OnInit {
   limpiarTodosFiltros(table?: Table): void {
     this.filtroEstado.set('todos');
     this.filtroFecha.set(null);
+    this.filtroEquipo.set('todos');
     this.terminoBusqueda.set('');
     table?.reset();
   }

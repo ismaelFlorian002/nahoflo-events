@@ -16,6 +16,28 @@ export interface Evento {
   estaActivo: boolean; // Interruptor para habilitar/deshabilitar la invitación
   tipo: string; // Ej: "Boda", "XV Años", "Bautizo"
 
+  // ─── Multi-tenant B2B2C ────────────────────────────────────────────────────
+  /**
+   * Firebase Auth UID del Partner propietario del evento.
+   * null → evento creado directamente por un Admin.
+   */
+  ownerId?: string | null;
+
+  /**
+   * URL pública canónica del portal del anfitrión.
+   * En nuevos eventos, urlPublica === enlace.
+   * Se mantiene `enlace` por retrocompatibilidad con la invitación pública.
+   */
+  urlPublica?: string;
+
+  // Auditoría
+  creadoEn?:      Date | string;
+  actualizadoEn?: Date | string;
+  creadoPorUid?:  string | null;
+  creadoPorNombre?: string | null;
+  esDirecto?:     boolean;
+  // ──────────────────────────────────────────────────────────────────────────
+
   // Paquete y servicios activos
   modulos?: ModulosEvento;
 

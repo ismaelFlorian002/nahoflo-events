@@ -1,14 +1,16 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-// Módulos de PrimeNG necesarios para esta pantalla
+// PrimeNG
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { CardModule } from 'primeng/card';
+
 import { AuthService } from '../../../core/services/auth';
+import { UsuarioService } from '../../../core/services/usuario.service';
 
 @Component({
   selector: 'app-login',
@@ -25,16 +27,16 @@ import { AuthService } from '../../../core/services/auth';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
-  // Inyección de dependencias
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  private authService    = inject(AuthService);
+  private usuarioService = inject(UsuarioService);
+  private router         = inject(Router);
+  private ngZone         = inject(NgZone);
 
-  // Estado del formulario
-  email = '';
-  password = '';
-  loading = false;
+  email        = '';
+  password     = '';
+  loading      = false;
   errorMessage = '';
-  currentYear = new Date().getFullYear();
+  currentYear  = new Date().getFullYear();
 
   async onLogin() {
     if (!this.email || !this.password) {
@@ -42,15 +44,59 @@ export class LoginComponent {
       return;
     }
 
-    this.loading = true;
+    this.loading      = true;
     this.errorMessage = '';
 
     try {
-      await this.authService.login(this.email, this.password);
-      // Si entra correctamente, lo redirigimos al panel de control
-      this.router.navigate(['/admin']);
-    } catch (error) {
-      this.errorMessage = 'Credenciales incorrectas o usuario no encontrado.';
+      // 1. Iniciar sesión en Firebase Auth
+      const credencial = await this.authService.login(this.email.trim(), this.password);
+      const uid = credencial.user.uid;
+
+      // 2. Obtener el perfil directamente
+      const perfil = await this.usuarioService.obtenerPerfilPorUid(uid);
+
+      if (!perfil) {
+        await this.authService.logout();
+        this.errorMessage = 'No se encontró el perfil de usuario asociado a esta cuenta.';
+        return;
+      }
+
+      if (!perfil.estaActivo) {
+        await this.authService.logout();
+        this.errorMessage = 'Tu cuenta ha sido desactivada. Contacta al administrador.';
+        return;
+      }
+
+      // 3. ACTUALIZAR EL ESTADO EN MEMORIA INMEDIATAMENTE
+      this.usuarioService.setPerfil(perfil);
+
+      // 4. Redirigir de inmediato dentro de la zona de Angular
+      this.ngZone.run(async () => {
+        if (perfil.rol === 'admin') {
+          await this.router.navigate(['/admin']);
+        } else if (perfil.rol === 'partner') {
+          await this.router.navigate(['/partner']);
+        } else {
+          await this.authService.logout();
+          this.errorMessage = `Rol '${perfil.rol}' no reconocido. Contacta al administrador.`;
+        }
+      });
+    } catch (error: any) {
+      console.error('Error durante el inicio de sesión:', error);
+      const codigo = error?.code || '';
+      if (
+        codigo === 'auth/user-not-found' ||
+        codigo === 'auth/wrong-password' ||
+        codigo === 'auth/invalid-credential'
+      ) {
+        this.errorMessage = 'Credenciales incorrectas. Verifica tu correo y contraseña.';
+      } else if (codigo === 'auth/too-many-requests') {
+        this.errorMessage = 'Demasiados intentos fallidos. Espera unos minutos e intenta de nuevo.';
+      } else if (error?.code === 'permission-denied') {
+        this.errorMessage = 'Permiso denegado al leer el perfil en Firestore. Revisa las Security Rules.';
+      } else {
+        this.errorMessage = error?.message || 'Ocurrió un error al iniciar sesión. Intenta de nuevo.';
+      }
     } finally {
       this.loading = false;
     }

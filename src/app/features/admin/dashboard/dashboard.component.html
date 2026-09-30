@@ -1,13 +1,42 @@
 <div class="w-full">
 
-  <!-- ENCABEZADO INTERNO: SUBTÍTULO Y BOTÓN NUEVO EVENTO -->
+  <!-- ENCABEZADO INTERNO: TÍTULO CONTEXTUAL + BOTÓN NUEVO EVENTO -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">Tus Eventos</h1>
-      <p class="text-sm text-gray-500 m-0 mt-0.5">Gestiona y administra todas tus invitaciones digitales</p>
+      <!-- Título adaptado al rol -->
+      @if (esAdmin()) {
+        <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">
+          Catálogo de Eventos
+        </h1>
+        <p class="text-sm text-gray-500 m-0 mt-0.5">
+          @if (vistaAdmin() === 'directos') {
+            Eventos directos de NahoFlo Studio · Vista privada exclusiva
+          } @else {
+            Supervisión global de eventos registrados en todas las agencias
+          }
+        </p>
+      }
+      @if (esPartner()) {
+        <div class="flex items-center gap-2.5 mb-1">
+          <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">
+            Mis Eventos
+          </h1>
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200/60 uppercase tracking-wider">
+            Mi Workspace
+          </span>
+        </div>
+        <p class="text-sm text-gray-500 m-0">
+          Solo ves los eventos de tu agencia · Filtro automático por tu cuenta
+        </p>
+      }
+      <!-- Estado de carga mientras el perfil resuelve -->
+      @if (!esAdmin() && !esPartner()) {
+        <div class="h-7 w-48 bg-gray-100 rounded-lg animate-pulse"></div>
+        <div class="h-4 w-64 bg-gray-50 rounded mt-1.5 animate-pulse"></div>
+      }
     </div>
 
-    <!-- Botón Nuevo Evento con Colores Corporativos -->
+    <!-- Botón Nuevo Evento -->
     <p-button
       label="Nuevo Evento"
       icon="pi pi-plus"
@@ -31,6 +60,65 @@
       >
       <!-- TOOLBAR DE LA TABLA (Filtros y Buscador) -->
       <ng-template pTemplate="caption">
+        <!-- SELECTOR DE VISTA PARA ADMINISTRADOR (OPCIÓN A) -->
+        @if (esAdmin()) {
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <!-- Nivel 1: Directos vs Agencias -->
+            <div class="flex items-center gap-1.5 p-1 bg-gray-100/80 rounded-xl w-fit">
+              <button
+                type="button"
+                (click)="cambiarVistaAdmin('directos')"
+                [class]="vistaAdmin() === 'directos'
+                  ? 'bg-violet-600 text-white font-bold shadow-xs border-0'
+                  : 'text-gray-500 hover:text-gray-800 font-medium bg-transparent border-0'"
+                class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5">
+                <i class="pi pi-calendar text-xs"></i>
+                <span>Eventos Directos (NahoFlo)</span>
+              </button>
+
+              <button
+                type="button"
+                (click)="cambiarVistaAdmin('todos')"
+                [class]="vistaAdmin() === 'todos'
+                  ? 'bg-violet-600 text-white font-bold shadow-xs border-0'
+                  : 'text-gray-500 hover:text-gray-800 font-medium bg-transparent border-0'"
+                class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5">
+                <i class="pi pi-briefcase text-xs"></i>
+                <span>Eventos de Agencias</span>
+              </button>
+            </div>
+
+            <!-- Nivel 2: Opción A (Dentro de Directos: Todo el Estudio vs Creados por mí) -->
+            @if (vistaAdmin() === 'directos') {
+              <div class="flex items-center gap-1 p-1 bg-gray-100/80 rounded-xl w-fit">
+                <button
+                  type="button"
+                  (click)="cambiarFiltroEquipo('todos', dt)"
+                  [class]="filtroEquipo() === 'todos'
+                    ? 'bg-white text-gray-900 font-bold shadow-xs'
+                    : 'text-gray-500 hover:text-gray-800 font-medium'"
+                  class="px-2.5 py-1.5 rounded-lg text-xs transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5">
+                  <i class="pi pi-building text-xs"></i>
+                  <span>Todo el Estudio</span>
+                  <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gray-200/80 text-gray-700 font-bold">{{ totalDirectos() }}</span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="cambiarFiltroEquipo('mios', dt)"
+                  [class]="filtroEquipo() === 'mios'
+                    ? 'bg-white text-gold-700 font-bold shadow-xs'
+                    : 'text-gray-500 hover:text-gray-800 font-medium'"
+                  class="px-2.5 py-1.5 rounded-lg text-xs transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5">
+                  <i class="pi pi-user text-xs"></i>
+                  <span>Solo los míos</span>
+                  <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gold-100 text-gold-800 font-bold">{{ totalMios() }}</span>
+                </button>
+              </div>
+            }
+          </div>
+        }
+
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-4">
 
           <!-- FILTROS CORPORATIVOS (ESTADO Y FECHA) -->
@@ -64,7 +152,7 @@
                       (click)="seleccionarFiltroEstado('todos', dt, opFiltrosEstado)">
                       <span class="filtro-item-left">
                         <i class="pi pi-th-large text-slate-500"></i>
-                        <span>Todos los eventos</span>
+                        <span>{{ esPartner() ? 'Todos mis eventos' : 'Todos los eventos' }}</span>
                       </span>
                       <span class="badge-filtro-cant">{{ totalEventos() }}</span>
                     </button>
@@ -211,7 +299,39 @@
       <ng-template pTemplate="body" let-evento>
         <tr>
           <td class="fw-medium">
-            <span>{{ evento.titulo }}</span>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-sm font-semibold text-gray-900 leading-tight">{{ evento.titulo }}</span>
+
+              <!-- Badge de Creador en Vista Directos (Opción A) -->
+              @if (esAdmin() && vistaAdmin() === 'directos') {
+                @if (esEventoMio(evento)) {
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 text-[10px] font-semibold border border-gold-200/60" pTooltip="Creado por ti">
+                    <i class="pi pi-user text-[9px]"></i>
+                    <span>Tú</span>
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200/70" [pTooltip]="'Creado por ' + getCreadorEvento(evento)">
+                    <i class="pi pi-user text-[9px] text-slate-400"></i>
+                    <span>Por: {{ getCreadorEvento(evento) }}</span>
+                  </span>
+                }
+              }
+
+              <!-- Badge de Agencia si es Admin en vista global -->
+              @if (esAdmin() && vistaAdmin() === 'todos') {
+                @if (esEventoDirecto(evento)) {
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 text-[10px] font-semibold border border-gold-200/60">
+                    <i class="pi pi-shield text-[9px]"></i>
+                    <span>NahoFlo (Directo)</span>
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 text-[10px] font-semibold border border-violet-200/60">
+                    <i class="pi pi-briefcase text-[9px]"></i>
+                    <span>{{ getAgenciaEvento(evento) }}</span>
+                  </span>
+                }
+              }
+            </div>
 
             <div *ngIf="evento.contactoNombre" class="flex items-center gap-1.5 mt-1 text-xs text-gray-500 font-normal">
               <i class="pi pi-user text-gold-500 text-[11px]"></i>
@@ -247,7 +367,7 @@
           </td>
           <td style="text-align: right;">
             <div class="flex items-center justify-end gap-1">
-              <!-- BOTÓN VER DETALLE (MODAL CON DIALOGSERVICE) -->
+              <!-- BOTÓN VER DETALLE -->
               <p-button
                 icon="pi pi-eye"
                 [rounded]="true"
@@ -301,15 +421,18 @@
                 (onClick)="toggleEstado(evento)">
               </p-button>
 
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
-                [text]="true"
-                severity="danger"
-                pTooltip="Eliminar Evento"
-                tooltipPosition="top"
-                (onClick)="eliminarEvento(evento)">
-              </p-button>
+              <!-- ELIMINAR: solo Admin puede borrar definitivamente -->
+              @if (esAdmin()) {
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  pTooltip="Eliminar Evento"
+                  tooltipPosition="top"
+                  (onClick)="eliminarEvento(evento)">
+                </p-button>
+              }
             </div>
           </td>
         </tr>
@@ -321,11 +444,18 @@
           <td colspan="5" class="py-12 text-center text-gray-400">
             <i
               [class]="hayFiltrosActivos() ? 'pi pi-filter-slash text-4xl text-gray-300 mb-2 block' : 'pi pi-folder-open text-4xl text-gray-300 mb-2 block'"></i>
-            <p *ngIf="!hayFiltrosActivos()" class="text-sm m-0">No tienes eventos registrados aún.<br>Haz clic en "Nuevo
-              Evento" para empezar.</p>
+            <p *ngIf="!hayFiltrosActivos()" class="text-sm m-0">
+              @if (esPartner()) {
+                No tienes eventos registrados en tu workspace.
+              } @else if (vistaAdmin() === 'directos') {
+                No tienes eventos directos registrados aún.
+              } @else {
+                No se encontraron eventos en la cartera global.
+              }
+              <br>Haz clic en "Nuevo Evento" para empezar.
+            </p>
             <div *ngIf="hayFiltrosActivos()">
-              <p class="text-sm m-0 font-medium text-gray-600">No se encontraron eventos con los filtros
-                seleccionados.</p>
+              <p class="text-sm m-0 font-medium text-gray-600">No se encontraron eventos con los filtros seleccionados.</p>
               <button
                 type="button"
                 (click)="limpiarTodosFiltros(dt)"

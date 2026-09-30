@@ -1,7 +1,5 @@
 import { inject, Injectable } from '@angular/core';
 import { getDownloadURL, ref, Storage, uploadBytes } from '@angular/fire/storage';
-
-// Importamos getDocs (el comando nativo de Firebase)
 import {
   addDoc,
   arrayUnion,
@@ -12,12 +10,17 @@ import {
   getDocs,
   increment,
   query,
+  serverTimestamp,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
+import { Auth } from '@angular/fire/auth';
+import { firstValueFrom } from 'rxjs';
+
 import { Evento, ItemMinutario, ItemPresupuesto, MesaDiseno, ProveedorEvento, TareaPlaneacion } from '../models/event.model';
 import { InvitadoModel } from '../models/invitado.model';
 import { ComentarioModel, RecuerdoModel } from '../models/RecuerdoModel';
+import { UsuarioService } from './usuario.service';
 
 // --- UTILIDADES DE DEDUPLICACIÓN INTELIGENTE (TOKEN MATCHING) ---
 export function normalizarTextoInvitado(texto: string): string {
@@ -82,91 +85,154 @@ export function coincidenNombresInvitados(nombreA: string, nombreB: string): boo
   providedIn: 'root',
 })
 export class EventService {
-  private firestore = inject(Firestore);
+  private firestore      = inject(Firestore);
+  private storage        = inject(Storage);
+  private auth           = inject(Auth);
+  private usuarioService = inject(UsuarioService);
 
-  private storage = inject(Storage); // <--- NUEVO: Inyectamos el servicio de almacenamiento de Google
+  /**
+   * Resuelve el perfil asegurando que la sesión esté cargada.
+   */
+  private async getPerfil() {
+    return this.usuarioService.esperarInicializacion();
+  }
 
-  // 1. LEER (A prueba de balas)
-  async getEvents(): Promise<Evento[]> {
-    const refColeccion = collection(this.firestore, 'eventos');
+  // ─── 1. LEER ──────────────────────────────────────────────────────────────
+  /**
+   * Devuelve eventos filtrados por rol y vista:
+   * - Partner → solo los eventos donde ownerId === su uid.
+   * - Admin en modo 'directos' (por defecto) → solo los eventos directos de NahoFlo (sin ownerId o ownerId === admin.uid).
+   * - Admin en modo 'todos' → todos los eventos de la plataforma.
+   */
+  async getEvents(vistaAdmin: 'directos' | 'todos' = 'directos'): Promise<Evento[]> {
+    const perfil         = await this.getPerfil();
+    const currentUser    = this.auth.currentUser;
+    const refColeccion   = collection(this.firestore, 'eventos');
+
+    const esPartner = perfil?.rol === 'partner' || (currentUser && perfil?.rol !== 'admin');
+    if (esPartner) {
+      const partnerUid = perfil?.uid || currentUser?.uid;
+      // Partner: filtra estrictamente por su ownerId
+      const q = query(refColeccion, where('ownerId', '==', partnerUid));
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Evento);
+    }
+
+    // Modo Administrador
+    // 1. Obtenemos los UIDs de los partners registrados para aislar con precisión
+    const usuariosCol = collection(this.firestore, 'usuarios');
+    const qPartners = query(usuariosCol, where('rol', '==', 'partner'));
+    const snapPartners = await getDocs(qPartners);
+    const partnerUids = new Set(snapPartners.docs.map(d => d.id));
+
+    // 2. Obtenemos todos los eventos
     const snapshot = await getDocs(refColeccion);
+    const todos = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Evento);
 
-    // Extraemos el ID y los datos de cada documento
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Evento);
+    if (vistaAdmin === 'directos') {
+      // Eventos directos de NahoFlo Studio (Opción A):
+      // Incluye todos los eventos que NO pertenecen a un partner registrado
+      return todos.filter((e) => !e.ownerId || !partnerUids.has(e.ownerId) || e.esDirecto);
+    }
+
+    // Eventos de agencias: SOLO eventos que pertenecen a un partner registrado
+    return todos.filter((e) => e.ownerId && partnerUids.has(e.ownerId));
   }
 
-  // 2. CREAR
+  // ─── 2. CREAR ─────────────────────────────────────────────────────────────
+  /**
+   * Crea un nuevo evento inyectando automáticamente:
+   * - ownerId: uid del Partner o del Admin que lo crea.
+   * - creadoPorUid / creadoPorNombre: trazabilidad de qué usuario del equipo lo dio de alta.
+   * - esDirecto: flag para identificar eventos del estudio.
+   * - creadoEn / actualizadoEn: timestamps de servidor.
+   * - urlPublica: igual al slug `enlace` para nuevos eventos.
+   */
   async createEvent(event: Evento) {
+    const perfil       = await this.getPerfil();
+    const currentUser  = this.auth.currentUser;
     const refColeccion = collection(this.firestore, 'eventos');
-    return addDoc(refColeccion, event);
+
+    const esPartner = perfil?.rol === 'partner' || (currentUser && perfil?.rol !== 'admin');
+    const ownerId = esPartner
+      ? (perfil?.uid || currentUser?.uid || null)
+      : (event.ownerId ?? perfil?.uid ?? currentUser?.uid ?? null);
+
+    const creadoPorNombre =
+      perfil?.displayName ||
+      currentUser?.displayName ||
+      (esPartner ? 'Partner' : 'Administrador');
+
+    const payload: any = {
+      ...event,
+      ownerId:         ownerId,
+      creadoPorUid:    perfil?.uid || currentUser?.uid || null,
+      creadoPorNombre: creadoPorNombre,
+      esDirecto:       !esPartner,
+      urlPublica:      event.urlPublica ?? event.enlace ?? '',
+      creadoEn:        serverTimestamp(),
+      actualizadoEn:   serverTimestamp(),
+    };
+
+    return addDoc(refColeccion, payload);
   }
 
-  // 3. ACTUALIZAR
+  // ─── 3. ACTUALIZAR ────────────────────────────────────────────────────────
   async updateEvent(id: string, data: any): Promise<void> {
     const eventDoc = doc(this.firestore, `eventos/${id}`);
-    await updateDoc(eventDoc, data);
+    await updateDoc(eventDoc, { ...data, actualizadoEn: serverTimestamp() });
   }
 
   // Actualiza el minutario / cronograma técnico de un evento
   async actualizarMinutario(eventoId: string, minutario: ItemMinutario[]): Promise<void> {
     const eventDoc = doc(this.firestore, `eventos/${eventoId}`);
-    await updateDoc(eventDoc, { minutario });
+    await updateDoc(eventDoc, { minutario, actualizadoEn: serverTimestamp() });
   }
 
-  // 4. BORRAR
+  // ─── 4. BORRAR ────────────────────────────────────────────────────────────
   async deleteEvent(id: string) {
     const docRef = doc(this.firestore, `eventos/${id}`);
     return deleteDoc(docRef);
   }
 
-  // NUEVA FUNCIÓN: Sube una foto a Firebase y nos devuelve la URL
+  // ─── STORAGE ──────────────────────────────────────────────────────────────
   // Sube una foto a Firebase Storage con identificador único a prueba de colisiones
   async uploadImage(file: File, folder: string = 'eventos'): Promise<string> {
     try {
-      // 1. Generamos un sufijo aleatorio y limpiamos caracteres especiales del nombre
-      const aleatorio = Math.random().toString(36).substring(2, 8);
+      const aleatorio   = Math.random().toString(36).substring(2, 8);
       const nombreLimpio = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const fileName = `${Date.now()}_${aleatorio}_${nombreLimpio}`;
-      const filePath = `${folder}/${fileName}`;
-
-      // 2. Apuntamos a ese espacio en la nube
-      const storageRef = ref(this.storage, filePath);
-
-      // 3. Subimos el archivo
+      const fileName    = `${Date.now()}_${aleatorio}_${nombreLimpio}`;
+      const filePath    = `${folder}/${fileName}`;
+      const storageRef  = ref(this.storage, filePath);
       await uploadBytes(storageRef, file);
-
-      // 4. Obtenemos el link público para guardarlo en la base de datos
-      const publicUrl = await getDownloadURL(storageRef);
-      return publicUrl;
+      return getDownloadURL(storageRef);
     } catch (error) {
       console.error('Error al subir la imagen:', error);
       throw error;
     }
   }
-  // Convertimos a Array nativo con Array.from() para soportar FileList y evitar colisiones
+
   async uploadMultipleImages(files: any, folder: string = 'eventos/galeria'): Promise<string[]> {
     const fileList = Array.from(files || []) as File[];
     if (fileList.length === 0) return [];
-    const uploadPromises = fileList.map((file) => this.uploadImage(file, folder));
-    return Promise.all(uploadPromises);
+    return Promise.all(fileList.map((file) => this.uploadImage(file, folder)));
   }
 
-  // Busca un evento por su URL personalizada (slug) asegurando que esté activo
+  // ─── BÚSQUEDA POR SLUG ───────────────────────────────────────────────────
+  // Busca un evento por su URL personalizada (slug) asegurando que esté activo.
+  // Esta consulta es pública (invitación web / portal host) → no filtra por ownerId.
   async getEventBySlug(slug: string): Promise<Evento | null> {
     const refColeccion = collection(this.firestore, 'eventos');
-    const q = query(refColeccion, where('enlace', '==', slug), where('estaActivo', '==', true));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      return null;
-    }
-
+    const q            = query(refColeccion, where('enlace', '==', slug), where('estaActivo', '==', true));
+    const snapshot     = await getDocs(q);
+    if (snapshot.empty) return null;
     const docSnap = snapshot.docs[0];
     return { id: docSnap.id, ...docSnap.data() } as Evento;
   }
 
   /**
-   * Obtiene todos los eventos asociados a un cliente por su ID, teléfono de contacto o nombre
+   * Obtiene todos los eventos asociados a un cliente por su ID, teléfono o nombre.
+   * Reutiliza getEvents() para que el filtro de rol se aplique automáticamente.
    */
   async getEventsByCliente(clienteId?: string, telefono?: string, clienteNombre?: string): Promise<Evento[]> {
     try {
@@ -177,23 +243,14 @@ export class EventService {
       const nomLimpio = clienteNombre ? clienteNombre.trim().toLowerCase() : '';
 
       return todos.filter((e) => {
-        // 1. Coincidencia directa por clienteId
-        if (clienteId && e.clienteId === clienteId) {
-          return true;
-        }
-        // 2. Coincidencia por teléfono de contacto registrado en el evento
+        if (clienteId && e.clienteId === clienteId) return true;
         if (telLimpio && telLimpio.length >= 7 && e.contactoTelefono) {
           const eTel = String(e.contactoTelefono).replace(/\D/g, '');
-          if (eTel.length >= 7 && (eTel.includes(telLimpio) || telLimpio.includes(eTel))) {
-            return true;
-          }
+          if (eTel.length >= 7 && (eTel.includes(telLimpio) || telLimpio.includes(eTel))) return true;
         }
-        // 3. Coincidencia por nombre de contacto registrado en el evento
         if (nomLimpio && e.contactoNombre) {
           const eNom = String(e.contactoNombre).trim().toLowerCase();
-          if (eNom && (eNom === nomLimpio || eNom.includes(nomLimpio) || nomLimpio.includes(eNom))) {
-            return true;
-          }
+          if (eNom && (eNom === nomLimpio || eNom.includes(nomLimpio) || nomLimpio.includes(eNom))) return true;
         }
         return false;
       });
@@ -202,9 +259,9 @@ export class EventService {
       return [];
     }
   }
-  // Guarda o actualiza la confirmación en la subcolección 'invitados' del evento
-  // Incluye deduplicación inteligente: si ya existe por ID, teléfono o nombre,
-  // actualiza el registro existente en vez de duplicarlo.
+
+  // Guarda o actualiza la confirmación en la subcolección 'invitados' del evento.
+  // Incluye deduplicación inteligente.
   async confirmarAsistencia(
     eventoId: string,
     datosInvitado: InvitadoModel,
@@ -212,33 +269,26 @@ export class EventService {
   ): Promise<{ id: string } & Partial<InvitadoModel>> {
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/invitados`);
 
-    // 1. Si se provee un ID explícito (ej. enlace con ?pase=ID)
     if (invitadoId) {
-      const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
+      const refDoc  = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
       const payload: Partial<InvitadoModel> = {
-        asistira: datosInvitado.asistira,
-        estado: datosInvitado.estado || (datosInvitado.asistira ? 'confirmado' : 'declinado'),
-        pasesConfirmados: datosInvitado.pasesConfirmados,
-        telefono: datosInvitado.telefono?.trim() || '',
-        mensaje: datosInvitado.mensaje?.trim() || '',
+        asistira:          datosInvitado.asistira,
+        estado:            datosInvitado.estado || (datosInvitado.asistira ? 'confirmado' : 'declinado'),
+        pasesConfirmados:  datosInvitado.pasesConfirmados,
+        telefono:          datosInvitado.telefono?.trim() || '',
+        mensaje:           datosInvitado.mensaje?.trim() || '',
         fechaConfirmacion: new Date(),
       };
       await updateDoc(refDoc, payload);
       return { id: invitadoId, ...datosInvitado, ...payload };
     }
 
-    // 2. Si no viene ID, consultamos los invitados existentes para evitar duplicidad
-    const snapshot = await getDocs(refSubcoleccion);
-    const listaExistente = snapshot.docs.map((d) => ({
-      id: d.id,
-      ...d.data(),
-    })) as InvitadoModel[];
+    const snapshot      = await getDocs(refSubcoleccion);
+    const listaExistente = snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) as InvitadoModel[];
 
     const telInput = normalizarTelefonoInvitado(datosInvitado.telefono || '');
     const nomInput = (datosInvitado.nombre || '').trim();
 
-    // Buscar coincidencia:
-    // A) Primero por teléfono (si tiene al menos 7 dígitos válidos)
     let encontrado: InvitadoModel | undefined = undefined;
     if (telInput.length >= 7) {
       encontrado = listaExistente.find((inv) => {
@@ -246,118 +296,76 @@ export class EventService {
         return telExistente.length >= 7 && telExistente === telInput;
       });
     }
-
-    // B) Si no hubo coincidencia por teléfono, buscar por Token Matching Inteligente (nombre + apellidos)
     if (!encontrado && nomInput.length >= 2) {
-      encontrado = listaExistente.find((inv) => {
-        return coincidenNombresInvitados(inv.nombre || '', nomInput);
-      });
+      encontrado = listaExistente.find((inv) => coincidenNombresInvitados(inv.nombre || '', nomInput));
     }
 
-    // 3. Si encontramos el registro previo (ej. anfitrión lo precargó en 'pendiente')
     if (encontrado && encontrado.id) {
-      const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${encontrado.id}`);
-
-      // Preservamos el nombre más completo y detallado entre ambos
-      const nombreFinal = nomInput.length > (encontrado.nombre?.trim().length || 0)
-        ? nomInput
-        : encontrado.nombre;
-
+      const refDoc      = doc(this.firestore, `eventos/${eventoId}/invitados/${encontrado.id}`);
+      const nombreFinal = nomInput.length > (encontrado.nombre?.trim().length || 0) ? nomInput : encontrado.nombre;
       const payload: Partial<InvitadoModel> = {
-        nombre: nombreFinal,
-        asistira: datosInvitado.asistira,
-        estado: datosInvitado.estado || (datosInvitado.asistira ? 'confirmado' : 'declinado'),
-        pasesConfirmados: datosInvitado.pasesConfirmados || encontrado.pasesConfirmados || 1,
-        telefono: datosInvitado.telefono?.trim() || encontrado.telefono || '',
-        mensaje: datosInvitado.mensaje?.trim() || encontrado.mensaje || '',
+        nombre:            nombreFinal,
+        asistira:          datosInvitado.asistira,
+        estado:            datosInvitado.estado || (datosInvitado.asistira ? 'confirmado' : 'declinado'),
+        pasesConfirmados:  datosInvitado.pasesConfirmados || encontrado.pasesConfirmados || 1,
+        telefono:          datosInvitado.telefono?.trim() || encontrado.telefono || '',
+        mensaje:           datosInvitado.mensaje?.trim() || encontrado.mensaje || '',
         fechaConfirmacion: new Date(),
       };
       await updateDoc(refDoc, payload);
       return { id: encontrado.id, ...encontrado, ...payload };
     }
 
-    // 4. Si no existía coincidencia previa, creamos un nuevo registro en Firestore
     const nuevoDocRef = await addDoc(refSubcoleccion, {
       ...datosInvitado,
-      haIngresado: false,
-      pasesIngresados: 0,
+      haIngresado:       false,
+      pasesIngresados:   0,
       fechaConfirmacion: new Date(),
     });
-
     return { id: nuevoDocRef.id, ...datosInvitado };
   }
 
-  // Registra un nuevo invitado manualmente desde el portal del anfitrión
   async agregarInvitado(eventoId: string, datosInvitado: Omit<InvitadoModel, 'id'>) {
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/invitados`);
-
     return addDoc(refSubcoleccion, {
       ...datosInvitado,
-      haIngresado: false,
-      pasesIngresados: 0,
+      haIngresado:       false,
+      pasesIngresados:   0,
       fechaConfirmacion: new Date(),
     });
   }
 
-  // Obtiene la lista completa de confirmaciones (invitados) de un evento
   async getInvitados(eventoId: string): Promise<InvitadoModel[]> {
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/invitados`);
-    const snapshot = await getDocs(refSubcoleccion);
-
+    const snapshot        = await getDocs(refSubcoleccion);
     return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() }) as InvitadoModel);
   }
 
-  // Registra el acceso presencial (Check-in) del invitado en la puerta
-  async registrarCheckIn(
-    eventoId: string,
-    invitadoId: string,
-    pasesIngresados: number
-  ): Promise<void> {
+  async registrarCheckIn(eventoId: string, invitadoId: string, pasesIngresados: number): Promise<void> {
     const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
-    await updateDoc(refDoc, {
-      haIngresado: true,
-      horaIngreso: new Date(),
-      pasesIngresados,
-    });
+    await updateDoc(refDoc, { haIngresado: true, horaIngreso: new Date(), pasesIngresados });
   }
 
-  // Permite revertir el check-in en caso de error del personal de recepción
   async revertirCheckIn(eventoId: string, invitadoId: string): Promise<void> {
     const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
-    await updateDoc(refDoc, {
-      haIngresado: false,
-      horaIngreso: null,
-      pasesIngresados: 0,
-    });
+    await updateDoc(refDoc, { haIngresado: false, horaIngreso: null, pasesIngresados: 0 });
   }
 
-  // Permite al anfitrión ajustar el número de pases asignados a un invitado
-  async actualizarPasesInvitado(
-    eventoId: string,
-    invitadoId: string,
-    pasesConfirmados: number,
-  ): Promise<void> {
+  async actualizarPasesInvitado(eventoId: string, invitadoId: string, pasesConfirmados: number): Promise<void> {
     const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
     await updateDoc(refDoc, { pasesConfirmados });
   }
 
-  // Permite al anfitrión actualizar datos completos del invitado (nombre, teléfono, asistencia, pases, mensaje)
-  async actualizarInvitado(
-    eventoId: string,
-    invitadoId: string,
-    datos: Partial<InvitadoModel>,
-  ): Promise<void> {
+  async actualizarInvitado(eventoId: string, invitadoId: string, datos: Partial<InvitadoModel>): Promise<void> {
     const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
     await updateDoc(refDoc, { ...datos });
   }
 
-  // Permite al anfitrión eliminar un registro de invitado
   async eliminarInvitado(eventoId: string, invitadoId: string): Promise<void> {
     const refDoc = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
     await deleteDoc(refDoc);
   }
 
-  // Permite fusionar dos registros de invitados (ej. si uno se registró con apodo y otro con nombre formal)
   async fusionarInvitados(
     eventoId: string,
     invitadoConservarId: string,
@@ -365,124 +373,83 @@ export class EventService {
     datosFusionados?: Partial<InvitadoModel>
   ): Promise<void> {
     const refDocConservar = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoConservarId}`);
-    const refDocEliminar = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoEliminarId}`);
-
-    if (datosFusionados) {
-      await updateDoc(refDocConservar, datosFusionados);
-    }
+    const refDocEliminar  = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoEliminarId}`);
+    if (datosFusionados) await updateDoc(refDocConservar, datosFusionados);
     await deleteDoc(refDocEliminar);
   }
-  // Sube N fotos del invitado a Storage en paralelo y guarda la publicación del carrusel en Firestore
-  // Sube N fotos del invitado a Storage de forma secuencial y guarda el carrusel en Firestore
-  async guardarRecuerdo(
-    eventoId: string,
-    archivosFotos: File[],
-    nombreAutor: string,
-    mensaje?: string,
-  ): Promise<void> {
-    // 1. Subir fotos una a una para evitar colisiones y no saturar el ancho de banda del celular
+
+  async guardarRecuerdo(eventoId: string, archivosFotos: File[], nombreAutor: string, mensaje?: string): Promise<void> {
     const urls: string[] = [];
     for (const foto of archivosFotos) {
-      const url = await this.uploadImage(foto, 'eventos/album');
-      urls.push(url);
+      urls.push(await this.uploadImage(foto, 'eventos/album'));
     }
-
-    // 2. Registra la publicación con su arreglo de fotos en Firestore
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/recuerdos`);
     await addDoc(refSubcoleccion, {
-      nombreAutor: nombreAutor.trim(),
-      mensaje: mensaje?.trim() || '',
-      fotoUrl: urls[0] || '', // Foto de portada (retrocompatibilidad)
-      fotosUrls: urls, // Carrusel completo
-      creadoEn: new Date(),
+      nombreAutor:  nombreAutor.trim(),
+      mensaje:      mensaje?.trim() || '',
+      fotoUrl:      urls[0] || '',
+      fotosUrls:    urls,
+      creadoEn:     new Date(),
       estaAprobado: true,
-      meGusta: 0,
-      comentarios: [],
+      meGusta:      0,
+      comentarios:  [],
     });
   }
 
-  // Obtiene los recuerdos asegurando que fotosUrls siempre exista para el carrusel
   async getRecuerdos(eventoId: string): Promise<RecuerdoModel[]> {
     const refSubcoleccion = collection(this.firestore, `eventos/${eventoId}/recuerdos`);
-    const snapshot = await getDocs(refSubcoleccion);
-
+    const snapshot        = await getDocs(refSubcoleccion);
     return snapshot.docs
       .map((docSnap) => {
-        const data = docSnap.data() as RecuerdoModel;
-        // Retrocompatibilidad: si es un recuerdo previo con fotoUrl única, lo convertimos a arreglo
+        const data      = docSnap.data() as RecuerdoModel;
         const fotosUrls = data.fotosUrls || (data.fotoUrl ? [data.fotoUrl] : []);
         return { id: docSnap.id, ...data, fotosUrls } as RecuerdoModel;
       })
       .sort((a, b) => new Date(b.creadoEn).getTime() - new Date(a.creadoEn).getTime());
   }
 
-  // Suma (+1) o resta (-1) un like de forma atómica en Firestore
   async alternarMeGusta(eventoId: string, recuerdoId: string, sumar: boolean): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
-    await updateDoc(docRef, {
-      meGusta: increment(sumar ? 1 : -1),
-    });
+    await updateDoc(docRef, { meGusta: increment(sumar ? 1 : -1) });
   }
 
-  // Agrega un comentario a la foto en Firebase usando arrayUnion (1 sola escritura, 0 lecturas)
-  async agregarComentario(
-    eventoId: string,
-    recuerdoId: string,
-    autor: string,
-    texto: string,
-  ): Promise<ComentarioModel> {
-    const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
-
+  async agregarComentario(eventoId: string, recuerdoId: string, autor: string, texto: string): Promise<ComentarioModel> {
+    const docRef           = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
     const nuevoComentario: ComentarioModel = {
-      id: Date.now().toString(),
-      autor: autor.trim(),
-      texto: texto.trim(),
+      id:       Date.now().toString(),
+      autor:    autor.trim(),
+      texto:    texto.trim(),
       creadoEn: new Date(),
     };
-
-    await updateDoc(docRef, {
-      comentarios: arrayUnion(nuevoComentario),
-    });
-
+    await updateDoc(docRef, { comentarios: arrayUnion(nuevoComentario) });
     return nuevoComentario;
   }
 
-  // Actualiza la lista completa de comentarios (incluyendo respuestas anidadas y likes de comentarios)
-  async actualizarComentariosRecuerdo(
-    eventoId: string,
-    recuerdoId: string,
-    comentarios: ComentarioModel[],
-  ): Promise<void> {
+  async actualizarComentariosRecuerdo(eventoId: string, recuerdoId: string, comentarios: ComentarioModel[]): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
     await updateDoc(docRef, { comentarios });
   }
 
-  // Elimina una publicación/recuerdo del álbum colaborativo
   async eliminarRecuerdo(eventoId: string, recuerdoId: string): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}/recuerdos/${recuerdoId}`);
     await deleteDoc(docRef);
   }
 
-  // Actualiza el Presupuesto / Control Financiero del evento
   async actualizarPresupuesto(eventoId: string, presupuesto: ItemPresupuesto[]): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}`);
-    await updateDoc(docRef, { presupuesto });
+    await updateDoc(docRef, { presupuesto, actualizadoEn: serverTimestamp() });
   }
 
-
-  // Actualiza el Directorio de Proveedores del evento
   async actualizarProveedores(eventoId: string, proveedores: ProveedorEvento[]): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}`);
-    await updateDoc(docRef, { proveedores });
+    await updateDoc(docRef, { proveedores, actualizadoEn: serverTimestamp() });
   }
 
-  // Actualiza el Checklist de Planeación por Fases del evento
   async actualizarChecklist(eventoId: string, checklist: TareaPlaneacion[]): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}`);
-    await updateDoc(docRef, { checklist });
+    await updateDoc(docRef, { checklist, actualizadoEn: serverTimestamp() });
   }
 
-  // Actualiza los datos de Marca Blanca / Agencia del evento
   async actualizarDatosAgencia(
     eventoId: string,
     datosAgencia: {
@@ -493,21 +460,16 @@ export class EventService {
     },
   ): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}`);
-    await updateDoc(docRef, { ...datosAgencia });
+    await updateDoc(docRef, { ...datosAgencia, actualizadoEn: serverTimestamp() });
   }
 
-  // Actualiza el Plano Visual de Mesas (Croquis) del evento
   async actualizarMesasLayout(eventoId: string, mesasLayout: MesaDiseno[]): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}`);
-    await updateDoc(docRef, { mesasLayout });
+    await updateDoc(docRef, { mesasLayout, actualizadoEn: serverTimestamp() });
   }
 
-  // Asigna o cambia la mesa de un invitado específico
   async asignarMesaInvitado(eventoId: string, invitadoId: string, mesa: string): Promise<void> {
     const docRef = doc(this.firestore, `eventos/${eventoId}/invitados/${invitadoId}`);
     await updateDoc(docRef, { mesa });
   }
 }
-
-
-

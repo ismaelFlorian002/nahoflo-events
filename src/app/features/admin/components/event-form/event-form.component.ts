@@ -19,6 +19,8 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ClienteService } from '../../../../core/services/cliente.service';
 import { ClienteModel } from '../../../../core/models/cliente.model';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { UsuarioService } from '../../../../core/services/usuario.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-event-form',
@@ -44,15 +46,16 @@ import { FloatLabelModule } from 'primeng/floatlabel';
   styleUrl: './event-form.component.scss',
 })
 export class EventFormComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private eventService = inject(EventService);
+  private fb             = inject(FormBuilder);
+  private eventService   = inject(EventService);
   private clienteService = inject(ClienteService);
-  public ref = inject(DynamicDialogRef);
-  public config = inject(DynamicDialogConfig);
-  private dialogService = inject(DialogService);
-  private primengConfig = inject(PrimeNGConfig);
+  private usuarioService = inject(UsuarioService);
+  public  ref    = inject(DynamicDialogRef);
+  public  config = inject(DynamicDialogConfig);
+  private dialogService    = inject(DialogService);
+  private primengConfig    = inject(PrimeNGConfig);
   private confirmationService = inject(ConfirmationService);
-  private messageService = inject(MessageService);
+  private messageService      = inject(MessageService);
   previewVisible = false;
   previewUrl = '';
   isEditMode = false;

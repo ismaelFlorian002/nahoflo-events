@@ -1,0 +1,178 @@
+<form [formGroup]="partnerForm" (ngSubmit)="guardarPartner()" class="flex flex-col gap-4 pt-2">
+
+  <!-- SELECTOR DE ROL -->
+  <div>
+    <label class="block text-xs font-semibold text-gray-600 mb-2">Selecciona el Rol del Usuario *</label>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+      <!-- Opción Partner -->
+      <div
+        (click)="setRol('partner')"
+        [class]="partnerForm.get('rol')?.value === 'partner'
+          ? 'border-violet-500 bg-violet-50/70 ring-2 ring-violet-400/30'
+          : 'border-gray-200 hover:border-gray-300 bg-white'"
+        class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all">
+        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center text-violet-700 shrink-0 mt-0.5">
+          <i class="pi pi-briefcase text-sm"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-gray-800 block">Partner (Wedding Planner)</span>
+          <span class="text-[11px] text-gray-500 leading-tight block mt-0.5">Workspace privado para coordinar sus propios eventos</span>
+        </div>
+      </div>
+
+      <!-- Opción Admin -->
+      <div
+        (click)="setRol('admin')"
+        [class]="partnerForm.get('rol')?.value === 'admin'
+          ? 'border-gold-500 bg-gold-50/70 ring-2 ring-gold-400/30'
+          : 'border-gray-200 hover:border-gray-300 bg-white'"
+        class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all">
+        <div class="w-8 h-8 rounded-lg bg-gold-100 flex items-center justify-center text-gold-700 shrink-0 mt-0.5">
+          <i class="pi pi-shield text-sm"></i>
+        </div>
+        <div>
+          <span class="text-xs font-bold text-gray-800 block">Administrador</span>
+          <span class="text-[11px] text-gray-500 leading-tight block mt-0.5">Acceso total al panel de NahoFlo y gestión de usuarios</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-1">
+
+    <!-- NOMBRE COMPLETO -->
+    <div class="flex flex-col gap-1.5">
+      <p-floatLabel>
+        <input
+          id="displayName"
+          type="text"
+          pInputText
+          formControlName="displayName"
+          class="w-full text-sm" />
+        <label for="displayName">Nombre Completo *</label>
+      </p-floatLabel>
+      <small
+        *ngIf="partnerForm.get('displayName')?.invalid && partnerForm.get('displayName')?.touched"
+        class="text-red-500 text-xs pl-1">
+        El nombre es requerido (mínimo 3 caracteres).
+      </small>
+    </div>
+
+    <!-- CORREO ELECTRÓNICO -->
+    <div class="flex flex-col gap-1.5">
+      <p-floatLabel>
+        <input
+          id="email"
+          type="email"
+          pInputText
+          formControlName="email"
+          class="w-full text-sm" />
+        <label for="email">Correo Electrónico (Acceso al panel) *</label>
+      </p-floatLabel>
+      <small
+        *ngIf="partnerForm.get('email')?.invalid && partnerForm.get('email')?.touched"
+        class="text-red-500 text-xs pl-1">
+        Ingresa un correo electrónico válido.
+      </small>
+    </div>
+
+  </div>
+
+  <!-- CAMPOS DE AGENCIA (Obligatorios si es Partner) -->
+  @if (partnerForm.get('rol')?.value === 'partner') {
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- NOMBRE DE LA AGENCIA -->
+      <div class="flex flex-col gap-1.5">
+        <p-floatLabel>
+          <input
+            id="agenciaNombre"
+            type="text"
+            pInputText
+            formControlName="agenciaNombre"
+            class="w-full text-sm" />
+          <label for="agenciaNombre">Nombre de la Agencia / Marca *</label>
+        </p-floatLabel>
+        <small
+          *ngIf="partnerForm.get('agenciaNombre')?.invalid && partnerForm.get('agenciaNombre')?.touched"
+          class="text-red-500 text-xs pl-1">
+          El nombre de la agencia es requerido para Partners.
+        </small>
+      </div>
+
+      <!-- TELÉFONO / WHATSAPP -->
+      <div class="flex flex-col gap-1.5">
+        <p-floatLabel>
+          <input
+            id="agenciaTelefono"
+            type="tel"
+            pInputText
+            formControlName="agenciaTelefono"
+            class="w-full text-sm" />
+          <label for="agenciaTelefono">Teléfono de Contacto (WhatsApp)</label>
+        </p-floatLabel>
+      </div>
+
+    </div>
+  }
+
+  <!-- TELÉFONO PARA ADMIN -->
+  @if (partnerForm.get('rol')?.value === 'admin') {
+    <div class="flex flex-col gap-1.5">
+      <p-floatLabel>
+        <input
+          id="agenciaTelefonoAdmin"
+          type="tel"
+          pInputText
+          formControlName="agenciaTelefono"
+          class="w-full text-sm" />
+        <label for="agenciaTelefonoAdmin">Teléfono de Contacto (Opcional)</label>
+      </p-floatLabel>
+    </div>
+  }
+
+  <!-- CONTRASEÑA INICIAL (Solo en creación) -->
+  @if (!esEdicion) {
+    <div class="flex flex-col gap-1.5 p-3.5 bg-gray-50/70 border border-gray-100 rounded-xl">
+      <div class="flex items-center gap-2 mb-1">
+        <i class="pi pi-key text-gold-500 text-sm"></i>
+        <span class="text-xs font-semibold text-gray-700">Contraseña Inicial de Acceso</span>
+      </div>
+      <p-password
+        id="password"
+        formControlName="password"
+        [toggleMask]="true"
+        [feedback]="false"
+        styleClass="w-full"
+        inputStyleClass="w-full text-sm">
+      </p-password>
+      <small class="text-gray-400 text-xs">
+        Contraseña provisional que usará para ingresar por primera vez en /login.
+      </small>
+    </div>
+  }
+
+  <!-- BOTONES DE ACCIÓN -->
+  <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-gray-100 mt-2">
+    <p-button
+      label="Cancelar"
+      icon="pi pi-times"
+      [text]="true"
+      severity="secondary"
+      size="small"
+      (onClick)="cancelar()">
+    </p-button>
+
+    <p-button
+      [label]="esEdicion ? 'Guardar Cambios' : 'Crear Usuario'"
+      [icon]="guardando ? 'pi pi-spin pi-spinner' : (esEdicion ? 'pi pi-check' : 'pi pi-plus')"
+      [loading]="guardando"
+      type="submit"
+      size="small"
+      styleClass="bg-gold-500 hover:bg-gold-600 text-white font-semibold border-0">
+    </p-button>
+  </div>
+
+</form>

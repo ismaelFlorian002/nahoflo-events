@@ -3,9 +3,35 @@
   <!-- HEADER PRINCIPAL -->
   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">Catálogo de Clientes</h1>
-      <p class="text-sm text-gray-500 m-0 mt-0.5">Gestiona tu cartera de clientes, datos de contacto e historial de eventos</p>
+      <div class="flex items-center gap-2 mb-1">
+        <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">
+          @if (esPartner()) {
+            Mis Clientes
+          } @else {
+            Catálogo de Clientes
+          }
+        </h1>
+
+        <!-- Badge de rol / contexto -->
+        @if (esPartner()) {
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200/60 uppercase tracking-wider">
+            Mi Cartera
+          </span>
+        }
+      </div>
+
+      <p class="text-sm text-gray-500 m-0">
+        @if (esPartner()) {
+          Gestiona tu cartera privada de clientes, datos de contacto e historial de eventos
+        } @else if (vistaAdmin === 'directos') {
+          Clientes directos de NahoFlo Studio · Vista privada exclusiva
+        } @else {
+          Supervisión global de clientes registrados en todas las agencias
+        }
+      </p>
     </div>
+
+    <!-- Botón Nuevo Cliente -->
     <p-button
       label="Nuevo Cliente"
       icon="pi pi-user-plus"
@@ -31,7 +57,72 @@
       >
       <!-- TOOLBAR DE LA TABLA -->
       <ng-template pTemplate="caption">
-        <div class="flex justify-end pb-4 border-b border-gray-100 mb-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-4">
+
+          <!-- SELECTOR DE VISTA PARA ADMINISTRADOR (OPCIÓN A) -->
+          @if (esAdmin()) {
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+              <!-- Nivel 1: Directos vs Agencias -->
+              <div class="flex items-center gap-1.5 p-1 bg-gray-100/80 rounded-xl w-fit">
+                <button
+                  type="button"
+                  (click)="cambiarVistaAdmin('directos')"
+                  [class]="vistaAdmin === 'directos'
+                    ? 'bg-violet-600 text-white font-bold shadow-xs border-0'
+                    : 'text-gray-500 hover:text-gray-800 font-medium bg-transparent border-0'"
+                  class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5">
+                  <i class="pi pi-user text-xs"></i>
+                  <span>Clientes Directos (NahoFlo)</span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="cambiarVistaAdmin('todos')"
+                  [class]="vistaAdmin === 'todos'
+                    ? 'bg-violet-600 text-white font-bold shadow-xs border-0'
+                    : 'text-gray-500 hover:text-gray-800 font-medium bg-transparent border-0'"
+                  class="px-3 py-1.5 rounded-lg text-xs transition-all cursor-pointer flex items-center gap-1.5">
+                  <i class="pi pi-briefcase text-xs"></i>
+                  <span>Clientes de Agencias</span>
+                </button>
+              </div>
+
+              <!-- Nivel 2: Opción A (Dentro de Directos: Todo el Estudio vs Creados por mí) -->
+              @if (vistaAdmin === 'directos') {
+                <div class="flex items-center gap-1 p-1 bg-gray-100/80 rounded-xl w-fit">
+                  <button
+                    type="button"
+                    (click)="cambiarFiltroEquipo('todos')"
+                    [class]="filtroEquipo === 'todos'
+                      ? 'bg-white text-gray-900 font-bold shadow-xs'
+                      : 'text-gray-500 hover:text-gray-800 font-medium'"
+                    class="px-2.5 py-1.5 rounded-lg text-xs transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5">
+                    <i class="pi pi-building text-xs"></i>
+                    <span>Todo el Estudio</span>
+                    <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gray-200/80 text-gray-700 font-bold">{{ totalDirectos }}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="cambiarFiltroEquipo('mios')"
+                    [class]="filtroEquipo === 'mios'
+                      ? 'bg-white text-gold-700 font-bold shadow-xs'
+                      : 'text-gray-500 hover:text-gray-800 font-medium'"
+                    class="px-2.5 py-1.5 rounded-lg text-xs transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5">
+                    <i class="pi pi-user text-xs"></i>
+                    <span>Solo los míos</span>
+                    <span class="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-gold-100 text-gold-800 font-bold">{{ totalMios }}</span>
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              Total: {{ clientes.length }} clientes registrados
+            </div>
+          }
+
+          <!-- BÚSQUEDA GLOBAL -->
           <span class="p-input-icon-left w-full sm:w-80">
             <i class="pi pi-search text-gray-400"></i>
             <input
@@ -41,6 +132,7 @@
               (input)="dt.filterGlobal($any($event.target).value, 'contains')"
               placeholder="Buscar por cliente, teléfono o correo..." />
           </span>
+
         </div>
       </ng-template>
 
@@ -48,6 +140,12 @@
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="nombreCompleto">Cliente <p-sortIcon field="nombreCompleto"></p-sortIcon></th>
+
+          <!-- Columna condicional en modo global de Admin -->
+          @if (esAdmin() && vistaAdmin === 'todos') {
+            <th>Agencia / Propietario</th>
+          }
+
           <th>Contacto</th>
           <th pSortableColumn="totalEventos" style="text-align: center;">Eventos <p-sortIcon field="totalEventos"></p-sortIcon></th>
           <th pSortableColumn="creadoEn">Registrado <p-sortIcon field="creadoEn"></p-sortIcon></th>
@@ -58,69 +156,105 @@
       <!-- CUERPO DE LA TABLA -->
       <ng-template pTemplate="body" let-cliente>
         <tr>
-          <!-- NOMBRE Y AVATAR -->
-          <td class="fw-medium">
-            <div class="client-name-row cursor-pointer group" (click)="verDetalleCliente(cliente)" title="Ver detalle del cliente">
-              <div class="client-avatar transition-transform group-hover:scale-105">
-                <i class="pi pi-user"></i>
+
+          <!-- CLIENTE -->
+          <td class="font-medium text-gray-900">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-gold-50 border border-gold-200/60 flex items-center justify-center text-gold-700 font-bold text-xs shrink-0 select-none">
+                {{ cliente.nombreCompleto ? cliente.nombreCompleto.substring(0, 2).toUpperCase() : 'CL' }}
               </div>
-              <div class="client-info">
-                <span class="client-fullname group-hover:text-gold-600 transition-colors">{{ cliente.nombreCompleto }}</span>
-                <span class="client-subid" *ngIf="cliente.id">ID: {{ cliente.id.substring(0, 8) }}</span>
+              <div>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  <span class="text-sm font-semibold text-gray-900 leading-tight">{{ cliente.nombreCompleto }}</span>
+                  <!-- Badge de Creador en Vista Directos (Opción A) -->
+                  @if (esAdmin() && vistaAdmin === 'directos') {
+                    @if (esClienteMio(cliente)) {
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 text-[10px] font-semibold border border-gold-200/60" pTooltip="Registrado por ti">
+                        <i class="pi pi-user text-[9px]"></i>
+                        <span>Tú</span>
+                      </span>
+                    } @else {
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-medium border border-slate-200/70" [pTooltip]="'Registrado por ' + getCreadorCliente(cliente)">
+                        <i class="pi pi-user text-[9px] text-slate-400"></i>
+                        <span>Por: {{ getCreadorCliente(cliente) }}</span>
+                      </span>
+                    }
+                  }
+                </div>
+                <span *ngIf="cliente.notas" class="text-xs text-gray-400 font-normal italic truncate max-w-[200px] block mt-0.5" [pTooltip]="cliente.notas" tooltipPosition="top">
+                  {{ cliente.notas }}
+                </span>
               </div>
             </div>
           </td>
 
-          <!-- CONTACTO (TEL / WHATSAPP / CORREO) -->
+          <!-- AGENCIA / PROPIETARIO (Solo visible si es Admin en modo Global) -->
+          @if (esAdmin() && vistaAdmin === 'todos') {
+            <td>
+              @if (esClienteDirecto(cliente)) {
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gold-50 text-gold-700 text-xs font-semibold border border-gold-200/60">
+                  <i class="pi pi-shield text-[10px]"></i>
+                  <span>NahoFlo (Directo)</span>
+                </span>
+              } @else {
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-700 text-xs font-semibold border border-violet-200/60">
+                  <i class="pi pi-briefcase text-[10px]"></i>
+                  <span>{{ getAgenciaCliente(cliente) }}</span>
+                </span>
+              }
+            </td>
+          }
+
+          <!-- CONTACTO -->
           <td>
-            <div class="contact-info-col">
-              <div class="phone-link" *ngIf="cliente.telefono">
-                <i class="pi pi-phone text-gold"></i>
-                <span>{{ cliente.telefono }}</span>
+            <div class="flex flex-col gap-0.5 text-xs text-gray-600">
+              <div class="flex items-center gap-1.5">
+                <i class="pi pi-phone text-gray-400 text-[11px]"></i>
+                <span class="font-medium">{{ cliente.telefono }}</span>
                 <a
+                  *ngIf="cliente.telefono"
                   [href]="getWhatsappUrl(cliente.telefono)"
                   target="_blank"
-                  class="whatsapp-btn"
-                  pTooltip="Enviar WhatsApp"
+                  class="inline-flex items-center text-emerald-600 hover:text-emerald-700 no-underline ml-1"
+                  pTooltip="Escribir por WhatsApp"
                   tooltipPosition="top">
-                  <i class="pi pi-whatsapp"></i>
+                  <i class="pi pi-whatsapp text-xs"></i>
                 </a>
               </div>
-              <div class="email-row" *ngIf="cliente.email">
-                <i class="pi pi-envelope text-muted"></i>
-                <a [href]="'mailto:' + cliente.email" class="email-link">{{ cliente.email }}</a>
+              <div *ngIf="cliente.email" class="flex items-center gap-1.5 text-gray-400">
+                <i class="pi pi-envelope text-gray-300 text-[11px]"></i>
+                <span>{{ cliente.email }}</span>
               </div>
-              <span *ngIf="!cliente.telefono && !cliente.email" class="text-secondary">Sin contacto</span>
             </div>
           </td>
 
-          <!-- TOTAL DE EVENTOS -->
+          <!-- TOTAL EVENTOS -->
           <td style="text-align: center;">
-            <p-tag
-              [value]="(cliente.totalEventos || 0) + (cliente.totalEventos === 1 ? ' evento' : ' eventos')"
-              [severity]="(cliente.totalEventos || 0) > 0 ? 'success' : 'info'"
-              [rounded]="true">
-            </p-tag>
+            <span
+              class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+              [ngClass]="cliente.totalEventos > 0 ? 'bg-gold-50 text-gold-700 border border-gold-200/60' : 'bg-gray-100 text-gray-500'">
+              {{ cliente.totalEventos }}
+            </span>
           </td>
 
-
           <!-- FECHA DE REGISTRO -->
-          <td class="text-secondary">
+          <td class="text-gray-500 text-sm">
             {{ formatFecha(cliente.creadoEn) }}
           </td>
 
           <!-- ACCIONES -->
           <td style="text-align: right;">
-            <div class="action-buttons">
+            <div class="flex items-center justify-end gap-1">
               <p-button
-                icon="pi pi-eye"
+                icon="pi pi-folder-open"
                 [rounded]="true"
                 [text]="true"
                 severity="info"
-                pTooltip="Ver Detalle"
+                pTooltip="Ver Expediente"
                 tooltipPosition="top"
-                (onClick)="verDetalleCliente(cliente)">
+                (onClick)="verDetalle(cliente)">
               </p-button>
+
               <p-button
                 icon="pi pi-pencil"
                 [rounded]="true"
@@ -130,6 +264,7 @@
                 tooltipPosition="top"
                 (onClick)="openDialog(cliente)">
               </p-button>
+
               <p-button
                 icon="pi pi-trash"
                 [rounded]="true"
@@ -141,23 +276,31 @@
               </p-button>
             </div>
           </td>
+
         </tr>
       </ng-template>
 
-      <!-- ESTADO VACÍO -->
+      <!-- EMPTY STATE -->
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="6" class="empty-state">
-            <i class="pi pi-users empty-icon"></i>
-            <p class="empty-title">Aún no hay clientes registrados</p>
-            <p class="empty-desc">Registra a tus clientes aquí o se guardarán automáticamente al crear tus eventos.</p>
-            <p-button label="Crear Primer Cliente" icon="pi pi-plus" [rounded]="true" (onClick)="openDialog()"></p-button>
+          <td [attr.colspan]="esAdmin() && vistaAdmin === 'todos' ? 6 : 5" class="py-12 text-center text-gray-400">
+            <i class="pi pi-users text-4xl text-gray-300 mb-2 block"></i>
+            <p class="text-sm m-0 font-medium text-gray-600">
+              @if (esPartner()) {
+                Aún no tienes clientes registrados en tu workspace.
+              } @else if (vistaAdmin === 'directos') {
+                No tienes clientes directos registrados aún.
+              } @else {
+                No se encontraron clientes en la cartera global.
+              }
+            </p>
+            <p class="text-xs text-gray-400 m-0 mt-1">Registra a tus clientes aquí o se guardarán automáticamente al crear tus eventos.</p>
           </td>
         </tr>
       </ng-template>
-    </p-table>
+
+      </p-table>
     </div>
   </div>
 
 </div>
-

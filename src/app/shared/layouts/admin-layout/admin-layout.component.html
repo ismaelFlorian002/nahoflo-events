@@ -15,7 +15,7 @@
     [class.desktop-expanded]="sidebarExpandido"
     [class.desktop-collapsed]="!sidebarExpandido">
     <div>
-      <!-- Cabecera del Sidebar: Logo Centrado y Toggle -->
+      <!-- Cabecera del Sidebar: Logo + Badge de Workspace -->
       <div class="h-16 sm:h-20 flex items-center justify-center relative px-4 border-b border-gray-100/80 transition-all duration-300">
         <div
           class="flex items-center justify-center"
@@ -49,16 +49,43 @@
         </button>
       </div>
 
+      <!-- Badge de workspace (solo cuando el sidebar está expandido) -->
+      @if (sidebarExpandido) {
+        <div class="px-4 pt-3 pb-0">
+          <!-- Badge Admin -->
+          @if (esAdmin()) {
+            <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-gold-50 border border-gold-200/60">
+              <span class="w-2 h-2 rounded-full bg-gold-500 shrink-0"></span>
+              <span class="text-[11px] font-bold text-gold-700 uppercase tracking-wider truncate">
+                Panel Admin
+              </span>
+              <i class="pi pi-shield text-[11px] text-gold-500 ml-auto shrink-0"></i>
+            </div>
+          }
+          <!-- Badge Partner -->
+          @if (esPartner()) {
+            <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 border border-violet-200/60">
+              <span class="w-2 h-2 rounded-full bg-violet-500 shrink-0"></span>
+              <span class="text-[11px] font-bold text-violet-700 uppercase tracking-wider truncate"
+                    [pTooltip]="workspaceLabel()" tooltipPosition="right">
+                {{ workspaceLabel() }}
+              </span>
+              <i class="pi pi-briefcase text-[11px] text-violet-500 ml-auto shrink-0"></i>
+            </div>
+          }
+        </div>
+      }
+
       <!-- Navegación Principal -->
-      <div class="sidebar-nav-container px-4 py-6 transition-all duration-300">
+      <div class="sidebar-nav-container px-4 py-4 transition-all duration-300">
         <span class="sidebar-label block px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
           Panel de Control
         </span>
-        <nav class="flex flex-col gap-1.5" aria-label="Navegación del Administrador">
+        <nav class="flex flex-col gap-1.5" aria-label="Navegación del Panel">
 
-          <!-- Enlace: Eventos -->
+          <!-- Enlace: Eventos — apunta dinámicamente a /admin o /partner -->
           <a
-            routerLink="/admin"
+            [routerLink]="workspaceBase()"
             [routerLinkActiveOptions]="{ exact: true }"
             routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
             [class.text-gray-500]="true"
@@ -67,13 +94,13 @@
             class="sidebar-link flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
             <i class="pi pi-calendar text-base shrink-0"></i>
             <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
-              Eventos
+              @if (esPartner()) { Mis Eventos } @else { Todos los Eventos }
             </span>
           </a>
 
-          <!-- Enlace: Clientes -->
+          <!-- Enlace: Clientes — apunta dinámicamente a /admin/clientes o /partner/clientes -->
           <a
-            routerLink="/admin/clientes"
+            [routerLink]="workspaceBase() + '/clientes'"
             routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
             [class.text-gray-500]="true"
             [pTooltip]="!sidebarExpandido ? 'Clientes' : ''"
@@ -81,9 +108,25 @@
             class="sidebar-link flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
             <i class="pi pi-users text-base shrink-0"></i>
             <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
-              Clientes
+              @if (esPartner()) { Mis Clientes } @else { Clientes }
             </span>
           </a>
+
+          <!-- Enlace: Usuarios (Exclusivo para Administrador) -->
+          @if (esAdmin()) {
+            <a
+              routerLink="/admin/usuarios"
+              routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
+              [class.text-gray-500]="true"
+              [pTooltip]="!sidebarExpandido ? 'Usuarios' : ''"
+              tooltipPosition="right"
+              class="sidebar-link flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
+              <i class="pi pi-user-edit text-base shrink-0"></i>
+              <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
+                Usuarios
+              </span>
+            </a>
+          }
 
         </nav>
       </div>
@@ -114,7 +157,7 @@
     <!-- BARRA SUPERIOR (TOPBAR) -->
     <header class="h-16 sm:h-20 bg-white border-b border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] px-3.5 sm:px-8 flex items-center justify-between sticky top-0 z-10">
 
-      <!-- Lado Izquierdo: Botón Hamburguesa Móvil + Título de Marca -->
+      <!-- Lado Izquierdo: Botón Hamburguesa Móvil + Título de Marca + Badge de rol -->
       <div class="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           id="btn-hamburguesa"
@@ -128,9 +171,19 @@
         <span class="font-bold text-gray-900 text-sm sm:text-base md:text-lg tracking-tight truncate">
           NahoFlo Event Studio
         </span>
-        <span class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gold-50 text-gold-600 border border-gold-200/60 uppercase tracking-wider shrink-0">
-          Workspace
-        </span>
+
+        <!-- Badge dinámico según rol -->
+        @if (esAdmin()) {
+          <span class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 border border-gold-200/60 uppercase tracking-wider shrink-0 hidden sm:inline">
+            Admin
+          </span>
+        }
+        @if (esPartner()) {
+          <span class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200/60 uppercase tracking-wider shrink-0 hidden sm:inline"
+                [pTooltip]="workspaceLabel()" tooltipPosition="bottom">
+            Partner
+          </span>
+        }
       </div>
 
       <!-- Lado Derecho: Saludo al Usuario Logueado -->
@@ -146,8 +199,11 @@
           }
         </div>
         <div
-          class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-tr from-gold-100 to-pastel-pink-100 border border-gold-200/60 flex items-center justify-center text-gold-700 font-bold text-xs shadow-xs shrink-0 select-none"
-          [pTooltip]="usuarioEmail ? usuarioEmail : 'Administrador'"
+          class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs shadow-xs shrink-0 select-none border"
+          [class]="esPartner()
+            ? 'bg-gradient-to-tr from-violet-100 to-violet-50 border-violet-200/60 text-violet-700'
+            : 'bg-gradient-to-tr from-gold-100 to-pastel-pink-100 border-gold-200/60 text-gold-700'"
+          [pTooltip]="usuarioEmail ? usuarioEmail : (esAdmin() ? 'Administrador' : 'Partner')"
           tooltipPosition="left">
           {{ inicialesUsuario }}
         </div>
