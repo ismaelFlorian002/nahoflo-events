@@ -87,16 +87,16 @@
               <input id="pinAnfitrion" pInputText formControlName="pinAnfitrion" class="w-full" maxlength="6" autocomplete="off" />
               <label for="pinAnfitrion">PIN Anfitrión</label>
             </p-floatlabel>
-            <p-button
-              type="button"
-              icon="pi pi-refresh"
+            <button pButton type="button"
+             
               [rounded]="true"
               [text]="true"
               severity="secondary"
               pTooltip="Generar PIN aleatorio"
               tooltipPosition="top"
-              (onClick)="generarPinAleatorio()">
-            </p-button>
+              (click)="generarPinAleatorio()">
+  <i pButtonIcon class="pi pi-refresh"></i>
+</button>
           </div>
 
           <!-- 3. FRASE / PRE-TÍTULO (4 columnas en desktop) -->
@@ -320,10 +320,14 @@
                   <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
                 </div>
                 <div class="flex gap-1">
-                  <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
-                            (onClick)="previewExistingUrl(existingFotoCeremoniaUrl)"></p-button>
-                  <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
-                            (onClick)="removeExistingFoto('ceremonia')"></p-button>
+                  <button pButton type="button" [text]="true" [rounded]="true" severity="info"
+                            (click)="previewExistingUrl(existingFotoCeremoniaUrl)">
+  <i pButtonIcon class="pi pi-eye"></i>
+</button>
+                  <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                            (click)="removeExistingFoto('ceremonia')">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
                 </div>
               </div>
 
@@ -335,10 +339,14 @@
                   <span class="text-slate-700 font-medium text-xs max-w-[200px] truncate">{{ fotoCeremoniaFile.name }}</span>
                 </div>
                 <div class="flex gap-1">
-                  <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
-                            (onClick)="previewImage(fotoCeremoniaFile)"></p-button>
-                  <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
-                            (onClick)="removeEstructuralFile('ceremonia')"></p-button>
+                  <button pButton type="button" [text]="true" [rounded]="true" severity="info"
+                            (click)="previewImage(fotoCeremoniaFile)">
+  <i pButtonIcon class="pi pi-eye"></i>
+</button>
+                  <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                            (click)="removeEstructuralFile('ceremonia')">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
                 </div>
               </div>
 
@@ -382,10 +390,14 @@
                   <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
                 </div>
                 <div class="flex gap-1">
-                  <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
-                            (onClick)="previewExistingUrl(existingFotoRecepcionUrl)"></p-button>
-                  <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
-                            (onClick)="removeExistingFoto('recepcion')"></p-button>
+                  <button pButton type="button" [text]="true" [rounded]="true" severity="info"
+                            (click)="previewExistingUrl(existingFotoRecepcionUrl)">
+  <i pButtonIcon class="pi pi-eye"></i>
+</button>
+                  <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                            (click)="removeExistingFoto('recepcion')">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
                 </div>
               </div>
 
@@ -397,10 +409,14 @@
                   <span class="text-slate-700 font-medium text-xs max-w-[200px] truncate">{{ fotoRecepcionFile.name }}</span>
                 </div>
                 <div class="flex gap-1">
-                  <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
-                            (onClick)="previewImage(fotoRecepcionFile)"></p-button>
-                  <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
-                            (onClick)="removeEstructuralFile('recepcion')"></p-button>
+                  <button pButton type="button" [text]="true" [rounded]="true" severity="info"
+                            (click)="previewImage(fotoRecepcionFile)">
+  <i pButtonIcon class="pi pi-eye"></i>
+</button>
+                  <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                            (click)="removeEstructuralFile('recepcion')">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
                 </div>
               </div>
 
@@ -444,8 +460,10 @@
                 <span class="text-slate-500 text-[11px]">Guardada en Firebase Storage</span>
               </div>
             </div>
-            <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
-                      (onClick)="removeExistingMusica()" pTooltip="Eliminar música"></p-button>
+            <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                      (click)="removeExistingMusica()" pTooltip="Eliminar música">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
           </div>
 
           <!-- 2. Archivo nuevo de música -->
@@ -460,8 +478,10 @@
                 <span class="text-slate-400 text-[11px]">{{ (musicaFondoFile.size / 1024 / 1024).toFixed(2) }} MB</span>
               </div>
             </div>
-            <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
-                      (onClick)="removeMusicaFile()"></p-button>
+            <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                      (click)="removeMusicaFile()">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
           </div>
 
           <!-- 3. Botón para subir música -->
@@ -482,10 +502,14 @@
               <span class="text-slate-700 text-xs font-semibold">Foto actual en la nube</span>
             </div>
             <div class="flex gap-1">
-              <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
-                        (onClick)="previewExistingUrl(existingFotoPrincipalUrl)"></p-button>
-              <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
-                        (onClick)="removeExistingFoto('principal')"></p-button>
+              <button pButton type="button" [text]="true" [rounded]="true" severity="info"
+                        (click)="previewExistingUrl(existingFotoPrincipalUrl)">
+  <i pButtonIcon class="pi pi-eye"></i>
+</button>
+              <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                        (click)="removeExistingFoto('principal')">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
             </div>
           </div>
 
@@ -497,10 +521,14 @@
               <span class="text-slate-700 font-medium text-xs max-w-[200px] truncate">{{ fotoPrincipalFile.name }}</span>
             </div>
             <div class="flex gap-1">
-              <p-button type="button" icon="pi pi-eye" [text]="true" [rounded]="true" severity="info"
-                        (onClick)="previewImage(fotoPrincipalFile)"></p-button>
-              <p-button type="button" icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger"
-                        (onClick)="removeEstructuralFile('principal')"></p-button>
+              <button pButton type="button" [text]="true" [rounded]="true" severity="info"
+                        (click)="previewImage(fotoPrincipalFile)">
+  <i pButtonIcon class="pi pi-eye"></i>
+</button>
+              <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                        (click)="removeEstructuralFile('principal')">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
             </div>
           </div>
 
@@ -551,10 +579,14 @@
                   </div>
                 </div>
                 <div class="flex gap-2">
-                  <p-button type="button" icon="pi pi-eye" [rounded]="true" [text]="true" severity="info"
-                            (onClick)="previewImage(file)"></p-button>
-                  <p-button type="button" icon="pi pi-trash" [rounded]="true" [text]="true" severity="danger"
-                            (onClick)="removeGaleriaFoto($event, file, galeriaUploader)"></p-button>
+                  <button pButton type="button" [rounded]="true" [text]="true" severity="info"
+                            (click)="previewImage(file)">
+  <i pButtonIcon class="pi pi-eye"></i>
+</button>
+                  <button pButton type="button" [rounded]="true" [text]="true" severity="danger"
+                            (click)="removeGaleriaFoto($event, file, galeriaUploader)">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
                 </div>
               </div>
             </ng-template>
@@ -570,8 +602,12 @@
 
   <!-- BOTONES DE ACCIÓN FIJOS AL FINAL -->
   <div class="sticky bottom-[-1.5rem] -mx-6 -mb-6 p-6 bg-white z-[100] flex justify-end gap-3 border-t border-slate-200">
-    <p-button type="button" label="Cancelar" severity="secondary" [text]="true" (onClick)="ref.close()"></p-button>
-    <p-button label="Guardar Evento" type="submit" (onClick)="saveEvent()" [loading]="isSaving"></p-button>
+    <button pButton type="button" severity="secondary" [text]="true" (click)="ref.close()">
+  <span pButtonLabel>Cancelar</span>
+</button>
+    <button pButton type="submit" (click)="saveEvent()" [loading]="isSaving">
+  <span pButtonLabel>Guardar Evento</span>
+</button>
   </div>
 
 </form>

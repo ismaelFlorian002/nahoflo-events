@@ -54,22 +54,20 @@
 
   <!-- BOTONES DE ACCIÓN NATIVOS PRIMENG -->
   <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <p-button
-      label="Descargar"
-      icon="pi pi-download"
-      text="true"
+    <button pButton text="true"
       severity="info"
-      styleClass="w-full"
+      class="w-full"
       [loading]="descargando()"
-      (onClick)="descargarPase()">
-    </p-button>
+      (click)="descargarPase()">
+  <i pButtonIcon class="pi pi-download"></i>
+  <span pButtonLabel>Descargar</span>
+</button>
 
-    <p-button
-      label="Enviar"
-      icon="pi pi-whatsapp"
-      severity="success"
-      styleClass="w-full"
-      (onClick)="compartirWhatsApp()">
-    </p-button>
+    <button pButton severity="success"
+      class="w-full"
+      (click)="compartirWhatsApp()">
+  <i pButtonIcon class="pi pi-whatsapp"></i>
+  <span pButtonLabel>Enviar</span>
+</button>
   </div>
 </div>

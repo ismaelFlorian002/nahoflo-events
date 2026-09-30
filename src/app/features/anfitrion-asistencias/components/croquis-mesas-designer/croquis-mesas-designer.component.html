@@ -16,24 +16,22 @@
 
     <!-- BOTONES DE ACCIÓN PRINCIPALES -->
     <div class="flex flex-wrap items-center gap-2">
-      <p-button
-        label="Autogenerar Mesas"
-        icon="pi pi-sync"
-        size="small"
+      <button pButton size="small"
         [outlined]="true"
         severity="secondary"
         pTooltip="Crear mesas automáticamente según los nombres asignados a los invitados"
         tooltipPosition="bottom"
-        (onClick)="autogenerarMesasIniciales(true)">
-      </p-button>
+        (click)="autogenerarMesasIniciales(true)">
+  <i pButtonIcon class="pi pi-sync"></i>
+  <span pButtonLabel>Autogenerar Mesas</span>
+</button>
 
-      <p-button
-        label="Nueva Mesa"
-        icon="pi pi-plus"
-        size="small"
-        styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl"
-        (onClick)="abrirModalMesa()">
-      </p-button>
+      <button pButton size="small"
+        class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl"
+        (click)="abrirModalMesa()">
+  <i pButtonIcon class="pi pi-plus"></i>
+  <span pButtonLabel>Nueva Mesa</span>
+</button>
     </div>
   </div>
 
@@ -139,13 +137,13 @@
         <p class="text-xs text-gray-500 max-w-sm mx-auto mb-5">
           Crea tus mesas manualmente o presiona "Autogenerar Mesas" para crearlas según los nombres de mesa asignados a tus invitados.
         </p>
-        <p-button
-          label="Crear Primera Mesa"
-          icon="pi pi-plus"
-          size="small"
-          styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl"
-          (onClick)="abrirModalMesa()"
-        ></p-button>
+        <button pButton size="small"
+          class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl"
+          (click)="abrirModalMesa()"
+        >
+  <i pButtonIcon class="pi pi-plus"></i>
+  <span pButtonLabel>Crear Primera Mesa</span>
+</button>
       </div>
     } @else {
       <!-- GRID DE TARJETAS DE MESAS -->
@@ -267,17 +265,19 @@
           <div class="flex flex-wrap items-center gap-2">
             <!-- 1. FILTRO DE ESTADO (BOTÓN + OVERLAYPANEL) -->
             <div class="filtro-dropdown-wrap">
-              <p-button
-                icon="pi pi-filter"
-                [label]="'Estado: ' + labelFiltroEstado()"
-                [badge]="conteoFiltroEstado()"
+              <button pButton
+               
                 badgeClass="p-badge-secondary"
                 size="small"
                 [outlined]="filtroEstado() === 'todos'"
                 [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
-                (onClick)="opFiltrosEstado.toggle($event)"
+                (click)="opFiltrosEstado.toggle($event)"
                 title="Filtrar por estado del invitado">
-              </p-button>
+  <span pButtonLabel>{{ 'Estado: ' + labelFiltroEstado() }}</span>
+  <span pButtonBadge>{{ conteoFiltroEstado() }}</span>
+
+  <i pButtonIcon class="pi pi-filter"></i>
+ </button>
 
               <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
                 <div class="menu-filtros-popover">
@@ -341,16 +341,15 @@
 
             <!-- BOTÓN RESTABLECER FILTROS -->
             @if (hayFiltrosActivos()) {
-              <p-button
-                icon="pi pi-filter-slash"
-                label="Limpiar filtros"
-                size="small"
+              <button pButton size="small"
                 [text]="true"
                 severity="secondary"
-                (onClick)="limpiarTodosFiltros(dt)"
+                (click)="limpiarTodosFiltros(dt)"
                 pTooltip="Restablecer todos los filtros"
                 tooltipPosition="top">
-              </p-button>
+  <i pButtonIcon class="pi pi-filter-slash"></i>
+  <span pButtonLabel>Limpiar filtros</span>
+</button>
             }
           </div>
 

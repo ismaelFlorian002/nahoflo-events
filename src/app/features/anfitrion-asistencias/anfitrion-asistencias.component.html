@@ -57,38 +57,37 @@
             <!-- Acciones Rápidas (Copiar Enlace, Ver Invitación, Salir) -->
             <div class="flex flex-wrap items-center gap-2">
               @if (tieneInvitacion()) {
-                <p-button
-                  [label]="copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
-                  [icon]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
+                <button pButton
+                 
                   size="small"
                   [outlined]="!copiadoGeneral()"
                   [severity]="copiadoGeneral() ? 'success' : 'secondary'"
                   [text]="!copiadoGeneral()"
-                  (onClick)="copiarEnlaceGeneral()"
+                  (click)="copiarEnlaceGeneral()"
                   aria-label="Copiar enlace general del evento">
-                </p-button>
+  <i pButtonIcon [class]="copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span pButtonLabel>{{ copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace' }}</span>
+ </button>
 
-                <p-button
-                  label="Ver Invitación"
-                  icon="pi pi-external-link"
-                  size="small"
+                <button pButton size="small"
                   [outlined]="true"
                   severity="secondary"
                   [text]="true"
-                  (onClick)="abrirInvitacion()"
+                  (click)="abrirInvitacion()"
                   aria-label="Abrir invitación en nueva pestaña">
-                </p-button>
+  <i pButtonIcon class="pi pi-external-link"></i>
+  <span pButtonLabel>Ver Invitación</span>
+</button>
               }
 
-              <p-button
-                label="Salir"
-                icon="pi pi-sign-out"
-                size="small"
+              <button pButton size="small"
                 [text]="true"
                 severity="danger"
-                (onClick)="salir()"
+                (click)="salir()"
                 aria-label="Cerrar sesión de anfitrión">
-              </p-button>
+  <i pButtonIcon class="pi pi-sign-out"></i>
+  <span pButtonLabel>Salir</span>
+</button>
             </div>
           </div>
         </div>

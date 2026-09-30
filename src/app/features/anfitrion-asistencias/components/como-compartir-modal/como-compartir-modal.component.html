@@ -23,24 +23,24 @@
       <div class="enlace-general-box">
         <span class="enlace-texto">{{ urlGeneral() }}</span>
         <div class="enlace-acciones">
-          <p-button
-            [label]="copiado() ? '¡Copiado!' : 'Copiar Enlace'"
-            [icon]="copiado() ? 'pi pi-check' : 'pi pi-copy'"
+          <button pButton
+           
             size="small"
             text="true"
             severity="contrast"
-            (onClick)="copiarEnlace()">
-          </p-button>
+            (click)="copiarEnlace()">
+  <i pButtonIcon [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span pButtonLabel>{{ copiado() ? '¡Copiado!' : 'Copiar Enlace' }}</span>
+ </button>
 
           @if (puedeCompartirNativo()) {
-            <p-button
-              icon="pi pi-share-alt"
-              text=""
+            <button pButton text=""
               size="small"
               severity="secondary"
-              (onClick)="compartirNativo()"
+              (click)="compartirNativo()"
               title="Compartir mediante el menú de tu dispositivo">
-            </p-button>
+  <i pButtonIcon class="pi pi-share-alt"></i>
+</button>
           }
         </div>
       </div>
@@ -73,13 +73,12 @@
 
   <!-- FOOTER CON BOTÓN DE CIERRE -->
   <div class="modal-footer-acciones">
-    <p-button
-      label="Entendido, volver a la lista"
-      icon="pi pi-check"
-      size="small"
+    <button pButton size="small"
       severity="secondary"
-      (onClick)="cerrar()">
-    </p-button>
+      (click)="cerrar()">
+  <i pButtonIcon class="pi pi-check"></i>
+  <span pButtonLabel>Entendido, volver a la lista</span>
+</button>
   </div>
 
 </div>

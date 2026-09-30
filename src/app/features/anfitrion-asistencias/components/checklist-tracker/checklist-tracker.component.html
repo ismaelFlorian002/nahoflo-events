@@ -15,22 +15,20 @@
 
     <div class="flex items-center gap-2 w-full md:w-auto">
       @if (tareas().length === 0) {
-        <p-button
-          label="Cargar Plantilla Boda"
-          icon="pi pi-list-check"
-          severity="secondary"
+        <button pButton severity="secondary"
           [outlined]="true"
-          styleClass="p-button-sm"
-          (onClick)="cargarPlantillaBoda()">
-        </p-button>
+          class="p-button-sm"
+          (click)="cargarPlantillaBoda()">
+  <i pButtonIcon class="pi pi-list-check"></i>
+  <span pButtonLabel>Cargar Plantilla Boda</span>
+</button>
       }
-      <p-button
-        label="Añadir Tarea"
-        icon="pi pi-plus"
-        severity="primary"
-        styleClass="p-button-sm font-semibold"
-        (onClick)="abrirModalTarea()">
-      </p-button>
+      <button pButton severity="primary"
+        class="p-button-sm font-semibold"
+        (click)="abrirModalTarea()">
+  <i pButtonIcon class="pi pi-plus"></i>
+  <span pButtonLabel>Añadir Tarea</span>
+</button>
     </div>
   </div>
 
@@ -150,13 +148,12 @@
         Puedes cargar la plantilla inteligente de bodas con más de 20 tareas esenciales organizadas por etapas.
       </p>
       <div class="mt-4">
-        <p-button
-          label="Cargar Plantilla Boda"
-          icon="pi pi-list-check"
-          severity="primary"
-          styleClass="p-button-sm font-semibold"
-          (onClick)="cargarPlantillaBoda()">
-        </p-button>
+        <button pButton severity="primary"
+          class="p-button-sm font-semibold"
+          (click)="cargarPlantillaBoda()">
+  <i pButtonIcon class="pi pi-list-check"></i>
+  <span pButtonLabel>Cargar Plantilla Boda</span>
+</button>
       </div>
     </div>
   }

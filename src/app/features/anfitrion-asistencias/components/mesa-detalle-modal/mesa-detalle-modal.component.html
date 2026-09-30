@@ -99,14 +99,14 @@
       </div>
 
       <div class="pt-3 border-t border-gray-100 flex justify-end">
-        <p-button
-          label="Asignar a Mesa"
-          icon="pi pi-plus"
-          size="small"
+        <button pButton size="small"
           [disabled]="!invitadoSeleccionadoId"
-          (onClick)="agregarInvitadoAMesa()"
-          styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl text-xs"
-        ></p-button>
+          (click)="agregarInvitadoAMesa()"
+          class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl text-xs"
+        >
+  <i pButtonIcon class="pi pi-plus"></i>
+  <span pButtonLabel>Asignar a Mesa</span>
+</button>
       </div>
     </div>
   </div>
@@ -159,15 +159,15 @@
             </div>
 
             <!-- Botón quitar de mesa -->
-            <p-button
-              icon="pi pi-times"
-              size="small"
+            <button pButton size="small"
               [text]="true"
               severity="danger"
               [rounded]="true"
               pTooltip="Desasignar de esta mesa"
-              (onClick)="removerInvitado(inv)"
-            ></p-button>
+              (click)="removerInvitado(inv)"
+            >
+  <i pButtonIcon class="pi pi-times"></i>
+</button>
           </div>
         }
       </div>
@@ -176,34 +176,40 @@
 
   <!-- PIE DE ACCIONES -->
   <div class="flex justify-between items-center pt-3 border-t border-gray-100 mt-1">
-    <p-button
-      type="button"
-      label="Eliminar Mesa"
-      icon="pi pi-trash"
+    <button pButton type="button"
+     
+     
       size="small"
       [text]="true"
       severity="danger"
-      (onClick)="eliminarMesa()"
-    ></p-button>
+      (click)="eliminarMesa()"
+    >
+  <i pButtonIcon class="pi pi-trash"></i>
+  <span pButtonLabel>Eliminar Mesa</span>
+</button>
 
     <div class="flex items-center gap-2">
-      <p-button
-        type="button"
-        label="Editar Mesa"
-        icon="pi pi-pencil"
+      <button pButton type="button"
+       
+       
         size="small"
         text
         severity="secondary"
-        (onClick)="editarMesa()"
-      ></p-button>
-      <p-button
-        type="button"
-        label="Listo"
-        icon="pi pi-check"
+        (click)="editarMesa()"
+      >
+  <i pButtonIcon class="pi pi-pencil"></i>
+  <span pButtonLabel>Editar Mesa</span>
+</button>
+      <button pButton type="button"
+       
+       
         size="small"
-        (onClick)="ref.close({ cambio: true })"
-        styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl"
-      ></p-button>
+        (click)="ref.close({ cambio: true })"
+        class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold !rounded-xl"
+      >
+  <i pButtonIcon class="pi pi-check"></i>
+  <span pButtonLabel>Listo</span>
+</button>
     </div>
   </div>
 </div>

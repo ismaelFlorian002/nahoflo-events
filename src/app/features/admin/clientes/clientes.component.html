@@ -247,35 +247,32 @@
           <!-- ACCIONES -->
           <td style="text-align: right;">
             <div class="flex items-center justify-end gap-1">
-              <p-button
-                icon="pi pi-folder-open"
-                [rounded]="true"
+              <button pButton [rounded]="true"
                 [text]="true"
                 severity="info"
                 pTooltip="Ver Expediente"
                 tooltipPosition="top"
-                (onClick)="verDetalle(cliente)">
-              </p-button>
+                (click)="verDetalle(cliente)">
+  <i pButtonIcon class="pi pi-folder-open"></i>
+</button>
 
-              <p-button
-                icon="pi pi-pencil"
-                [rounded]="true"
+              <button pButton [rounded]="true"
                 [text]="true"
                 severity="secondary"
                 pTooltip="Editar Cliente"
                 tooltipPosition="top"
-                (onClick)="openDialog(cliente)">
-              </p-button>
+                (click)="openDialog(cliente)">
+  <i pButtonIcon class="pi pi-pencil"></i>
+</button>
 
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
+              <button pButton [rounded]="true"
                 [text]="true"
                 severity="danger"
                 pTooltip="Eliminar Cliente"
                 tooltipPosition="top"
-                (onClick)="eliminarCliente(cliente)">
-              </p-button>
+                (click)="eliminarCliente(cliente)">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
             </div>
           </td>
 

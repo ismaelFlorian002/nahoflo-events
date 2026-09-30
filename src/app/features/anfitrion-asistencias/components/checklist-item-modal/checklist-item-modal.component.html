@@ -99,20 +99,21 @@
 
   <!-- BOTONES DE ACCIÓN -->
   <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <p-button
-      type="button"
-      label="Cancelar"
+    <button pButton type="button"
+     
       severity="danger"
       [text]="true"
       size="small"
-      (onClick)="cancelar()">
-    </p-button>
+      (click)="cancelar()">
+  <span pButtonLabel>Cancelar</span>
+</button>
 
-    <p-button
-      type="submit"
-      [label]="esEdicion ? 'Actualizar Tarea' : 'Guardar Tarea'"
-      [icon]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"
+    <button pButton type="submit"
+     
+     
       size="small">
-    </p-button>
+  <i pButtonIcon [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+  <span pButtonLabel>{{ esEdicion ? 'Actualizar Tarea' : 'Guardar Tarea' }}</span>
+ </button>
   </div>
 </form>

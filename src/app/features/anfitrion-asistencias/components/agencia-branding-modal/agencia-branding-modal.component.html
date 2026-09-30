@@ -60,16 +60,16 @@
               styleClass="p-button-sm p-button-outlined p-button-secondary !rounded-xl text-xs"
               (onSelect)="onLogoSelected($event)">
             </p-fileupload>
-            <p-button
-              type="button"
-              icon="pi pi-trash"
+            <button pButton type="button"
+             
               [text]="true"
               [rounded]="true"
               severity="danger"
               size="small"
               pTooltip="Eliminar logo"
-              (onClick)="removerLogo()">
-            </p-button>
+              (click)="removerLogo()">
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
           </div>
         </div>
       } @else {
@@ -106,20 +106,23 @@
 
   <!-- Botones de Acción -->
   <div class="flex justify-end items-center gap-2 pt-4 border-t border-slate-100">
-    <p-button
-      type="button"
-      label="Cancelar"
-      icon="pi pi-times"
+    <button pButton type="button"
+     
+     
       text="true"
       severity="danger"
-      (onClick)="cancelar()">
-    </p-button>
-    <p-button
-      type="submit"
-      label="Guardar Marca Blanca"
-      [icon]="guardando ? 'pi pi-spin pi-spinner' : 'pi pi-check'"
+      (click)="cancelar()">
+  <i pButtonIcon class="pi pi-times"></i>
+  <span pButtonLabel>Cancelar</span>
+</button>
+    <button pButton type="submit"
+     
+     
       severity="primary"
       [disabled]="guardando">
-    </p-button>
+  <i pButtonIcon [class]="guardando ? 'pi pi-spin pi-spinner' : 'pi pi-check'"></i>
+
+  <span pButtonLabel>Guardar Marca Blanca</span>
+ </button>
   </div>
 </form>

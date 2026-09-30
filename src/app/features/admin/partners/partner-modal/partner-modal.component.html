@@ -156,23 +156,23 @@
 
   <!-- BOTONES DE ACCIÓN -->
   <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-gray-100 mt-2">
-    <p-button
-      label="Cancelar"
-      icon="pi pi-times"
-      [text]="true"
+    <button pButton [text]="true"
       severity="secondary"
       size="small"
-      (onClick)="cancelar()">
-    </p-button>
+      (click)="cancelar()">
+  <i pButtonIcon class="pi pi-times"></i>
+  <span pButtonLabel>Cancelar</span>
+</button>
 
-    <p-button
-      [label]="esEdicion ? 'Guardar Cambios' : 'Crear Usuario'"
-      [icon]="guardando ? 'pi pi-spin pi-spinner' : (esEdicion ? 'pi pi-check' : 'pi pi-plus')"
+    <button pButton
+     
       [loading]="guardando"
       type="submit"
       size="small"
-      styleClass="bg-gold-500 hover:bg-gold-600 text-white font-semibold border-0">
-    </p-button>
+      class="bg-gold-500 hover:bg-gold-600 text-white font-semibold border-0">
+  <i pButtonIcon [class]="guardando ? 'pi pi-spin pi-spinner' : (esEdicion ? 'pi pi-check' : 'pi pi-plus')"></i>
+  <span pButtonLabel>{{ esEdicion ? 'Guardar Cambios' : 'Crear Usuario' }}</span>
+ </button>
   </div>
 
 </form>

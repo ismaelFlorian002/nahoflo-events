@@ -167,25 +167,25 @@
               </a>
             }
 
-            <p-button
-              [label]="vm.descargandoDossier() ? 'Generando Dossier...' : 'Descargar Dossier PDF'"
-              [icon]="vm.descargandoDossier() ? 'pi pi-spin pi-spinner' : 'pi pi-file-pdf'"
+            <button pButton
+             
               severity="warn"
-              styleClass="p-button-sm font-semibold !rounded-xl !bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white shadow-sm"
+              class="p-button-sm font-semibold !rounded-xl !bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white shadow-sm"
               [disabled]="vm.descargandoDossier()"
-              (onClick)="vm.descargarDossierPdf()"
+              (click)="vm.descargarDossierPdf()"
             >
-            </p-button>
+  <i pButtonIcon [class]="vm.descargandoDossier() ? 'pi pi-spin pi-spinner' : 'pi pi-file-pdf'"></i>
+  <span pButtonLabel>{{ vm.descargandoDossier() ? 'Generando Dossier...' : 'Descargar Dossier PDF' }}</span>
+ </button>
 
-            <p-button
-              label="Configurar Agencia"
-              icon="pi pi-cog"
-              severity="secondary"
+            <button pButton severity="secondary"
               [outlined]="true"
-              styleClass="p-button-sm font-semibold text-gray-700 hover:bg-gray-50 !rounded-xl border-gray-200"
-              (onClick)="vm.abrirModalBrandingAgencia()"
+              class="p-button-sm font-semibold text-gray-700 hover:bg-gray-50 !rounded-xl border-gray-200"
+              (click)="vm.abrirModalBrandingAgencia()"
             >
-            </p-button>
+  <i pButtonIcon class="pi pi-cog"></i>
+  <span pButtonLabel>Configurar Agencia</span>
+</button>
           </div>
         </div>
       </div>
@@ -235,28 +235,26 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2 shrink-0">
-            <p-button
-              label="Ver Invitación"
-              icon="pi pi-external-link"
-              size="small"
+            <button pButton size="small"
               text="true"
               severity="primary"
-              (onClick)="vm.abrirInvitacion()"
+              (click)="vm.abrirInvitacion()"
               aria-label="Ver invitación en pestaña nueva"
             >
-            </p-button>
+  <i pButtonIcon class="pi pi-external-link"></i>
+  <span pButtonLabel>Ver Invitación</span>
+</button>
 
-            <p-button
-              label="Guía Compartir"
-              icon="pi pi-share-alt"
-              size="small"
+            <button pButton size="small"
               text="true"
               severity="secondary"
-              styleClass="!rounded-xl font-semibold"
-              (onClick)="vm.abrirModalCompartir()"
+              class="!rounded-xl font-semibold"
+              (click)="vm.abrirModalCompartir()"
               aria-label="Guía para compartir invitaciones"
             >
-            </p-button>
+  <i pButtonIcon class="pi pi-share-alt"></i>
+  <span pButtonLabel>Guía Compartir</span>
+</button>
           </div>
         </div>
 
@@ -281,17 +279,18 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2 shrink-0">
-            <p-button
-              [label]="vm.copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace'"
-              [icon]="vm.copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"
+            <button pButton
+             
               size="small"
               [severity]="vm.copiadoGeneral() ? 'success' : 'secondary'"
               [outlined]="!vm.copiadoGeneral()"
-              styleClass="!rounded-xl font-semibold"
-              (onClick)="vm.copiarEnlaceGeneral()"
+              class="!rounded-xl font-semibold"
+              (click)="vm.copiarEnlaceGeneral()"
               aria-label="Copiar enlace de invitación"
             >
-            </p-button>
+  <i pButtonIcon [class]="vm.copiadoGeneral() ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span pButtonLabel>{{ vm.copiadoGeneral() ? '¡Enlace Copiado!' : 'Copiar Enlace' }}</span>
+ </button>
 
             @if (vm.whatsappShareInvitacionUrl()) {
               <a
@@ -492,24 +491,22 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <p-button
-                label="Registrar Invitado"
-                icon="pi pi-user-plus"
-                size="small"
+              <button pButton size="small"
                 severity="primary"
-                (onClick)="vm.abrirModalInvitado()"
+                (click)="vm.abrirModalInvitado()"
               >
-              </p-button>
+  <i pButtonIcon class="pi pi-user-plus"></i>
+  <span pButtonLabel>Registrar Invitado</span>
+</button>
 
-              <p-button
-                label="Ver Lista de Invitados"
-                icon="pi pi-users"
-                size="small"
+              <button pButton size="small"
                 [outlined]="true"
                 severity="secondary"
-                (onClick)="vm.cambiarPestana('invitados')"
+                (click)="vm.cambiarPestana('invitados')"
               >
-              </p-button>
+  <i pButtonIcon class="pi pi-users"></i>
+  <span pButtonLabel>Ver Lista de Invitados</span>
+</button>
             </div>
           </div>
 
@@ -660,24 +657,22 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <p-button
-                label="Registrar Invitado"
-                icon="pi pi-user-plus"
-                size="small"
+              <button pButton size="small"
                 severity="primary"
-                (onClick)="vm.abrirModalInvitado()"
+                (click)="vm.abrirModalInvitado()"
               >
-              </p-button>
+  <i pButtonIcon class="pi pi-user-plus"></i>
+  <span pButtonLabel>Registrar Invitado</span>
+</button>
 
-              <p-button
-                label="Ver Lista de Invitados"
-                icon="pi pi-users"
-                size="small"
+              <button pButton size="small"
                 [outlined]="true"
                 severity="secondary"
-                (onClick)="vm.cambiarPestana('invitados')"
+                (click)="vm.cambiarPestana('invitados')"
               >
-              </p-button>
+  <i pButtonIcon class="pi pi-users"></i>
+  <span pButtonLabel>Ver Lista de Invitados</span>
+</button>
             </div>
           </div>
 
@@ -905,16 +900,17 @@
             </p>
           </div>
 
-          <p-button
-            [label]="
-              ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción'
-            "
-            [icon]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"
+          <button pButton
+           
             size="small"
             severity="primary"
-            (onClick)="vm.cambiarPestana('recepcion')"
+            (click)="vm.cambiarPestana('recepcion')"
           >
-          </p-button>
+  <i pButtonIcon [class]="ev.modulos?.tipoControlInvitados === 'total' ? 'pi pi-qrcode' : 'pi pi-sign-in'"></i>
+  <span pButtonLabel>{{ 
+              ev.modulos?.tipoControlInvitados === 'total' ? 'Abrir Escáner' : 'Abrir Recepción'
+             }}</span>
+ </button>
         </div>
 
         <!-- 3 TARJETAS KPIS EJECUTIVAS -->
@@ -1034,24 +1030,22 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <p-button
-              label="Cronograma"
-              icon="pi pi-clock"
-              size="small"
+            <button pButton size="small"
               [outlined]="true"
               severity="secondary"
-              (onClick)="vm.cambiarPestana('minutario')"
+              (click)="vm.cambiarPestana('minutario')"
             >
-            </p-button>
-            <p-button
-              label="Presupuesto"
-              icon="pi pi-dollar"
-              size="small"
+  <i pButtonIcon class="pi pi-clock"></i>
+  <span pButtonLabel>Cronograma</span>
+</button>
+            <button pButton size="small"
               [outlined]="true"
               severity="secondary"
-              (onClick)="vm.cambiarPestana('presupuesto')"
+              (click)="vm.cambiarPestana('presupuesto')"
             >
-            </p-button>
+  <i pButtonIcon class="pi pi-dollar"></i>
+  <span pButtonLabel>Presupuesto</span>
+</button>
           </div>
         </div>
 
@@ -1267,16 +1261,15 @@
             </div>
 
             <div class="pt-4 mt-4 border-t border-gray-50 flex justify-end">
-              <p-button
-                label="Gestionar Presupuesto"
-                icon="pi pi-dollar"
-                size="small"
+              <button pButton size="small"
                 [outlined]="true"
                 severity="secondary"
-                styleClass="text-xs font-semibold"
-                (onClick)="vm.cambiarPestana('presupuesto')"
+                class="text-xs font-semibold"
+                (click)="vm.cambiarPestana('presupuesto')"
               >
-              </p-button>
+  <i pButtonIcon class="pi pi-dollar"></i>
+  <span pButtonLabel>Gestionar Presupuesto</span>
+</button>
             </div>
           </div>
 
@@ -1329,16 +1322,15 @@
             </div>
 
             <div class="pt-4 mt-4 border-t border-gray-50 flex justify-end">
-              <p-button
-                label="Abrir Checklist"
-                icon="pi pi-check-square"
-                size="small"
+              <button pButton size="small"
                 [outlined]="true"
                 severity="secondary"
-                styleClass="text-xs font-semibold"
-                (onClick)="vm.cambiarPestana('checklist')"
+                class="text-xs font-semibold"
+                (click)="vm.cambiarPestana('checklist')"
               >
-              </p-button>
+  <i pButtonIcon class="pi pi-check-square"></i>
+  <span pButtonLabel>Abrir Checklist</span>
+</button>
             </div>
           </div>
         </div>
@@ -1365,37 +1357,34 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <p-button
-              label="QR para Mesas"
-              icon="pi pi-qrcode"
-              size="small"
+            <button pButton size="small"
               severity="warn"
-              styleClass="!bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white font-semibold !rounded-xl shadow-xs"
-              (onClick)="vm.abrirModalQrMesas()"
+              class="!bg-gradient-to-r !from-gold-500 !to-gold-600 !border-gold-500 hover:!from-gold-600 hover:!to-gold-700 text-white font-semibold !rounded-xl shadow-xs"
+              (click)="vm.abrirModalQrMesas()"
             >
-            </p-button>
+  <i pButtonIcon class="pi pi-qrcode"></i>
+  <span pButtonLabel>QR para Mesas</span>
+</button>
 
-            <p-button
-              label="Ver Muro en Vivo"
-              icon="pi pi-external-link"
-              size="small"
+            <button pButton size="small"
               [outlined]="true"
               severity="secondary"
-              styleClass="!rounded-xl font-semibold"
-              (onClick)="vm.abrirAlbumEnVivo()"
+              class="!rounded-xl font-semibold"
+              (click)="vm.abrirAlbumEnVivo()"
             >
-            </p-button>
+  <i pButtonIcon class="pi pi-external-link"></i>
+  <span pButtonLabel>Ver Muro en Vivo</span>
+</button>
 
-            <p-button
-              label="Moderar Fotos"
-              icon="pi pi-images"
-              size="small"
+            <button pButton size="small"
               [outlined]="true"
               severity="secondary"
-              styleClass="!rounded-xl font-semibold"
-              (onClick)="vm.cambiarPestana('album')"
+              class="!rounded-xl font-semibold"
+              (click)="vm.cambiarPestana('album')"
             >
-            </p-button>
+  <i pButtonIcon class="pi pi-images"></i>
+  <span pButtonLabel>Moderar Fotos</span>
+</button>
           </div>
         </div>
 

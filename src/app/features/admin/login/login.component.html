@@ -77,14 +77,15 @@
       </div>
 
       <!-- BOTÓN DE INGRESO -->
-      <p-button
-        type="submit"
-        label="Ingresar al Panel"
-        icon="pi pi-arrow-right"
-        iconPos="right"
+      <button pButton type="submit"
+       
+       
+       
         [loading]="loading"
-        styleClass="w-full bg-gold-500 hover:bg-gold-600 text-white font-semibold py-3 rounded-xl shadow-xs border-0 text-sm transition-all hover:shadow-md hover:scale-[1.01] active:scale-[0.99] cursor-pointer mt-1">
-      </p-button>
+        class="w-full bg-gold-500 hover:bg-gold-600 text-white font-semibold py-3 rounded-xl shadow-xs border-0 text-sm transition-all hover:shadow-md hover:scale-[1.01] active:scale-[0.99] cursor-pointer mt-1">
+  <i pButtonIcon class="pi pi-arrow-right"></i>
+  <span pButtonLabel>Ingresar al Panel</span>
+</button>
 
     </form>
   </div>

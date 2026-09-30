@@ -132,12 +132,11 @@
 
   <!-- ACCIONES DE PIE DE MODAL -->
   <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <p-button
-      label="Cerrar"
-      icon="pi pi-times"
-      [text]="true"
+    <button pButton [text]="true"
       severity="danger"
-      (onClick)="cerrar()">
-    </p-button>
+      (click)="cerrar()">
+  <i pButtonIcon class="pi pi-times"></i>
+  <span pButtonLabel>Cerrar</span>
+</button>
   </div>
 </div>

@@ -90,13 +90,12 @@
           <p class="frase-portada">Estás cordialmente invitado a celebrar con nosotros</p>
 
           <div class="contenedor-accion">
-            <p-button
-              label="Abrir Invitación"
-              icon="pi pi-heart"
-              [rounded]="true"
-              (onClick)="abrirInvitacion()"
-              styleClass="boton-abrir-dorado">
-            </p-button>
+            <button pButton rounded
+              (click)="abrirInvitacion()"
+              class="boton-abrir-dorado">
+  <i pButtonIcon class="pi pi-heart"></i>
+  <span pButtonLabel>Abrir Invitación</span>
+</button>
           </div>
         </div>
       </section>

@@ -57,17 +57,19 @@
 
           <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL -->
           <div class="filtro-dropdown-wrap">
-            <p-button
-              icon="pi pi-filter"
-              [label]="labelFiltroActivo()"
-              [badge]="conteoFiltroActivo()"
+            <button pButton
+             
               badgeClass="p-badge-secondary"
               size="small"
               [outlined]="filtroRespuesta() === 'todos'"
               [severity]="filtroRespuesta() !== 'todos' ? 'primary' : 'secondary'"
-              (onClick)="opFiltros.toggle($event)"
+              (click)="opFiltros.toggle($event)"
               title="Filtrar por estado de respuesta">
-            </p-button>
+  <span pButtonLabel>{{ labelFiltroActivo() }}</span>
+  <span pButtonBadge>{{ conteoFiltroActivo() }}</span>
+
+  <i pButtonIcon class="pi pi-filter"></i>
+ </button>
 
             <p-popover #opFiltros styleClass="popover-filtros-invitados">
               <div class="menu-filtros-popover">
@@ -133,77 +135,71 @@
 
           <!-- BOTONES DE EXPORTAR DESKTOP (DIRECTOS) -->
           <div class="exportar-grupo exportar-desktop">
-            <p-button
-              label="Excel"
-              icon="pi pi-file-excel"
-              size="small"
+            <button pButton size="small"
               severity="success"
               [outlined]="true"
               [disabled]="invitadosFiltrados().length === 0"
-              (onClick)="exportarExcel()"
+              (click)="exportarExcel()"
               title="Descargar lista filtrada en Excel">
-            </p-button>
+  <i pButtonIcon class="pi pi-file-excel"></i>
+  <span pButtonLabel>Excel</span>
+</button>
 
-            <p-button
-              label="PDF"
-              icon="pi pi-file-pdf"
-              size="small"
+            <button pButton size="small"
               severity="danger"
               [outlined]="true"
               [disabled]="invitadosFiltrados().length === 0"
-              (onClick)="exportarPdf()"
+              (click)="exportarPdf()"
               title="Descargar reporte filtrado en PDF">
-            </p-button>
+  <i pButtonIcon class="pi pi-file-pdf"></i>
+  <span pButtonLabel>PDF</span>
+</button>
           </div>
 
           <!-- BOTÓN DESPLEGABLE DE EXPORTAR (MÓVIL Y TABLET) -->
           <div class="exportar-mobile">
-            <p-button
-              label="Exportar"
-              icon="pi pi-download"
-              size="small"
+            <button pButton size="small"
               [outlined]="true"
               severity="secondary"
               [disabled]="invitadosFiltrados().length === 0"
-              (onClick)="menuExport.toggle($event)"
+              (click)="menuExport.toggle($event)"
               title="Exportar lista en Excel o PDF">
-            </p-button>
+  <i pButtonIcon class="pi pi-download"></i>
+  <span pButtonLabel>Exportar</span>
+</button>
           </div>
         </div>
 
         <!-- DERECHA: COMPARTIR INVITACIONES + BOTÓN AGREGAR -->
         <div class="toolbar-derecha">
           @if (tieneInvitacion()) {
-            <p-button
-              label="Cómo compartir invitación"
-              icon="pi pi-info-circle"
-              size="small"
+            <button pButton size="small"
               outlined
               severity="help"
               class="btn-compartir-desktop"
-              (onClick)="abrirModalCompartir()"
+              (click)="abrirModalCompartir()"
               title="Cómo compartir invitación">
-            </p-button>
+  <i pButtonIcon class="pi pi-info-circle"></i>
+  <span pButtonLabel>Cómo compartir invitación</span>
+</button>
 
             <!-- Versión compacta para móvil -->
-            <p-button
-              icon="pi pi-info-circle"
-              size="small"
+            <button pButton size="small"
               [outlined]="true"
               severity="secondary"
               class="btn-compartir-mobile"
-              (onClick)="abrirModalCompartir()"
+              (click)="abrirModalCompartir()"
               title="Cómo compartir invitación">
-            </p-button>
+  <i pButtonIcon class="pi pi-info-circle"></i>
+</button>
           }
 
-          <p-button
-            label="Agregar"
-            icon="pi pi-user-plus"
-            size="small"
-            (onClick)="abrirModalCrearInvitado()"
+          <button pButton size="small"
+            (click)="abrirModalCrearInvitado()"
             title="Registrar nuevo invitado manualmente">
-          </p-button>
+  <i pButtonIcon class="pi pi-user-plus"></i>
+  <span pButtonLabel>Agregar</span>
+</button>
         </div>
 
       </div>
@@ -356,15 +352,14 @@
         @if (evento()?.modulos?.tipoControlInvitados === 'total') {
           <td class="col-vip col-desktop" style="text-align: center;">
             @if (invitado.asistira || invitado.estado === 'pendiente') {
-              <p-button
-                icon="pi pi-qrcode"
-                [rounded]="true"
+              <button pButton [rounded]="true"
                 [text]="true"
                 severity="warn"
                 pTooltip="Ver Pase QR VIP"
                 tooltipPosition="top"
-                (onClick)="abrirModalQr(invitado)">
-              </p-button>
+                (click)="abrirModalQr(invitado)">
+  <i pButtonIcon class="pi pi-qrcode"></i>
+</button>
             } @else {
               <span style="color: #cbd5e1;">-</span>
             }
@@ -375,65 +370,60 @@
         <td class="col-acciones" style="text-align: right;">
           <!-- ACCIONES MÓVIL: BOTÓN DESPLEGABLE DE 3 PUNTOS -->
           <div class="acciones-mobile">
-            <p-button
-              icon="pi pi-ellipsis-v"
-              [rounded]="true"
+            <button pButton [rounded]="true"
               [text]="true"
               severity="secondary"
               size="small"
-              (onClick)="abrirMenuAcciones($event, invitado, menuAcciones)"
+              (click)="abrirMenuAcciones($event, invitado, menuAcciones)"
               [title]="'Acciones para ' + invitado.nombre">
-            </p-button>
+  <i pButtonIcon class="pi pi-ellipsis-v"></i>
+</button>
           </div>
 
           <!-- ACCIONES DESKTOP: BOTONES INDIVIDUALES CON TOOLTIP -->
           <div class="acciones-desktop action-buttons">
             <!-- BOTÓN WHATSAPP INVITACIÓN PERSONALIZADA (SOLO SI LA INVITACIÓN WEB ESTÁ ACTIVA) -->
             @if (tieneInvitacion()) {
-              <p-button
-                icon="pi pi-whatsapp"
-                [rounded]="true"
+              <button pButton [rounded]="true"
                 [text]="true"
                 severity="success"
                 [pTooltip]="'Enviar invitación personalizada a ' + invitado.nombre"
                 tooltipPosition="top"
-                (onClick)="enviarInvitacionWhatsApp(invitado)">
-              </p-button>
+                (click)="enviarInvitacionWhatsApp(invitado)">
+  <i pButtonIcon class="pi pi-whatsapp"></i>
+</button>
             }
 
             <!-- BOTÓN ENVIAR PASE VIP (OMITIDO SI ES SOLO LISTA PUERTA) -->
             @if (evento()?.modulos?.tipoControlInvitados !== 'lista_puerta') {
-              <p-button
-                icon="pi pi-ticket"
-                [rounded]="true"
+              <button pButton [rounded]="true"
                 [text]="true"
                 [pTooltip]="(evento()?.modulos?.tipoControlInvitados === 'total' ? 'Enviar Pase VIP a ' : 'Enviar Pase a ') + invitado.nombre"
                 tooltipPosition="top"
-                (onClick)="enviarPaseVipWhatsApp(invitado)">
-              </p-button>
+                (click)="enviarPaseVipWhatsApp(invitado)">
+  <i pButtonIcon class="pi pi-ticket"></i>
+</button>
             }
 
             <!-- BOTÓN VER DETALLE -->
-            <p-button
-              icon="pi pi-eye"
-              [rounded]="true"
+            <button pButton [rounded]="true"
               [text]="true"
               severity="info"
               pTooltip="Ver Detalle"
               tooltipPosition="top"
-              (onClick)="abrirModalDetalle(invitado)">
-            </p-button>
+              (click)="abrirModalDetalle(invitado)">
+  <i pButtonIcon class="pi pi-eye"></i>
+</button>
 
             <!-- BOTÓN EDITAR INVITADO -->
-            <p-button
-              icon="pi pi-pencil"
-              [rounded]="true"
+            <button pButton [rounded]="true"
               [text]="true"
               severity="secondary"
               pTooltip="Editar Invitado"
               tooltipPosition="top"
-              (onClick)="abrirModalEditar(invitado)">
-            </p-button>
+              (click)="abrirModalEditar(invitado)">
+  <i pButtonIcon class="pi pi-pencil"></i>
+</button>
           </div>
         </td>
       </tr>

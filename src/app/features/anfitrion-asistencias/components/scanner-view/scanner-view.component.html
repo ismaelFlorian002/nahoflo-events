@@ -38,13 +38,14 @@
         <div class="card-escaner">
           <div class="cabecera-card-puerta">
             <h3><i class="pi pi-camera"></i> Escáner en Puerta</h3>
-            <p-button
-              [label]="escanerActivo() ? 'Detener Cámara' : 'Activar Cámara'"
-              [icon]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"
+            <button pButton
+             
               [severity]="escanerActivo() ? 'danger' : 'primary'"
               size="small"
-              (onClick)="toggleEscaner()">
-            </p-button>
+              (click)="toggleEscaner()">
+  <i pButtonIcon [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
+  <span pButtonLabel>{{ escanerActivo() ? 'Detener Cámara' : 'Activar Cámara' }}</span>
+ </button>
           </div>
 
           <!-- VISOR DE CÁMARA -->
@@ -92,14 +93,13 @@
                     </div>
                   }
                   @if (res.tipo === 'exito') {
-                    <p-button
-                      label="Deshacer ingreso"
-                      icon="pi pi-undo"
-                      size="small"
+                    <button pButton size="small"
                       [text]="true"
                       severity="secondary"
-                      (onClick)="revertirCheckIn(inv)">
-                    </p-button>
+                      (click)="revertirCheckIn(inv)">
+  <i pButtonIcon class="pi pi-undo"></i>
+  <span pButtonLabel>Deshacer ingreso</span>
+</button>
                   }
                 }
               </div>
@@ -159,23 +159,21 @@
                   <span class="badge-ingresado">
                     <i class="pi pi-check"></i> Ingresó {{ formatearFecha(inv.horaIngreso) }}
                   </span>
-                  <p-button
-                    icon="pi pi-undo"
-                    [rounded]="true"
+                  <button pButton [rounded]="true"
                     [text]="true"
                     severity="secondary"
                     size="small"
                     pTooltip="Revertir ingreso"
                     tooltipPosition="left"
-                    (onClick)="revertirCheckIn(inv)">
-                  </p-button>
+                    (click)="revertirCheckIn(inv)">
+  <i pButtonIcon class="pi pi-undo"></i>
+</button>
                 } @else {
-                  <p-button
-                    label="Dar Acceso"
-                    icon="pi pi-sign-in"
-                    size="small"
-                    (onClick)="hacerCheckIn(inv)">
-                  </p-button>
+                  <button pButton size="small"
+                    (click)="hacerCheckIn(inv)">
+  <i pButtonIcon class="pi pi-sign-in"></i>
+  <span pButtonLabel>Dar Acceso</span>
+</button>
                 }
               </div>
             </div>

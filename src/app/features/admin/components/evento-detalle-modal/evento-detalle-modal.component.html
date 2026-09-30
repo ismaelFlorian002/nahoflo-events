@@ -94,23 +94,23 @@
     </div>
 
     <div class="flex items-center gap-2 shrink-0">
-      <p-button
-        [label]="copiadoEnlace ? '¡Copiado!' : 'Copiar Enlace'"
-        [icon]="copiadoEnlace ? 'pi pi-check' : 'pi pi-copy'"
+      <button pButton
+       
         size="small"
         [severity]="copiadoEnlace ? 'success' : 'secondary'"
         [outlined]="!copiadoEnlace"
-        (onClick)="copiarEnlace()">
-      </p-button>
+        (click)="copiarEnlace()">
+  <i pButtonIcon [class]="copiadoEnlace ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span pButtonLabel>{{ copiadoEnlace ? '¡Copiado!' : 'Copiar Enlace' }}</span>
+ </button>
 
-      <p-button
-        label="Abrir"
-        icon="pi pi-external-link"
-        size="small"
+      <button pButton size="small"
         severity="secondary"
         [outlined]="true"
-        (onClick)="abrirInvitacion()">
-      </p-button>
+        (click)="abrirInvitacion()">
+  <i pButtonIcon class="pi pi-external-link"></i>
+  <span pButtonLabel>Abrir</span>
+</button>
     </div>
   </div>
 
@@ -392,13 +392,12 @@
 
   <div
     style="position: sticky; bottom: -1.5rem; margin: 1rem -1.5rem -1.5rem -1.5rem; padding: 1.5rem; background: #ffffff; z-index: 100; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid #e2e8f0;">
-    <p-button
-      label="Cerrar"
-      icon="pi pi-times"
-      size="small"
+    <button pButton size="small"
       [text]="true"
       severity="secondary"
-      (onClick)="cerrar()">
-    </p-button>
+      (click)="cerrar()">
+  <i pButtonIcon class="pi pi-times"></i>
+  <span pButtonLabel>Cerrar</span>
+</button>
   </div>
 </div>

@@ -61,20 +61,22 @@
 
   <!-- Acciones del Modal (Alineadas al final) -->
   <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <p-button
-      type="button"
-      label="Cancelar"
+    <button pButton type="button"
+     
       severity="danger"
       [text]="true"
       size="small"
-      (onClick)="cancelar()"
-    ></p-button>
-    <p-button
-      type="submit"
-      [label]="clienteEnEdicion ? 'Actualizar Cliente' : 'Guardar Cliente'"
+      (click)="cancelar()"
+    >
+  <span pButtonLabel>Cancelar</span>
+</button>
+    <button pButton type="submit"
+     
       [loading]="guardando"
       size="small"
-    ></p-button>
+    >
+  <span pButtonLabel>{{ clienteEnEdicion ? 'Actualizar Cliente' : 'Guardar Cliente' }}</span>
+ </button>
   </div>
 
 </form>

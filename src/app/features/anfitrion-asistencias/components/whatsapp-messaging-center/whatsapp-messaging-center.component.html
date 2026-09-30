@@ -121,14 +121,14 @@
 
       <div class="flex justify-end">
         <!-- ACCIÓN DE COPIAR TEXTO -->
-        <p-button
-          label="Copiar Texto de Vista Previa"
-          icon="pi pi-copy"
-          size="small"
+        <button pButton size="small"
           text="true"
           severity="secondary"
-          (onClick)="copiarTextoProcesado()"
-        ></p-button>
+          (click)="copiarTextoProcesado()"
+        >
+  <i pButtonIcon class="pi pi-copy"></i>
+  <span pButtonLabel>Copiar Texto de Vista Previa</span>
+</button>
       </div>
 
 
@@ -155,17 +155,19 @@
           <div class="flex flex-wrap items-center gap-2">
             <!-- 1. FILTRO DE ESTADO (BOTÓN + OVERLAYPANEL) -->
             <div class="filtro-dropdown-wrap">
-              <p-button
-                icon="pi pi-filter"
-                [label]="'Estado: ' + labelFiltroEstado()"
-                [badge]="conteoFiltroEstado()"
+              <button pButton
+               
                 badgeClass="p-badge-secondary"
                 size="small"
                 [outlined]="filtroEstado() === 'todos'"
                 [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
-                (onClick)="opFiltrosEstado.toggle($event)"
+                (click)="opFiltrosEstado.toggle($event)"
                 title="Filtrar por estado del invitado">
-              </p-button>
+  <span pButtonLabel>{{ 'Estado: ' + labelFiltroEstado() }}</span>
+  <span pButtonBadge>{{ conteoFiltroEstado() }}</span>
+
+  <i pButtonIcon class="pi pi-filter"></i>
+ </button>
 
               <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
                 <div class="menu-filtros-popover">
@@ -228,17 +230,18 @@
             </div>
 
             <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
-            <p-button
-              *ngIf="hayFiltrosActivos()"
-              icon="pi pi-filter-slash"
-              label="Limpiar filtros"
+            <button pButton *ngIf="hayFiltrosActivos()"
+             
+             
               size="small"
               [text]="true"
               severity="secondary"
-              (onClick)="limpiarTodosFiltros(dt)"
+              (click)="limpiarTodosFiltros(dt)"
               pTooltip="Restablecer todos los filtros"
               tooltipPosition="top">
-            </p-button>
+  <i pButtonIcon class="pi pi-filter-slash"></i>
+  <span pButtonLabel>Limpiar filtros</span>
+</button>
           </div>
 
           <!-- BÚSQUEDA GLOBAL (A LA DERECHA COMO EN /ADMIN) -->
@@ -331,41 +334,41 @@
           <td style="text-align: right;">
             <div class="flex items-center justify-end gap-1">
               <!-- Botón Copiar Texto Resuelto para este invitado -->
-              <p-button
-                icon="pi pi-copy"
-                size="small"
+              <button pButton size="small"
                 [rounded]="true"
                 [text]="true"
                 severity="secondary"
                 pTooltip="Copiar mensaje"
                 tooltipPosition="top"
-                (onClick)="copiarTextoInvitado(inv)"
-              ></p-button>
+                (click)="copiarTextoInvitado(inv)"
+              >
+  <i pButtonIcon class="pi pi-copy"></i>
+</button>
 
               <!-- Botón Ver/Personalizar en Modal DialogService -->
-              <p-button
-                icon="pi pi-pencil"
-                size="small"
+              <button pButton size="small"
                 [rounded]="true"
                 [text]="true"
                 severity="secondary"
                 pTooltip="Personalizar antes de enviar"
                 tooltipPosition="top"
-                (onClick)="abrirModalMensajeInvitado(inv)"
-              ></p-button>
+                (click)="abrirModalMensajeInvitado(inv)"
+              >
+  <i pButtonIcon class="pi pi-pencil"></i>
+</button>
 
               <!-- Botón Enviar Directo -->
-              <p-button
-                label="Enviar"
-                icon="pi pi-whatsapp"
-                size="small"
+              <button pButton size="small"
                 text
                 severity="success"
-                styleClass="font-semibold shadow-xs"
+                class="font-semibold shadow-xs"
                 pTooltip="Abrir WhatsApp con mensaje personalizado"
                 tooltipPosition="top"
-                (onClick)="lanzarWhatsApp(inv)"
-              ></p-button>
+                (click)="lanzarWhatsApp(inv)"
+              >
+  <i pButtonIcon class="pi pi-whatsapp"></i>
+  <span pButtonLabel>Enviar</span>
+</button>
             </div>
           </td>
         </tr>

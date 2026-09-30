@@ -172,23 +172,24 @@
 
   <!-- BOTONES DE ACCIÓN (ALINEADOS AL FINAL) -->
   <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <p-button
-      type="button"
+    <button pButton type="button"
 
-      label="Cancelar"
+     
       severity="danger"
       [text]="true"
       size="small"
       [disabled]="guardando()"
-      (onClick)="cancelar()">
-    </p-button>
+      (click)="cancelar()">
+  <span pButtonLabel>Cancelar</span>
+</button>
 
-    <p-button
-      [label]="esEdicion ? 'Guardar Cambios' : 'Registrar Invitado'"
-      [icon]="esEdicion ? 'pi pi-check' : 'pi pi-user-plus'"
+    <button pButton
+     
       type="submit"
       size="small"
       [loading]="guardando()">
-    </p-button>
+  <i pButtonIcon [class]="esEdicion ? 'pi pi-check' : 'pi pi-user-plus'"></i>
+  <span pButtonLabel>{{ esEdicion ? 'Guardar Cambios' : 'Registrar Invitado' }}</span>
+ </button>
   </div>
 </form>

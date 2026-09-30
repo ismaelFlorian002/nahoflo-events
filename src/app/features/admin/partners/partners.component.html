@@ -17,13 +17,12 @@
     </div>
 
     <!-- Botón Nuevo Usuario -->
-    <p-button
-      label="Nuevo Usuario"
-      icon="pi pi-user-plus"
-      size="small"
-      (onClick)="openDialog()"
-      styleClass="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
-    </p-button>
+    <button pButton size="small"
+      (click)="openDialog()"
+      class="bg-gold-500 hover:bg-gold-600 text-white border-0 shadow-sm font-semibold px-4 py-2 text-sm">
+  <i pButtonIcon class="pi pi-user-plus"></i>
+  <span pButtonLabel>Nuevo Usuario</span>
+</button>
   </div>
 
   <!-- TARJETA CONTENEDORA PREMIUM DE LA TABLA -->
@@ -47,17 +46,19 @@
 
               <!-- 1. FILTRO DE ESTADO (BOTÓN + OVERLAYPANEL) -->
               <div class="filtro-dropdown-wrap">
-                <p-button
-                  icon="pi pi-filter"
-                  [label]="'Estado: ' + labelFiltroEstado()"
-                  [badge]="conteoFiltroEstado()"
+                <button pButton
+                 
                   badgeClass="p-badge-secondary"
                   size="small"
                   [outlined]="filtroEstado() === 'todos'"
                   [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
-                  (onClick)="opFiltrosEstado.toggle($event)"
+                  (click)="opFiltrosEstado.toggle($event)"
                   title="Filtrar por estado del usuario">
-                </p-button>
+  <span pButtonLabel>{{ 'Estado: ' + labelFiltroEstado() }}</span>
+  <span pButtonBadge>{{ conteoFiltroEstado() }}</span>
+
+  <i pButtonIcon class="pi pi-filter"></i>
+ </button>
 
                 <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
                   <div class="menu-filtros-popover">
@@ -109,17 +110,19 @@
 
               <!-- 2. FILTRO DE ROL (BOTÓN + POPOVER) -->
               <div class="filtro-dropdown-wrap">
-                <p-button
-                  icon="pi pi-shield"
-                  [label]="'Rol: ' + labelFiltroRol()"
-                  [badge]="conteoFiltroRol()"
+                <button pButton
+                 
                   badgeClass="p-badge-secondary"
                   size="small"
                   [outlined]="filtroRol() === 'todos'"
                   [severity]="filtroRol() !== 'todos' ? 'primary' : 'secondary'"
-                  (onClick)="opFiltrosRol.toggle($event)"
+                  (click)="opFiltrosRol.toggle($event)"
                   title="Filtrar por rol de usuario">
-                </p-button>
+  <span pButtonLabel>{{ 'Rol: ' + labelFiltroRol() }}</span>
+  <span pButtonBadge>{{ conteoFiltroRol() }}</span>
+
+  <i pButtonIcon class="pi pi-shield"></i>
+ </button>
 
                 <p-popover #opFiltrosRol styleClass="popover-filtros-invitados">
                   <div class="menu-filtros-popover">
@@ -171,17 +174,19 @@
 
               <!-- 3. FILTRO DE FECHA DE REGISTRO (BOTÓN + POPOVER DATEPICKER) -->
               <div class="filtro-dropdown-wrap">
-                <p-button
-                  icon="pi pi-calendar"
-                  [label]="labelFiltroFecha()"
-                  [badge]="filtroFecha() ? '1' : undefined"
+                <button pButton
+                 
                   badgeClass="p-badge-secondary"
                   size="small"
                   [outlined]="!filtroFecha()"
                   [severity]="filtroFecha() ? 'primary' : 'secondary'"
-                  (onClick)="opFiltroFecha.toggle($event)"
+                  (click)="opFiltroFecha.toggle($event)"
                   title="Filtrar por fecha de registro">
-                </p-button>
+  <span pButtonLabel>{{ labelFiltroFecha() }}</span>
+  <span pButtonBadge>{{ filtroFecha() ? '1' : undefined }}</span>
+
+  <i pButtonIcon class="pi pi-calendar"></i>
+ </button>
 
                 <p-popover #opFiltroFecha styleClass="popover-filtros-invitados">
                   <div class="menu-filtros-popover" style="min-width: 290px;">
@@ -239,16 +244,15 @@
 
               <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
               @if (hayFiltrosActivos()) {
-                <p-button
-                  icon="pi pi-filter-slash"
-                  label="Limpiar filtros"
-                  size="small"
+                <button pButton size="small"
                   [text]="true"
                   severity="secondary"
-                  (onClick)="limpiarTodosFiltros(dt)"
+                  (click)="limpiarTodosFiltros(dt)"
                   pTooltip="Restablecer todos los filtros"
                   tooltipPosition="top">
-                </p-button>
+  <i pButtonIcon class="pi pi-filter-slash"></i>
+  <span pButtonLabel>Limpiar filtros</span>
+</button>
               }
 
             </div>
@@ -385,26 +389,25 @@
               <div class="flex items-center justify-end gap-1">
 
                 <!-- BOTÓN EDITAR -->
-                <p-button
-                  icon="pi pi-pencil"
-                  [rounded]="true"
+                <button pButton [rounded]="true"
                   [text]="true"
                   severity="secondary"
                   pTooltip="Editar Usuario y Rol"
                   tooltipPosition="top"
-                  (onClick)="openDialog(usuario)">
-                </p-button>
+                  (click)="openDialog(usuario)">
+  <i pButtonIcon class="pi pi-pencil"></i>
+</button>
 
                 <!-- BOTÓN TOGGLE ACTIVAR / DESACTIVAR -->
-                <p-button
-                  [icon]="usuario.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"
+                <button pButton
                   [rounded]="true"
                   [text]="true"
                   [severity]="usuario.estaActivo ? 'warn' : 'success'"
                   [pTooltip]="usuario.estaActivo ? 'Desactivar Cuenta' : 'Activar Cuenta'"
                   tooltipPosition="top"
-                  (onClick)="toggleEstado(usuario)">
-                </p-button>
+                  (click)="toggleEstado(usuario)">
+  <i pButtonIcon [class]="usuario.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"></i>
+ </button>
 
               </div>
             </td>

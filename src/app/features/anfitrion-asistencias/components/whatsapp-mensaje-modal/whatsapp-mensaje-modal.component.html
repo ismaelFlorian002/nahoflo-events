@@ -78,34 +78,40 @@
 
   <!-- PIE DE ACCIONES -->
   <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-      <p-button
-        type="button"
-        label="Cerrar"
-        icon="pi pi-times"
+      <button pButton type="button"
+       
+       
         size="small"
         [text]="true"
         severity="danger"
-        (onClick)="ref.close()"
-      ></p-button>
-      <p-button
-        type="button"
-        label="Copiar Texto"
-        icon="pi pi-copy"
+        (click)="ref.close()"
+      >
+  <i pButtonIcon class="pi pi-times"></i>
+  <span pButtonLabel>Cerrar</span>
+</button>
+      <button pButton type="button"
+       
+       
         text="true"
         size="small"
         severity="secondary"
-        (onClick)="copiarTexto()"
-        styleClass="!rounded-xl font-semibold"
-      ></p-button>
+        (click)="copiarTexto()"
+        class="!rounded-xl font-semibold"
+      >
+  <i pButtonIcon class="pi pi-copy"></i>
+  <span pButtonLabel>Copiar Texto</span>
+</button>
 
-      <p-button
-        type="button"
-        label="Enviar"
-        icon="pi pi-whatsapp"
+      <button pButton type="button"
+       
+       
         size="small"
         severity="success"
-        (onClick)="enviarWhatsApp()"
-        styleClass="!rounded-xl font-bold shadow-sm"
-      ></p-button>
+        (click)="enviarWhatsApp()"
+        class="!rounded-xl font-bold shadow-sm"
+      >
+  <i pButtonIcon class="pi pi-whatsapp"></i>
+  <span pButtonLabel>Enviar</span>
+</button>
     </div>
   </div>

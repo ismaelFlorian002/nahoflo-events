@@ -150,22 +150,25 @@
 
   <!-- BOTONES DE ACCIÓN (ALINEADOS A LA DERECHA) -->
   <div class="col-span-12 flex justify-end items-center gap-3 pt-3 mt-2 border-t border-slate-100">
-    <p-button
-      type="button"
+    <button pButton type="button"
       size="small"
-      label="Cancelar"
+     
       [text]="true"
-      icon="pi pi-times"
+     
       severity="secondary"
-      (onClick)="cancelar()">
-    </p-button>
-    <p-button
-      type="submit"
-      [label]="esEdicion ? 'Actualizar Partida' : 'Guardar Partida'"
-      icon="pi pi-check"
+      (click)="cancelar()">
+  <i pButtonIcon class="pi pi-times"></i>
+  <span pButtonLabel>Cancelar</span>
+</button>
+    <button pButton type="submit"
+     
+     
       size="small"
       severity="primary">
-    </p-button>
+  <span pButtonLabel>{{ esEdicion ? 'Actualizar Partida' : 'Guardar Partida' }}</span>
+
+  <i pButtonIcon class="pi pi-check"></i>
+ </button>
   </div>
 
 </form>

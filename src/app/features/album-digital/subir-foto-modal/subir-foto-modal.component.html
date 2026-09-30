@@ -75,21 +75,20 @@
 
   <!-- BOTONES DE ACCIÓN -->
   <div class="acciones-modal">
-    <p-button
-      type="button"
-      label="Cancelar"
+    <button pButton type="button"
+     
       severity="secondary"
       [text]="true"
-      (onClick)="ref.close(false)">
-    </p-button>
+      (click)="ref.close(false)">
+  <span pButtonLabel>Cancelar</span>
+</button>
 
-    <p-button
-      type="submit"
-      [label]="previewsUrls().length > 1 ? 'Publicar Carrusel (' + previewsUrls().length + ')' : 'Publicar Foto'"
-      icon="pi pi-send"
+    <button pButton type="submit"
       [loading]="subiendo()"
       [disabled]="formRecuerdo.invalid || archivosFotos().length === 0 || subiendo()">
-    </p-button>
+      <i pButtonIcon class="pi pi-send"></i>
+      <span pButtonLabel>{{ previewsUrls().length > 1 ? 'Publicar Carrusel (' + previewsUrls().length + ')' : 'Publicar Foto' }}</span>
+</button>
   </div>
 
 </form>

@@ -15,13 +15,12 @@
       </p>
     </div>
 
-    <p-button
-      label="Agregar Proveedor"
-      icon="pi pi-plus"
-      severity="primary"
-      styleClass="p-button-sm font-semibold"
-      (onClick)="abrirModalProveedor()">
-    </p-button>
+    <button pButton severity="primary"
+      class="p-button-sm font-semibold"
+      (click)="abrirModalProveedor()">
+  <i pButtonIcon class="pi pi-plus"></i>
+  <span pButtonLabel>Agregar Proveedor</span>
+</button>
   </div>
 
 
@@ -32,17 +31,19 @@
     <div class="flex flex-wrap items-center gap-2">
       <!-- BOTÓN DE FILTRO CON OVERLAYPANEL (IDÉNTICO A LISTA DE INVITADOS / MENSAJES WA) -->
       <div class="filtro-dropdown-wrap">
-        <p-button
-          icon="pi pi-filter"
-          [label]="'Categoría: ' + labelFiltroCategoria()"
-          [badge]="conteoFiltroCategoria().toString()"
+        <button pButton
+         
           badgeClass="p-badge-secondary"
           size="small"
           [outlined]="categoriaSeleccionada() === 'todas'"
           [severity]="categoriaSeleccionada() !== 'todas' ? 'primary' : 'secondary'"
-          (onClick)="opFiltrosCategoria.toggle($event)"
+          (click)="opFiltrosCategoria.toggle($event)"
           title="Filtrar por categoría de proveedor">
-        </p-button>
+  <span pButtonLabel>{{ 'Categoría: ' + labelFiltroCategoria() }}</span>
+  <span pButtonBadge>{{ conteoFiltroCategoria().toString() }}</span>
+
+  <i pButtonIcon class="pi pi-filter"></i>
+ </button>
 
         <p-popover #opFiltrosCategoria styleClass="popover-filtros-invitados">
           <div class="menu-filtros-popover">
@@ -71,16 +72,15 @@
 
       <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
       @if (hayFiltrosActivos()) {
-        <p-button
-          icon="pi pi-filter-slash"
-          label="Limpiar filtros"
-          size="small"
+        <button pButton size="small"
           [text]="true"
           severity="secondary"
-          (onClick)="limpiarFiltros()"
+          (click)="limpiarFiltros()"
           pTooltip="Restablecer todos los filtros"
           tooltipPosition="top">
-        </p-button>
+  <i pButtonIcon class="pi pi-filter-slash"></i>
+  <span pButtonLabel>Limpiar filtros</span>
+</button>
       }
     </div>
 
@@ -173,14 +173,14 @@
           <!-- Botón de Contacto Directo por WhatsApp -->
           <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
             @if (prov.telefono) {
-              <p-button
-                label="Contactar"
-                size="small"
-                icon="pi pi-whatsapp"
+              <button pButton size="small"
+               
                 severity="success"
                 outlined="true"
                 (click)="contactarWhatsApp(prov)">
-              </p-button>
+  <i pButtonIcon class="pi pi-whatsapp"></i>
+  <span pButtonLabel>Contactar</span>
+</button>
             } @else {
               <span class="text-xs text-slate-400 block text-center py-1">Sin teléfono registrado</span>
             }
@@ -196,13 +196,12 @@
         Agrega al DJ, fotógrafo, banquetera, florista y salón para mantener todo tu equipo de trabajo organizado.
       </p>
       <div class="mt-4">
-        <p-button
-          label="Agregar Primer Proveedor"
-          icon="pi pi-plus"
-          severity="primary"
-          styleClass="p-button-sm font-semibold"
-          (onClick)="abrirModalProveedor()">
-        </p-button>
+        <button pButton severity="primary"
+          class="p-button-sm font-semibold"
+          (click)="abrirModalProveedor()">
+  <i pButtonIcon class="pi pi-plus"></i>
+  <span pButtonLabel>Agregar Primer Proveedor</span>
+</button>
       </div>
     </div>
   }

@@ -82,21 +82,22 @@
 
   <!-- BOTONES DE ACCIÓN -->
   <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <p-button
-      type="button"
-      label="Cancelar"
+    <button pButton type="button"
+     
       severity="danger"
       [text]="true"
       size="small"
-      (onClick)="ref.close()">
-    </p-button>
+      (click)="ref.close()">
+  <span pButtonLabel>Cancelar</span>
+</button>
 
-    <p-button
-      type="submit"
-      [label]="esEdicion ? 'Guardar Cambios' : 'Crear Mesa'"
-      [icon]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"
+    <button pButton type="submit"
+     
+     
       size="small"
       [disabled]="form.invalid">
-    </p-button>
+  <i pButtonIcon [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+  <span pButtonLabel>{{ esEdicion ? 'Guardar Cambios' : 'Crear Mesa' }}</span>
+ </button>
   </div>
 </form>

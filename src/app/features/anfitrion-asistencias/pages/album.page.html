@@ -14,40 +14,39 @@
 
     <!-- BOTONES DE ACCIÓN PARA EL ANFITRIÓN -->
     <div class="flex flex-wrap items-center gap-2">
-      <p-button
-        label="QR para Mesas"
-        icon="pi pi-qrcode"
-        size="small"
-        (onClick)="vm.abrirModalQrMesas()"
+      <button pButton size="small"
+        (click)="vm.abrirModalQrMesas()"
       >
-      </p-button>
+  <i pButtonIcon class="pi pi-qrcode"></i>
+  <span pButtonLabel>QR para Mesas</span>
+</button>
 
       @if (vm.recuerdos().length > 0) {
-        <p-button
-          [label]="
-            vm.descargandoTodo()
-              ? vm.progresoDescarga()
-              : 'Descargar Todo (' + vm.contarFotosTotales() + ')'
-          "
-          [icon]="vm.descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"
+        <button pButton
+         
           size="small"
           [outlined]="true"
           severity="secondary"
           [disabled]="vm.descargandoTodo()"
-          (onClick)="vm.descargarTodasLasFotos()"
+          (click)="vm.descargarTodasLasFotos()"
         >
-        </p-button>
+  <i pButtonIcon [class]="vm.descargandoTodo() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"></i>
+  <span pButtonLabel>{{ 
+            vm.descargandoTodo()
+              ? vm.progresoDescarga()
+              : 'Descargar Todo (' + vm.contarFotosTotales() + ')'
+           }}</span>
+ </button>
       }
 
-      <p-button
-        label="Ver Muro en Vivo"
-        icon="pi pi-external-link"
-        size="small"
+      <button pButton size="small"
         [outlined]="true"
         severity="secondary"
-        (onClick)="vm.abrirAlbumEnVivo()"
+        (click)="vm.abrirAlbumEnVivo()"
       >
-      </p-button>
+  <i pButtonIcon class="pi pi-external-link"></i>
+  <span pButtonLabel>Ver Muro en Vivo</span>
+</button>
     </div>
   </div>
 
@@ -112,26 +111,26 @@
 
             <!-- BOTONES: DESCARGAR + ELIMINAR -->
             <div class="flex items-center gap-2 pt-2 border-t border-gray-100">
-              <p-button
-                label="Descargar"
-                icon="pi pi-download"
-                size="small"
+              <button pButton size="small"
                 [outlined]="true"
                 severity="secondary"
-                (onClick)="vm.descargarRecuerdo(recuerdo, $event)"
+                (click)="vm.descargarRecuerdo(recuerdo, $event)"
               >
-              </p-button>
+  <i pButtonIcon class="pi pi-download"></i>
+  <span pButtonLabel>Descargar</span>
+</button>
 
-              <p-button
-                label="Eliminar"
-                [icon]="vm.eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"
+              <button pButton
                 size="small"
                 [outlined]="true"
                 severity="danger"
                 [disabled]="vm.eliminandoId() === recuerdo.id"
-                (onClick)="vm.eliminarRecuerdo(recuerdo)"
+                (click)="vm.eliminarRecuerdo(recuerdo)"
               >
-              </p-button>
+  <i pButtonIcon [class]="vm.eliminandoId() === recuerdo.id ? 'pi pi-spin pi-spinner' : 'pi pi-trash'"></i>
+
+  <span pButtonLabel>Eliminar</span>
+ </button>
             </div>
           </div>
         </article>

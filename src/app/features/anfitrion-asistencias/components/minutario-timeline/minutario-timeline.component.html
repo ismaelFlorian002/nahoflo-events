@@ -19,24 +19,22 @@
 
     <div class="flex flex-wrap items-center gap-2">
       @if (totalItems() > 0) {
-        <p-button
-          label="WhatsApp Staff"
-          icon="pi pi-whatsapp"
-          size="small"
+        <button pButton size="small"
           severity="success"
           [outlined]="true"
-          (onClick)="copiarMinutarioWhatsApp()"
+          (click)="copiarMinutarioWhatsApp()"
           pTooltip="Copiar cronograma para enviar por WhatsApp"
           tooltipPosition="top">
-        </p-button>
+  <i pButtonIcon class="pi pi-whatsapp"></i>
+  <span pButtonLabel>WhatsApp Staff</span>
+</button>
       }
 
-      <p-button
-        label="Agregar Momento"
-        icon="pi pi-plus"
-        size="small"
-        (onClick)="abrirModalMomento()">
-      </p-button>
+      <button pButton size="small"
+        (click)="abrirModalMomento()">
+  <i pButtonIcon class="pi pi-plus"></i>
+  <span pButtonLabel>Agregar Momento</span>
+</button>
     </div>
   </div>
 
@@ -110,24 +108,22 @@
 
         <!-- ACCIONES EDICIÓN / ELIMINAR -->
         <div class="flex items-center gap-1 opacity-90 sm:opacity-0 hover:opacity-100 transition-opacity">
-          <p-button
-            icon="pi pi-pencil"
-            [rounded]="true"
+          <button pButton [rounded]="true"
             [text]="true"
             severity="secondary"
             size="small"
-            (onClick)="abrirModalMomento(item)"
+            (click)="abrirModalMomento(item)"
             pTooltip="Editar momento">
-          </p-button>
-          <p-button
-            icon="pi pi-trash"
-            [rounded]="true"
+  <i pButtonIcon class="pi pi-pencil"></i>
+</button>
+          <button pButton [rounded]="true"
             [text]="true"
             severity="danger"
             size="small"
-            (onClick)="eliminarItem(item)"
+            (click)="eliminarItem(item)"
             pTooltip="Eliminar momento">
-          </p-button>
+  <i pButtonIcon class="pi pi-trash"></i>
+</button>
         </div>
 
       </div>
@@ -145,20 +141,18 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2 mt-2">
-          <p-button
-            label="Cargar Plantilla Estándar"
-            icon="pi pi-sparkles"
-            size="small"
+          <button pButton size="small"
             severity="warn"
-            (onClick)="cargarPlantillaEstandar()">
-          </p-button>
-          <p-button
-            label="Agregar Momento Manual"
-            icon="pi pi-plus"
-            size="small"
+            (click)="cargarPlantillaEstandar()">
+  <i pButtonIcon class="pi pi-sparkles"></i>
+  <span pButtonLabel>Cargar Plantilla Estándar</span>
+</button>
+          <button pButton size="small"
             [outlined]="true"
-            (onClick)="abrirModalMomento()">
-          </p-button>
+            (click)="abrirModalMomento()">
+  <i pButtonIcon class="pi pi-plus"></i>
+  <span pButtonLabel>Agregar Momento Manual</span>
+</button>
         </div>
       </div>
     }

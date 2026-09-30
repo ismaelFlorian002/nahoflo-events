@@ -44,37 +44,36 @@
     <!-- BARRA DE ACCIONES (NO SE IMPRIME) -->
     <footer class="acciones-modal no-imprimir">
       <div class="acciones-izquierda">
-        <p-button
-          [label]="copiado() ? '¡Copiado!' : 'Copiar Link'"
-          [icon]="copiado() ? 'pi pi-check' : 'pi pi-copy'"
+        <button pButton
+         
           size="small"
           severity="secondary"
           [outlined]="true"
-          (onClick)="copiarEnlace()">
-        </p-button>
+          (click)="copiarEnlace()">
+  <i pButtonIcon [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
+  <span pButtonLabel>{{ copiado() ? '¡Copiado!' : 'Copiar Link' }}</span>
+ </button>
 
         @if (qrDataUrl()) {
           <a
             [href]="qrDataUrl()"
             [download]="'QR-Mesas-' + ev.enlace + '.png'"
             class="link-descargar-qr">
-            <p-button
-              label="Descargar PNG"
-              icon="pi pi-download"
-              size="small"
+            <button pButton size="small"
               severity="secondary"
               [outlined]="true">
-            </p-button>
+  <i pButtonIcon class="pi pi-download"></i>
+  <span pButtonLabel>Descargar PNG</span>
+</button>
           </a>
         }
       </div>
 
-      <p-button
-        label="Imprimir Tarjeta"
-        icon="pi pi-print"
-        size="small"
-        (onClick)="imprimir()">
-      </p-button>
+      <button pButton size="small"
+        (click)="imprimir()">
+  <i pButtonIcon class="pi pi-print"></i>
+  <span pButtonLabel>Imprimir Tarjeta</span>
+</button>
     </footer>
 
   </div>

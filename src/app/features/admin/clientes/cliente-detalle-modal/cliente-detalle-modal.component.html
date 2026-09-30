@@ -194,14 +194,13 @@
             <!-- ACCIÓN -->
             @if (evento.enlace) {
               <div class="shrink-0 self-end sm:self-center">
-                <p-button
-                  label="Ver Invitación"
-                  icon="pi pi-external-link"
-                  size="small"
+                <button pButton size="small"
                   [text]="true"
                   severity="secondary"
-                  (onClick)="abrirInvitacion(evento)">
-                </p-button>
+                  (click)="abrirInvitacion(evento)">
+  <i pButtonIcon class="pi pi-external-link"></i>
+  <span pButtonLabel>Ver Invitación</span>
+</button>
               </div>
             }
           </div>
@@ -219,14 +218,13 @@
 
   <!-- FOOTER LIMPIO -->
   <div class="pt-4 mt-4 border-t border-gray-100 flex items-center justify-end gap-2">
-    <p-button
-      label="Cerrar"
-      icon="pi pi-times"
-      size="small"
+    <button pButton size="small"
       [text]="true"
       severity="secondary"
-      (onClick)="cerrar()">
-    </p-button>
+      (click)="cerrar()">
+  <i pButtonIcon class="pi pi-times"></i>
+  <span pButtonLabel>Cerrar</span>
+</button>
 
   </div>
 </div>
