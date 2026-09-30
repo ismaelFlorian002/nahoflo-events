@@ -59,6 +59,36 @@ app-root {
   min-height: 100vh;
 }
 
+/* Compatibilidad visual para los buscadores escritos con el patrón de PrimeNG 17.
+   En PrimeNG actual el patrón recomendado es p-iconfield, pero estas pantallas
+   todavía usan p-input-icon-left. */
+.p-input-icon-left {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  min-width: 0;
+
+  > .pi,
+  > .p-inputicon {
+    position: absolute;
+    z-index: 1;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #94a3b8;
+    font-size: 0.875rem;
+  }
+
+  > .p-inputtext,
+  > input {
+    width: 100%;
+    min-width: 0;
+    padding-left: 2.5rem !important;
+  }
+}
+
 /* =========================================================
    DIÁLOGOS MODERNOS (PrimeNG v22)
    ========================================================= */
