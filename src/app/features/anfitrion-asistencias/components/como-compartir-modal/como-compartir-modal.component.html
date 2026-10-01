@@ -1,84 +1,116 @@
-<div class="compartir-modal-wrapper">
+<div class="flex flex-col gap-5 pt-2">
 
-  <p class="modal-intro">
-    Tienes dos formas prácticas de compartir con tus invitados según lo que prefieras:
+  <p class="m-0 text-sm text-gray-500">
+    Elige la forma que mejor te funcione para hacer llegar la invitación a tus invitados.
   </p>
 
-  <div class="opciones-container">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-    <!-- 1. OPCIÓN A: ENLACE GENERAL -->
-    <div class="opcion-bloque bloque-general">
-      <div class="opcion-cabecera">
-        <span class="badge-opcion badge-a">Opción A · Enlace General</span>
-        <h4>Para Grupos de WhatsApp y Redes Sociales</h4>
-      </div>
-
-      <p class="opcion-descripcion">
-        Comparte este enlace único en grupos familiares o estados. Si el invitado ya estaba precargado en tu lista,
-        el sistema lo detecta automáticamente por su nombre y le asigna sus pases reservados. Si es de último momento,
-        podrá indicar sus acompañantes.
-      </p>
-
-      <!-- CAJA CON URL Y BOTONES DE COPIADO -->
-      <div class="enlace-general-box">
-        <span class="enlace-texto">{{ urlGeneral() }}</span>
-        <div class="enlace-acciones">
-          <button pButton
-           
-            size="small"
-            text="true"
-            severity="contrast"
-            (click)="copiarEnlace()">
-  <i [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
-  <span>{{ copiado() ? '¡Copiado!' : 'Copiar Enlace' }}</span>
- </button>
-
-          @if (puedeCompartirNativo()) {
-            <button pButton text=""
-              size="small"
-              severity="secondary"
-              (click)="compartirNativo()"
-              title="Compartir mediante el menú de tu dispositivo">
-  <i class="pi pi-share-alt"></i>
-</button>
-          }
+    <!-- OPCIÓN A: ENLACE GENERAL -->
+    <section class="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5">
+      <div class="flex items-start gap-3">
+        <span class="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center shrink-0">
+          <i class="pi pi-link"></i>
+        </span>
+        <div class="min-w-0">
+          <span class="block text-[11px] font-semibold uppercase tracking-wide text-gray-400">Opción A</span>
+          <h4 class="m-0 text-base font-semibold text-gray-900">Enlace general</h4>
+          <span class="block text-xs text-gray-500">Para grupos de WhatsApp y redes sociales</span>
         </div>
       </div>
-    </div>
 
-    <!-- 2. OPCIÓN B: INVITACIÓN PERSONALIZADA DIRECTA -->
-    <div class="opcion-bloque bloque-personalizada">
-      <div class="opcion-cabecera">
-        <span class="badge-opcion badge-b">
-          <i class="pi pi-star-fill"></i> Opción B · Recomendada
+      <ul class="m-0 p-0 list-none flex flex-col gap-2 text-sm text-gray-600">
+        <li class="flex items-start gap-2">
+          <i class="pi pi-check text-xs text-gray-400 mt-1"></i>
+          <span>Un solo enlace para compartir en grupos o estados.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <i class="pi pi-check text-xs text-gray-400 mt-1"></i>
+          <span>Si el invitado ya está en tu lista, se le reconoce por su nombre y recibe sus pases.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <i class="pi pi-check text-xs text-gray-400 mt-1"></i>
+          <span>Si es de último momento, puede indicar a sus acompañantes.</span>
+        </li>
+      </ul>
+
+      <div class="mt-auto flex flex-col gap-2">
+        <span class="text-xs font-medium text-gray-500">Tu enlace</span>
+        <div class="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 pl-3 pr-1 py-1">
+          <i class="pi pi-globe text-xs text-gray-400"></i>
+          <span class="flex-1 min-w-0 truncate text-sm text-gray-700" [title]="urlGeneral()">{{ urlGeneral() }}</span>
+          @if (puedeCompartirNativo()) {
+            <button pButton type="button" size="small" severity="secondary" [text]="true" [rounded]="true"
+              (click)="compartirNativo()"
+              pTooltip="Compartir desde tu dispositivo" tooltipPosition="top"
+              aria-label="Compartir enlace">
+              <i class="pi pi-share-alt"></i>
+            </button>
+          }
+        </div>
+        <button pButton type="button" size="small"
+          [severity]="copiado() ? 'success' : 'secondary'"
+          [outlined]="!copiado()"
+          class="w-full"
+          (click)="copiarEnlace()">
+          <i [class]="copiado() ? 'pi pi-check' : 'pi pi-copy'"></i>
+          <span>{{ copiado() ? '¡Enlace copiado!' : 'Copiar enlace' }}</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- OPCIÓN B: INVITACIÓN PERSONALIZADA -->
+    <section class="relative flex flex-col gap-4 rounded-xl border border-emerald-200 bg-emerald-50/40 p-5">
+      <p-tag value="Recomendada" severity="success" icon="pi pi-star-fill" [rounded]="true"
+        class="absolute top-4 right-4" />
+
+      <div class="flex items-start gap-3 pr-24">
+        <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+          <i class="pi pi-whatsapp"></i>
         </span>
-        <h4>Invitación Personalizada por Invitado (WhatsApp)</h4>
+        <div class="min-w-0">
+          <span class="block text-[11px] font-semibold uppercase tracking-wide text-emerald-600/70">Opción B</span>
+          <h4 class="m-0 text-base font-semibold text-gray-900">Invitación personalizada</h4>
+          <span class="block text-xs text-gray-500">Un mensaje de WhatsApp para cada invitado</span>
+        </div>
       </div>
 
-      <p class="opcion-descripcion">
-        En cada fila de tu <strong>Lista de Invitados</strong> encontrarás el botón verde de WhatsApp
-        (<i class="pi pi-whatsapp wa-icono"></i>) y el botón de enlace directo (<i class="pi pi-link link-icono"></i>).
-      </p>
+      <ol class="m-0 p-0 list-none flex flex-col gap-3">
+        <li class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-white border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center justify-center shrink-0">1</span>
+          <span class="text-sm text-gray-600">Ve a tu <strong class="text-gray-800">Lista de invitados</strong>.</span>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-white border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center justify-center shrink-0">2</span>
+          <span class="text-sm text-gray-600">
+            En la fila del invitado, presiona el botón
+            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 align-middle">
+              <i class="pi pi-whatsapp text-[10px]"></i>
+            </span>
+            de WhatsApp.
+          </span>
+        </li>
+        <li class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-white border border-emerald-200 text-emerald-700 text-xs font-semibold flex items-center justify-center shrink-0">3</span>
+          <span class="text-sm text-gray-600">Tu invitado recibe su enlace y confirma con sus pases ya asignados.</span>
+        </li>
+      </ol>
 
-      <div class="beneficio-destacado">
-        <i class="pi pi-shield-check"></i>
-        <span>
-          <strong>Máxima Precisión:</strong> El enlace ya incluye su código de pase con sus boletos exactos
-          preasignados para que tu invitado confirme al instante sin margen de confusión ni registros duplicados.
+      <div class="mt-auto flex items-start gap-2.5 rounded-lg bg-white border border-emerald-100 px-3 py-2.5">
+        <i class="pi pi-shield-check text-emerald-600 mt-0.5"></i>
+        <span class="text-xs text-gray-600 leading-relaxed">
+          <strong class="text-gray-800">Máxima precisión:</strong> cada enlace incluye el código de pase del invitado,
+          así evitas confusiones y registros duplicados.
         </span>
       </div>
-    </div>
-
+    </section>
   </div>
 
-  <!-- FOOTER CON BOTÓN DE CIERRE -->
-  <div class="modal-footer-acciones">
-    <button pButton size="small"
-      severity="secondary"
-      (click)="cerrar()">
-  <i class="pi pi-check"></i>
-  <span>Entendido, volver a la lista</span>
-</button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex justify-end">
+    <button pButton type="button" size="small" (click)="cerrar()">
+      <i class="pi pi-check"></i>
+      <span>Entendido</span>
+    </button>
   </div>
-
 </div>

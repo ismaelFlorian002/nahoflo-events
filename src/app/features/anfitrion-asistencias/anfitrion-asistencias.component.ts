@@ -622,9 +622,11 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
     const ref = this.dialogService.open(InvitadoFormModalComponent, {
       header: esEdicion ? `Editar Invitado — ${invitado.nombre}` : 'Registrar Nuevo Invitado',
-      width: '1200px',
-      breakpoints: { '960px': '80vw', '640px': '94vw' },
+      width: '640px',
+      breakpoints: { '700px': '94vw' },
       closable: true,
+      draggable: false,
+
       dismissableMask: true,
       data: {
         eventoId: ev.id,
@@ -648,8 +650,8 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
     this.dialogService.open(ComoCompartirModalComponent, {
       header: '¿Cómo compartir tus invitaciones?',
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '95vw' },
+      width: '820px',
+      breakpoints: { '880px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: {
@@ -664,7 +666,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
     const ref = this.dialogService.open(InvitadoQrModalComponent, {
       header: 'Pase Digital QR',
-      width: '410px',
+      width: '620px',
       breakpoints: { '640px': '94vw' },
       closable: true,
       dismissableMask: true,

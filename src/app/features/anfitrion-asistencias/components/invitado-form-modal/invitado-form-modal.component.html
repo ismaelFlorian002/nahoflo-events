@@ -1,195 +1,206 @@
-<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-12 gap-x-5 gap-y-7 pt-6">
+@let estado = form.get('estado')?.value;
+@let pases = form.get('pasesConfirmados')?.value;
+@let nombreInvalido = form.get('nombre')?.touched && form.get('nombre')?.invalid;
 
-  <!-- MENSAJE DE ERROR -->
+<form [formGroup]="form" (ngSubmit)="guardar()" class="flex flex-col gap-6 pt-2">
+
   @if (errorMensaje()) {
-    <div class="col-span-12 alerta-error">
-      <i class="pi pi-exclamation-triangle"></i>
-      <span>{{ errorMensaje() }}</span>
-    </div>
+    <p-message severity="error" icon="pi pi-exclamation-triangle">{{ errorMensaje() }}</p-message>
   }
 
-  <!-- FILA 1: NOMBRE (7 COLS) Y TELÉFONO (5 COLS) -->
-  <div class="col-span-12 sm:col-span-7 flex flex-col gap-1">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="nombre"
-        type="text"
-        formControlName="nombre"
-        class="w-full"
-        autocomplete="off" />
-      <label for="nombre">Nombre Completo o Familia *</label>
-    </p-floatlabel>
-    @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
-      <span class="text-xs text-rose-500 font-semibold pl-1">El nombre es requerido (mínimo 2 caracteres).</span>
+  <!-- DATOS DEL INVITADO -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-user text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Datos del invitado</h3>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+      <div class="sm:col-span-7 flex flex-col gap-1.5">
+        <p-floatlabel variant="on" class="w-full block">
+          <input
+            pInputText
+            id="nombre"
+            type="text"
+            formControlName="nombre"
+            class="w-full"
+            autocomplete="off"
+            [attr.aria-invalid]="nombreInvalido" />
+          <label for="nombre">Nombre o familia *</label>
+        </p-floatlabel>
+        @if (nombreInvalido) {
+          <small class="flex items-center gap-1 text-xs text-rose-500">
+            <i class="pi pi-exclamation-circle text-[11px]"></i>
+            Escribe al menos 2 caracteres.
+          </small>
+        }
+      </div>
+
+      <div class="sm:col-span-5 flex flex-col gap-1.5">
+        <p-floatlabel variant="on" class="w-full block">
+          <p-iconfield class="w-full">
+            <p-inputicon><i class="pi pi-whatsapp"></i></p-inputicon>
+            <input
+              pInputText
+              id="telefono"
+              type="tel"
+              formControlName="telefono"
+              class="w-full"
+              autocomplete="off" />
+          </p-iconfield>
+          <label for="telefono">Teléfono (WhatsApp)</label>
+        </p-floatlabel>
+        <small class="text-xs text-gray-400">Para enviarle su invitación y pase.</small>
+      </div>
+    </div>
+
+    @if (!esEdicion && coincidenciaExistente(); as coincidencia) {
+      <p-message severity="warn" icon="pi pi-info-circle">
+        <span class="text-sm">
+          Ya existe <strong>{{ coincidencia.nombre }}</strong>
+          @if (coincidencia.telefono) { ({{ coincidencia.telefono }}) }
+          como <strong>{{ coincidencia.estado || (coincidencia.asistira ? 'confirmado' : 'pendiente') }}</strong>.
+          Al guardar se actualizarán sus datos en lugar de duplicarlo.
+        </span>
+      </p-message>
     }
-  </div>
+  </section>
 
-  <div class="col-span-12 sm:col-span-5">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="telefono"
-        type="text"
-        formControlName="telefono"
-        class="w-full"
-        autocomplete="off" />
-      <label for="telefono">Teléfono (WhatsApp)</label>
-    </p-floatlabel>
-  </div>
-
-  <!-- NOTIFICACIÓN DE COINCIDENCIA CON INVITADO PREVIO (SOLO EN MODO CREAR) -->
-  @if (!esEdicion && coincidenciaExistente(); as coincidencia) {
-    <div class="col-span-12 alerta-coincidencia">
-      <i class="pi pi-info-circle"></i>
-      <div>
-        <span>Ya existe un registro para <strong>{{ coincidencia.nombre }}</strong>
-        @if (coincidencia.telefono) { (Tel: {{ coincidencia.telefono }}) }
-        como <em>{{ coincidencia.estado || (coincidencia.asistira ? 'confirmado' : 'pendiente') }}</em>. Al guardar, se actualizarán sus datos en lugar de duplicarlo.</span>
-      </div>
-    </div>
-  }
-
-  <!-- SECCIÓN: ESTADO DE ASISTENCIA Y PASES (FILA COMPLETA) -->
-  <div class="col-span-12 seccion-opciones-card">
-    <!-- ESTADO DE ASISTENCIA -->
-    <div class="opcion-bloque">
-      <span class="opcion-label">{{ esEdicion ? 'Estado de Asistencia' : 'Estado Inicial de Asistencia' }}</span>
-      <div class="selector-estado-tres">
-        <button
-          type="button"
-          class="btn-opcion-estado pendiente"
-          [class.seleccionado]="form.get('estado')?.value === 'pendiente'"
-          (click)="cambiarEstado('pendiente')">
-          <i class="pi pi-clock"></i>
-          <span>Pendiente</span>
-        </button>
-
-        <button
-          type="button"
-          class="btn-opcion-estado confirmado"
-          [class.seleccionado]="form.get('estado')?.value === 'confirmado'"
-          (click)="cambiarEstado('confirmado')">
-          <i class="pi pi-check"></i>
-          <span>Confirmado</span>
-        </button>
-
-        <button
-          type="button"
-          class="btn-opcion-estado declinado"
-          [class.seleccionado]="form.get('estado')?.value === 'declinado'"
-          (click)="cambiarEstado('declinado')">
-          <i class="pi pi-times"></i>
-          <span>No Asiste</span>
-        </button>
-      </div>
+  <!-- ASISTENCIA Y PASES -->
+  <section class="flex flex-col gap-4 rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-calendar-clock text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">
+        {{ esEdicion ? 'Asistencia' : 'Asistencia inicial' }}
+      </h3>
     </div>
 
-    <!-- NÚMERO DE PASES ASIGNADOS -->
-    <div class="opcion-bloque">
-      <span class="opcion-label">{{ esEdicion ? 'Pases Autorizados' : 'Pases Reservados / Asignados' }}</span>
-      <div class="pases-selector-wrap">
+    <div class="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Estado de asistencia">
+      @for (op of [
+        { id: 'pendiente', etiqueta: 'Pendiente', icono: 'pi pi-clock', activo: 'border-amber-400 bg-amber-50 text-amber-700' },
+        { id: 'confirmado', etiqueta: 'Confirmado', icono: 'pi pi-check', activo: 'border-emerald-400 bg-emerald-50 text-emerald-700' },
+        { id: 'declinado', etiqueta: 'No asiste', icono: 'pi pi-times', activo: 'border-rose-400 bg-rose-50 text-rose-600' }
+      ]; track op.id) {
         <button
           type="button"
-          class="btn-pases-stepper"
-          [disabled]="form.get('pasesConfirmados')?.value <= (form.get('estado')?.value === 'declinado' ? 0 : 1)"
-          (click)="cambiarPases(-1)">
-          <i class="pi pi-minus"></i>
+          role="radio"
+          [attr.aria-checked]="estado === op.id"
+          (click)="cambiarEstado($any(op.id))"
+          class="flex items-center justify-center gap-1.5 h-10 rounded-lg border text-xs sm:text-sm font-medium font-sans cursor-pointer transition-colors"
+          [ngClass]="estado === op.id ? op.activo : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:text-gray-800'">
+          <i [class]="op.icono + ' text-xs'"></i>
+          <span>{{ op.etiqueta }}</span>
         </button>
-        <span class="pases-valor-display">{{ form.get('pasesConfirmados')?.value }}</span>
-        <button
-          type="button"
-          class="btn-pases-stepper"
-          (click)="cambiarPases(1)">
-          <i class="pi pi-plus"></i>
-        </button>
-        <span class="pases-ayuda-texto">
+      }
+    </div>
+
+    <div class="flex items-center justify-between gap-4 rounded-lg border border-gray-200 bg-white px-4 py-3">
+      <div class="min-w-0">
+        <span class="block text-sm font-medium text-gray-800">
+          {{ esEdicion ? 'Pases autorizados' : 'Pases reservados' }}
+        </span>
+        <span class="block text-xs text-gray-400">
           @if (esEdicion) {
-            {{ form.get('pasesConfirmados')?.value === 1 ? 'persona autorizada' : 'personas autorizadas' }}
+            {{ pases === 1 ? 'Persona autorizada' : 'Personas autorizadas' }} para entrar.
           } @else {
-            {{ form.get('pasesConfirmados')?.value === 1 ? 'lugar reservado' : 'lugares reservados' }}
+            {{ pases === 1 ? 'Lugar reservado' : 'Lugares reservados' }} para este invitado.
           }
         </span>
       </div>
-    </div>
-  </div>
 
-  <!-- FILA 2: MESA ASIGNADA (6 COLS) Y TIPO DE MENÚ (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="mesa"
-        type="text"
-        formControlName="mesa"
-        class="w-full"
-        autocomplete="off" />
-      <label for="mesa">Mesa Asignada (ej. Mesa 5)</label>
-    </p-floatlabel>
-  </div>
-
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="tipoMenu"
-        appendTo="body"
-        inputId="tipoMenu"
-        [options]="opcionesMenu"
-        optionLabel="label"
-        optionValue="value"
-        formControlName="tipoMenu"
-        placeholder="Selecciona tipo de menú"
-        styleClass="w-full">
-      </p-select>
-      <label for="tipoMenu">Tipo de Menú</label>
-    </p-floatlabel>
-  </div>
-
-  <!-- FILA 3: ALERGIAS Y RESTRICCIONES ALIMENTARIAS (FILA COMPLETA) -->
-  <div class="col-span-12">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="restriccionesAlimentarias"
-        type="text"
-        formControlName="restriccionesAlimentarias"
-        class="w-full"
-        autocomplete="off" />
-      <label for="restriccionesAlimentarias">Alergias / Restricciones Alimentarias (ej. Sin gluten)</label>
-    </p-floatlabel>
-  </div>
-
-  <!-- MENSAJE O DEDICATORIA DEL INVITADO (SOLO LECTURA EN MODO EDICIÓN, OMITIDO EN SOLO LISTA PUERTA) -->
-  @if (esEdicion && invitado?.mensaje && evento?.modulos?.tipoControlInvitados !== 'lista_puerta') {
-    <div class="col-span-12 dedicatoria-card">
-      <div class="dedicatoria-header">
-        <i class="pi pi-heart-fill"></i>
-        <span>Mensaje Dedicado del Invitado</span>
+      <div class="inline-flex items-center gap-1 shrink-0">
+        <button pButton type="button" severity="secondary" [outlined]="true" [rounded]="true" size="small"
+          [disabled]="pases <= (estado === 'declinado' ? 0 : 1)"
+          (click)="cambiarPases(-1)"
+          aria-label="Restar pase">
+          <i class="pi pi-minus"></i>
+        </button>
+        <span class="w-10 text-center text-xl font-bold text-gray-900 tabular-nums">{{ pases }}</span>
+        <button pButton type="button" severity="secondary" [outlined]="true" [rounded]="true" size="small"
+          (click)="cambiarPases(1)"
+          aria-label="Sumar pase">
+          <i class="pi pi-plus"></i>
+        </button>
       </div>
-      <p class="dedicatoria-texto">“{{ invitado.mensaje }}”</p>
     </div>
+  </section>
+
+  <!-- MESA Y MENÚ -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-th-large text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Mesa y menú</h3>
+      <span class="text-xs text-gray-400">(opcional)</span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <p-floatlabel variant="on" class="w-full block">
+        <input
+          pInputText
+          id="mesa"
+          type="text"
+          formControlName="mesa"
+          class="w-full"
+          autocomplete="off" />
+        <label for="mesa">Mesa asignada (ej. Mesa 5)</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="on" class="w-full block">
+        <p-select
+          inputId="tipoMenu"
+          appendTo="body"
+          [options]="opcionesMenu"
+          optionLabel="label"
+          optionValue="value"
+          formControlName="tipoMenu"
+          class="w-full">
+        </p-select>
+        <label for="tipoMenu">Tipo de menú</label>
+      </p-floatlabel>
+
+      <p-floatlabel variant="on" class="sm:col-span-2 w-full block">
+        <input
+          pInputText
+          id="restriccionesAlimentarias"
+          type="text"
+          formControlName="restriccionesAlimentarias"
+          class="w-full"
+          autocomplete="off" />
+        <label for="restriccionesAlimentarias">Alergias o restricciones (ej. Sin gluten)</label>
+      </p-floatlabel>
+    </div>
+  </section>
+
+  <!-- MENSAJE DEL INVITADO (SOLO LECTURA) -->
+  @if (esEdicion && invitado?.mensaje && evento?.modulos?.tipoControlInvitados !== 'lista_puerta') {
+    <section class="rounded-xl border border-pastel-pink-100 bg-pastel-pink-50/60 px-4 py-3">
+      <span class="flex items-center gap-1.5 text-xs font-medium text-pastel-pink-500">
+        <i class="pi pi-heart-fill text-[11px]"></i>
+        Mensaje del invitado
+      </span>
+      <p class="m-0 mt-1.5 text-sm italic text-gray-700 whitespace-pre-wrap break-words">“{{ invitado?.mensaje }}”</p>
+    </section>
   }
 
-  <!-- BOTONES DE ACCIÓN (ALINEADOS AL FINAL) -->
-  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <button pButton type="button"
-
-     
-      severity="danger"
-      [text]="true"
-      size="small"
-      [disabled]="guardando()"
-      (click)="cancelar()">
-  <span>Cancelar</span>
-</button>
-
-    <button pButton
-     
-      type="submit"
-      size="small"
-      [loading]="guardando()">
-  <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-user-plus'"></i>
-  <span>{{ esEdicion ? 'Guardar Cambios' : 'Registrar Invitado' }}</span>
- </button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-between gap-3">
+    <span class="text-xs text-gray-400 hidden sm:inline">Los campos con * son obligatorios.</span>
+    <div class="flex items-center gap-2 ml-auto">
+      <button pButton type="button" severity="secondary" [text]="true" size="small"
+        [disabled]="guardando()"
+        (click)="cancelar()">
+        <span>Cancelar</span>
+      </button>
+      <button pButton type="submit" size="small" [loading]="guardando()">
+        <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-user-plus'"></i>
+        <span>{{ esEdicion ? 'Guardar cambios' : 'Registrar invitado' }}</span>
+      </button>
+    </div>
   </div>
 </form>

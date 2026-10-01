@@ -31,6 +31,13 @@ export class InvitadoQrModalComponent implements OnInit {
   descargando = signal<boolean>(false);
   huboCambioPases = false;
 
+  get fechaEvento(): string | null {
+    const f: any = this.evento?.fecha;
+    const fecha: Date | null = f?.toDate ? f.toDate() : f ? new Date(f) : null;
+    if (!fecha || isNaN(fecha.getTime())) return null;
+    return fecha.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
   async ngOnInit(): Promise<void> {
     this.invitado = this.config.data?.invitado;
     this.evento = this.config.data?.evento;

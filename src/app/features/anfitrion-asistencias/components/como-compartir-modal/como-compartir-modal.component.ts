@@ -1,6 +1,8 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Evento } from '../../../../core/models/event.model';
 import { copiarAlPortapapeles } from '../../../../core/utils/clipboard.util';
@@ -8,7 +10,7 @@ import { copiarAlPortapapeles } from '../../../../core/utils/clipboard.util';
 @Component({
   selector: 'app-como-compartir-modal',
   standalone: true,
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, TagModule, TooltipModule],
   templateUrl: './como-compartir-modal.component.html',
   styleUrl: './como-compartir-modal.component.scss',
 })
