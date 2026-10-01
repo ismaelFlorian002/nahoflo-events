@@ -13,13 +13,14 @@ import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
-import { PopoverModule } from 'primeng/popover';
 import { MenuModule } from 'primeng/menu';
+import { PopoverModule } from 'primeng/popover';
 import { MenuItem } from 'primeng/api';
 import { Evento } from '../../../../core/models/event.model';
 import { InvitadoModel } from '../../../../core/models/invitado.model';
 import { PdfReportService } from '../../services/pdf-report.service';
-import { BadgeModule } from 'primeng/badge';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-guest-table',
@@ -34,7 +35,8 @@ import { BadgeModule } from 'primeng/badge';
     TooltipModule,
     PopoverModule,
     MenuModule,
-    BadgeModule,
+    IconFieldModule,
+    InputIconModule,
   ],
   templateUrl: './guest-table.component.html',
   styleUrl: '../../anfitrion-asistencias.component.scss',
