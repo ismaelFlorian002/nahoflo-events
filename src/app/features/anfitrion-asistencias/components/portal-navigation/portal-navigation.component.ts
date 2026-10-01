@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, computed, input, output, viewChild } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { DrawerModule } from 'primeng/drawer';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -18,7 +17,7 @@ export interface PortalNavigationItem {
 @Component({
   selector: 'app-portal-navigation',
   standalone: true,
-  imports: [NgTemplateOutlet, ButtonModule, TooltipModule, DrawerModule, RouterLink, RouterLinkActive],
+  imports: [NgTemplateOutlet, TooltipModule, DrawerModule, RouterLink, RouterLinkActive],
   templateUrl: './portal-navigation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './portal-navigation.component.scss',
@@ -30,10 +29,12 @@ export class PortalNavigationComponent {
   readonly active = input.required<PortalSection>();
   readonly brandLogoUrl = input<string | null | undefined>(undefined);
   readonly brandName = input<string>('NahoFlo Creative Studio');
-  readonly brandSlogan = input<string>('CreativeStudio');
+  readonly exitLabel = input<string>('');
+  readonly exitIcon = input<string>('pi pi-power-off');
   readonly sectionSelected = output<PortalSection>();
+  readonly exit = output<void>();
   drawerVisible = false;
-  collapsed = true;
+  collapsed = false;
 
   private readonly desktopMenu = viewChild<ElementRef<HTMLElement>>('desktopMenu');
   private readonly desktopToggle = viewChild<ElementRef<HTMLButtonElement>>('desktopToggle');
@@ -60,6 +61,24 @@ export class PortalNavigationComponent {
       .map((label) => ({ label, items: this.items().filter((item) => item.group === label) }))
       .filter((group) => group.items.length > 0);
   });
+
+  toggle(event: MouseEvent): void {
+    event.stopPropagation();
+    this.collapsed = !this.collapsed;
+  }
+
+  expandOnAsideClick(event: MouseEvent): void {
+    if (!this.collapsed) return;
+    const target = event.target as HTMLElement | null;
+    if (target?.closest('.nav-item')) return;
+    this.collapsed = false;
+  }
+
+  onExit(event: MouseEvent): void {
+    event.stopPropagation();
+    this.drawerVisible = false;
+    this.exit.emit();
+  }
 
   select(section: PortalSection): void {
     this.drawerVisible = false;

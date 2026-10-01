@@ -29,7 +29,9 @@
         [active]="pestanaActiva()"
         [brandLogoUrl]="permiteMarcaBlanca() ? evento()?.agenciaLogoUrl : null"
         [brandName]="permiteMarcaBlanca() && evento()?.agenciaNombre ? evento()!.agenciaNombre! : 'NahoFlo Creative Studio'"
-        [brandSlogan]="permiteMarcaBlanca() ? 'Portal de anfitrión' : 'CreativeStudio'">
+        [exitLabel]="accesoStaff() ? 'Volver al panel' : 'Salir del portal'"
+        [exitIcon]="accesoStaff() ? 'pi pi-arrow-left' : 'pi pi-power-off'"
+        (exit)="salir()">
 
         <!-- HEADER SUPERIOR CORPORATIVO -->
         <div portalHeader class="w-full flex flex-wrap justify-between items-center gap-3">
@@ -58,7 +60,7 @@
             <div class="flex flex-wrap items-center gap-2">
               @if (tieneInvitacion()) {
                 <button pButton
-                 
+
                   size="small"
                   [outlined]="!copiadoGeneral()"
                   [severity]="copiadoGeneral() ? 'success' : 'secondary'"
@@ -77,26 +79,6 @@
                   aria-label="Abrir invitación en nueva pestaña">
   <i class="pi pi-external-link"></i>
   <span>Ver Invitación</span>
-</button>
-              }
-
-              @if (accesoStaff()) {
-                <button pButton size="small"
-                  [text]="true"
-                  severity="secondary"
-                  (click)="salir()"
-                  aria-label="Volver al panel">
-  <i class="pi pi-arrow-left"></i>
-  <span>Volver al panel</span>
-</button>
-              } @else {
-                <button pButton size="small"
-                  [text]="true"
-                  severity="danger"
-                  (click)="salir()"
-                  aria-label="Cerrar sesión de anfitrión">
-  <i class="pi pi-sign-out"></i>
-  <span>Salir</span>
 </button>
               }
             </div>
