@@ -1,262 +1,323 @@
-<div class="space-y-6">
-  <!-- Encabezado del Módulo Financiero -->
-  <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-    <div>
-      <div class="flex items-center gap-2">
-        <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-amber-100 text-amber-700 font-bold">
-          <i class="pi pi-dollar text-lg"></i>
-        </span>
-        <h2 class="text-xl font-bold text-slate-800 tracking-tight">Presupuesto & Control de Pagos</h2>
+<div class="flex flex-col gap-5">
+
+  <!-- CABECERA -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-wallet"></i>
       </div>
-      <p class="text-xs text-slate-500 mt-1">
-        Gestiona el presupuesto estimado vs real, control de anticipos y fechas de vencimiento de proveedores.
-      </p>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-lg font-semibold text-gray-900 m-0">Presupuesto</h2>
+          <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+            {{ items().length }} {{ items().length === 1 ? 'partida' : 'partidas' }}
+          </span>
+        </div>
+        <p class="text-sm text-gray-500 m-0">Lo estimado vs lo real, anticipos y saldos con tus proveedores.</p>
+      </div>
     </div>
 
-    <div class="flex items-center gap-2 w-full md:w-auto">
+    <div class="flex items-center gap-2">
       @if (items().length === 0) {
-        <button pButton severity="secondary"
-          [outlined]="true"
-         
-          (click)="cargarPlantillaBoda()">
-  <i class="pi pi-wallet"></i>
-  <span>Cargar Plantilla Boda</span>
-</button>
+        <button pButton size="small" severity="secondary" [text]="true" (click)="cargarPlantillaBoda()">
+          <i class="pi pi-sparkles"></i>
+          <span class="hidden sm:inline">Usar plantilla</span>
+        </button>
       }
-      <button pButton severity="primary"
-       
-        (click)="abrirModalNuevo()">
-  <i class="pi pi-plus"></i>
-  <span>Registrar Gasto</span>
-</button>
+      <button pButton size="small" (click)="abrirModalNuevo()">
+        <i class="pi pi-plus"></i>
+        <span>Registrar gasto</span>
+      </button>
     </div>
   </div>
 
-  <!-- KPI Cards (Tarjetas Metricas Financieras) -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-    <!-- Presupuesto Estimado -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-      <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Presupuesto Meta</span>
-      <span class="text-xl md:text-2xl font-bold text-slate-800">${{ totalEstimado() | number:'1.0-0' }}</span>
-      <span class="text-xs text-slate-400 block mt-1">Estimación total</span>
-    </div>
-
-    <!-- Costo Real Acordado -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-      <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Costo Real Total</span>
-      <span class="text-xl md:text-2xl font-bold text-slate-900">${{ totalReal() | number:'1.0-0' }}</span>
-      <span class="text-xs font-semibold block mt-1" [ngClass]="variacionPresupuesto() > 0 ? 'text-rose-600' : 'text-emerald-600'">
-        {{ variacionPresupuesto() > 0 ? '+$' + (variacionPresupuesto() | number:'1.0-0') + ' sobre meta' : '-$' + (variacionAbsoluta() | number:'1.0-0') + ' vs meta' }}
+  <!-- INDICADORES -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-flag text-sm"></i>
       </span>
-
+      <div class="min-w-0">
+        <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight truncate">${{ totalEstimado() | number:'1.0-0' }}</span>
+        <span class="block text-xs text-gray-500 truncate">Presupuesto meta</span>
+      </div>
     </div>
 
-    <!-- Total Pagado -->
-    <div class="bg-emerald-50/70 p-4 rounded-2xl border border-emerald-200/80 shadow-sm">
-      <span class="text-xs font-semibold text-emerald-800 uppercase tracking-wider block mb-1">Total Pagado</span>
-      <span class="text-xl md:text-2xl font-bold text-emerald-700">${{ totalPagado() | number:'1.0-0' }}</span>
-      <span class="text-xs font-semibold text-emerald-600 block mt-1">{{ porcentajePagado() }}% cubierto</span>
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-receipt text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight truncate">${{ totalReal() | number:'1.0-0' }}</span>
+        <span class="block text-xs truncate" [ngClass]="variacionPresupuesto() > 0 ? 'text-rose-600 font-medium' : 'text-gray-500'">
+          @if (variacionPresupuesto() > 0) {
+            Costo real · +${{ variacionPresupuesto() | number:'1.0-0' }} sobre meta
+          } @else if (variacionPresupuesto() < 0) {
+            Costo real · <span class="text-emerald-600 font-medium">${{ variacionAbsoluta() | number:'1.0-0' }} bajo meta</span>
+          } @else {
+            Costo real
+          }
+        </span>
+      </div>
     </div>
 
-    <!-- Saldo Pendiente -->
-    <div class="bg-amber-50/70 p-4 rounded-2xl border border-amber-200/80 shadow-sm">
-      <span class="text-xs font-semibold text-amber-800 uppercase tracking-wider block mb-1">Saldo Por Pagar</span>
-      <span class="text-xl md:text-2xl font-bold text-amber-700">${{ saldoPendiente() | number:'1.0-0' }}</span>
-      <span class="text-xs text-amber-600 font-medium block mt-1">Pendiente de liquidar</span>
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <span class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <i class="pi pi-check-circle text-sm"></i>
+        </span>
+        <div class="min-w-0 flex-1">
+          <span class="block text-lg font-bold text-emerald-600 tabular-nums leading-tight truncate">${{ totalPagado() | number:'1.0-0' }}</span>
+          <span class="block text-xs text-gray-500 truncate">Pagado · {{ porcentajePagado() }}%</span>
+        </div>
+      </div>
+      <div class="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
+        <div class="h-full rounded-full bg-emerald-500 transition-all duration-500" [style.width.%]="porcentajePagado()"></div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-clock text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-lg font-bold tabular-nums leading-tight truncate"
+          [ngClass]="saldoPendiente() > 0 ? 'text-amber-600' : 'text-gray-900'">${{ saldoPendiente() | number:'1.0-0' }}</span>
+        <span class="block text-xs text-gray-500 truncate">Por pagar</span>
+      </div>
     </div>
   </div>
 
-  <!-- Barra de Salud Financiera -->
-  @if (items().length > 0) {
-    <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-2">
-      <div class="flex justify-between items-center text-xs font-semibold">
-        <span>Progreso de Liquidación del Evento</span>
-        <span class="text-emerald-700 font-bold">${{ totalPagado() | number:'1.0-0' }} de ${{ totalReal() | number:'1.0-0' }} ({{ porcentajePagado() }}%)</span>
-      </div>
-      <p-progressbar [value]="porcentajePagado()" [showValue]="false" styleClass="h-2 rounded-full"></p-progressbar>
-    </div>
-  }
-
-  <!-- Filtros & Barra de Búsqueda -->
-  <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-3 justify-between items-center">
-    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-      <!-- BOTÓN CON ICONO DE FILTRO PRIMENG + OVERLAYPANEL (ESTILO MENSAJES WA) -->
-      <div class="filtro-dropdown-wrap">
-        <button pButton
-         
-          badgeClass="p-badge-secondary"
-          size="small"
-          [outlined]="categoriaSeleccionada() === 'todas'"
-          [severity]="categoriaSeleccionada() !== 'todas' ? 'primary' : 'secondary'"
-          (click)="opFiltroCategoria.toggle($event)"
-          title="Filtrar por categoría de gasto">
-  <span>{{ 'Categoría: ' + labelFiltroCategoria() }}</span>
-  <span>{{ conteoFiltroCategoria() }}</span>
-
-  <i class="pi pi-filter"></i>
- </button>
-
-        <p-popover #opFiltroCategoria styleClass="popover-filtros-invitados">
-          <div class="menu-filtros-popover">
-            <div class="popover-filtros-header">
-              <i class="pi pi-filter"></i>
-              <span>Filtrar por categoría</span>
-            </div>
-
-            <div class="popover-filtros-lista max-h-80 overflow-y-auto pr-1">
-              <button
-                type="button"
-                class="item-filtro-btn"
-                [class.activo]="categoriaSeleccionada() === 'todas'"
-                (click)="seleccionarCategoria('todas', opFiltroCategoria, dt)">
-                <span class="filtro-item-left">
-                  <i class="pi pi-th-large text-slate-500"></i>
-                  <span>Todas las categorías</span>
-                </span>
-                <span class="badge-filtro-cant">{{ items().length }}</span>
-              </button>
-
-              @for (cat of categoriasCatalogo; track cat.value) {
-                <button
-                  type="button"
-                  class="item-filtro-btn"
-                  [class.activo]="categoriaSeleccionada() === cat.value"
-                  (click)="seleccionarCategoria(cat.value, opFiltroCategoria, dt)">
-                  <span class="filtro-item-left">
-                    <span class="text-base leading-none w-[18px] text-center inline-block">{{ cat.emoji }}</span>
-                    <span>{{ cat.label }}</span>
-                  </span>
-                  <span class="badge-filtro-cant">{{ conteoPorCategoria()[cat.value] || 0 }}</span>
-                </button>
-              }
-            </div>
-          </div>
-        </p-popover>
-      </div>
-
-      <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
-      @if (hayFiltrosActivos()) {
-        <button pButton size="small"
-          [text]="true"
-          severity="secondary"
-          (click)="limpiarTodosFiltros(dt)"
-          pTooltip="Restablecer filtros"
-          tooltipPosition="top">
-  <i class="pi pi-filter-slash"></i>
-  <span>Limpiar filtros</span>
-</button>
-      }
+  <!-- PARTIDAS -->
+  <div class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-list text-gold-500"></i>
+      <h3 class="m-0 text-sm font-semibold text-gray-900">Partidas</h3>
     </div>
 
-    <!-- Barra de Búsqueda -->
-    <span class="p-input-icon-left w-full md:w-80">
-      <i class="pi pi-search text-gray-400"></i>
-      <input
-        pInputText
-        type="text"
-        class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
-        [ngModel]="busqueda()"
-        (ngModelChange)="busqueda.set($event)"
-        placeholder="Buscar concepto o proveedor..."
-      />
-    </span>
-  </div>
-
-  <!-- Tabla Dinámica de Presupuesto -->
-  <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
     <p-table
       #dt
       [value]="itemsFiltrados()"
+      dataKey="id"
       [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[10, 20, 50]"
-      styleClass="p-datatable-sm p-datatable-gridlines">
+      [rows]="5"
+      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      styleClass="p-datatable-borderless modern-table w-full"
+      responsiveLayout="scroll">
 
+      <!-- BUSCADOR + FILTRO -->
+      <ng-template #caption>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <span class="p-input-icon-left w-full md:w-80">
+              <i class="pi pi-search text-gray-400"></i>
+              <input
+                pInputText
+                type="text"
+                class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+                [ngModel]="busqueda()"
+                (ngModelChange)="busqueda.set($event)"
+                placeholder="Buscar concepto o proveedor..." />
+            </span>
+
+            <!-- FILTRO POR CATEGORÍA (POPOVER) -->
+            <div class="filtro-dropdown-wrap">
+              <button pButton
+                size="small"
+                [outlined]="categoriaSeleccionada() === 'todas'"
+                [severity]="categoriaSeleccionada() !== 'todas' ? 'primary' : 'secondary'"
+                (click)="opFiltroCategoria.toggle($event)"
+                title="Filtrar por categoría de gasto">
+                <span>{{ 'Categoría: ' + labelFiltroCategoria() }}</span>
+                <span>{{ conteoFiltroCategoria() }}</span>
+                <i class="pi pi-filter"></i>
+              </button>
+
+              <p-popover #opFiltroCategoria styleClass="popover-filtros-invitados">
+                <div class="menu-filtros-popover">
+                  <div class="popover-filtros-header">
+                    <i class="pi pi-filter"></i>
+                    <span>Filtrar por categoría</span>
+                  </div>
+
+                  <div class="popover-filtros-lista max-h-80 overflow-y-auto pr-1">
+                    <button
+                      type="button"
+                      class="item-filtro-btn"
+                      [class.activo]="categoriaSeleccionada() === 'todas'"
+                      (click)="seleccionarCategoria('todas', opFiltroCategoria, dt)">
+                      <span class="filtro-item-left">
+                        <i class="pi pi-th-large text-slate-500"></i>
+                        <span>Todas las categorías</span>
+                      </span>
+                      <span class="badge-filtro-cant">{{ items().length }}</span>
+                    </button>
+
+                    @for (cat of categoriasCatalogo; track cat.value) {
+                      <button
+                        type="button"
+                        class="item-filtro-btn"
+                        [class.activo]="categoriaSeleccionada() === cat.value"
+                        (click)="seleccionarCategoria(cat.value, opFiltroCategoria, dt)">
+                        <span class="filtro-item-left">
+                          <span class="text-base leading-none w-[18px] text-center inline-block">{{ cat.emoji }}</span>
+                          <span>{{ cat.label }}</span>
+                        </span>
+                        <span class="badge-filtro-cant">{{ conteoPorCategoria()[cat.value] || 0 }}</span>
+                      </button>
+                    }
+                  </div>
+                </div>
+              </p-popover>
+            </div>
+
+            @if (hayFiltrosActivos()) {
+              <button pButton size="small" [text]="true" [rounded]="true" severity="secondary"
+                pTooltip="Limpiar filtros" tooltipPosition="top"
+                (click)="limpiarTodosFiltros(dt)">
+                <i class="pi pi-filter-slash"></i>
+              </button>
+            }
+          </div>
+
+          <span class="text-xs text-gray-400 hidden md:inline">
+            {{ itemsFiltrados().length }} de {{ items().length }}
+          </span>
+        </div>
+      </ng-template>
+
+      <!-- CABECERAS -->
       <ng-template #header>
-        <tr class="bg-slate-50 text-slate-600 text-xs font-semibold uppercase tracking-wider">
-          <th pSortableColumn="categoria" style="width: 18%">Categoría <p-sort-icon field="categoria"></p-sort-icon></th>
-          <th pSortableColumn="concepto">Concepto / Servicio <p-sort-icon field="concepto"></p-sort-icon></th>
-          <th pSortableColumn="costoEstimado" style="width: 12%" class="text-right">Meta ($) <p-sort-icon field="costoEstimado"></p-sort-icon></th>
-          <th pSortableColumn="costoReal" style="width: 12%" class="text-right">Real ($) <p-sort-icon field="costoReal"></p-sort-icon></th>
-          <th pSortableColumn="montoPagado" style="width: 12%" class="text-right">Pagado ($) <p-sort-icon field="montoPagado"></p-sort-icon></th>
-          <th pSortableColumn="estadoPago" style="width: 12%" class="text-center">Estatus <p-sort-icon field="estadoPago"></p-sort-icon></th>
-          <th style="width: 10%" class="text-center">Acciones</th>
+        <tr>
+          <th pSortableColumn="concepto">Concepto <p-sort-icon field="concepto"></p-sort-icon></th>
+          <th pSortableColumn="costoEstimado" class="hidden lg:table-cell" style="text-align: right;">Meta <p-sort-icon field="costoEstimado"></p-sort-icon></th>
+          <th pSortableColumn="costoReal" class="hidden sm:table-cell" style="text-align: right;">Real <p-sort-icon field="costoReal"></p-sort-icon></th>
+          <th pSortableColumn="montoPagado" style="text-align: right;">Pagado <p-sort-icon field="montoPagado"></p-sort-icon></th>
+          <th pSortableColumn="estadoPago" class="hidden md:table-cell" style="text-align: center;">Estatus <p-sort-icon field="estadoPago"></p-sort-icon></th>
+          <th style="text-align: right;">Acciones</th>
         </tr>
       </ng-template>
 
+      <!-- FILAS -->
       <ng-template #body let-item>
+        @let resta = (item.costoReal || 0) - (item.montoPagado || 0);
+        @let avance = item.costoReal > 0 ? (item.montoPagado / item.costoReal) * 100 : 0;
+        @let excedente = (item.costoReal || 0) - (item.costoEstimado || 0);
         <tr>
+          <!-- CONCEPTO -->
           <td>
-            <span>
-              {{ item.categoria }}
-            </span>
-          </td>
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-9 h-9 rounded-lg bg-gold-50 text-base flex items-center justify-center shrink-0 select-none"
+                [pTooltip]="item.categoria" tooltipPosition="top">
+                {{ emojiCategoria(item.categoria) }}
+              </span>
+              <div class="min-w-0">
+                <span class="block text-sm font-semibold text-gray-900">{{ item.concepto }}</span>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-xs text-gray-500">
+                  <span>{{ item.categoria }}</span>
+                  @if (item.proveedorNombre) {
+                    <span class="inline-flex items-center gap-1">
+                      <i class="pi pi-building text-[10px] text-gray-400"></i>{{ item.proveedorNombre }}
+                    </span>
+                  }
+                  @if (item.fechaLimitePago && item.estadoPago !== 'pagado') {
+                    <span class="inline-flex items-center gap-1 text-amber-600">
+                      <i class="pi pi-calendar text-[10px]"></i>Vence {{ fechaCorta(item.fechaLimitePago) }}
+                    </span>
+                  }
+                </div>
+                @if (item.notas) {
+                  <span class="block text-[11px] text-gray-400 mt-0.5 truncate max-w-[320px]" [pTooltip]="item.notas" tooltipPosition="top">{{ item.notas }}</span>
+                }
 
-          <td>
-            <div>{{ item.concepto }}</div>
-            @if (item.proveedorNombre) {
-              <div class="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                <i class="pi pi-user text-slate-400 text-[10px]"></i>
-                <span>{{ item.proveedorNombre }}</span>
+                <!-- Resumen en móvil -->
+                <div class="md:hidden flex flex-wrap items-center gap-1.5 mt-1.5">
+                  <p-tag
+                    [value]="item.estadoPago === 'pagado' ? 'Pagado' : item.estadoPago === 'parcial' ? 'Anticipo' : 'Pendiente'"
+                    [severity]="obtenerSeverityEstado(item.estadoPago)"
+                    [rounded]="true" />
+                  <span class="sm:hidden text-[11px] text-gray-500 tabular-nums">Real ${{ item.costoReal | number:'1.0-0' }}</span>
+                </div>
               </div>
-            }
-            @if (item.notas) {
-              <div class="text-[11px] text-slate-400 italic mt-0.5">{{ item.notas }}</div>
-            }
+            </div>
           </td>
 
-          <td class="text-right font-medium text-slate-500">
+          <!-- META -->
+          <td class="hidden lg:table-cell text-sm text-gray-500 tabular-nums" style="text-align: right;">
             ${{ item.costoEstimado | number:'1.0-0' }}
           </td>
 
-          <td class="text-right font-semibold text-slate-800">
-            ${{ item.costoReal | number:'1.0-0' }}
+          <!-- REAL -->
+          <td class="hidden sm:table-cell tabular-nums" style="text-align: right;">
+            <span class="block text-sm font-semibold text-gray-900">${{ item.costoReal | number:'1.0-0' }}</span>
+            @if (excedente > 0) {
+              <span class="block text-[11px] text-rose-500">+${{ excedente | number:'1.0-0' }} vs meta</span>
+            }
           </td>
 
-          <td class="text-right font-bold text-emerald-600">
-            ${{ item.montoPagado | number:'1.0-0' }}
+          <!-- PAGADO -->
+          <td class="tabular-nums" style="text-align: right;">
+            <span class="block text-sm font-semibold text-emerald-600">${{ item.montoPagado | number:'1.0-0' }}</span>
+            <div class="ml-auto mt-1 h-1 w-20 rounded-full bg-gray-100 overflow-hidden">
+              <div class="h-full rounded-full bg-emerald-500" [style.width.%]="avance > 100 ? 100 : avance"></div>
+            </div>
+            @if (resta > 0) {
+              <span class="block text-[11px] text-amber-600 mt-0.5">Resta ${{ resta | number:'1.0-0' }}</span>
+            }
           </td>
 
-          <td class="text-center">
-            <p-badge
-              [value]="item.estadoPago === 'pagado' ? 'PAGADO' : item.estadoPago === 'parcial' ? 'ANTICIPO' : 'PENDIENTE'"
+          <!-- ESTATUS -->
+          <td class="hidden md:table-cell" style="text-align: center;">
+            <p-tag
+              [value]="item.estadoPago === 'pagado' ? 'Pagado' : item.estadoPago === 'parcial' ? 'Anticipo' : 'Pendiente'"
               [severity]="obtenerSeverityEstado(item.estadoPago)"
-             >
-            </p-badge>
+              [icon]="item.estadoPago === 'pagado' ? 'pi pi-check' : item.estadoPago === 'parcial' ? 'pi pi-percentage' : 'pi pi-clock'"
+              [rounded]="true" />
           </td>
 
-          <td class="text-center">
-            <div class="flex items-center justify-center gap-1">
-              <button pButton
-               
-               
-                pTooltip="Editar Partida"
-                (click)="abrirModalEditar(item)"><i class="pi pi-wallet text-3xl text-slate-300 block mb-2"></i>
+          <!-- ACCIONES -->
+          <td style="text-align: right;">
+            <div class="inline-flex items-center justify-end gap-0.5">
+              <button pButton [rounded]="true" [text]="true" severity="secondary" size="small"
+                pTooltip="Editar partida" tooltipPosition="top"
+                (click)="abrirModalEditar(item)">
+                <i class="pi pi-pencil"></i>
               </button>
-              <button pButton
-               
-               
-                pTooltip="Eliminar"
-                (click)="eliminarItem(item)"><i class="pi pi-wallet"></i>
+              <button pButton [rounded]="true" [text]="true" severity="danger" size="small"
+                pTooltip="Eliminar" tooltipPosition="top"
+                (click)="eliminarItem(item)">
+                <i class="pi pi-trash"></i>
               </button>
             </div>
           </td>
         </tr>
       </ng-template>
 
+      <!-- ESTADO VACÍO -->
       <ng-template #emptymessage>
         <tr>
-          <td colspan="7" class="text-center py-8 text-slate-500">
-            <i class="pi pi-wallet text-3xl text-slate-300 block mb-2"></i>
-            No hay partidas presupuestarias registradas aún.
-            <div class="mt-2">
-              <button pButton severity="secondary"
-                [outlined]="true"
-               
-                (click)="cargarPlantillaBoda()">
-  <i class="pi pi-wallet text-3xl text-slate-300 block mb-2"></i>
-  <span>Cargar Plantilla Boda</span>
-</button>
+          <td colspan="6">
+            <div class="flex flex-col items-center text-center py-12 px-4">
+              <div class="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300 mb-3">
+                <i [class]="items().length === 0 ? 'pi pi-wallet text-2xl' : 'pi pi-search text-2xl'"></i>
+              </div>
+              @if (items().length === 0) {
+                <span class="text-sm font-semibold text-gray-800">Aún no hay gastos registrados</span>
+                <span class="text-xs text-gray-500 mt-1 max-w-xs">Usa la plantilla sugerida para bodas o registra tu primer gasto.</span>
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-4">
+                  <button pButton size="small" (click)="cargarPlantillaBoda()">
+                    <i class="pi pi-sparkles"></i>
+                    <span>Usar plantilla sugerida</span>
+                  </button>
+                  <button pButton size="small" severity="secondary" [outlined]="true" (click)="abrirModalNuevo()">
+                    <i class="pi pi-plus"></i>
+                    <span>Registrar gasto</span>
+                  </button>
+                </div>
+              } @else {
+                <span class="text-sm font-semibold text-gray-800">Sin resultados</span>
+                <span class="text-xs text-gray-500 mt-1">No hay partidas que coincidan con tu búsqueda o filtro.</span>
+              }
             </div>
           </td>
         </tr>

@@ -2,10 +2,9 @@ import { Component, computed, inject, input, output, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { TagModule } from 'primeng/tag';
 import { CheckboxModule } from 'primeng/checkbox';
-import { AccordionModule } from 'primeng/accordion';
+import { TooltipModule } from 'primeng/tooltip';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, TareaPlaneacion } from '../../../../core/models/event.model';
@@ -19,10 +18,9 @@ import { ChecklistItemModalComponent } from '../checklist-item-modal/checklist-i
     CommonModule,
     FormsModule,
     ButtonModule,
-    ProgressBarModule,
     TagModule,
     CheckboxModule,
-    AccordionModule,
+    TooltipModule,
   ],
   templateUrl: './checklist-tracker.component.html',
   styleUrl: './checklist-tracker.component.scss',
@@ -75,6 +73,20 @@ export class ChecklistTrackerComponent {
     }));
   });
 
+  faseEnCurso = computed(
+    () => this.tareasPorFase().find((f) => f.total > 0 && f.completadas < f.total) ?? null,
+  );
+  pendientesAlta = computed(
+    () => this.tareas().filter((t) => !t.completada && t.prioridad === 'alta').length,
+  );
+
+  fechaCorta(fecha: any): string {
+    if (!fecha) return '';
+    const d: Date = fecha?.toDate ? fecha.toDate() : fecha instanceof Date ? fecha : new Date(fecha);
+    if (isNaN(d.getTime())) return typeof fecha === 'string' ? fecha : '';
+    return d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
   async toggleTareaCompletada(tarea: TareaPlaneacion): Promise<void> {
     const nuevaLista = this.tareas().map((t) =>
       t.id === tarea.id ? { ...t, completada: !t.completada } : t,
@@ -88,9 +100,9 @@ export class ChecklistTrackerComponent {
   abrirModalTarea(tarea?: TareaPlaneacion): void {
     const esEdicion = !!tarea;
     const ref = this.dialogService.open(ChecklistItemModalComponent, {
-      header: esEdicion ? 'Editar Tarea' : 'Añadir Tarea al Checklist',
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '94vw' },
+      header: esEdicion ? 'Editar tarea' : 'Nueva tarea',
+      width: '600px',
+      breakpoints: { '660px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: tarea ? { tarea } : undefined,

@@ -18,7 +18,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Table, TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { Popover, PopoverModule } from 'primeng/popover';
-import { BadgeModule } from 'primeng/badge';
+import { TagModule } from 'primeng/tag';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, MesaDiseno } from '../../../../core/models/event.model';
@@ -39,7 +39,7 @@ import { MesaDetalleModalComponent } from '../mesa-detalle-modal/mesa-detalle-mo
     TableModule,
     InputTextModule,
     PopoverModule,
-    BadgeModule,
+    TagModule,
   ],
   templateUrl: './croquis-mesas-designer.component.html',
   styleUrl: './croquis-mesas-designer.component.scss',
@@ -49,6 +49,8 @@ export class CroquisMesasDesignerComponent implements OnInit, OnChanges {
   @Input() invitados: InvitadoModel[] = [];
   @Output() eventoActualizado = new EventEmitter<Evento>();
   @Output() invitadosActualizados = new EventEmitter<void>();
+  @Output() abrirDetalle = new EventEmitter<InvitadoModel>();
+  @Output() abrirEditar = new EventEmitter<InvitadoModel>();
 
   private eventService = inject(EventService);
   private dialogService = inject(DialogService);
@@ -305,8 +307,8 @@ export class CroquisMesasDesignerComponent implements OnInit, OnChanges {
     const esEdicion = !!mesaAEditar;
     const ref = this.dialogService.open(MesaFormModalComponent, {
       header: esEdicion ? `Editar Mesa — ${mesaAEditar.nombre}` : 'Nueva Mesa',
-      width: '1200px',
-      breakpoints: { '640px': '94vw' },
+      width: '560px',
+      breakpoints: { '620px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: {
@@ -351,8 +353,8 @@ export class CroquisMesasDesignerComponent implements OnInit, OnChanges {
   abrirModalDetalleMesa(mesa: MesaDiseno): void {
     const ref = this.dialogService.open(MesaDetalleModalComponent, {
       header: `Distribución de ${mesa.nombre}`,
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '94vw' },
+      width: '680px',
+      breakpoints: { '740px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: {

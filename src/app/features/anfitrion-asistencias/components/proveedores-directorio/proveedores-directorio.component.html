@@ -1,55 +1,95 @@
-<div class="space-y-6">
-  <!-- Header del Módulo -->
-  <div
-    class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-    <div>
-      <div class="flex items-center gap-2">
-        <span
-          class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-purple-100 text-purple-700 font-bold">
-          <i class="pi pi-briefcase text-lg"></i>
-        </span>
-        <h2 class="text-xl font-bold text-slate-800 tracking-tight">Directorio de Proveedores</h2>
+<div class="flex flex-col gap-5">
+
+  <!-- CABECERA -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-briefcase"></i>
       </div>
-      <p class="text-xs text-slate-500 mt-1">
-        Catálogo centralizado de empresas, contactos clave y presupuestos contratados para el evento.
-      </p>
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-lg font-semibold text-gray-900 m-0">Proveedores</h2>
+          <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+            {{ proveedores().length }} {{ proveedores().length === 1 ? 'proveedor' : 'proveedores' }}
+          </span>
+        </div>
+        <p class="text-sm text-gray-500 m-0">Contactos y contratos de tu equipo de trabajo para el evento.</p>
+      </div>
     </div>
 
-    <button pButton severity="primary"
-     
-      (click)="abrirModalProveedor()">
-  <i class="pi pi-plus"></i>
-  <span>Agregar Proveedor</span>
-</button>
+    <button pButton size="small" (click)="abrirModalProveedor()">
+      <i class="pi pi-plus"></i>
+      <span>Agregar proveedor</span>
+    </button>
   </div>
 
+  <!-- INDICADORES -->
+  @if (proveedores().length > 0) {
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+        <span class="w-9 h-9 rounded-lg bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
+          <i class="pi pi-briefcase text-sm"></i>
+        </span>
+        <div class="min-w-0">
+          <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight">{{ proveedores().length }}</span>
+          <span class="block text-xs text-gray-500 truncate">Proveedores · {{ categoriasCubiertas() }} {{ categoriasCubiertas() === 1 ? 'categoría' : 'categorías' }}</span>
+        </div>
+      </div>
 
-    <!-- Filtros & Buscador -->
-  <div
-    class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-3 justify-between items-center">
+      <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+        <span class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <i class="pi pi-file-check text-sm"></i>
+        </span>
+        <div class="min-w-0">
+          <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight truncate">${{ totalContratos() | number:'1.0-0' }}</span>
+          <span class="block text-xs text-gray-500 truncate">Total en contratos</span>
+        </div>
+      </div>
 
-    <div class="flex flex-wrap items-center gap-2">
-      <!-- BOTÓN DE FILTRO CON OVERLAYPANEL (IDÉNTICO A LISTA DE INVITADOS / MENSAJES WA) -->
+      <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+        <span class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+          <i class="pi pi-phone text-sm"></i>
+        </span>
+        <div class="min-w-0">
+          <span class="block text-lg font-bold tabular-nums leading-tight"
+            [ngClass]="proveedoresSinTelefono() > 0 ? 'text-amber-600' : 'text-gray-900'">{{ proveedoresSinTelefono() }}</span>
+          <span class="block text-xs text-gray-500 truncate">Sin teléfono registrado</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- BUSCADOR + FILTRO -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-2 w-full sm:w-auto">
+      <span class="p-input-icon-left w-full md:w-80">
+        <i class="pi pi-search text-gray-400"></i>
+        <input
+          pInputText
+          type="text"
+          class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          placeholder="Buscar por nombre, contacto o notas..." />
+      </span>
+
       <div class="filtro-dropdown-wrap">
         <button pButton
-         
-          badgeClass="p-badge-secondary"
           size="small"
           [outlined]="categoriaSeleccionada() === 'todas'"
           [severity]="categoriaSeleccionada() !== 'todas' ? 'primary' : 'secondary'"
           (click)="opFiltrosCategoria.toggle($event)"
           title="Filtrar por categoría de proveedor">
-  <span>{{ 'Categoría: ' + labelFiltroCategoria() }}</span>
-  <span>{{ conteoFiltroCategoria().toString() }}</span>
-
-  <i class="pi pi-filter"></i>
- </button>
+          <span>{{ 'Categoría: ' + labelFiltroCategoria() }}</span>
+          <span>{{ conteoFiltroCategoria().toString() }}</span>
+          <i class="pi pi-filter"></i>
+        </button>
 
         <p-popover #opFiltrosCategoria styleClass="popover-filtros-invitados">
           <div class="menu-filtros-popover">
             <div class="popover-filtros-header">
               <i class="pi pi-filter"></i>
-              <span>FILTRAR POR CATEGORÍA</span>
+              <span>Filtrar por categoría</span>
             </div>
 
             <div class="popover-filtros-lista">
@@ -70,137 +110,128 @@
         </p-popover>
       </div>
 
-      <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
       @if (hayFiltrosActivos()) {
-        <button pButton size="small"
-          [text]="true"
-          severity="secondary"
-          (click)="limpiarFiltros()"
-          pTooltip="Restablecer todos los filtros"
-          tooltipPosition="top">
-  <i class="pi pi-filter-slash"></i>
-  <span>Limpiar filtros</span>
-</button>
+        <button pButton size="small" [text]="true" [rounded]="true" severity="secondary"
+          pTooltip="Limpiar filtros" tooltipPosition="top"
+          (click)="limpiarFiltros()">
+          <i class="pi pi-filter-slash"></i>
+        </button>
       }
     </div>
 
-
-    <!-- BÚSQUEDA GLOBAL (A LA DERECHA COMO EN /ADMIN) -->
-    <span class="p-input-icon-left w-full md:w-80">
-      <i class="pi pi-search text-gray-400"></i>
-      <input
-        pInputText
-        type="text"
-        class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
-        [ngModel]="busqueda()"
-        (ngModelChange)="busqueda.set($event)"
-        placeholder="Buscar por nombre, teléfono o notas..." />
+    <span class="text-xs text-gray-400 hidden md:inline">
+      {{ proveedoresFiltrados().length }} de {{ proveedores().length }}
     </span>
   </div>
 
-
-  <!-- Tarjetero de Proveedores -->
+  <!-- TARJETAS DE PROVEEDORES -->
   @if (proveedoresFiltrados().length > 0) {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       @for (prov of proveedoresFiltrados(); track prov.id) {
-        <div
-          class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between">
-          <div>
-            <!-- Categoría Badge -->
-            <div class="flex items-center justify-between mb-3">
-              <span
-                class="text-[11px] font-bold tracking-wider uppercase bg-purple-50 text-purple-700 border border-purple-100 px-2.5 py-1 rounded-full">
-                {{ prov.categoria }}
-              </span>
+        <div class="group bg-white rounded-2xl border border-gray-100 hover:border-gold-200 hover:shadow-sm transition-all p-4 flex flex-col gap-3">
 
-              <div class="flex items-center gap-1">
-                <button pButton
-                 
-                 
-                  pTooltip="Editar"
-                  (click)="abrirModalProveedor(prov)"><i class="pi pi-user text-slate-400 text-xs"></i>
-                </button>
-                <button pButton
-                 
-                 
-                  pTooltip="Eliminar"
-                  (click)="eliminarProveedor(prov)"><i class="pi pi-phone text-emerald-600"></i>
-                </button>
-              </div>
+          <!-- IDENTIDAD -->
+          <div class="flex items-start gap-3">
+            <span class="w-11 h-11 rounded-xl bg-gold-50 text-xl flex items-center justify-center shrink-0 select-none">
+              {{ emojiCategoria(prov.categoria) }}
+            </span>
+            <div class="flex-1 min-w-0">
+              <span class="block text-base font-semibold text-gray-900 truncate" [pTooltip]="prov.empresa" tooltipPosition="top">{{ prov.empresa }}</span>
+              <span class="block text-xs text-gray-500 truncate">{{ prov.categoria }}</span>
             </div>
+            <div class="flex items-center shrink-0 -mr-1.5 -mt-1">
+              <button pButton type="button" [rounded]="true" [text]="true" severity="secondary" size="small"
+                pTooltip="Editar" tooltipPosition="top"
+                (click)="abrirModalProveedor(prov)">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <button pButton type="button" [rounded]="true" [text]="true" severity="danger" size="small"
+                pTooltip="Eliminar" tooltipPosition="top"
+                (click)="eliminarProveedor(prov)">
+                <i class="pi pi-trash"></i>
+              </button>
+            </div>
+          </div>
 
-            <!-- Nombre de Empresa -->
-            <h3 class="text-lg font-bold text-slate-800 leading-tight mb-1">{{ prov.empresa }}</h3>
-
+          <!-- CONTACTO -->
+          <div class="flex flex-col gap-1.5 text-sm">
             @if (prov.contactoNombre) {
-              <div class="text-xs font-medium text-slate-600 flex items-center gap-1.5 mb-2">
-                <i class="pi pi-envelope text-slate-400"></i>
-                <span>{{ prov.contactoNombre }}</span>
-              </div>
+              <span class="flex items-center gap-2 text-gray-700 min-w-0">
+                <i class="pi pi-user text-xs text-gray-400 w-4 text-center"></i>
+                <span class="truncate">{{ prov.contactoNombre }}</span>
+              </span>
             }
-
-            <!-- Información de Contacto -->
-            <div class="space-y-1.5 border-t border-slate-100 pt-3 my-3 text-xs text-slate-600">
-              @if (prov.telefono) {
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-tag text-amber-500"></i>
-                  <span>{{ prov.telefono }}</span>
-                </div>
-              }
-              @if (prov.email) {
-                <div class="flex items-center gap-2">
-                  <i class="pi pi-whatsapp"></i>
-                  <span class="truncate">{{ prov.email }}</span>
-                </div>
-              }
-              @if (prov.montoContrato && prov.montoContrato > 0) {
-                <div class="flex items-center gap-2 font-semibold text-slate-800 pt-1">
-                  <i class="pi pi-briefcase text-4xl text-slate-300 block mb-3"></i>
-                  <span>Contrato: ${{ prov.montoContrato | number:'1.0-0' }} MXN</span>
-                </div>
-              }
-            </div>
-
-            @if (prov.notas) {
-              <p class="text-xs text-slate-500 italic bg-slate-50 p-2.5 rounded-xl border border-slate-100 mb-3">
-                "{{ prov.notas }}"
-              </p>
+            @if (prov.telefono) {
+              <a [href]="'tel:' + prov.telefono"
+                class="flex items-center gap-2 text-gray-700 hover:text-gold-700 no-underline min-w-0 transition-colors">
+                <i class="pi pi-phone text-xs text-gray-400 w-4 text-center"></i>
+                <span class="truncate tabular-nums">{{ prov.telefono }}</span>
+              </a>
+            }
+            @if (prov.email) {
+              <a [href]="'mailto:' + prov.email"
+                class="flex items-center gap-2 text-gray-700 hover:text-gold-700 no-underline min-w-0 transition-colors">
+                <i class="pi pi-envelope text-xs text-gray-400 w-4 text-center"></i>
+                <span class="truncate">{{ prov.email }}</span>
+              </a>
+            }
+            @if (!prov.contactoNombre && !prov.telefono && !prov.email) {
+              <span class="text-xs text-gray-400 italic">Sin datos de contacto</span>
             }
           </div>
 
-          <!-- Botón de Contacto Directo por WhatsApp -->
-          <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
+          <!-- CONTRATO Y NOTAS -->
+          @if ((prov.montoContrato && prov.montoContrato > 0) || prov.notas) {
+            <div class="rounded-xl bg-gray-50/80 border border-gray-100 px-3 py-2.5 flex flex-col gap-1">
+              @if (prov.montoContrato && prov.montoContrato > 0) {
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-xs text-gray-500">Contrato</span>
+                  <span class="text-sm font-semibold text-gray-900 tabular-nums">${{ prov.montoContrato | number:'1.0-0' }} <span class="text-[11px] font-medium text-gray-400">MXN</span></span>
+                </div>
+              }
+              @if (prov.notas) {
+                <p class="text-xs text-gray-500 m-0 line-clamp-2" [pTooltip]="prov.notas" tooltipPosition="top">{{ prov.notas }}</p>
+              }
+            </div>
+          }
+
+          <!-- CONTACTO DIRECTO -->
+          <div class="mt-auto pt-3 border-t border-gray-100">
             @if (prov.telefono) {
-              <button pButton size="small"
-               
-                severity="success"
-                outlined="true"
+              <button pButton type="button" size="small" severity="success" [outlined]="true" class="w-full"
                 (click)="contactarWhatsApp(prov)">
-  <i class="pi pi-plus"></i>
-  <span>Contactar</span>
-</button>
+                <i class="pi pi-whatsapp"></i>
+                <span>Escribir por WhatsApp</span>
+              </button>
             } @else {
-              <span class="text-xs text-slate-400 block text-center py-1">Sin teléfono registrado</span>
+              <button pButton type="button" size="small" severity="secondary" [text]="true" class="w-full"
+                (click)="abrirModalProveedor(prov)">
+                <i class="pi pi-plus"></i>
+                <span>Agregar teléfono</span>
+              </button>
             }
           </div>
         </div>
       }
     </div>
   } @else {
-    <div class="bg-white rounded-2xl p-12 border border-slate-200 text-center">
-      <i class="pi pi-briefcase text-4xl text-slate-300 block mb-3"></i>
-      <h4>No hay proveedores registrados</h4>
-      <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-        Agrega al DJ, fotógrafo, banquetera, florista y salón para mantener todo tu equipo de trabajo organizado.
-      </p>
-      <div class="mt-4">
-        <button pButton severity="primary"
-         
-          (click)="abrirModalProveedor()">
-  <i class="pi pi-briefcase text-4xl text-slate-300 block mb-3"></i>
-  <span>Agregar Primer Proveedor</span>
-</button>
+    <div class="bg-white rounded-2xl border border-gray-100 flex flex-col items-center text-center py-12 px-4">
+      <div class="w-14 h-14 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300 mb-3">
+        <i [class]="proveedores().length === 0 ? 'pi pi-briefcase text-2xl' : 'pi pi-search text-2xl'"></i>
       </div>
+      @if (proveedores().length === 0) {
+        <span class="text-sm font-semibold text-gray-800">Aún no hay proveedores</span>
+        <span class="text-xs text-gray-500 mt-1 max-w-sm">
+          Agrega al DJ, fotógrafo, banquetera, florista y salón para tener a todo tu equipo a la mano.
+        </span>
+        <button pButton size="small" class="mt-4" (click)="abrirModalProveedor()">
+          <i class="pi pi-plus"></i>
+          <span>Agregar proveedor</span>
+        </button>
+      } @else {
+        <span class="text-sm font-semibold text-gray-800">Sin resultados</span>
+        <span class="text-xs text-gray-500 mt-1">No hay proveedores que coincidan con tu búsqueda o filtro.</span>
+      }
     </div>
   }
 </div>

@@ -594,8 +594,8 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   abrirModalDetalle(invitado: InvitadoModel): void {
     const ref = this.dialogService.open(InvitadoDetalleModalComponent, {
       header: 'Detalle del Invitado',
-      width: '1200px',
-      breakpoints: { '960px': '75vw', '640px': '92vw' },
+      width: '600px',
+      breakpoints: { '660px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: {

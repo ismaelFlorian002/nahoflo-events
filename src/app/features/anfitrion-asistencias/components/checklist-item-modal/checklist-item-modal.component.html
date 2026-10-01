@@ -1,119 +1,134 @@
-<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-12 gap-x-5 gap-y-7 pt-6">
+@let v = form.value;
+<form [formGroup]="form" (ngSubmit)="guardar()" class="flex flex-col gap-5 pt-2">
 
-  <!-- FILA 1: ETAPA / FASE (6 COLS) Y TÍTULO DE LA TAREA (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="fase"
-        inputId="fase"
-        [options]="fases"
-        formControlName="fase"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full"
-        placeholder="Seleccionar Etapa">
-      </p-select>
-      <label for="fase">Etapa / Fase del Evento *</label>
-    </p-floatlabel>
-  </div>
+  <!-- TAREA -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-check-square text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Tarea</h3>
+    </div>
 
-  <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="titulo"
-        type="text"
-        formControlName="titulo"
-        class="w-full"
-        autocomplete="off" />
-      <label for="titulo">Título de la Tarea *</label>
-    </p-floatlabel>
-    @if (form.get('titulo')?.touched && form.get('titulo')?.invalid) {
-      <span class="text-xs text-rose-500 font-semibold pl-1">El título es requerido (mínimo 3 caracteres).</span>
-    }
-  </div>
+    <div class="flex flex-col gap-1">
+      <p-floatlabel variant="on" class="block">
+        <input pInputText id="titulo" type="text" formControlName="titulo" class="w-full" autocomplete="off" />
+        <label for="titulo">¿Qué hay que hacer? *</label>
+      </p-floatlabel>
+      @if (form.get('titulo')?.touched && form.get('titulo')?.invalid) {
+        <span class="text-xs text-rose-500 pl-1">Escribe la tarea (mínimo 3 caracteres).</span>
+      } @else {
+        <span class="text-[11px] text-gray-400 pl-1">Ej. Reservar el salón, Contratar al fotógrafo.</span>
+      }
+    </div>
+  </section>
 
-  <!-- FILA 2: RESPONSABLE (6 COLS) Y PRIORIDAD (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="responsable"
-        inputId="responsable"
-        [options]="responsables"
-        formControlName="responsable"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full"
-        placeholder="Responsable">
-      </p-select>
-      <label for="responsable">Responsable Asignado</label>
-    </p-floatlabel>
-  </div>
+  <!-- ETAPA -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-calendar text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Etapa</h3>
+    </div>
 
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="prioridad"
-        inputId="prioridad"
-        [options]="prioridades"
-        formControlName="prioridad"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full"
-        placeholder="Prioridad">
-      </p-select>
-      <label for="prioridad">Nivel de Prioridad</label>
-    </p-floatlabel>
-  </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+      @for (f of fases; track f.value) {
+        @let activo = v.fase === f.value;
+        <button type="button"
+          class="flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium text-left cursor-pointer transition-colors"
+          [ngClass]="activo
+            ? 'bg-gold-50 border-gold-400 text-gold-700'
+            : 'bg-white border-gray-200 text-gray-600 hover:border-gold-200 hover:bg-gold-50/50'"
+          [attr.aria-pressed]="activo"
+          (click)="form.patchValue({ fase: f.value })">
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  </section>
 
-  <!-- FILA 3: FECHA LÍMITE (6 COLS) Y NOTAS (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-datepicker
-        id="fechaLimite"
-        inputId="fechaLimite"
-        formControlName="fechaLimite"
-        [showIcon]="true"
-        [iconDisplay]="'input'"
-        dateFormat="dd/mm/yy"
-        appendTo="body"
-        styleClass="w-full"
-        inputStyleClass="w-full">
+  <!-- RESPONSABLE Y PRIORIDAD -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-user text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Responsable</h3>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      @for (r of responsables; track r.value) {
+        @let activo = v.responsable === r.value;
+        <button type="button"
+          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors"
+          [ngClass]="activo
+            ? 'bg-gold-50 border-gold-400 text-gold-700'
+            : 'bg-white border-gray-200 text-gray-600 hover:border-gold-200 hover:bg-gold-50/50'"
+          [attr.aria-pressed]="activo"
+          (click)="form.patchValue({ responsable: r.value })">
+          @if (activo) {
+            <i class="pi pi-check text-[10px]"></i>
+          }
+          {{ r.label }}
+        </button>
+      }
+    </div>
+
+    <div class="flex flex-col gap-2 mt-1">
+      <span class="text-xs font-medium text-gray-500">Prioridad</span>
+      <div class="grid grid-cols-3 gap-2">
+        @for (p of prioridades; track p.value) {
+          @let activo = v.prioridad === p.value;
+          <button type="button"
+            class="flex items-center justify-center gap-1.5 rounded-xl border px-2 py-2 text-xs font-medium cursor-pointer transition-colors"
+            [ngClass]="activo
+              ? (p.value === 'alta' ? 'bg-rose-50 border-rose-300 text-rose-700'
+                : p.value === 'media' ? 'bg-amber-50 border-amber-300 text-amber-700'
+                : 'bg-sky-50 border-sky-300 text-sky-700')
+              : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'"
+            [attr.aria-pressed]="activo"
+            (click)="form.patchValue({ prioridad: p.value })">
+            <span class="w-2 h-2 rounded-full"
+              [ngClass]="p.value === 'alta' ? 'bg-rose-500' : p.value === 'media' ? 'bg-amber-500' : 'bg-sky-500'"></span>
+            {{ p.value === 'alta' ? 'Alta' : p.value === 'media' ? 'Media' : 'Baja' }}
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- DETALLES -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-file-edit text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Detalles</h3>
+      <span class="text-xs text-gray-400">Opcional</span>
+    </div>
+
+    <p-floatlabel variant="on" class="block">
+      <p-datepicker inputId="fechaLimite" formControlName="fechaLimite"
+        [showIcon]="true" iconDisplay="input" dateFormat="dd/mm/yy" appendTo="body" [fluid]="true">
       </p-datepicker>
-      <label for="fechaLimite">Fecha Límite Sugerida</label>
+      <label for="fechaLimite">Fecha límite</label>
     </p-floatlabel>
-  </div>
 
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="notas"
-        type="text"
-        formControlName="notas"
-        class="w-full"
-        autocomplete="off" />
-      <label for="notas">Notas / Instrucciones</label>
+    <p-floatlabel variant="on" class="block">
+      <textarea id="notas" pTextarea formControlName="notas" rows="2" class="w-full resize-none"></textarea>
+      <label for="notas">Notas o instrucciones</label>
     </p-floatlabel>
-  </div>
+  </section>
 
-  <!-- BOTONES DE ACCIÓN -->
-  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <button pButton type="button"
-     
-      severity="danger"
-      [text]="true"
-      size="small"
-      (click)="cancelar()">
-  <span>Cancelar</span>
-</button>
-
-    <button pButton type="submit"
-     
-     
-      size="small">
-  <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
-  <span>{{ esEdicion ? 'Actualizar Tarea' : 'Guardar Tarea' }}</span>
- </button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-end gap-2">
+    <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="cancelar()">
+      <span>Cancelar</span>
+    </button>
+    <button pButton type="submit" size="small">
+      <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+      <span>{{ esEdicion ? 'Guardar cambios' : 'Añadir tarea' }}</span>
+    </button>
   </div>
 </form>

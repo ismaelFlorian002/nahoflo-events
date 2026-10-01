@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { SelectModule } from 'primeng/select';
+import { TextareaModule } from 'primeng/textarea';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ProveedorEvento } from '../../../../core/models/event.model';
@@ -18,7 +18,7 @@ import { ProveedorEvento } from '../../../../core/models/event.model';
     ButtonModule,
     InputTextModule,
     InputNumberModule,
-    SelectModule,
+    TextareaModule,
     FloatLabelModule,
   ],
   templateUrl: './proveedor-modal.component.html',

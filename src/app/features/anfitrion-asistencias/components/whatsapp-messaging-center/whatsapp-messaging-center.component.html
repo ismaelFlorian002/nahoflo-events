@@ -1,173 +1,169 @@
-<div class="whatsapp-center-container flex flex-col gap-6">
+<div class="whatsapp-center-container flex flex-col gap-5">
 
-  <!-- CABECERA DE LA SECCIÓN (IDÉNTICA A RESUMEN Y CROQUIS) -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+  <!-- CABECERA -->
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+      <i class="pi pi-whatsapp"></i>
+    </div>
     <div>
-      <div class="flex items-center gap-2.5">
-        <h2 class="text-xl font-bold text-gray-900 m-0 flex items-center gap-2">
-          <i class="pi pi-whatsapp text-emerald-600 text-2xl"></i>
-          Centro de Mensajería WhatsApp
-        </h2>
-<!--        <p-badge value="WhatsApp Direct" severity="success" ></p-badge>-->
-      </div>
-      <p class="text-sm text-gray-500 m-0 mt-0.5">
-        Gestiona plantillas y envía invitaciones o recordatorios personalizados en 1-click.
-      </p>
+      <h2 class="text-lg font-semibold text-gray-900 m-0">Mensajes de WhatsApp</h2>
+      <p class="text-sm text-gray-500 m-0">Elige una plantilla, personalízala y envíala a cada invitado en un clic.</p>
     </div>
   </div>
 
-  <!-- SECCIÓN 1: CONFIGURACIÓN DE PLANTILLA Y VISTA PREVIA (2 COLUMNAS) -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+  <!-- PLANTILLA + VISTA PREVIA -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
-    <!-- COLUMNA 1: EDITOR DE PLANTILLA (7 COLS) -->
-    <div
-      class="lg:col-span-7 bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-5 sm:p-6 flex flex-col gap-4">
+    <!-- EDITOR -->
+    <section class="lg:col-span-7 bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col gap-4">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+          <i class="pi pi-pencil text-[11px]"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-gray-900 m-0">Mensaje</h3>
+      </div>
 
-      <!-- SELECTOR DE PLANTILLAS PRIMENG -->
-      <div>
-        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-          <i class="pi pi-bookmark text-gold-500"></i>
-          Plantilla Predefinida
-        </label>
+      <p-floatlabel variant="on" class="w-full block">
         <p-select
+          inputId="plantilla"
           [options]="opcionesPlantillas()"
           [ngModel]="plantillaSeleccionadaId()"
           (ngModelChange)="alCambiarPlantilla($event)"
           optionLabel="label"
           optionValue="value"
-          placeholder="Seleccionar plantilla..."
-          styleClass="w-full"
-        ></p-select>
+          class="w-full">
+        </p-select>
+        <label for="plantilla">Plantilla</label>
+      </p-floatlabel>
+
+      <div class="flex flex-col gap-1.5">
+        <p-floatlabel variant="on" class="w-full block">
+          <textarea
+            pTextarea
+            id="mensaje"
+            [autoResize]="true"
+            [ngModel]="mensajeTexto()"
+            (ngModelChange)="mensajeTexto.set($event)"
+            rows="7"
+            class="w-full text-sm leading-relaxed"></textarea>
+          <label for="mensaje">Texto del mensaje</label>
+        </p-floatlabel>
+        <small class="text-xs text-gray-400">Escribe entre *asteriscos* para poner texto en negrita.</small>
       </div>
 
-      <!-- TEXTAREA DE MENSAJE CON DIRECTIVA PRIMENG -->
-      <div>
-        <div class="flex items-center justify-between mb-1.5">
-          <label class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5 m-0">
-            <i class="pi pi-pencil text-gold-500"></i>
-            Mensaje de WhatsApp
-          </label>
-          <span class="text-[11px] text-gray-400 font-medium">Usa *asteriscos* para negrita</span>
+      <div class="flex flex-col gap-2 pt-3 border-t border-gray-100">
+        <span class="text-xs font-medium text-gray-500">Insertar dato del invitado o del evento</span>
+        <div class="flex flex-wrap gap-1.5">
+          @for (campo of opcionesCampos; track campo.value) {
+            <button type="button"
+              (click)="insertarCampo(campo.value)"
+              class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-gray-200 bg-white text-xs font-medium font-sans text-gray-600 cursor-pointer transition-colors hover:border-gold-300 hover:bg-gold-50 hover:text-gold-700">
+              <i class="pi pi-plus text-[9px]"></i>
+              {{ campo.value.slice(1, -1) }}
+            </button>
+          }
         </div>
+      </div>
+    </section>
 
-        <textarea
-          pTextarea
-          [autoResize]="true"
-          [ngModel]="mensajeTexto()"
-          (ngModelChange)="mensajeTexto.set($event)"
-          rows="6"
-          class="w-full text-xs font-sans p-3.5 rounded-xl border border-gray-300 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 text-gray-800 bg-gray-50/40 leading-relaxed shadow-xs"
-          placeholder="Escribe el mensaje de WhatsApp..."
-        ></textarea>
+    <!-- VISTA PREVIA -->
+    <section class="lg:col-span-5 bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col gap-4">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <i class="pi pi-eye text-[11px]"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-gray-900 m-0">Vista previa</h3>
       </div>
 
-      <!-- INSERTAR VARIABLE DINÁMICA VÍA PRIMENG DROPDOWN (SIN CÓDIGO BASURA) -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-gray-100">
-        <span class="text-xs font-semibold text-gray-600 flex items-center gap-1.5">
-          <i class="pi pi-plus-circle text-gold-500"></i>
-          Insertar campo dinámico:
-        </span>
+      <p-floatlabel variant="on" class="w-full block">
         <p-select
-          [options]="opcionesCampos"
-          [(ngModel)]="variableSeleccionada"
+          inputId="invitadoPreview"
+          [options]="opcionesInvitadosDropdown()"
+          [ngModel]="invitadoPreviewId()"
+          (ngModelChange)="invitadoPreviewId.set($event)"
           optionLabel="label"
           optionValue="value"
-          placeholder="Seleccionar variable..."
-          styleClass="w-full sm:w-64"
-          (onChange)="alSeleccionarVariable($event.value)"
-        ></p-select>
-      </div>
+          class="w-full"
+          [filter]="true"
+          filterBy="label"
+          emptyMessage="Sin invitados">
+        </p-select>
+        <label for="invitadoPreview">Ver como</label>
+      </p-floatlabel>
 
-    </div>
-
-    <!-- COLUMNA 2: VISTA PREVIA SOBRIA DEL TEXTO RESUELTO (5 COLS) -->
-    <div
-      class="lg:col-span-5 bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-5 sm:p-6 flex flex-col justify-between gap-4">
-
-      <div>
-        <!-- SELECTOR DE INVITADO PARA PREVIEW -->
-        <div class="mb-3">
-          <label
-            class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-            <i class="pi pi-eye text-emerald-600"></i>
-            Probar Vista Previa con Invitado
-          </label>
-          <p-select
-            [options]="opcionesInvitadosDropdown()"
-            [ngModel]="invitadoPreviewId()"
-            (ngModelChange)="invitadoPreviewId.set($event)"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="Seleccionar invitado de prueba..."
-            styleClass="w-full"
-            [filter]="true"
-            filterBy="label"
-            emptyMessage="Sin invitados"
-          ></p-select>
+      <!-- Chat -->
+      <div class="flex-1 rounded-xl bg-[#efeae2] p-3 flex flex-col gap-2 min-h-[220px] max-h-[340px] overflow-y-auto">
+        <div class="flex items-center gap-2 pb-2 border-b border-black/5">
+          <span class="w-7 h-7 rounded-full bg-white text-gold-700 text-xs font-semibold flex items-center justify-center shrink-0">
+            {{ (invitadoParaPreview().nombre || '?').trim().charAt(0).toUpperCase() }}
+          </span>
+          <span class="text-xs font-medium text-gray-700 truncate">{{ invitadoParaPreview().nombre }}</span>
         </div>
-
-        <!-- CUADRO DE VISTA PREVIA LIMPIO -->
-        <div class="bg-gray-50/70 border border-gray-200/80 rounded-xl p-4 max-h-[260px] overflow-y-auto">
-          <div
-            class="flex items-center gap-2 mb-2 pb-1.5 border-b border-gray-200/60 text-ms text-gray-500 font-medium">
-            <i class="pi pi-whatsapp text-emerald-600"></i>
-            <span>Para: <strong>{{ invitadoParaPreview().nombre }}</strong></span>
-          </div>
-          <div class="whitespace-pre-line text-xs text-gray-800 leading-relaxed font-sans">
-            {{ mensajeProcesadoPreview() }}
-          </div>
+        <div class="self-end max-w-[92%] rounded-xl rounded-tr-sm bg-[#d9fdd3] px-3 py-2 shadow-sm">
+          <p class="m-0 whitespace-pre-line text-[13px] leading-relaxed text-gray-800 break-words">{{ mensajeProcesadoPreview() }}</p>
+          <span class="flex items-center justify-end gap-1 mt-1 text-[10px] text-gray-500">
+            <i class="pi pi-check text-[9px] text-sky-500"></i>
+          </span>
         </div>
       </div>
 
-      <div class="flex justify-end">
-        <!-- ACCIÓN DE COPIAR TEXTO -->
-        <button pButton size="small"
-          text="true"
-          severity="secondary"
-          (click)="copiarTextoProcesado()"
-        >
-  <i class="pi pi-copy"></i>
-  <span>Copiar Texto de Vista Previa</span>
-</button>
+      <div class="flex items-center justify-end gap-2">
+        <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="copiarTextoProcesado()">
+          <i class="pi pi-copy"></i>
+          <span>Copiar</span>
+        </button>
+        @if (invitados.length > 0) {
+          <button pButton type="button" size="small" severity="success" (click)="lanzarWhatsApp(invitadoParaPreview())">
+            <i class="pi pi-whatsapp"></i>
+            <span>Enviar a este invitado</span>
+          </button>
+        }
       </div>
-
-
-    </div>
-
+    </section>
   </div>
 
-  <!-- SECCIÓN 2: DESTINATARIOS - TABLA PRIMENG MODERNA (IDÉNTICA A /ADMIN) -->
-  <div class="card-table-wrapper bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 overflow-hidden">
+  <!-- DESTINATARIOS -->
+  <div class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-send text-gold-500"></i>
+      <h3 class="m-0 text-sm font-semibold text-gray-900">Destinatarios</h3>
+    </div>
+
     <p-table
       #dt
       [value]="invitadosFiltrados()"
       [paginator]="true"
-      [rows]="10"
+      [rows]="5"
       [rowsPerPageOptions]="[5, 10, 20]"
-      styleClass="p-datatable-borderless modern-table w-full min-w-[700px]"
-      responsiveLayout="scroll"
-    >
-      <!-- TOOLBAR DE LA TABLA (Filtros a la izquierda, Buscador a la derecha como en /admin) -->
-      <ng-template #caption>
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-4">
+      styleClass="p-datatable-borderless modern-table w-full"
+      responsiveLayout="scroll">
 
-          <!-- FILTROS CORPORATIVOS (ESTADO) -->
-          <div class="flex flex-wrap items-center gap-2">
-            <!-- 1. FILTRO DE ESTADO (BOTÓN + OVERLAYPANEL) -->
+      <!-- BUSCADOR + FILTRO -->
+      <ng-template #caption>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <span class="p-input-icon-left w-full md:w-80">
+              <i class="pi pi-search text-gray-400"></i>
+              <input
+                pInputText
+                type="text"
+                class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+                [ngModel]="busqueda()"
+                (input)="onBusquedaChange($any($event.target).value, dt)"
+                placeholder="Buscar por nombre, teléfono o mesa..." />
+            </span>
+
             <div class="filtro-dropdown-wrap">
               <button pButton
-               
-                badgeClass="p-badge-secondary"
                 size="small"
                 [outlined]="filtroEstado() === 'todos'"
                 [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
                 (click)="opFiltrosEstado.toggle($event)"
                 title="Filtrar por estado del invitado">
-  <span>{{ 'Estado: ' + labelFiltroEstado() }}</span>
-  <span>{{ conteoFiltroEstado() }}</span>
-
-  <i class="pi pi-filter"></i>
- </button>
+                <span>{{ labelFiltroEstado() }}</span>
+                <span>{{ conteoFiltroEstado() }}</span>
+                <i class="pi pi-filter"></i>
+              </button>
 
               <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
                 <div class="menu-filtros-popover">
@@ -220,7 +216,7 @@
                       (click)="seleccionarFiltroEstado('sin_mesa', dt, opFiltrosEstado)">
                       <span class="filtro-item-left">
                         <i class="pi pi-exclamation-circle text-slate-500"></i>
-                        <span>Sin Mesa</span>
+                        <span>Sin mesa</span>
                       </span>
                       <span class="badge-filtro-cant">{{ totalSinMesa() }}</span>
                     </button>
@@ -228,45 +224,24 @@
                 </div>
               </p-popover>
             </div>
-
-            <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
-            <button pButton *ngIf="hayFiltrosActivos()"
-             
-             
-              size="small"
-              [text]="true"
-              severity="secondary"
-              (click)="limpiarTodosFiltros(dt)"
-              pTooltip="Restablecer todos los filtros"
-              tooltipPosition="top">
-  <i class="pi pi-filter-slash"></i>
-  <span>Limpiar filtros</span>
-</button>
           </div>
 
-          <!-- BÚSQUEDA GLOBAL (A LA DERECHA COMO EN /ADMIN) -->
-          <span class="p-input-icon-left w-full md:w-80">
-            <i class="pi pi-search text-gray-400"></i>
-            <input
-              pInputText
-              type="text"
-              class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
-              [ngModel]="busqueda()"
-              (input)="onBusquedaChange($any($event.target).value, dt)"
-              placeholder="Buscar por nombre, teléfono o mesa..." />
-          </span>
-
+          @if (hayFiltrosActivos()) {
+            <button pButton size="small" severity="secondary" [text]="true" (click)="limpiarTodosFiltros(dt)">
+              <i class="pi pi-filter-slash"></i>
+              <span>Limpiar filtros</span>
+            </button>
+          }
         </div>
       </ng-template>
 
-      <!-- CABECERAS MINIMALISTAS CON SORT -->
+      <!-- CABECERAS -->
       <ng-template #header>
         <tr>
-          <th pSortableColumn="nombre">Invitado / Familia
+          <th pSortableColumn="nombre">Invitado
             <p-sort-icon field="nombre"></p-sort-icon>
           </th>
-          <th>Teléfono WhatsApp</th>
-          <th pSortableColumn="estado">Estado
+          <th pSortableColumn="estado">Respuesta
             <p-sort-icon field="estado"></p-sort-icon>
           </th>
           <th pSortableColumn="pasesConfirmados" style="text-align: center;">Pases
@@ -279,112 +254,95 @@
         </tr>
       </ng-template>
 
+      <!-- FILAS -->
       <ng-template #body let-inv>
         <tr>
-          <!-- Nombre -->
           <td>
-            <strong class="text-gray-900 text-xs sm:text-sm">{{ inv.nombre }}</strong>
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-9 h-9 rounded-full bg-gold-50 text-gold-700 text-sm font-semibold flex items-center justify-center shrink-0 select-none">
+                {{ (inv.nombre || '?').trim().charAt(0).toUpperCase() }}
+              </span>
+              <div class="min-w-0">
+                <span class="block text-sm font-semibold text-gray-900 truncate">{{ inv.nombre }}</span>
+                @if (inv.telefono) {
+                  <span class="inline-flex items-center gap-1 text-xs text-gray-400">
+                    <i class="pi pi-whatsapp text-[11px]"></i>{{ inv.telefono }}
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center gap-1 text-xs text-amber-600">
+                    <i class="pi pi-exclamation-circle text-[11px]"></i>Sin teléfono
+                  </span>
+                }
+              </div>
+            </div>
           </td>
 
-          <!-- Teléfono -->
           <td>
-            @if (inv.telefono) {
-              <span class=" text-sm text-gray-700 flex items-center gap-1">
-                <i class="pi pi-phone text-emerald-600 text-sm"></i>
-                {{ inv.telefono }}
-              </span>
+            @if (inv.estado === 'declinado') {
+              <p-tag value="No asiste" severity="danger" icon="pi pi-times" [rounded]="true" />
+            } @else if (inv.estado === 'confirmado' || inv.asistira) {
+              <p-tag value="Confirmado" severity="success" icon="pi pi-check" [rounded]="true" />
             } @else {
-              <span class=" text-gray-400 italic">Sin teléfono</span>
+              <p-tag value="Pendiente" severity="warn" icon="pi pi-clock" [rounded]="true" />
             }
           </td>
 
-          <!-- Estado -->
-          <td>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize"
-                  [ngClass]="{
-          'bg-emerald-50 text-emerald-700 border border-emerald-100': inv.estado === 'confirmado' || inv.asistira,
-          'bg-amber-50 text-amber-700 border border-amber-200': inv.estado === 'pendiente' || (!inv.asistira && inv.estado !== 'declinado'),
-          'bg-red-50 text-red-700 border border-red-200': inv.estado === 'declinado'
-        }">
-        {{ inv.estado || 'Pendiente' }}
-      </span>
-          </td>
-
-          <!-- Pases -->
           <td style="text-align: center;">
-            <span
-             >
-              {{ inv.pasesConfirmados || 1 }} {{ (inv.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
+            <span class="inline-flex items-center gap-1 text-sm font-semibold text-gray-700 tabular-nums">
+              <i class="pi pi-ticket text-[11px] text-gray-400"></i>{{ inv.pasesConfirmados || 1 }}
             </span>
           </td>
 
-          <!-- Mesa -->
           <td>
             @if (inv.mesa) {
-              <span
-                class="text-sm px-2 py-0.5 rounded-full font-medium bg-amber-50 text-amber-800 border border-amber-200">
-                {{ inv.mesa }}
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-xs font-medium">
+                <i class="pi pi-th-large text-[10px]"></i>{{ inv.mesa }}
               </span>
             } @else {
-              <span>Sin mesa</span>
+              <span class="text-xs text-gray-400 italic">Sin mesa</span>
             }
           </td>
 
-          <!-- Acciones -->
           <td style="text-align: right;">
-            <div class="flex items-center justify-end gap-1">
-              <!-- Botón Copiar Texto Resuelto para este invitado -->
-              <button pButton size="small"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                pTooltip="Copiar mensaje"
-                tooltipPosition="top"
-                (click)="copiarTextoInvitado(inv)"
-              >
-  <i class="pi pi-copy"></i>
-</button>
-
-              <!-- Botón Ver/Personalizar en Modal DialogService -->
-              <button pButton size="small"
-                [rounded]="true"
-                [text]="true"
-                severity="secondary"
-                pTooltip="Personalizar antes de enviar"
-                tooltipPosition="top"
-                (click)="abrirModalMensajeInvitado(inv)"
-              >
-  <i class="pi pi-pencil"></i>
-</button>
-
-              <!-- Botón Enviar Directo -->
-              <button pButton size="small"
-                text
-                severity="success"
-               
-                pTooltip="Abrir WhatsApp con mensaje personalizado"
-                tooltipPosition="top"
-                (click)="lanzarWhatsApp(inv)"
-              >
-  <i class="pi pi-whatsapp"></i>
-  <span>Enviar</span>
-</button>
+            <div class="inline-flex items-center justify-end gap-0.5">
+              <button pButton type="button" size="small" [rounded]="true" [text]="true" severity="secondary"
+                pTooltip="Copiar mensaje" tooltipPosition="top"
+                [attr.aria-label]="'Copiar mensaje para ' + inv.nombre"
+                (click)="copiarTextoInvitado(inv)">
+                <i class="pi pi-copy"></i>
+              </button>
+              <button pButton type="button" size="small" [rounded]="true" [text]="true" severity="secondary"
+                pTooltip="Personalizar antes de enviar" tooltipPosition="top"
+                [attr.aria-label]="'Personalizar mensaje para ' + inv.nombre"
+                (click)="abrirModalMensajeInvitado(inv)">
+                <i class="pi pi-pencil"></i>
+              </button>
+              <span class="w-px h-5 bg-gray-200 mx-1"></span>
+              <button pButton type="button" size="small" severity="success" [outlined]="true"
+                pTooltip="Abrir WhatsApp con el mensaje" tooltipPosition="top"
+                (click)="lanzarWhatsApp(inv)">
+                <i class="pi pi-whatsapp"></i>
+                <span>Enviar</span>
+              </button>
             </div>
           </td>
         </tr>
       </ng-template>
 
-      <!-- EMPTY STATE -->
+      <!-- ESTADO VACÍO -->
       <ng-template #emptymessage>
         <tr>
-          <td colspan="6" class="text-center py-8 text-gray-400">
-            <i class="pi pi-inbox text-2xl mb-1 block text-gray-300"></i>
-            <p class="text-xs font-medium m-0">No se encontraron invitados con este filtro o búsqueda.</p>
+          <td colspan="5">
+            <div class="flex flex-col items-center text-center py-10 px-4">
+              <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300 mb-3">
+                <i class="pi pi-search text-xl"></i>
+              </div>
+              <span class="text-sm font-semibold text-gray-800">Sin resultados</span>
+              <span class="text-xs text-gray-500 mt-1">No hay invitados que coincidan con tu búsqueda o filtro.</span>
+            </div>
           </td>
         </tr>
       </ng-template>
     </p-table>
-
   </div>
-
 </div>

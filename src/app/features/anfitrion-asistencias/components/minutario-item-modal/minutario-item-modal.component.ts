@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
-import { SelectModule } from 'primeng/select';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { ItemMinutario } from '../../../../core/models/event.model';
@@ -18,7 +17,6 @@ import { ItemMinutario } from '../../../../core/models/event.model';
     ButtonModule,
     InputTextModule,
     TextareaModule,
-    SelectModule,
     FloatLabelModule,
   ],
   templateUrl: './minutario-item-modal.component.html',

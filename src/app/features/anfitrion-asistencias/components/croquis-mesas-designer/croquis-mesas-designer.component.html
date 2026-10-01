@@ -1,283 +1,254 @@
-<div class="croquis-container flex flex-col gap-6">
+<div class="croquis-container flex flex-col gap-5">
 
-  <!-- CABECERA DE LA SECCIÓN (IDÉNTICA AL FORMATO DE RESUMEN) -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-    <div>
-      <div class="flex items-center gap-2.5">
-        <h2 class="text-xl font-bold text-gray-900 m-0">Plano Visual & Croquis de Mesas</h2>
-        <span>
-          {{ totalMesas() }} {{ totalMesas() === 1 ? 'mesa' : 'mesas' }}
-        </span>
-      </div>
-      <p class="text-sm text-gray-500 m-0 mt-0.5">
-        Diseña la distribución del salón, asigna lugares a tus invitados y monitorea restricciones médicas en tiempo real.
-      </p>
-    </div>
-
-    <!-- BOTONES DE ACCIÓN PRINCIPALES -->
-    <div class="flex flex-wrap items-center gap-2">
-      <button pButton size="small"
-        [outlined]="true"
-        severity="secondary"
-        pTooltip="Crear mesas automáticamente según los nombres asignados a los invitados"
-        tooltipPosition="bottom"
-        (click)="autogenerarMesasIniciales(true)">
-  <i class="pi pi-sync"></i>
-  <span>Autogenerar Mesas</span>
-</button>
-
-      <button pButton size="small"
-       
-        (click)="abrirModalMesa()">
-  <i class="pi pi-plus"></i>
-  <span>Nueva Mesa</span>
-</button>
-    </div>
-  </div>
-
-  <!-- TARJETAS KPIS / TARGETS (COMPACTAS Y DELGADAS) -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-    <!-- 1. Total Mesas -->
-    <div class="bg-white rounded-xl shadow-2xs border border-gray-100 p-3.5 flex items-center gap-3.5">
-      <div class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center shrink-0 text-base">
+  <!-- CABECERA -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
         <i class="pi pi-th-large"></i>
       </div>
-      <div class="min-w-0 flex-1">
-        <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block truncate">Total Mesas</span>
-        <div class="flex items-baseline gap-1.5 mt-0.5">
-          <span>{{ totalMesas() }}</span>
-          <span class="text-xs text-gray-400 font-normal truncate">({{ totalCapacidad() }} asientos)</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 2. Asientos Ocupados -->
-    <div class="bg-white rounded-xl shadow-2xs border border-gray-100 p-3.5 flex items-center gap-3.5">
-      <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 text-base">
-        <i class="pi pi-users"></i>
-      </div>
-      <div class="min-w-0 flex-1">
-        <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block truncate">Asientos Ocupados</span>
-        <div class="flex items-baseline gap-1.5 mt-0.5">
-          <span>{{ totalAsientosOcupados() }}</span>
-          <span class="text-xs font-medium text-emerald-600 truncate">/ {{ totalCapacidad() }} ({{ porcentajeOcupacion() }}%)</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- 3. Sin Mesa -->
-    <div class="bg-white rounded-xl shadow-2xs border border-gray-100 p-3.5 flex items-center gap-3.5">
-      <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 text-base">
-        <i class="pi pi-user-minus"></i>
-      </div>
-      <div class="min-w-0 flex-1">
-        <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block truncate">Sin Mesa</span>
-        <div class="flex items-baseline gap-1.5 mt-0.5">
-          <span>{{ invitadosSinMesa().length }}</span>
-          <span class="text-xs font-medium truncate" [ngClass]="invitadosSinMesa().length > 0 ? 'text-amber-600' : 'text-gray-400'">
-            {{ invitadosSinMesa().length === 1 ? '1 por ubicar' : 'por ubicar' }}
+      <div>
+        <div class="flex items-center gap-2">
+          <h2 class="text-lg font-semibold text-gray-900 m-0">Mesas</h2>
+          <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+            {{ totalMesas() }} {{ totalMesas() === 1 ? 'mesa' : 'mesas' }}
           </span>
         </div>
+        <p class="text-sm text-gray-500 m-0">Distribución del salón y lugar de cada invitado.</p>
       </div>
     </div>
 
-    <!-- 4. Alertas Médicas -->
-    <div class="bg-white rounded-xl shadow-2xs border border-gray-100 p-3.5 flex items-center gap-3.5">
-      <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center shrink-0 text-base">
-        <i class="pi pi-exclamation-triangle"></i>
-      </div>
-      <div class="min-w-0 flex-1">
-        <span class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider block truncate">Alertas Médicas</span>
-        <div class="flex items-baseline gap-1.5 mt-0.5">
-          <span [ngClass]="totalAlergias() > 0 ? 'text-red-500' : 'text-gray-900'">
-            {{ totalAlergias() }}
-          </span>
-          <span class="text-xs font-medium truncate" [ngClass]="totalAlergias() > 0 ? 'text-red-500' : 'text-gray-400'">
-            {{ totalAlergias() === 1 ? 'restricción' : 'restricciones' }}
-          </span>
-        </div>
-      </div>
+    <div class="flex items-center gap-2">
+      <button pButton size="small" severity="secondary" [text]="true"
+        pTooltip="Crea mesas a partir de las mesas que ya tienen asignadas tus invitados"
+        tooltipPosition="bottom"
+        (click)="autogenerarMesasIniciales(true)">
+        <i class="pi pi-sync"></i>
+        <span class="hidden sm:inline">Autogenerar</span>
+      </button>
+      <button pButton size="small" (click)="abrirModalMesa()">
+        <i class="pi pi-plus"></i>
+        <span>Nueva mesa</span>
+      </button>
     </div>
-
   </div>
 
-  <!-- PLANO DEL SALÓN DE RECEPCIÓN (ANCHO COMPLETO) -->
-  <div class="w-full bg-white rounded-2xl shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-gray-100 p-5 sm:p-6 flex flex-col">
+  <!-- INDICADORES -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-th-large text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight">{{ totalMesas() }}</span>
+        <span class="block text-xs text-gray-500 truncate">Mesas · {{ totalCapacidad() }} asientos</span>
+      </div>
+    </div>
 
-    <!-- LEYENDA Y CONTROL SUPERIOR -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-6 border-b border-gray-100">
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-users text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight">
+          {{ totalAsientosOcupados() }}<span class="text-sm font-medium text-gray-400"> / {{ totalCapacidad() }}</span>
+        </span>
+        <span class="block text-xs text-gray-500 truncate">Ocupados · {{ porcentajeOcupacion() }}%</span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-user-minus text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-lg font-bold tabular-nums leading-tight"
+          [ngClass]="invitadosSinMesa().length > 0 ? 'text-amber-600' : 'text-gray-900'">
+          {{ invitadosSinMesa().length }}
+        </span>
+        <span class="block text-xs text-gray-500 truncate">Sin mesa asignada</span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
+        <i class="pi pi-exclamation-triangle text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-lg font-bold tabular-nums leading-tight"
+          [ngClass]="totalAlergias() > 0 ? 'text-rose-500' : 'text-gray-900'">
+          {{ totalAlergias() }}
+        </span>
+        <span class="block text-xs text-gray-500 truncate">{{ totalAlergias() === 1 ? 'Alergia o restricción' : 'Alergias o restricciones' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANO DEL SALÓN -->
+  <div class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col gap-5">
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div class="flex items-center gap-2">
         <i class="pi pi-compass text-gold-500"></i>
-        <span class="text-ms font-semibold text-gray-800 uppercase tracking-wider">
-          Plano del Salón de Recepción
-        </span>
+        <h3 class="m-0 text-sm font-semibold text-gray-900">Plano del salón</h3>
       </div>
-      <div class="text-xs font-medium text-gray-500 flex items-center gap-3">
-        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Disponible</span>
-        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500 inline-block"></span> Sobrecupo</span>
-        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gold-500 inline-block"></span> Novios / Anfitriones</span>
+      <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+        <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span>Disponible</span>
+        <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500"></span>Sobrecupo</span>
+        <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-gold-500"></span>Novios / anfitriones</span>
       </div>
     </div>
 
-    <!-- PISTA DE BAILE / ESCENARIO PRINCIPAL (LUXURY DARK & GOLD COMO EVENTO-DETALLE) -->
-    <div class="w-full max-w-md mx-auto  text-gold-700 font-bold tracking-widest text-xs uppercase shadow-sm rounded-xl p-3 text-center mb-8 border border-gold-500/30 flex items-center justify-center gap-2">
-      <i class="pi pi-star-fill text-gold-400 text-xs"></i>
-      <span>Pista de Baile / Escenario Principal</span>
-      <i class="pi pi-star-fill text-gold-400 text-xs"></i>
+    <!-- Pista / escenario -->
+    <div class="w-full max-w-md mx-auto rounded-xl border border-dashed border-gold-300 bg-gold-50/60 py-2.5 text-center">
+      <span class="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-700">
+        <i class="pi pi-star-fill text-[10px] text-gold-400"></i>
+        Pista de baile · Escenario
+        <i class="pi pi-star-fill text-[10px] text-gold-400"></i>
+      </span>
     </div>
 
-    <!-- MENSAJE VACÍO SI AÚN NO HAY MESAS -->
     @if (mesas().length === 0) {
-      <div class="text-center py-16 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200 p-8 my-auto">
-        <div class="w-14 h-14 rounded-2xl bg-gold-50 text-gold-600 flex items-center justify-center mx-auto text-2xl mb-3 shadow-xs">
-          <i class="pi pi-th-large"></i>
+      <div class="flex flex-col items-center text-center py-12 px-4 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+        <div class="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gold-500 mb-3">
+          <i class="pi pi-th-large text-2xl"></i>
         </div>
-        <h3 class="text-base font-bold text-gray-800 mb-1">El croquis aún no tiene mesas configuradas</h3>
-        <p class="text-xs text-gray-500 max-w-sm mx-auto mb-5">
-          Crea tus mesas manualmente o presiona "Autogenerar Mesas" para crearlas según los nombres de mesa asignados a tus invitados.
-        </p>
-        <button pButton size="small"
-         
-          (click)="abrirModalMesa()"
-        >
-  <i class="pi pi-plus"></i>
-  <span>Crear Primera Mesa</span>
-</button>
+        <span class="text-sm font-semibold text-gray-800">Aún no hay mesas</span>
+        <span class="text-xs text-gray-500 mt-1 max-w-sm">
+          Crea tus mesas una por una o usa "Autogenerar" para crearlas con las mesas que ya tienen asignadas tus invitados.
+        </span>
+        <button pButton size="small" class="mt-4" (click)="abrirModalMesa()">
+          <i class="pi pi-plus"></i>
+          <span>Crear primera mesa</span>
+        </button>
       </div>
     } @else {
-      <!-- GRID DE TARJETAS DE MESAS -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
         @for (m of mesas(); track m.id) {
-          <div
+          @let ocupados = obtenerAsientosOcupadosMesa(m.nombre);
+          @let comensales = obtenerInvitadosMesa(m.nombre);
+          @let esPrincipal = m.forma === 'imperial' || m.nombre.toLowerCase().includes('novio');
+          @let sobrecupo = ocupados > m.capacidad;
+
+          <button type="button"
             (click)="abrirModalDetalleMesa(m)"
-            class="bg-white rounded-xl border transition-all duration-200 shadow-sm hover:shadow-md cursor-pointer p-4 relative group flex flex-col justify-between hover:border-gold-400"
-            [ngClass]="{
-              'border-gold-400 bg-gold-50/15 ring-1 ring-gold-400/20': m.forma === 'imperial' || m.nombre.toLowerCase().includes('novio'),
-              'border-gray-200': m.forma !== 'imperial' && !m.nombre.toLowerCase().includes('novio') && obtenerAsientosOcupadosMesa(m.nombre) <= m.capacidad,
-              'border-red-300 bg-red-50/20 ring-1 ring-red-400/20': obtenerAsientosOcupadosMesa(m.nombre) > m.capacidad
-            }"
-          >
-            <!-- BADGE DE ALERTA MÉDICA (ESTILO PASTEL-PINK DE DETALLE EVENTO) -->
+            class="group relative text-left font-sans bg-white rounded-xl border p-4 flex flex-col gap-3 cursor-pointer transition-all hover:shadow-md"
+            [ngClass]="sobrecupo
+              ? 'border-rose-200 hover:border-rose-300'
+              : esPrincipal ? 'border-gold-300 bg-gold-50/30 hover:border-gold-400' : 'border-gray-200 hover:border-gold-300'">
+
             @if (tieneAlergiasMesa(m.nombre)) {
-              <div
-                class="absolute -top-2.5 -right-2 bg-pastel-pink-50 text-pastel-pink-500 border border-pastel-pink-200 px-2 py-0.5 rounded-full text-[10px] font-bold shadow-xs flex items-center gap-1"
-                pTooltip="Comensales con restricciones o alergias alimentarias"
-                tooltipPosition="top"
-              >
-                <i class="pi pi-heart-fill text-[9px]"></i> Alergia
-              </div>
+              <span class="absolute -top-2 right-3 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-50 border border-rose-200 text-rose-500 text-[10px] font-semibold"
+                pTooltip="Hay comensales con alergias o restricciones" tooltipPosition="top">
+                <i class="pi pi-exclamation-triangle text-[9px]"></i> Alergia
+              </span>
             }
 
-            <!-- ENCABEZADO DE LA MESA -->
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span [ngSwitch]="m.forma" class="text-base shrink-0">
-                    <span *ngSwitchCase="'redonda'">🔴</span>
-                    <span *ngSwitchCase="'rectangular'">🟦</span>
-                    <span *ngSwitchCase="'imperial'">👑</span>
-                    <span *ngSwitchCase="'cabaret'">🌙</span>
-                    <span *ngSwitchDefault>🔘</span>
-                  </span>
-                  <span class="font-bold text-gray-900 text-sm group-hover:text-gold-600 transition-colors truncate">
-                    {{ m.nombre }}
-                  </span>
-                </div>
-
-                <!-- BADGE DE CAPACIDAD -->
-                <span
-                  class="px-2 py-0.5 rounded-full text-xs font-semibold shrink-0"
-                  [ngClass]="{
-                    'bg-emerald-50 text-emerald-700 border border-emerald-200': obtenerAsientosOcupadosMesa(m.nombre) <= m.capacidad && obtenerAsientosOcupadosMesa(m.nombre) > 0,
-                    'bg-gray-100 text-gray-500 border border-gray-200': obtenerAsientosOcupadosMesa(m.nombre) === 0,
-                    'bg-red-50 text-red-600 border border-red-200': obtenerAsientosOcupadosMesa(m.nombre) > m.capacidad
-                  }"
-                >
-                  {{ obtenerAsientosOcupadosMesa(m.nombre) }} / {{ m.capacidad }}
+            <!-- Encabezado -->
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                  [ngClass]="esPrincipal ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-500'">
+                  @switch (m.forma) {
+                    @case ('rectangular') { <i class="pi pi-stop text-xs"></i> }
+                    @case ('imperial') { <i class="pi pi-star-fill text-xs"></i> }
+                    @case ('cabaret') { <i class="pi pi-moon text-xs"></i> }
+                    @default { <i class="pi pi-circle text-xs"></i> }
+                  }
+                </span>
+                <span class="min-w-0">
+                  <span class="block text-sm font-semibold text-gray-900 truncate group-hover:text-gold-700 transition-colors">{{ m.nombre }}</span>
+                  <span class="block text-[11px] text-gray-400 capitalize">{{ m.forma || 'redonda' }}</span>
                 </span>
               </div>
 
-              <!-- BARRA DE OCUPACIÓN -->
-              <div class="w-full bg-gray-100 rounded-full h-1.5 mb-3 overflow-hidden">
-                <div
-                  class="h-full rounded-full transition-all duration-300"
-                  [ngClass]="{
-                    'bg-gold-500': m.forma === 'imperial' || m.nombre.toLowerCase().includes('novio'),
-                    'bg-emerald-500': m.forma !== 'imperial' && obtenerAsientosOcupadosMesa(m.nombre) <= m.capacidad,
-                    'bg-red-500': obtenerAsientosOcupadosMesa(m.nombre) > m.capacidad
-                  }"
-                  [style.width.%]="Math.min(100, (obtenerAsientosOcupadosMesa(m.nombre) / m.capacidad) * 100)"
-                ></div>
-              </div>
-
-              <!-- VISTA PREVIA DE COMENSALES SENTADOS -->
-              <div class="flex flex-col gap-1.5 mt-2">
-                @for (inv of obtenerInvitadosMesa(m.nombre).slice(0, 3); track inv.id) {
-                  <div class="text-xs flex items-center justify-between p-1.5 px-2.5 rounded-lg bg-gray-50 text-gray-700 font-medium border border-gray-100">
-                    <span class="truncate max-w-[130px] font-medium">{{ inv.nombre }}</span>
-                    <span class="text-[10px] font-semibold text-gray-500 shrink-0">🎟️ {{ inv.pasesConfirmados || 1 }}</span>
-                  </div>
-                }
-
-                @if (obtenerInvitadosMesa(m.nombre).length > 3) {
-                  <div class="text-[11px] font-semibold text-gold-600 text-center pt-0.5">
-                    + {{ obtenerInvitadosMesa(m.nombre).length - 3 }} invitados más...
-                  </div>
-                }
-
-                @if (obtenerInvitadosMesa(m.nombre).length === 0) {
-                  <div class="text-[11px] text-gray-400 text-center py-2 italic font-normal">
-                    Sin comensales asignados
-                  </div>
-                }
-              </div>
+              <span class="px-2 py-0.5 rounded-full text-xs font-semibold tabular-nums shrink-0"
+                [ngClass]="sobrecupo
+                  ? 'bg-rose-50 text-rose-600'
+                  : ocupados === 0 ? 'bg-gray-100 text-gray-500' : 'bg-emerald-50 text-emerald-700'">
+                {{ ocupados }}/{{ m.capacidad }}
+              </span>
             </div>
 
-            <!-- PIE DE TARJETA CON ENLACE DE DETALLE -->
-            <div class="mt-3 pt-2.5 border-t border-gray-100 flex items-center justify-between text-xs text-gold-600 font-semibold group-hover:translate-x-0.5 transition-transform">
-              <span>Ver y acomodar comensales</span>
-              <i class="pi pi-arrow-right text-[11px]"></i>
+            <!-- Ocupación -->
+            <div class="w-full h-1.5 rounded-full bg-gray-100 overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300"
+                [ngClass]="sobrecupo ? 'bg-rose-500' : esPrincipal ? 'bg-gold-500' : 'bg-emerald-500'"
+                [style.width.%]="Math.min(100, (ocupados / m.capacidad) * 100)"></div>
             </div>
-          </div>
+
+            <!-- Comensales -->
+            <div class="flex flex-col gap-1 flex-1">
+              @for (inv of comensales.slice(0, 3); track inv.id) {
+                <div class="flex items-center gap-2 text-xs">
+                  <span class="w-5 h-5 rounded-full bg-gold-50 text-gold-700 text-[10px] font-semibold flex items-center justify-center shrink-0">
+                    {{ (inv.nombre || '?').trim().charAt(0).toUpperCase() }}
+                  </span>
+                  <span class="flex-1 min-w-0 truncate text-gray-700">{{ inv.nombre }}</span>
+                  <span class="inline-flex items-center gap-0.5 text-[11px] text-gray-400 tabular-nums shrink-0">
+                    <i class="pi pi-ticket text-[9px]"></i>{{ inv.pasesConfirmados || 1 }}
+                  </span>
+                </div>
+              }
+              @if (comensales.length > 3) {
+                <span class="text-[11px] font-medium text-gold-600 pl-7">+{{ comensales.length - 3 }} más</span>
+              }
+              @if (comensales.length === 0) {
+                <span class="text-xs text-gray-400 italic py-2 text-center">Sin comensales</span>
+              }
+            </div>
+
+            <span class="flex items-center justify-between pt-2.5 border-t border-gray-100 text-xs font-medium text-gray-500 group-hover:text-gold-700 transition-colors">
+              Acomodar comensales
+              <i class="pi pi-arrow-right text-[10px] group-hover:translate-x-0.5 transition-transform"></i>
+            </span>
+          </button>
         }
       </div>
     }
   </div>
 
-  <!-- SECCIÓN: LISTA DE ASIGNACIÓN DE MESAS - TABLA PRIMENG MODERNA -->
-  <div class="card-table-wrapper bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 overflow-hidden flex flex-col">
+  <!-- ASIGNACIÓN DE MESAS -->
+  <div class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <i class="pi pi-list text-gold-500"></i>
+      <h3 class="m-0 text-sm font-semibold text-gray-900">Asignación de mesas</h3>
+    </div>
 
     <p-table
       #dt
       [value]="invitadosFiltrados()"
       [paginator]="true"
-      [rows]="10"
+      [rows]="5"
       [rowsPerPageOptions]="[5, 10, 20, 50]"
-      styleClass="p-datatable-borderless modern-table w-full min-w-[720px]"
-      responsiveLayout="scroll"
-    >
-      <!-- TOOLBAR DE LA TABLA (Filtros a la izquierda, Buscador a la derecha como en WA y Admin) -->
-      <ng-template #caption>
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-gray-100 mb-2">
+      styleClass="p-datatable-borderless modern-table w-full"
+      responsiveLayout="scroll">
 
-          <!-- FILTROS CORPORATIVOS (ESTADO) -->
-          <div class="flex flex-wrap items-center gap-2">
-            <!-- 1. FILTRO DE ESTADO (BOTÓN + OVERLAYPANEL) -->
+      <!-- BUSCADOR + FILTRO -->
+      <ng-template #caption>
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <span class="p-input-icon-left w-full md:w-80">
+              <i class="pi pi-search text-gray-400"></i>
+              <input
+                pInputText
+                type="text"
+                class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+                [ngModel]="busqueda()"
+                (input)="onBusquedaChange($any($event.target).value, dt)"
+                placeholder="Buscar por nombre, teléfono o mesa..." />
+            </span>
+
             <div class="filtro-dropdown-wrap">
               <button pButton
-               
-                badgeClass="p-badge-secondary"
                 size="small"
                 [outlined]="filtroEstado() === 'todos'"
                 [severity]="filtroEstado() !== 'todos' ? 'primary' : 'secondary'"
                 (click)="opFiltrosEstado.toggle($event)"
                 title="Filtrar por estado del invitado">
-  <span>{{ 'Estado: ' + labelFiltroEstado() }}</span>
-  <span>{{ conteoFiltroEstado() }}</span>
-
-  <i class="pi pi-filter"></i>
- </button>
+                <span>{{ labelFiltroEstado() }}</span>
+                <span>{{ conteoFiltroEstado() }}</span>
+                <i class="pi pi-filter"></i>
+              </button>
 
               <p-popover #opFiltrosEstado styleClass="popover-filtros-invitados">
                 <div class="menu-filtros-popover">
@@ -306,7 +277,7 @@
                       (click)="seleccionarFiltroEstado('sin_mesa', dt, opFiltrosEstado)">
                       <span class="filtro-item-left">
                         <i class="pi pi-exclamation-circle text-amber-500"></i>
-                        <span>Sin Mesa</span>
+                        <span>Sin mesa</span>
                       </span>
                       <span class="badge-filtro-cant">{{ totalSinMesa() }}</span>
                     </button>
@@ -338,44 +309,25 @@
                 </div>
               </p-popover>
             </div>
-
-            <!-- BOTÓN RESTABLECER FILTROS -->
-            @if (hayFiltrosActivos()) {
-              <button pButton size="small"
-                [text]="true"
-                severity="secondary"
-                (click)="limpiarTodosFiltros(dt)"
-                pTooltip="Restablecer todos los filtros"
-                tooltipPosition="top">
-  <i class="pi pi-filter-slash"></i>
-  <span>Limpiar filtros</span>
-</button>
-            }
           </div>
 
-          <!-- BÚSQUEDA GLOBAL -->
-          <span class="p-input-icon-left w-full md:w-80">
-            <i class="pi pi-search text-gray-400"></i>
-            <input
-              pInputText
-              type="text"
-              class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
-              [ngModel]="busqueda()"
-              (input)="onBusquedaChange($any($event.target).value, dt)"
-              placeholder="Buscar por nombre, teléfono o mesa..." />
-          </span>
-
+          @if (hayFiltrosActivos()) {
+            <button pButton size="small" severity="secondary" [text]="true"
+              (click)="limpiarTodosFiltros(dt)">
+              <i class="pi pi-filter-slash"></i>
+              <span>Limpiar filtros</span>
+            </button>
+          }
         </div>
       </ng-template>
 
-      <!-- CABECERAS MINIMALISTAS CON SORT -->
+      <!-- CABECERAS -->
       <ng-template #header>
         <tr>
-          <th pSortableColumn="nombre">Invitado / Familia
+          <th pSortableColumn="nombre">Invitado
             <p-sort-icon field="nombre"></p-sort-icon>
           </th>
-          <th>Teléfono WhatsApp</th>
-          <th pSortableColumn="estado">Estado
+          <th pSortableColumn="estado">Respuesta
             <p-sort-icon field="estado"></p-sort-icon>
           </th>
           <th pSortableColumn="pasesConfirmados" style="text-align: center;">Pases
@@ -384,98 +336,115 @@
           <th pSortableColumn="mesa">Mesa
             <p-sort-icon field="mesa"></p-sort-icon>
           </th>
+          <th style="text-align: right;">Acciones</th>
         </tr>
       </ng-template>
 
-      <!-- FILAS DE LA TABLA -->
+      <!-- FILAS -->
       <ng-template #body let-inv>
         <tr>
-          <!-- Nombre y alertas -->
           <td>
-            <div class="flex flex-col gap-0.5">
-              <strong class="text-gray-900 text-xs sm:text-sm font-semibold">{{ inv.nombre }}</strong>
-              @if (inv.restriccionesAlimentarias) {
-                <span class="text-[10px] font-bold text-red-500 flex items-center gap-1">
-                  <i class="pi pi-heart-fill text-[8px]"></i> {{ inv.restriccionesAlimentarias }}
-                </span>
-              }
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="w-9 h-9 rounded-full bg-gold-50 text-gold-700 text-sm font-semibold flex items-center justify-center shrink-0 select-none">
+                {{ (inv.nombre || '?').trim().charAt(0).toUpperCase() }}
+              </span>
+              <div class="min-w-0">
+                <span class="block text-sm font-semibold text-gray-900 truncate">{{ inv.nombre }}</span>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  @if (inv.telefono) {
+                    <span class="inline-flex items-center gap-1 text-xs text-gray-400">
+                      <i class="pi pi-whatsapp text-[11px]"></i>{{ inv.telefono }}
+                    </span>
+                  } @else {
+                    <span class="text-xs text-gray-300">Sin teléfono</span>
+                  }
+                  @if (inv.restriccionesAlimentarias) {
+                    <span class="inline-flex items-center gap-1 text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded font-medium max-w-[160px]"
+                      [pTooltip]="inv.restriccionesAlimentarias" tooltipPosition="top">
+                      <i class="pi pi-exclamation-triangle text-[9px]"></i>
+                      <span class="truncate">{{ inv.restriccionesAlimentarias }}</span>
+                    </span>
+                  }
+                </div>
+              </div>
             </div>
           </td>
 
-          <!-- Teléfono -->
           <td>
-            @if (inv.telefono) {
-              <span class="text-xs sm:text-sm text-gray-700 flex items-center gap-1.5">
-                <i class="pi pi-phone text-emerald-600 text-xs"></i>
-                {{ inv.telefono }}
-              </span>
+            @if (inv.estado === 'declinado') {
+              <p-tag value="No asiste" severity="danger" icon="pi pi-times" [rounded]="true" />
+            } @else if (inv.estado === 'confirmado' || inv.asistira) {
+              <p-tag value="Confirmado" severity="success" icon="pi pi-check" [rounded]="true" />
             } @else {
-              <span class="text-xs text-gray-400 italic">Sin teléfono</span>
+              <p-tag value="Pendiente" severity="warn" icon="pi pi-clock" [rounded]="true" />
             }
           </td>
 
-          <!-- Estado -->
-          <td>
-            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize"
-                  [ngClass]="{
-                    'bg-emerald-50 text-emerald-700 border border-emerald-100': inv.estado === 'confirmado' || inv.asistira,
-                    'bg-amber-50 text-amber-700 border border-amber-200': inv.estado === 'pendiente' || (!inv.asistira && inv.estado !== 'declinado'),
-                    'bg-red-50 text-red-700 border border-red-200': inv.estado === 'declinado'
-                  }">
-              {{ inv.estado || 'Pendiente' }}
-            </span>
-          </td>
-
-          <!-- Pases -->
           <td style="text-align: center;">
-            <span>
-              {{ inv.pasesConfirmados || 1 }} {{ (inv.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
+            <span class="inline-flex items-center gap-1 text-sm font-semibold text-gray-700 tabular-nums">
+              <i class="pi pi-ticket text-[11px] text-gray-400"></i>{{ inv.pasesConfirmados || 1 }}
             </span>
           </td>
 
-          <!-- Asignación de Mesa vía Dropdown PrimeNG -->
           <td>
-            <div class="w-full max-w-[240px]">
-              <p-select
-                [options]="opcionesMesasDropdown()"
-                [ngModel]="inv.mesa || ''"
-                placeholder="-- Asignar Mesa --"
-                optionLabel="label"
-                optionValue="value"
-                styleClass="w-full p-inputtext-sm text-xs rounded-xl"
-                [filter]="true"
-                filterBy="label"
-                emptyMessage="No hay mesas creadas"
-                appendTo="body"
-                (onChange)="asignarMesaRapida(inv, $event.value)"
-              >
-                <ng-template pTemplate="selectedItem" let-selectedOption>
-                  @if (selectedOption?.value) {
-                    <div class="flex items-center gap-1.5 font-semibold text-xs ">
-                      <span class="truncate">{{ selectedOption.value }}</span>
-                    </div>
-                  } @else {
-                    <span>Sin mesa</span>
-                  }
-                </ng-template>
-                <ng-template let-option pTemplate="item">
-                  <div class="flex items-center gap- py-0.5">
-                    <span  >{{ option.label }}</span>
-                  </div>
-                </ng-template>
-              </p-select>
+            <p-select
+              [options]="opcionesMesasDropdown()"
+              [ngModel]="inv.mesa || ''"
+              placeholder="Asignar mesa"
+              optionLabel="label"
+              optionValue="value"
+              size="small"
+              class="w-full max-w-[220px]"
+              [filter]="true"
+              filterBy="label"
+              emptyMessage="No hay mesas creadas"
+              appendTo="body"
+              (onChange)="asignarMesaRapida(inv, $event.value)">
+              <ng-template pTemplate="selectedItem" let-selectedOption>
+                @if (selectedOption?.value) {
+                  <span class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-800">
+                    <i class="pi pi-th-large text-[10px] text-gold-600"></i>
+                    <span class="truncate">{{ selectedOption.value }}</span>
+                  </span>
+                } @else {
+                  <span class="text-sm text-gray-400">Sin mesa</span>
+                }
+              </ng-template>
+              <ng-template let-option pTemplate="item">
+                <span class="text-sm">{{ option.label }}</span>
+              </ng-template>
+            </p-select>
+          </td>
+
+          <td style="text-align: right;">
+            <div class="inline-flex items-center justify-end gap-0.5">
+              <button pButton type="button" [rounded]="true" [text]="true" severity="secondary" size="small"
+                pTooltip="Ver detalle" tooltipPosition="top"
+                [attr.aria-label]="'Ver detalle de ' + inv.nombre"
+                (click)="abrirDetalle.emit(inv)">
+                <i class="pi pi-eye"></i>
+              </button>
+              <button pButton type="button" [rounded]="true" [text]="true" severity="secondary" size="small"
+                pTooltip="Editar invitado" tooltipPosition="top"
+                [attr.aria-label]="'Editar a ' + inv.nombre"
+                (click)="abrirEditar.emit(inv)">
+                <i class="pi pi-pencil"></i>
+              </button>
             </div>
           </td>
         </tr>
       </ng-template>
 
-      <!-- EMPTY STATE -->
+      <!-- ESTADO VACÍO -->
       <ng-template #emptymessage>
         <tr>
-          <td colspan="5" class="text-center py-10 text-gray-400">
-            <div class="flex flex-col items-center justify-center gap-2">
-              <i class="pi pi-search text-2xl text-gray-300"></i>
-              <span>No se encontraron invitados con los filtros seleccionados</span>
+          <td colspan="5">
+            <div class="flex flex-col items-center text-center py-10 px-4">
+              <div class="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300 mb-3">
+                <i class="pi pi-search text-xl"></i>
+              </div>
+              <span class="text-sm font-semibold text-gray-800">Sin resultados</span>
+              <span class="text-xs text-gray-500 mt-1">No hay invitados que coincidan con tu búsqueda o filtro.</span>
             </div>
           </td>
         </tr>

@@ -1,130 +1,109 @@
-<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-12 gap-x-5 gap-y-7 pt-6">
+@let categoriaActual = form.get('categoria')?.value;
+<form [formGroup]="form" (ngSubmit)="guardar()" class="flex flex-col gap-5 pt-2">
 
-  <!-- FILA 1: NOMBRE COMERCIAL (6 COLS) Y CATEGORÍA (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="empresa"
-        type="text"
-        formControlName="empresa"
-        class="w-full"
-        autocomplete="off" />
-      <label for="empresa">Nombre Comercial / Empresa *</label>
+  <!-- EMPRESA -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-briefcase text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Empresa</h3>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <p-floatlabel variant="on" class="block">
+        <input pInputText id="empresa" type="text" formControlName="empresa" class="w-full" autocomplete="off" />
+        <label for="empresa">Nombre comercial *</label>
+      </p-floatlabel>
+      @if (form.get('empresa')?.touched && form.get('empresa')?.invalid) {
+        <span class="text-xs text-rose-500 pl-1">El nombre de la empresa es requerido.</span>
+      }
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      @for (cat of categorias; track cat.value) {
+        @let activo = categoriaActual === cat.value;
+        <button type="button"
+          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors"
+          [ngClass]="activo
+            ? 'bg-gold-50 border-gold-400 text-gold-700'
+            : 'bg-white border-gray-200 text-gray-600 hover:border-gold-200 hover:bg-gold-50/50'"
+          [attr.aria-pressed]="activo"
+          (click)="form.patchValue({ categoria: cat.value })">
+          @if (activo) {
+            <i class="pi pi-check text-[10px]"></i>
+          }
+          {{ cat.label }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-user text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Contacto</h3>
+    </div>
+
+    <p-floatlabel variant="on" class="block">
+      <input pInputText id="contactoNombre" type="text" formControlName="contactoNombre" class="w-full" autocomplete="off" />
+      <label for="contactoNombre">Nombre de la persona de contacto</label>
     </p-floatlabel>
-    @if (form.get('empresa')?.touched && form.get('empresa')?.invalid) {
-      <span class="text-xs text-rose-500 font-semibold pl-1">El nombre de la empresa es requerido.</span>
-    }
-  </div>
 
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="categoria"
-        inputId="categoria"
-        [options]="categorias"
-        formControlName="categoria"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full"
-        placeholder="Seleccionar Categoría">
-      </p-select>
-      <label for="categoria">Categoría del Proveedor *</label>
-    </p-floatlabel>
-  </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <p-floatlabel variant="on" class="block">
+        <input pInputText id="telefono" type="tel" formControlName="telefono" class="w-full" autocomplete="off" />
+        <label for="telefono">Teléfono / WhatsApp</label>
+      </p-floatlabel>
+      <div class="flex flex-col gap-1">
+        <p-floatlabel variant="on" class="block">
+          <input pInputText id="email" type="email" formControlName="email" class="w-full" autocomplete="off" />
+          <label for="email">Correo electrónico</label>
+        </p-floatlabel>
+        @if (form.get('email')?.touched && form.get('email')?.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Ingresa un correo válido.</span>
+        }
+      </div>
+    </div>
+  </section>
 
-  <!-- FILA 2: NOMBRE DE CONTACTO (6 COLS) Y TELÉFONO / WHATSAPP (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="contactoNombre"
-        type="text"
-        formControlName="contactoNombre"
-        class="w-full"
-        autocomplete="off" />
-      <label for="contactoNombre">Nombre de Contacto</label>
-    </p-floatlabel>
-  </div>
+  <!-- CONTRATO -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-file-check text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Contrato</h3>
+      <span class="text-xs text-gray-400">Opcional</span>
+    </div>
 
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="telefono"
-        type="text"
-        formControlName="telefono"
-        class="w-full"
-        autocomplete="off" />
-      <label for="telefono">Teléfono / WhatsApp</label>
-    </p-floatlabel>
-  </div>
-
-  <!-- FILA 3: CORREO ELECTRÓNICO (6 COLS) Y MONTO DEL CONTRATO (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="email"
-        type="email"
-        formControlName="email"
-        class="w-full"
-        autocomplete="off" />
-      <label for="email">Correo Electrónico</label>
-    </p-floatlabel>
-    @if (form.get('email')?.touched && form.get('email')?.invalid) {
-      <span class="text-xs text-rose-500 font-semibold pl-1">Ingresa un correo electrónico válido.</span>
-    }
-  </div>
-
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-inputnumber
-        id="montoContrato"
-        inputId="montoContrato"
-        formControlName="montoContrato"
-        mode="currency"
-        currency="MXN"
-        locale="es-MX"
-        styleClass="w-full"
-        inputStyleClass="w-full font-semibold text-slate-800"
-        [min]="0">
+    <p-floatlabel variant="on" class="block">
+      <p-inputnumber inputId="montoContrato" formControlName="montoContrato"
+        mode="currency" currency="MXN" locale="es-MX" [min]="0" [fluid]="true">
       </p-inputnumber>
-      <label for="montoContrato">Monto Total del Contrato ($)</label>
+      <label for="montoContrato">Monto total del contrato</label>
     </p-floatlabel>
-  </div>
 
-  <!-- FILA 4: NOTAS DEL CONTRATO (12 COLS) -->
-  <div class="col-span-12">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="notas"
-        type="text"
-        formControlName="notas"
-        class="w-full"
-        autocomplete="off" />
-      <label for="notas">Notas del Contrato / Requerimientos</label>
-    </p-floatlabel>
-  </div>
+    <div class="flex flex-col gap-1">
+      <p-floatlabel variant="on" class="block">
+        <textarea id="notas" pTextarea formControlName="notas" rows="2" class="w-full resize-none"></textarea>
+        <label for="notas">Notas o requerimientos</label>
+      </p-floatlabel>
+      <span class="text-[11px] text-gray-400 pl-1">Ej. Incluye 6 horas de servicio, requiere toma de corriente cerca de la pista.</span>
+    </div>
+  </section>
 
-  <!-- BOTONES DE ACCIÓN -->
-  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <button pButton type="button"
-     
-      severity="danger"
-      [text]="true"
-      size="small"
-      (click)="cancelar()">
-  <span>Cancelar</span>
-</button>
-
-    <button pButton type="submit"
-     
-     
-      size="small">
-  <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
-  <span>{{ esEdicion ? 'Actualizar Proveedor' : 'Guardar Proveedor' }}</span>
- </button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-end gap-2">
+    <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="cancelar()">
+      <span>Cancelar</span>
+    </button>
+    <button pButton type="submit" size="small">
+      <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+      <span>{{ esEdicion ? 'Guardar cambios' : 'Agregar proveedor' }}</span>
+    </button>
   </div>
 </form>

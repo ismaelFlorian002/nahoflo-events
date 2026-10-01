@@ -1,142 +1,162 @@
-<div class="detalle-invitado-modal">
-  <!-- ENCABEZADO DE PERFIL -->
-  <div class="perfil-cabecera">
-    <div class="avatar-iniciales">
-      <i class="pi pi-user"></i>
-    </div>
-    <div class="perfil-info">
-      <h3>{{ invitado.nombre }}</h3>
-      <div class="badges-fila">
+@let asiste = invitado.asistira || invitado.estado === 'pendiente';
+@let pases = invitado.pasesConfirmados || 1;
+
+<div class="flex flex-col gap-5 pt-2">
+
+  <!-- PERFIL -->
+  <section class="flex items-center gap-4">
+    <span class="w-14 h-14 rounded-2xl bg-gold-50 text-gold-700 border border-gold-100 text-xl font-semibold flex items-center justify-center shrink-0 select-none">
+      {{ (invitado.nombre || '?').trim().charAt(0).toUpperCase() }}
+    </span>
+    <div class="min-w-0">
+      <h3 class="m-0 text-lg font-semibold text-gray-900 truncate">{{ invitado.nombre }}</h3>
+      <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
         @if (invitado.estado === 'pendiente') {
-          <p-badge
-            value="Pendiente de Confirmar"
-            severity="warn"
-            icon="pi pi-clock">
-          </p-badge>
+          <p-tag value="Pendiente" severity="warn" icon="pi pi-clock" [rounded]="true" />
         } @else {
-          <p-badge
-            [value]="invitado.asistira ? 'Asistencia Confirmada' : 'Declinó Asistencia'"
-            [severity]="invitado.asistira ? 'success' : 'danger'">
-          </p-badge>
+          <p-tag
+            [value]="invitado.asistira ? 'Confirmado' : 'No asiste'"
+            [severity]="invitado.asistira ? 'success' : 'danger'"
+            [icon]="invitado.asistira ? 'pi pi-check' : 'pi pi-times'"
+            [rounded]="true" />
         }
-        @if (invitado.asistira || invitado.estado === 'pendiente') {
-          <span class="badge-pases-info">
-            <i class="pi pi-ticket"></i>
-            <strong>{{ invitado.pasesConfirmados || 1 }}</strong>
-            {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase reservado' : 'pases reservados' }}
+        @if (asiste) {
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+            <i class="pi pi-ticket text-[10px]"></i>
+            {{ pases }} {{ pases === 1 ? 'pase' : 'pases' }}
           </span>
         }
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- GRILLA DE DETALLES PRINCIPALES -->
-  <div class="detalle-grid">
-    <!-- TELÉFONO / WHATSAPP -->
-    <div class="detalle-item">
-      <span class="item-label"><i class="pi pi-phone"></i> Teléfono / WhatsApp</span>
-      @if (invitado.telefono) {
-        <a [href]="'https://wa.me/' + invitado.telefono" target="_blank" class="link-wa" title="Chatear por WhatsApp">
-          <i class="pi pi-whatsapp"></i>
-          <span>{{ invitado.telefono }}</span>
-          <i class="pi pi-external-link icono-externo"></i>
-        </a>
-      } @else {
-        <span class="item-valor sin-dato">No registrado</span>
-      }
-    </div>
-
-    <!-- FECHA Y HORA DE CONFIRMACIÓN -->
-    <div class="detalle-item">
-      <span class="item-label"><i class="pi pi-calendar"></i> Fecha de Registro</span>
-      <span class="item-valor">{{ formatearFecha(invitado.fechaConfirmacion) }}</span>
-    </div>
-
-    <!-- MESA ASIGNADA -->
-    <div class="detalle-item">
-      <span class="item-label"><i class="pi pi-th-large"></i> Mesa Asignada</span>
-      <span class="item-valor" [class.text-amber-600]="invitado.mesa" [class.font-semibold]="invitado.mesa">
-        {{ invitado.mesa || 'Sin asignar' }}
+  <!-- DATOS -->
+  <section class="grid grid-cols-1 sm:grid-cols-2 rounded-xl border border-gray-100 overflow-hidden">
+    <div class="flex items-start gap-3 p-4 border-b sm:border-r border-gray-100">
+      <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-whatsapp text-sm"></i>
       </span>
+      <div class="min-w-0">
+        <span class="block text-xs text-gray-400">Teléfono</span>
+        @if (invitado.telefono) {
+          <a [href]="'https://wa.me/' + invitado.telefono" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-900 hover:text-emerald-600 no-underline transition-colors">
+            {{ invitado.telefono }}
+            <i class="pi pi-external-link text-[10px] text-gray-400"></i>
+          </a>
+        } @else {
+          <span class="block text-sm text-gray-400">No registrado</span>
+        }
+      </div>
     </div>
 
-    <!-- TIPO DE MENÚ -->
-    <div class="detalle-item">
-      <span class="item-label"><i class="pi pi-bookmark"></i> Tipo de Menú</span>
-      <span class="item-valor">{{ invitado.tipoMenu || 'Adulto' }}</span>
+    <div class="flex items-start gap-3 p-4 border-b border-gray-100">
+      <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center shrink-0">
+        <i class="pi pi-calendar text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-xs text-gray-400">Fecha de registro</span>
+        <span class="block text-sm font-medium text-gray-900">{{ formatearFecha(invitado.fechaConfirmacion) }}</span>
+      </div>
     </div>
-  </div>
 
-  <!-- ALERTA DE RESTRICCIONES ALIMENTARIAS -->
+    <div class="flex items-start gap-3 p-4 border-b sm:border-b-0 sm:border-r border-gray-100">
+      <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-th-large text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-xs text-gray-400">Mesa</span>
+        @if (invitado.mesa) {
+          <span class="block text-sm font-medium text-gray-900">{{ invitado.mesa }}</span>
+        } @else {
+          <span class="block text-sm text-gray-400 italic">Sin asignar</span>
+        }
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3 p-4">
+      <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center shrink-0">
+        <i class="pi pi-bookmark text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-xs text-gray-400">Menú</span>
+        <span class="block text-sm font-medium text-gray-900">{{ invitado.tipoMenu || 'Adulto' }}</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ALERGIAS -->
   @if (invitado.restriccionesAlimentarias) {
-    <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 flex items-center gap-2 mt-3 mb-2">
-      <i class="pi pi-exclamation-triangle text-red-600 text-lg"></i>
-      <div class="flex flex-col">
-        <span class="text-xs font-bold uppercase tracking-wider text-red-700">Alergias / Restricciones Alimentarias</span>
-        <span>{{ invitado.restriccionesAlimentarias }}</span>
+    <section class="flex items-start gap-3 rounded-xl border border-rose-100 bg-rose-50/60 px-4 py-3">
+      <i class="pi pi-exclamation-triangle text-rose-500 mt-0.5"></i>
+      <div class="min-w-0">
+        <span class="block text-xs font-medium text-rose-600">Alergias o restricciones</span>
+        <span class="block text-sm text-gray-800 mt-0.5">{{ invitado.restriccionesAlimentarias }}</span>
       </div>
-    </div>
+    </section>
   }
 
-  <!-- DEDICATORIA DEL INVITADO (SOLO SI EL INVITADO LA ESCRIBIÓ EN LA WEB, OMITIDO EN SOLO LISTA PUERTA) -->
+  <!-- MENSAJE DEL INVITADO -->
   @if (invitado.mensaje && evento?.modulos?.tipoControlInvitados !== 'lista_puerta') {
-    <div class="seccion-mensaje">
-      <span class="item-label"><i class="pi pi-heart-fill"></i> Dedicatoria del Invitado</span>
-      <div class="caja-mensaje">
-        <p>“{{ invitado.mensaje }}”</p>
-      </div>
-    </div>
+    <section class="rounded-xl border border-pastel-pink-100 bg-pastel-pink-50/60 px-4 py-3">
+      <span class="flex items-center gap-1.5 text-xs font-medium text-pastel-pink-500">
+        <i class="pi pi-heart-fill text-[11px]"></i>
+        Mensaje del invitado
+      </span>
+      <p class="m-0 mt-1.5 text-sm italic text-gray-700 whitespace-pre-wrap break-words">“{{ invitado.mensaje }}”</p>
+    </section>
   }
 
-  <!-- CONTROL TOTAL VIP (SI APLICA) -->
+  <!-- CONTROL DE ACCESO -->
   @if (evento?.modulos?.tipoControlInvitados === 'total') {
-    <div class="seccion-vip">
-      <div class="vip-titulo">
-        <i class="pi pi-shield"></i>
-        <span>Control de Acceso VIP</span>
+    <section class="flex flex-col gap-3 rounded-xl border border-gray-100 p-4">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+            <i class="pi pi-shield text-[11px]"></i>
+          </span>
+          <h4 class="m-0 text-sm font-semibold text-gray-900">Control de acceso</h4>
+        </div>
+        @if (invitado.haIngresado) {
+          <p-tag value="Ingresó" severity="success" icon="pi pi-check-circle" [rounded]="true" />
+        } @else {
+          <p-tag value="Sin llegar" severity="secondary" icon="pi pi-clock" [rounded]="true" />
+        }
       </div>
-      <div class="vip-grid">
-        <div class="vip-item">
-          <span class="vip-label">Estado en Puerta</span>
-          @if (invitado.haIngresado) {
-            <span class="vip-status ingresado">
-              <i class="pi pi-check-circle"></i> Ingresó a sala
-            </span>
-          } @else {
-            <span class="vip-status pendiente">
-              <i class="pi pi-clock"></i> Pendiente de llegada
-            </span>
+
+      @if ((invitado.haIngresado && invitado.horaIngreso) || invitado.codigoAcceso) {
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          @if (invitado.haIngresado && invitado.horaIngreso) {
+            <div>
+              <span class="block text-xs text-gray-400">Hora de llegada</span>
+              <span class="block text-sm font-medium text-gray-900">{{ formatearFecha(invitado.horaIngreso) }}</span>
+            </div>
+            <div>
+              <span class="block text-xs text-gray-400">Ingresaron</span>
+              <span class="block text-sm font-medium text-gray-900">
+                {{ invitado.pasesIngresados ?? invitado.pasesConfirmados ?? 1 }} personas
+              </span>
+            </div>
+          }
+          @if (invitado.codigoAcceso) {
+            <div>
+              <span class="block text-xs text-gray-400">Código de pase</span>
+              <span class="block text-sm font-mono font-medium text-gray-900 tracking-wider">{{ invitado.codigoAcceso }}</span>
+            </div>
           }
         </div>
-
-        @if (invitado.haIngresado && invitado.horaIngreso) {
-          <div class="vip-item">
-            <span class="vip-label">Hora de Llegada</span>
-            <span class="vip-valor">{{ formatearFecha(invitado.horaIngreso) }}</span>
-          </div>
-          <div class="vip-item">
-            <span class="vip-label">Pases Ingresados</span>
-            <span class="vip-valor">{{ invitado.pasesIngresados ?? invitado.pasesConfirmados ?? 1 }} personas</span>
-          </div>
-        }
-
-        @if (invitado.codigoAcceso) {
-          <div class="vip-item">
-            <span class="vip-label">Token de Pase</span>
-            <span class="vip-valor token-code">{{ invitado.codigoAcceso }}</span>
-          </div>
-        }
-      </div>
-    </div>
+      }
+    </section>
   }
 
-  <!-- ACCIONES DE PIE DE MODAL -->
-  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <button pButton [text]="true"
-      severity="danger"
-      (click)="cerrar()">
-  <i class="pi pi-times"></i>
-  <span>Cerrar</span>
-</button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex justify-end gap-2">
+    <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="cerrar()">
+      <span>Cerrar</span>
+    </button>
+    <button pButton type="button" size="small" (click)="editar()">
+      <i class="pi pi-pencil"></i>
+      <span>Editar</span>
+    </button>
   </div>
 </div>

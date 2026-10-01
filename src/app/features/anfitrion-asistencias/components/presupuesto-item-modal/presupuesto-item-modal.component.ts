@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputNumberModule } from 'primeng/inputnumber';
-import { SelectModule } from 'primeng/select';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ItemPresupuesto } from '../../../../core/models/event.model';
 
@@ -20,7 +19,6 @@ import { FloatLabelModule } from 'primeng/floatlabel';
     ButtonModule,
     InputTextModule,
     InputNumberModule,
-    SelectModule,
     DatePickerModule,
     FloatLabelModule,
   ],

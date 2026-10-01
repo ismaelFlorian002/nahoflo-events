@@ -4,15 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, ItemPresupuesto } from '../../../../core/models/event.model';
 import { EventService } from '../../../../core/services/event.service';
 import { PresupuestoItemModalComponent } from '../presupuesto-item-modal/presupuesto-item-modal.component';
-import { BadgeModule } from 'primeng/badge';
 import { Popover, PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
 
@@ -25,10 +22,7 @@ import { TooltipModule } from 'primeng/tooltip';
     ButtonModule,
     TableModule,
     TagModule,
-    ProgressBarModule,
     InputTextModule,
-    SelectModule,
-    BadgeModule,
     PopoverModule,
     TooltipModule,
   ],
@@ -108,6 +102,21 @@ export class PresupuestoTrackerComponent {
     { label: 'Otros Servicios', value: 'Otros', emoji: '✨' },
   ];
 
+  emojiCategoria(categoria: string): string {
+    const c = categoria === 'Otros Servicios' ? 'Otros' : categoria;
+    return this.categoriasCatalogo.find((cat) => cat.value === c)?.emoji ?? '✨';
+  }
+
+  fechaCorta(fecha: string | Date): string {
+    const d = fecha instanceof Date ? fecha : new Date(fecha);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('es-MX', {
+      day: 'numeric',
+      month: 'short',
+      timeZone: typeof fecha === 'string' ? 'UTC' : undefined,
+    });
+  }
+
   conteoPorCategoria = computed(() => {
     const counts: Record<string, number> = {};
     for (const item of this.items()) {
@@ -151,9 +160,9 @@ export class PresupuestoTrackerComponent {
   // Método único para Agregar / Editar partidas presupuestarias
   abrirModalPresupuesto(item?: ItemPresupuesto): void {
     const ref = this.dialogService.open(PresupuestoItemModalComponent, {
-      header: item ? 'Editar Partida Presupuestaria' : 'Registrar Nueva Partida Presupuestaria',
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '94vw' },
+      header: item ? 'Editar gasto' : 'Registrar gasto',
+      width: '640px',
+      breakpoints: { '700px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: item ? { item } : undefined,

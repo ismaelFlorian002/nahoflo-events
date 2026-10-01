@@ -1,215 +1,181 @@
-<div class="mesa-detalle-modal flex flex-col gap-5 p-1 max-w-full overflow-x-hidden">
+@let ocupados = totalAsientosOcupados();
+@let sobrecupo = ocupados > mesa.capacidad;
+@let disponibles = opcionesInvitadosSinMesa();
+@let porcentaje = mesa.capacidad > 0 ? (ocupados / mesa.capacidad) * 100 : 0;
 
-  <!-- TARJETAS SUPERIORES EN GRID: INFORMACIÓN Y ASIGNACIÓN RÁPIDA -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex flex-col gap-5 pt-2">
 
-    <!-- TARJETA 1: DATOS DE LA MESA Y OCUPACIÓN -->
-    <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col justify-between">
-      <div>
-        <div class="flex items-center justify-between pb-2 mb-3 border-b border-gray-100">
-          <div class="flex items-center gap-2">
-            <i class="pi pi-th-large text-gold-500 text-base"></i>
-            <h4 class="text-sm font-bold text-gray-800 m-0">Detalles de la Mesa</h4>
-          </div>
-          <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gold-50 text-gold-700 border border-gold-200 capitalize">
-            {{ mesa.forma }}
+  <!-- RESUMEN DE LA MESA -->
+  <section class="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-gray-100 bg-gray-50/60 p-4">
+    <div class="flex items-center gap-3 flex-1 min-w-0">
+      <span class="w-11 h-11 rounded-xl bg-gold-50 text-gold-600 border border-gold-100 flex items-center justify-center shrink-0">
+        @switch (mesa.forma) {
+          @case ('rectangular') { <i class="pi pi-stop"></i> }
+          @case ('imperial') { <i class="pi pi-star-fill"></i> }
+          @case ('cabaret') { <i class="pi pi-moon"></i> }
+          @default { <i class="pi pi-circle"></i> }
+        }
+      </span>
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <span class="text-base font-semibold text-gray-900 truncate">{{ mesa.nombre }}</span>
+          <span class="px-2 py-0.5 rounded-full bg-white border border-gray-200 text-gray-500 text-[11px] font-medium capitalize">{{ mesa.forma }}</span>
+        </div>
+        @if (mesa.notas) {
+          <span class="flex items-center gap-1 text-xs text-gray-500 mt-0.5 truncate">
+            <i class="pi pi-map-marker text-[11px] text-gold-500"></i>{{ mesa.notas }}
           </span>
-        </div>
+        } @else {
+          <span class="block text-xs text-gray-400 mt-0.5">Sin notas de ubicación</span>
+        }
+      </div>
+    </div>
 
-        <div class="space-y-2">
-          <div>
-            <span class="block text-xs text-gray-400">Nombre Oficial</span>
-            <span>{{ mesa.nombre }}</span>
-          </div>
-
-          @if (mesa.notas) {
-            <div>
-              <span class="block text-xs text-gray-400">Ubicación / Notas</span>
-              <span class="text-xs text-gray-700 font-medium flex items-center gap-1 mt-0.5">
-                <i class="pi pi-map-marker text-gold-500"></i> {{ mesa.notas }}
-              </span>
-            </div>
+    <div class="sm:w-56 shrink-0">
+      <div class="flex items-baseline justify-between">
+        <span class="text-xs font-medium" [ngClass]="sobrecupo ? 'text-rose-600' : 'text-gray-500'">
+          @if (sobrecupo) {
+            <i class="pi pi-exclamation-triangle text-[10px] mr-0.5"></i>Sobrecupo
+          } @else {
+            Ocupación
           }
-        </div>
+        </span>
+        <span class="text-lg font-bold tabular-nums" [ngClass]="sobrecupo ? 'text-rose-600' : 'text-gray-900'">
+          {{ ocupados }}<span class="text-sm font-medium text-gray-400"> / {{ mesa.capacidad }}</span>
+        </span>
       </div>
-
-      <!-- TARGET DE OCUPACIÓN (ESTILO MÓDULOS DE RESUMEN) -->
-      <div class="mt-4 pt-3 border-t border-gray-100">
-        <div
-          class="p-3 rounded-xl border flex items-center justify-between"
-          [ngClass]="{
-            'bg-emerald-50 border-emerald-100 text-emerald-700': totalAsientosOcupados() <= mesa.capacidad,
-            'bg-red-50 border-red-100 text-red-700': totalAsientosOcupados() > mesa.capacidad
-          }"
-        >
-          <div class="flex items-center gap-2.5">
-            <div
-              class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-              [ngClass]="{
-                'bg-emerald-100 text-emerald-700': totalAsientosOcupados() <= mesa.capacidad,
-                'bg-red-100 text-red-700': totalAsientosOcupados() > mesa.capacidad
-              }"
-            >
-              <i [class]="totalAsientosOcupados() > mesa.capacidad ? 'pi pi-exclamation-triangle' : 'pi pi-users'"></i>
-            </div>
-            <div>
-              <span class="block text-xs font-semibold">Estado de Ocupación</span>
-              <span class="text-[11px] opacity-90">
-                {{ totalAsientosOcupados() > mesa.capacidad ? 'Sobrecupo detectado' : 'Capacidad adecuada' }}
-              </span>
-            </div>
-          </div>
-
-          <div class="text-right">
-            <span>{{ totalAsientosOcupados() }} / {{ mesa.capacidad }}</span>
-            <span class="block text-[10px] opacity-80 uppercase tracking-wider font-semibold">Lugares</span>
-          </div>
-        </div>
+      <div class="w-full h-1.5 rounded-full bg-gray-200 overflow-hidden mt-1.5">
+        <div class="h-full rounded-full transition-all duration-300"
+          [ngClass]="sobrecupo ? 'bg-rose-500' : 'bg-emerald-500'"
+          [style.width.%]="porcentaje > 100 ? 100 : porcentaje"></div>
       </div>
-    </div>
-
-    <!-- TARJETA 2: ASIGNAR INVITADO A LA MESA -->
-    <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col justify-between">
-      <div>
-        <div class="flex items-center gap-2 pb-2 mb-3 border-b border-gray-100">
-          <i class="pi pi-user-plus text-gold-500 text-base"></i>
-          <h4 class="text-sm font-bold text-gray-800 m-0">Asignar Comensal</h4>
-        </div>
-
-        <p class="text-xs text-gray-500 mb-3">
-          Selecciona a cualquier invitado que no tenga mesa asignada para ubicarlo aquí:
-        </p>
-
-        <div class="space-y-3">
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 mb-1">Invitado sin mesa:</label>
-            <p-select
-              [options]="opcionesInvitadosSinMesa()"
-              [(ngModel)]="invitadoSeleccionadoId"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Buscar invitado..."
-              styleClass="w-full"
-              [filter]="true"
-              filterBy="label"
-              emptyMessage="No hay invitados sin mesa"
-            ></p-select>
-          </div>
-        </div>
-      </div>
-
-      <div class="pt-3 border-t border-gray-100 flex justify-end">
-        <button pButton size="small"
-          [disabled]="!invitadoSeleccionadoId"
-          (click)="agregarInvitadoAMesa()"
-         
-        >
-  <i class="pi pi-plus"></i>
-  <span>Asignar a Mesa</span>
-</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TARJETA 3: LISTA DE COMENSALES ASIGNADOS -->
-  <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-    <div class="flex items-center justify-between pb-2 mb-3 border-b border-gray-100">
-      <div class="flex items-center gap-2">
-        <i class="pi pi-users text-gold-500 text-base"></i>
-        <h4 class="text-sm font-bold text-gray-800 m-0">
-          Comensales en la Mesa ({{ invitadosSentados().length }})
-        </h4>
-      </div>
-      <span>
-        {{ totalAsientosOcupados() }} lugares ocupados
+      <span class="block text-[11px] text-gray-400 mt-1">
+        @if (sobrecupo) {
+          {{ ocupados - mesa.capacidad }} {{ ocupados - mesa.capacidad === 1 ? 'lugar' : 'lugares' }} de más
+        } @else {
+          {{ mesa.capacidad - ocupados }} {{ mesa.capacidad - ocupados === 1 ? 'lugar disponible' : 'lugares disponibles' }}
+        }
       </span>
     </div>
+  </section>
 
-    <!-- ESTADO VACÍO -->
+  <!-- ASIGNAR COMENSAL -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+          <i class="pi pi-user-plus text-[11px]"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-gray-900 m-0">Agregar a la mesa</h3>
+      </div>
+      <span class="text-xs text-gray-400">{{ disponibles.length }} sin mesa</span>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-2">
+      <p-floatlabel variant="on" class="flex-1 block">
+        <p-select
+          inputId="invitadoSinMesa"
+          [options]="disponibles"
+          [(ngModel)]="invitadoSeleccionadoId"
+          optionLabel="label"
+          optionValue="value"
+          class="w-full"
+          appendTo="body"
+          [filter]="true"
+          filterBy="label"
+          [disabled]="disponibles.length === 0"
+          emptyMessage="No hay invitados sin mesa">
+        </p-select>
+        <label for="invitadoSinMesa">{{ disponibles.length === 0 ? 'Todos tienen mesa' : 'Invitado sin mesa' }}</label>
+      </p-floatlabel>
+      <button
+        pButton type="button"
+        [text]="true"
+        [disabled]="!invitadoSeleccionadoId"
+        (click)="agregarInvitadoAMesa()">
+        <i class="pi pi-plus"></i>
+        <span>Agregar</span>
+      </button>
+
+    </div>
+  </section>
+
+  <!-- COMENSALES -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+          <i class="pi pi-users text-[11px]"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-gray-900 m-0">Comensales</h3>
+        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">{{ invitadosSentados().length }}</span>
+      </div>
+      <span class="text-xs text-gray-400">{{ ocupados }} {{ ocupados === 1 ? 'lugar ocupado' : 'lugares ocupados' }}</span>
+    </div>
+
     @if (invitadosSentados().length === 0) {
-      <div class="text-center py-8 border border-dashed border-gray-200 rounded-xl text-gray-400 bg-gray-50/50">
-        <i class="pi pi-inbox text-3xl mb-1 text-gray-300 block"></i>
-        <p class="text-xs font-medium m-0">No hay invitados asignados a esta mesa todavía.</p>
+      <div class="flex flex-col items-center text-center py-8 px-4 rounded-xl border border-dashed border-gray-200 bg-gray-50/50">
+        <div class="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex items-center justify-center text-gray-300 mb-2">
+          <i class="pi pi-users text-xl"></i>
+        </div>
+        <span class="text-sm font-semibold text-gray-800">Mesa vacía</span>
+        <span class="text-xs text-gray-500 mt-0.5">Agrega invitados desde el buscador de arriba.</span>
       </div>
     } @else {
-      <!-- LISTA DE COMENSALES -->
-      <div class="flex flex-col gap-2.5 max-h-[280px] overflow-y-auto pr-1">
+      <div class="flex flex-col divide-y divide-gray-100 rounded-xl border border-gray-100 max-h-[300px] overflow-y-auto">
         @for (inv of invitadosSentados(); track inv.id) {
-          <div class="p-3 rounded-xl border border-gray-100 bg-gray-50/60 hover:bg-gray-50 transition-colors flex items-center justify-between gap-2">
-            <div class="flex flex-col gap-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-bold text-sm text-gray-900 truncate">{{ inv.nombre }}</span>
-                <span>
-                  🎟️ {{ inv.pasesConfirmados || 1 }} {{ (inv.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
+          <div class="group flex items-center gap-3 px-3 py-2.5 hover:bg-gray-50 transition-colors">
+            <span class="w-8 h-8 rounded-full bg-gold-50 text-gold-700 text-xs font-semibold flex items-center justify-center shrink-0 select-none">
+              {{ (inv.nombre || '?').trim().charAt(0).toUpperCase() }}
+            </span>
+            <div class="flex-1 min-w-0">
+              <span class="block text-sm font-medium text-gray-900 truncate">{{ inv.nombre }}</span>
+              <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                <span class="inline-flex items-center gap-1 text-[11px] text-gray-500">
+                  <i class="pi pi-ticket text-[10px]"></i>
+                  {{ inv.pasesConfirmados || 1 }} {{ (inv.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
                 </span>
                 @if (inv.tipoMenu) {
-                  <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
-                    🍽️ {{ inv.tipoMenu }}
+                  <span class="text-gray-300">·</span>
+                  <span class="text-[11px] text-gray-500">Menú {{ inv.tipoMenu | lowercase }}</span>
+                }
+                @if (inv.restriccionesAlimentarias) {
+                  <span class="inline-flex items-center gap-1 text-[10px] bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded font-medium max-w-[200px]"
+                    [pTooltip]="inv.restriccionesAlimentarias" tooltipPosition="top">
+                    <i class="pi pi-exclamation-triangle text-[9px]"></i>
+                    <span class="truncate">{{ inv.restriccionesAlimentarias }}</span>
                   </span>
                 }
               </div>
-
-              <!-- ALERTA MÉDICA (ESTILO PASTEL-PINK DE DETALLE EVENTO) -->
-              @if (inv.restriccionesAlimentarias) {
-                <div class="bg-pastel-pink-50/70 border border-pastel-pink-200 text-pastel-pink-500 rounded-lg px-2.5 py-1 text-xs font-bold flex items-center gap-1.5 w-fit mt-0.5">
-                  <i class="pi pi-heart-fill text-[10px]"></i>
-                  <span>Alergia / Dieta: {{ inv.restriccionesAlimentarias }}</span>
-                </div>
-              }
             </div>
-
-            <!-- Botón quitar de mesa -->
-            <button pButton size="small"
-              [text]="true"
-              severity="danger"
-              [rounded]="true"
-              pTooltip="Desasignar de esta mesa"
-              (click)="removerInvitado(inv)"
-            >
-  <i class="pi pi-times"></i>
-</button>
+            <button pButton type="button" size="small" severity="secondary" [text]="true" [rounded]="true"
+              class="hover:!text-rose-500"
+              pTooltip="Quitar de la mesa" tooltipPosition="left"
+              [attr.aria-label]="'Quitar a ' + inv.nombre + ' de la mesa'"
+              (click)="removerInvitado(inv)">
+              <i class="pi pi-times"></i>
+            </button>
           </div>
         }
       </div>
     }
-  </div>
+  </section>
 
-  <!-- PIE DE ACCIONES -->
-  <div class="flex justify-between items-center pt-3 border-t border-gray-100 mt-1">
-    <button pButton type="button"
-     
-     
-      size="small"
-      [text]="true"
-      severity="danger"
-      (click)="eliminarMesa()"
-    >
-  <i class="pi pi-trash"></i>
-  <span>Eliminar Mesa</span>
-</button>
-
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-between gap-3">
+    <button pButton type="button" size="small" severity="danger" [text]="true" (click)="eliminarMesa()">
+      <i class="pi pi-trash"></i>
+      <span class="hidden sm:inline">Eliminar mesa</span>
+    </button>
     <div class="flex items-center gap-2">
-      <button pButton type="button"
-       
-       
-        size="small"
-        text
-        severity="secondary"
-        (click)="editarMesa()"
-      >
-  <i class="pi pi-pencil"></i>
-  <span>Editar Mesa</span>
-</button>
-      <button pButton type="button"
-       
-       
-        size="small"
-        (click)="ref.close({ cambio: true })"
-       
-      >
-  <i class="pi pi-check"></i>
-  <span>Listo</span>
-</button>
+      <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="editarMesa()">
+        <i class="pi pi-pencil"></i>
+        <span>Editar</span>
+      </button>
+      <button pButton type="button" size="small" (click)="ref.close({ cambio: true })">
+        <i class="pi pi-check"></i>
+        <span>Listo</span>
+      </button>
     </div>
   </div>
 </div>

@@ -1,73 +1,114 @@
-<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-12 gap-x-5 gap-y-7 pt-6">
+@let nombreActual = form.get('nombre')?.value;
+@let formaActual = form.get('forma')?.value;
+@let nombreInvalido = form.get('nombre')?.touched && form.get('nombre')?.invalid;
 
-  <!-- FILA 1: NOMBRE DE LA MESA (12 COLS) -->
-  <div class="col-span-12 flex flex-col gap-1">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="nombre"
-        type="text"
-        formControlName="nombre"
-        class="w-full"
-        autocomplete="off" />
-      <label for="nombre">Nombre de la Mesa * (ej. Mesa 1, Mesa VIP, Mesa Novios)</label>
-    </p-floatlabel>
-    @if (form.get('nombre')?.touched && form.get('nombre')?.invalid) {
-      <span class="text-xs text-rose-500 font-semibold pl-1">El nombre de la mesa es obligatorio.</span>
-    }
-  </div>
+<form [formGroup]="form" (ngSubmit)="guardar()" class="flex flex-col gap-6 pt-2">
 
-  <!-- SUGERENCIAS RÁPIDAS DE NOMBRES (12 COLS) -->
-  <div class="col-span-12 bg-purple-50/60 p-3.5 rounded-2xl border border-purple-100/80">
-    <span class="text-[11px] font-bold text-purple-800 uppercase tracking-wider block mb-2 flex items-center gap-1">
-      <i class="pi pi-bolt text-purple-600"></i> Nombres Sugeridos Rápido:
-    </span>
-    <div class="flex flex-wrap gap-1.5">
-      @for (sug of sugerencias; track sug) {
+  <!-- NOMBRE -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-tag text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Nombre de la mesa</h3>
+    </div>
+
+    <div class="flex flex-col gap-1.5">
+      <p-floatlabel variant="on" class="w-full block">
+        <input
+          pInputText
+          id="nombre"
+          type="text"
+          formControlName="nombre"
+          class="w-full"
+          autocomplete="off"
+          [attr.aria-invalid]="nombreInvalido" />
+        <label for="nombre">Nombre *</label>
+      </p-floatlabel>
+      @if (nombreInvalido) {
+        <small class="flex items-center gap-1 text-xs text-rose-500">
+          <i class="pi pi-exclamation-circle text-[11px]"></i>
+          Escribe un nombre para la mesa.
+        </small>
+      }
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <span class="text-xs text-gray-400">Sugerencias</span>
+      <div class="flex flex-wrap gap-1.5">
+        @for (sug of sugerencias; track sug) {
+          <button
+            type="button"
+            (click)="usarSugerencia(sug)"
+            class="px-2.5 py-1 rounded-full border text-xs font-medium font-sans cursor-pointer transition-colors"
+            [ngClass]="nombreActual === sug
+              ? 'border-gold-400 bg-gold-50 text-gold-700'
+              : 'border-gray-200 bg-white text-gray-600 hover:border-gold-300 hover:text-gold-700'">
+            {{ sug }}
+          </button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMA Y CAPACIDAD -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-th-large text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Forma y capacidad</h3>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" role="radiogroup" aria-label="Forma de la mesa">
+      @for (op of [
+        { value: 'redonda', etiqueta: 'Redonda', icono: 'pi pi-circle' },
+        { value: 'rectangular', etiqueta: 'Rectangular', icono: 'pi pi-stop' },
+        { value: 'imperial', etiqueta: 'Imperial', icono: 'pi pi-star-fill' },
+        { value: 'cabaret', etiqueta: 'Cabaret', icono: 'pi pi-moon' }
+      ]; track op.value) {
         <button
           type="button"
-          (click)="usarSugerencia(sug)"
-          class="hover:text-white cursor-pointer">
-          {{ sug }}
+          role="radio"
+          [attr.aria-checked]="formaActual === op.value"
+          (click)="form.patchValue({ forma: op.value })"
+          class="flex flex-col items-center justify-center gap-1.5 py-3 rounded-xl border font-sans cursor-pointer transition-colors"
+          [ngClass]="formaActual === op.value
+            ? 'border-gold-400 bg-gold-50 text-gold-700'
+            : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:text-gray-800'">
+          <i [class]="op.icono + ' text-base'"></i>
+          <span class="text-xs font-medium">{{ op.etiqueta }}</span>
         </button>
       }
     </div>
-  </div>
+    @if (formaActual === 'imperial') {
+      <small class="text-xs text-gray-400">Ideal para la mesa de novios o familia principal.</small>
+    }
 
-  <!-- FILA 2: FORMA DE LA MESA (6 COLS) Y CAPACIDAD (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="forma"
-        inputId="forma"
-        [options]="opcionesForma"
-        formControlName="forma"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full"
-        placeholder="Forma de la Mesa">
-      </p-select>
-      <label for="forma">Forma de la Mesa *</label>
-    </p-floatlabel>
-  </div>
-
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
+    <p-floatlabel variant="on" class="w-full block mt-1">
       <p-inputnumber
-        id="capacidad"
         inputId="capacidad"
         formControlName="capacidad"
         [min]="1"
         [max]="50"
-        styleClass="w-full"
-        inputStyleClass="w-full font-semibold text-slate-800">
+        [showButtons]="true"
+        suffix=" asientos"
+        [fluid]="true">
       </p-inputnumber>
-      <label for="capacidad">Capacidad (Asientos) *</label>
+      <label for="capacidad">Capacidad *</label>
     </p-floatlabel>
-  </div>
+  </section>
 
-  <!-- FILA 3: NOTAS / UBICACIÓN (12 COLS) -->
-  <div class="col-span-12">
+  <!-- NOTAS -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-map-marker text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Ubicación</h3>
+      <span class="text-xs text-gray-400">(opcional)</span>
+    </div>
+
     <p-floatlabel variant="on" class="w-full block">
       <input
         pInputText
@@ -76,28 +117,21 @@
         formControlName="notas"
         class="w-full"
         autocomplete="off" />
-      <label for="notas">Notas / Ubicación (Opcional, ej. Junto a la pista de baile)</label>
+      <label for="notas">Notas (ej. Junto a la pista de baile)</label>
     </p-floatlabel>
-  </div>
+  </section>
 
-  <!-- BOTONES DE ACCIÓN -->
-  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <button pButton type="button"
-     
-      severity="danger"
-      [text]="true"
-      size="small"
-      (click)="ref.close()">
-  <span>Cancelar</span>
-</button>
-
-    <button pButton type="submit"
-     
-     
-      size="small"
-      [disabled]="form.invalid">
-  <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
-  <span>{{ esEdicion ? 'Guardar Cambios' : 'Crear Mesa' }}</span>
- </button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-between gap-3">
+    <span class="text-xs text-gray-400 hidden sm:inline">Los campos con * son obligatorios.</span>
+    <div class="flex items-center gap-2 ml-auto">
+      <button pButton type="button" severity="secondary" [text]="true" size="small" (click)="ref.close()">
+        <span>Cancelar</span>
+      </button>
+      <button pButton type="submit" size="small" [disabled]="form.invalid">
+        <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+        <span>{{ esEdicion ? 'Guardar cambios' : 'Crear mesa' }}</span>
+      </button>
+    </div>
   </div>
 </form>

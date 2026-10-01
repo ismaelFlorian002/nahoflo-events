@@ -4,6 +4,7 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { FormsModule } from '@angular/forms';
+import { FloatLabelModule } from 'primeng/floatlabel';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MesaDiseno } from '../../../../core/models/event.model';
 import { InvitadoModel } from '../../../../core/models/invitado.model';
@@ -11,7 +12,7 @@ import { InvitadoModel } from '../../../../core/models/invitado.model';
 @Component({
   selector: 'app-mesa-detalle-modal',
   standalone: true,
-  imports: [CommonModule, ButtonModule, SelectModule, TooltipModule, FormsModule],
+  imports: [CommonModule, ButtonModule, SelectModule, TooltipModule, FormsModule, FloatLabelModule],
   templateUrl: './mesa-detalle-modal.component.html',
   styleUrl: './mesa-detalle-modal.component.scss',
 })

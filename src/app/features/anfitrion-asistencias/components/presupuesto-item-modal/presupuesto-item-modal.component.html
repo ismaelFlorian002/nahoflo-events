@@ -1,174 +1,160 @@
-<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-12 gap-x-5 gap-y-7 pt-6">
+@let v = form.value;
+@let real = v.costoReal || 0;
+@let meta = v.costoEstimado || 0;
+@let pagado = v.montoPagado || 0;
+@let resta = real - pagado;
+@let avance = real > 0 ? (pagado / real) * 100 : 0;
+<form [formGroup]="form" (ngSubmit)="guardar()" class="flex flex-col gap-5 pt-2">
 
-  <!-- FILA 1: CATEGORÍA (5 COLS) & CONCEPTO (7 COLS) -->
-  <div class="col-span-12 sm:col-span-5">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="categoria"
-        inputId="categoria"
-        [options]="categorias"
-        formControlName="categoria"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full">
-      </p-select>
-      <label for="categoria">Categoría del Gasto *</label>
-    </p-floatlabel>
-  </div>
-
-  <div class="col-span-12 sm:col-span-7">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        type="text"
-        id="concepto"
-        pInputText
-        formControlName="concepto"
-        class="w-full"
-        autocomplete="off"
-      />
-      <label for="concepto">Concepto / Servicio *</label>
-    </p-floatlabel>
-  </div>
-
-  <!-- FILA 2: MONTOS FINANCIEROS (TARJETA EN 12 COLS CON 3 COLS INTERNAS) -->
-  <div class="col-span-12 bg-slate-50/80 p-4 pt-6 rounded-2xl border border-slate-200">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-6">
-      <div>
-        <p-floatlabel variant="on" class="w-full block">
-          <p-inputnumber
-            id="costoEstimado"
-            inputId="costoEstimado"
-            formControlName="costoEstimado"
-            mode="currency"
-            currency="MXN"
-            locale="es-MX"
-            styleClass="w-full"
-            inputStyleClass="w-full font-medium"
-            [min]="0">
-          </p-inputnumber>
-          <label for="costoEstimado">Costo Estimado ($)</label>
-        </p-floatlabel>
-      </div>
-
-      <div>
-        <p-floatlabel variant="on" class="w-full block">
-          <p-inputnumber
-            id="costoReal"
-            inputId="costoReal"
-            formControlName="costoReal"
-            mode="currency"
-            currency="MXN"
-            locale="es-MX"
-            styleClass="w-full"
-            inputStyleClass="w-full font-semibold text-slate-800"
-            [min]="0">
-          </p-inputnumber>
-          <label for="costoReal">Costo Real Acordado ($)</label>
-        </p-floatlabel>
-      </div>
-
-      <div>
-        <p-floatlabel variant="on" class="w-full block">
-          <p-inputnumber
-            id="montoPagado"
-            inputId="montoPagado"
-            formControlName="montoPagado"
-            mode="currency"
-            currency="MXN"
-            locale="es-MX"
-            styleClass="w-full"
-            inputStyleClass="w-full font-bold text-emerald-600"
-            [min]="0">
-          </p-inputnumber>
-          <label for="montoPagado" class="text-emerald-700">Monto Pagado ($)</label>
-        </p-floatlabel>
-      </div>
+  <!-- GASTO -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-tag text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Gasto</h3>
     </div>
+
+    <div class="flex flex-wrap gap-2">
+      @for (cat of categorias; track cat.value) {
+        @let activo = v.categoria === cat.value;
+        <button type="button"
+          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors"
+          [ngClass]="activo
+            ? 'bg-gold-50 border-gold-400 text-gold-700'
+            : 'bg-white border-gray-200 text-gray-600 hover:border-gold-200 hover:bg-gold-50/50'"
+          [attr.aria-pressed]="activo"
+          (click)="form.patchValue({ categoria: cat.value })">
+          @if (activo) {
+            <i class="pi pi-check text-[10px]"></i>
+          }
+          {{ cat.label }}
+        </button>
+      }
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="flex flex-col gap-1">
+        <p-floatlabel variant="on" class="block">
+          <input pInputText id="concepto" type="text" formControlName="concepto" class="w-full" autocomplete="off" />
+          <label for="concepto">Concepto o servicio *</label>
+        </p-floatlabel>
+        @if (form.get('concepto')?.touched && form.get('concepto')?.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Describe el gasto (mínimo 3 caracteres).</span>
+        }
+      </div>
+      <p-floatlabel variant="on" class="block">
+        <input pInputText id="proveedorNombre" type="text" formControlName="proveedorNombre" class="w-full" autocomplete="off" />
+        <label for="proveedorNombre">Proveedor o empresa</label>
+      </p-floatlabel>
+    </div>
+  </section>
+
+  <!-- MONTOS -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-dollar text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Montos</h3>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <p-floatlabel variant="on" class="block">
+        <p-inputnumber inputId="costoEstimado" formControlName="costoEstimado"
+          mode="currency" currency="MXN" locale="es-MX" [min]="0" [fluid]="true">
+        </p-inputnumber>
+        <label for="costoEstimado">Presupuesto meta</label>
+      </p-floatlabel>
+      <p-floatlabel variant="on" class="block">
+        <p-inputnumber inputId="costoReal" formControlName="costoReal"
+          mode="currency" currency="MXN" locale="es-MX" [min]="0" [fluid]="true">
+        </p-inputnumber>
+        <label for="costoReal">Costo real acordado</label>
+      </p-floatlabel>
+      <p-floatlabel variant="on" class="block">
+        <p-inputnumber inputId="montoPagado" formControlName="montoPagado"
+          mode="currency" currency="MXN" locale="es-MX" [min]="0" [fluid]="true">
+        </p-inputnumber>
+        <label for="montoPagado">Pagado hasta hoy</label>
+      </p-floatlabel>
+    </div>
+
+    <!-- RESUMEN EN VIVO -->
+    @if (real > 0) {
+      <div class="rounded-xl border border-gray-100 bg-gray-50/60 px-3.5 py-3 flex flex-col gap-2">
+        <div class="flex items-center justify-between gap-3 text-xs">
+          @if (resta > 0) {
+            <span class="text-gray-500">Resta por pagar <span class="font-semibold text-amber-600 tabular-nums">${{ resta | number:'1.0-0' }}</span></span>
+          } @else {
+            <span class="inline-flex items-center gap-1 font-semibold text-emerald-600"><i class="pi pi-check-circle text-[11px]"></i>Liquidado</span>
+          }
+          <span class="font-semibold text-emerald-600 tabular-nums">{{ (avance > 100 ? 100 : avance) | number:'1.0-0' }}% pagado</span>
+        </div>
+        <div class="h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
+          <div class="h-full rounded-full bg-emerald-500 transition-all duration-300" [style.width.%]="avance > 100 ? 100 : avance"></div>
+        </div>
+        @if (meta > 0 && real !== meta) {
+          <span class="text-[11px]" [ngClass]="real > meta ? 'text-rose-500' : 'text-emerald-600'">
+            {{ real > meta ? '+' : '-' }}${{ (real > meta ? real - meta : meta - real) | number:'1.0-0' }}
+            {{ real > meta ? 'por encima' : 'por debajo' }} del presupuesto meta
+          </span>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- PAGO -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-credit-card text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Pago</h3>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2">
+      @for (est of estadosPago; track est.value) {
+        @let activo = v.estadoPago === est.value;
+        <button type="button"
+          class="flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-xs font-medium cursor-pointer transition-colors"
+          [ngClass]="activo
+            ? (est.value === 'pagado' ? 'bg-emerald-50 border-emerald-300 text-emerald-700'
+              : est.value === 'parcial' ? 'bg-amber-50 border-amber-300 text-amber-700'
+              : 'bg-rose-50 border-rose-300 text-rose-700')
+            : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'"
+          [attr.aria-pressed]="activo"
+          (click)="form.patchValue({ estadoPago: est.value })">
+          <i class="pi text-sm"
+            [ngClass]="est.value === 'pagado' ? 'pi-check-circle' : est.value === 'parcial' ? 'pi-percentage' : 'pi-clock'"></i>
+          {{ est.value === 'pagado' ? 'Pagado' : est.value === 'parcial' ? 'Anticipo' : 'Pendiente' }}
+        </button>
+      }
+    </div>
+    <span class="text-[11px] text-gray-400 -mt-1 pl-1">El estatus se ajusta solo al guardar según el monto pagado.</span>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <p-floatlabel variant="on" class="block">
+        <p-datepicker inputId="fechaLimitePago" formControlName="fechaLimitePago"
+          [showIcon]="true" iconDisplay="input" dateFormat="dd/mm/yy" appendTo="body" [fluid]="true">
+        </p-datepicker>
+        <label for="fechaLimitePago">Fecha límite de pago</label>
+      </p-floatlabel>
+      <p-floatlabel variant="on" class="block">
+        <input pInputText id="notas" type="text" formControlName="notas" class="w-full" autocomplete="off" />
+        <label for="notas">Notas</label>
+      </p-floatlabel>
+    </div>
+  </section>
+
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-end gap-2">
+    <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="cancelar()">
+      <span>Cancelar</span>
+    </button>
+    <button pButton type="submit" size="small">
+      <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+      <span>{{ esEdicion ? 'Guardar cambios' : 'Registrar gasto' }}</span>
+    </button>
   </div>
-
-  <!-- FILA 3: ESTADO DE PAGO (5 COLS) & PROVEEDOR (7 COLS) -->
-  <div class="col-span-12 sm:col-span-5">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="estadoPago"
-        inputId="estadoPago"
-        [options]="estadosPago"
-        formControlName="estadoPago"
-        optionLabel="label"
-        optionValue="value"
-        styleClass="w-full">
-      </p-select>
-      <label for="estadoPago">Estatus del Pago *</label>
-    </p-floatlabel>
-  </div>
-
-  <div class="col-span-12 sm:col-span-7">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        type="text"
-        id="proveedorNombre"
-        pInputText
-        formControlName="proveedorNombre"
-        class="w-full"
-        autocomplete="off"
-      />
-      <label for="proveedorNombre">Proveedor / Empresa</label>
-    </p-floatlabel>
-  </div>
-
-  <!-- FILA 4: FECHA LÍMITE DE PAGO (5 COLS) & NOTAS (7 COLS) -->
-  <div class="col-span-12 sm:col-span-5">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-datepicker
-        id="fechaLimitePago"
-        inputId="fechaLimitePago"
-        formControlName="fechaLimitePago"
-        [showIcon]="true"
-        [iconDisplay]="'input'"
-        dateFormat="dd/mm/yy"
-        appendTo="body"
-        styleClass="w-full"
-        inputStyleClass="w-full">
-      </p-datepicker>
-      <label for="fechaLimitePago">Fecha Límite de Pago</label>
-    </p-floatlabel>
-  </div>
-
-  <div class="col-span-12 sm:col-span-7">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        type="text"
-        id="notas"
-        pInputText
-        formControlName="notas"
-        class="w-full"
-        autocomplete="off"
-      />
-      <label for="notas">Notas / Detalles</label>
-    </p-floatlabel>
-  </div>
-
-  <!-- BOTONES DE ACCIÓN (ALINEADOS A LA DERECHA) -->
-  <div class="col-span-12 flex justify-end items-center gap-3 pt-3 mt-2 border-t border-slate-100">
-    <button pButton type="button"
-      size="small"
-     
-      [text]="true"
-     
-      severity="secondary"
-      (click)="cancelar()">
-  <i class="pi pi-times"></i>
-  <span>Cancelar</span>
-</button>
-    <button pButton type="submit"
-     
-     
-      size="small"
-      severity="primary">
-  <span>{{ esEdicion ? 'Actualizar Partida' : 'Guardar Partida' }}</span>
-
-  <i class="pi pi-check"></i>
- </button>
-  </div>
-
 </form>

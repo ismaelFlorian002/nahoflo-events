@@ -1,83 +1,90 @@
-<form [formGroup]="form" (ngSubmit)="guardar()" class="grid grid-cols-12 gap-x-5 gap-y-7 pt-6">
-  
-  <!-- FILA 1: HORA (6 COLS) Y RESPONSABLE (6 COLS) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="hora"
-        type="time"
-        formControlName="hora"
-        class="w-full"
-        autocomplete="off" />
-      <label for="hora">Hora de Inicio *</label>
-    </p-floatlabel>
-  </div>
+@let responsableActual = form.get('responsable')?.value;
+<form [formGroup]="form" (ngSubmit)="guardar()" class="flex flex-col gap-5 pt-2">
 
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <p-select
-        id="responsable"
-        inputId="responsable"
-        [options]="opcionesResponsables"
-        optionLabel="label"
-        optionValue="value"
-        formControlName="responsable"
-        styleClass="w-full"
-        placeholder="Seleccionar Responsable">
-      </p-select>
-      <label for="responsable">Responsable Principal *</label>
-    </p-floatlabel>
-  </div>
+  <!-- MOMENTO -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-clock text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Momento</h3>
+    </div>
 
-  <!-- FILA 2: ACTIVIDAD / MOMENTO CLAVE (12 COLS) -->
-  <div class="col-span-12 flex flex-col gap-1">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        pInputText
-        id="actividad"
-        type="text"
-        formControlName="actividad"
-        class="w-full"
-        autocomplete="off" />
-      <label for="actividad">Nombre del Momento / Actividad * (ej. Entrada a la Pista)</label>
-    </p-floatlabel>
-    @if (form.get('actividad')?.touched && form.get('actividad')?.invalid) {
-      <span class="text-xs text-rose-500 font-semibold pl-1">Por favor indica qué actividad ocurrirá.</span>
-    }
-  </div>
+    <div class="grid grid-cols-1 sm:grid-cols-[9rem_1fr] gap-3">
+      <p-floatlabel variant="on" class="block">
+        <input pInputText id="hora" type="time" formControlName="hora" class="w-full" autocomplete="off" />
+        <label for="hora">Hora *</label>
+      </p-floatlabel>
 
-  <!-- FILA 3: DETALLES Y REQUERIMIENTOS (12 COLS) -->
-  <div class="col-span-12">
-    <p-floatlabel variant="on" class="w-full block">
-      <textarea
-        id="detalles"
-        pTextarea
-        formControlName="detalles"
-        rows="3"
-        class="w-full"
-        placeholder="Ej. Canción: A Thousand Years. Chisperos fríos encendidos al segundo 45..."></textarea>
-      <label for="detalles">Detalles Técnicos / Notas para el Staff</label>
-    </p-floatlabel>
-  </div>
+      <div class="flex flex-col gap-1">
+        <p-floatlabel variant="on" class="block">
+          <input pInputText id="actividad" type="text" formControlName="actividad" class="w-full" autocomplete="off" />
+          <label for="actividad">¿Qué sucede? *</label>
+        </p-floatlabel>
+        @if (form.get('actividad')?.touched && form.get('actividad')?.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Indica qué actividad ocurrirá.</span>
+        } @else {
+          <span class="text-[11px] text-gray-400 pl-1">Ej. Entrada de los novios, Vals, Corte de pastel.</span>
+        }
+      </div>
+    </div>
+  </section>
 
-  <!-- BOTONES DE ACCIÓN -->
-  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <button pButton type="button"
-     
-      severity="danger"
-      [text]="true"
-      size="small"
-      (click)="cancelar()">
-  <span>Cancelar</span>
-</button>
+  <!-- RESPONSABLE -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-user text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Responsable</h3>
+    </div>
 
-    <button pButton type="submit"
-     
-     
-      size="small">
-  <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
-  <span>{{ esEdicion ? 'Guardar Cambios' : 'Agregar al Minutario' }}</span>
- </button>
+    <div class="flex flex-wrap gap-2">
+      @for (op of opcionesResponsables; track op.value) {
+        @let activo = responsableActual === op.value;
+        <button type="button"
+          class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors"
+          [ngClass]="activo
+            ? 'bg-gold-50 border-gold-400 text-gold-700'
+            : 'bg-white border-gray-200 text-gray-600 hover:border-gold-200 hover:bg-gold-50/50'"
+          [attr.aria-pressed]="activo"
+          (click)="form.patchValue({ responsable: op.value })">
+          @if (activo) {
+            <i class="pi pi-check text-[10px]"></i>
+          }
+          {{ op.label }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- NOTAS -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-file-edit text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Notas para el staff</h3>
+      <span class="text-xs text-gray-400">Opcional</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <p-floatlabel variant="on" class="block">
+        <textarea id="detalles" pTextarea formControlName="detalles" rows="3" class="w-full resize-none"></textarea>
+        <label for="detalles">Detalles técnicos</label>
+      </p-floatlabel>
+      <span class="text-[11px] text-gray-400 pl-1">Ej. Canción: A Thousand Years · Chisperos fríos al segundo 45.</span>
+    </div>
+  </section>
+
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-end gap-2">
+    <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="cancelar()">
+      <span>Cancelar</span>
+    </button>
+    <button pButton type="submit" size="small">
+      <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-plus'"></i>
+      <span>{{ esEdicion ? 'Guardar cambios' : 'Agregar momento' }}</span>
+    </button>
   </div>
 </form>

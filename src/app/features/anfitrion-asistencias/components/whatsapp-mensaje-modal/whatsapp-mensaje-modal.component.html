@@ -1,117 +1,75 @@
-<div class="whatsapp-mensaje-modal flex flex-col gap-4 p-1 max-w-full overflow-x-hidden">
+@let pases = invitado.pasesConfirmados || 1;
 
-  <!-- TARJETA 1: DATOS DEL DESTINATARIO (ESTILO DETALLE DEL EVENTO) -->
-  <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-    <div class="flex items-center justify-between pb-2 mb-3 border-b border-gray-100">
+<div class="flex flex-col gap-5 pt-2">
+
+  <!-- DESTINATARIO -->
+  <section class="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/60 p-3.5">
+    <span class="w-11 h-11 rounded-full bg-gold-50 text-gold-700 border border-gold-100 text-base font-semibold flex items-center justify-center shrink-0 select-none">
+      {{ (invitado.nombre || '?').trim().charAt(0).toUpperCase() }}
+    </span>
+    <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2">
-        <i class="pi pi-user text-gold-500 text-base"></i>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Datos del Destinatario</h4>
-      </div>
-      <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full capitalize"
-            [ngClass]="{
-          'bg-emerald-50 text-emerald-700 border border-emerald-100': invitado.estado === 'confirmado' || invitado.asistira,
-          'bg-amber-50 text-amber-700 border border-amber-200': invitado.estado === 'pendiente' || (!invitado.asistira && invitado.estado !== 'declinado'),
-          'bg-red-50 text-red-700 border border-red-200': invitado.estado === 'declinado'
-        }">
-        {{ invitado.estado || 'Pendiente' }}
-      </span>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div>
-        <span class="block text-xs text-gray-400">Nombre Completo</span>
-        <span>{{ invitado.nombre }}</span>
-      </div>
-
-      <div>
-        <span class="block text-xs text-gray-400">Teléfono WhatsApp</span>
-        @if (invitado.telefono) {
-          <span class="text-sm font-medium text-gray-800 flex items-center gap-1.5 mt-0.5">
-            <i class="pi pi-phone text-emerald-600 text-xs"></i>
-            {{ invitado.telefono }}
-          </span>
+        <span class="text-sm font-semibold text-gray-900 truncate">{{ invitado.nombre }}</span>
+        @if (invitado.estado === 'declinado') {
+          <p-tag value="No asiste" severity="danger" [rounded]="true" />
+        } @else if (invitado.estado === 'confirmado' || invitado.asistira) {
+          <p-tag value="Confirmado" severity="success" [rounded]="true" />
         } @else {
-          <span class="text-xs text-amber-600 italic">Sin número registrado</span>
+          <p-tag value="Pendiente" severity="warn" [rounded]="true" />
         }
       </div>
-
-      <div>
-        <span class="block text-xs text-gray-400">Pases Autorizados</span>
-        <span
-          class="text-xs font-semibold px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 border border-gold-200 inline-block mt-0.5">
-          🎟️ {{ invitado.pasesConfirmados || 1 }} {{ (invitado.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
-        </span>
-      </div>
-
-      <div>
-        <span class="block text-xs text-gray-400">Mesa Asignada</span>
-        <span class="text-xs font-medium text-gray-700 inline-block mt-0.5">
-          🪑 {{ invitado.mesa || 'Sin mesa asignada' }}
-        </span>
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-1 text-xs text-gray-500">
+        @if (invitado.telefono) {
+          <span class="inline-flex items-center gap-1"><i class="pi pi-whatsapp text-[11px] text-emerald-600"></i>{{ invitado.telefono }}</span>
+        }
+        <span class="inline-flex items-center gap-1"><i class="pi pi-ticket text-[11px]"></i>{{ pases }} {{ pases === 1 ? 'pase' : 'pases' }}</span>
+        <span class="inline-flex items-center gap-1"><i class="pi pi-th-large text-[11px]"></i>{{ invitado.mesa || 'Sin mesa' }}</span>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- TARJETA 2: MENSAJE PERSONALIZADO EDITABLE -->
-  <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-    <div class="flex items-center justify-between pb-2 mb-2 border-b border-gray-100">
-      <div class="flex items-center gap-2">
-        <i class="pi pi-whatsapp text-emerald-600 text-base"></i>
-        <h4 class="text-sm font-bold text-gray-800 m-0">Mensaje a Enviar</h4>
-      </div>
-      <span class="text-[11px] text-gray-400 font-medium">Usa *asteriscos* para negrita</span>
+  @if (!invitado.telefono) {
+    <p-message severity="warn" icon="pi pi-exclamation-circle">
+      <span class="text-sm">Este invitado no tiene teléfono. Al enviar, WhatsApp te pedirá elegir el contacto.</span>
+    </p-message>
+  }
+
+  <!-- MENSAJE -->
+  <section class="flex flex-col gap-1.5">
+    <p-floatlabel variant="on" class="w-full block">
+      <textarea
+        pTextarea
+        id="mensajePersonalizado"
+        [autoResize]="true"
+        rows="8"
+        [(ngModel)]="mensajeTexto"
+        class="w-full text-sm leading-relaxed"></textarea>
+      <label for="mensajePersonalizado">Mensaje para {{ invitado.nombre }}</label>
+    </p-floatlabel>
+    <div class="flex items-center justify-between gap-2 text-xs text-gray-400">
+      <span>Los cambios solo aplican a este envío. Usa *asteriscos* para negrita.</span>
+      <span class="tabular-nums shrink-0">{{ mensajeTexto.length }} caracteres</span>
     </div>
+  </section>
 
-    <p class="text-xs text-gray-500 mb-2">
-      Puedes ajustar el texto para este invitado antes de abrir WhatsApp o copiarlo:
-    </p>
-
-    <textarea
-      pTextarea
-      [autoResize]="true"
-      rows="7"
-      [(ngModel)]="mensajeTexto"
-      placeholder="Escribe el mensaje..."
-      class="w-full text-xs font-sans p-3 rounded-xl border border-gray-300 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20 text-gray-800 bg-gray-50/40 leading-relaxed shadow-xs"
-    ></textarea>
-  </div>
-
-  <!-- PIE DE ACCIONES -->
-  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-      <button pButton type="button"
-       
-       
-        size="small"
-        [text]="true"
-        severity="danger"
-        (click)="ref.close()"
-      >
-  <i class="pi pi-times"></i>
-  <span>Cerrar</span>
-</button>
-      <button pButton type="button"
-       
-       
-        text="true"
-        size="small"
-        severity="secondary"
-        (click)="copiarTexto()"
-       
-      >
-  <i class="pi pi-copy"></i>
-  <span>Copiar Texto</span>
-</button>
-
-      <button pButton type="button"
-       
-       
-        size="small"
-        severity="success"
-        (click)="enviarWhatsApp()"
-       
-      >
-  <i class="pi pi-whatsapp"></i>
-  <span>Enviar</span>
-</button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-between gap-2">
+    <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="ref.close()">
+      <span>Cerrar</span>
+    </button>
+    <div class="flex items-center gap-2">
+      <button pButton type="button" size="small" severity="secondary" [outlined]="true"
+        [disabled]="!mensajeTexto"
+        (click)="copiarTexto()">
+        <i class="pi pi-copy"></i>
+        <span>Copiar</span>
+      </button>
+      <button pButton type="button" size="small" severity="success"
+        [disabled]="!mensajeTexto"
+        (click)="enviarWhatsApp()">
+        <i class="pi pi-whatsapp"></i>
+        <span>Enviar por WhatsApp</span>
+      </button>
     </div>
   </div>
+</div>

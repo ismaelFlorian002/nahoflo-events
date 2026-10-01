@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -22,7 +21,7 @@ import { MinutarioItemModalComponent } from '../minutario-item-modal/minutario-i
 @Component({
   selector: 'app-minutario-timeline',
   standalone: true,
-  imports: [CommonModule, ButtonModule, ProgressBarModule, TagModule, TooltipModule],
+  imports: [CommonModule, ButtonModule, TagModule, TooltipModule],
   providers: [DialogService],
   templateUrl: './minutario-timeline.component.html',
   styleUrl: './minutario-timeline.component.scss',
@@ -55,6 +54,7 @@ export class MinutarioTimelineComponent {
     if (tot === 0) return 0;
     return Math.round((this.completadosCount() / tot) * 100);
   });
+  siguienteItem = computed(() => this.itemsMinutario().find((i) => !i.completado) ?? null);
 
   // Marca / Desmarca un ítem como completado en tiempo real
   async toggleCompletado(item: ItemMinutario): Promise<void> {
@@ -84,9 +84,9 @@ export class MinutarioTimelineComponent {
 
     const esEdicion = !!item;
     const ref = this.dialogService.open(MinutarioItemModalComponent, {
-      header: esEdicion ? 'Editar Momento' : 'Agregar Momento al Minutario',
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '95vw' },
+      header: esEdicion ? 'Editar momento' : 'Nuevo momento',
+      width: '560px',
+      breakpoints: { '620px': '94vw' },
       closable: true,
       data: item ? { item } : undefined,
     });

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
+import { TextareaModule } from 'primeng/textarea';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { TareaPlaneacion } from '../../../../core/models/event.model';
@@ -17,7 +17,7 @@ import { DatePickerModule } from 'primeng/datepicker';
     ReactiveFormsModule,
     ButtonModule,
     InputTextModule,
-    SelectModule,
+    TextareaModule,
     FloatLabelModule,
     DatePickerModule,
   ],

@@ -16,7 +16,6 @@ import { InvitadoModel } from '../../../../core/models/invitado.model';
 import { copiarAlPortapapeles } from '../../../../core/utils/clipboard.util';
 import { WhatsappMensajeModalComponent } from '../whatsapp-mensaje-modal/whatsapp-mensaje-modal.component';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'app-whatsapp-messaging-center',
@@ -33,7 +32,6 @@ import { BadgeModule } from 'primeng/badge';
     TooltipModule,
     PopoverModule,
     FloatLabelModule,
-    BadgeModule,
   ],
   templateUrl: './whatsapp-messaging-center.component.html',
   styleUrl: './whatsapp-messaging-center.component.scss',
@@ -305,9 +303,9 @@ export class WhatsappMessagingCenterComponent implements OnInit {
   abrirModalMensajeInvitado(invitado: InvitadoModel): void {
     const textoPersonalizado = this.procesarPlantilla(this.mensajeTexto(), invitado);
     this.dialogService.open(WhatsappMensajeModalComponent, {
-      header: `Mensaje WhatsApp — ${invitado.nombre}`,
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '94vw' },
+      header: 'Personalizar mensaje',
+      width: '600px',
+      breakpoints: { '660px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: {

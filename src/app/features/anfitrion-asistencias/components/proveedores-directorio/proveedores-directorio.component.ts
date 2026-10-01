@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Evento, ProveedorEvento } from '../../../../core/models/event.model';
@@ -11,7 +10,6 @@ import { EventService } from '../../../../core/services/event.service';
 import { ProveedorModalComponent } from '../proveedor-modal/proveedor-modal.component';
 import { PopoverModule } from 'primeng/popover';
 import { TooltipModule } from 'primeng/tooltip';
-import { BadgeModule } from 'primeng/badge';
 
 @Component({
   selector: 'app-proveedores-directorio',
@@ -21,10 +19,8 @@ import { BadgeModule } from 'primeng/badge';
     FormsModule,
     ButtonModule,
     InputTextModule,
-    SelectModule,
     PopoverModule,
     TooltipModule,
-    BadgeModule,
   ],
   templateUrl: './proveedores-directorio.component.html',
   styleUrl: './proveedores-directorio.component.scss',
@@ -63,6 +59,17 @@ export class ProveedoresDirectorioComponent {
 
     return lista;
   });
+
+  totalContratos = computed(() =>
+    this.proveedores().reduce((acc, p) => acc + (Number(p.montoContrato) || 0), 0),
+  );
+  categoriasCubiertas = computed(() => new Set(this.proveedores().map((p) => p.categoria)).size);
+  proveedoresSinTelefono = computed(() => this.proveedores().filter((p) => !p.telefono).length);
+
+  emojiCategoria(categoria: string): string {
+    const found = this.categoriasFiltro.find((c) => c.value === categoria && c.value !== 'todas');
+    return found ? found.label.split(' ')[0] : '✨';
+  }
 
   categoriasFiltro = [
     { label: 'Todas las Categorías', value: 'todas' },
@@ -112,9 +119,9 @@ export class ProveedoresDirectorioComponent {
   abrirModalProveedor(proveedor?: ProveedorEvento): void {
     const esEdicion = !!proveedor;
     const ref = this.dialogService.open(ProveedorModalComponent, {
-      header: esEdicion ? 'Editar Proveedor' : 'Añadir Nuevo Proveedor',
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '94vw' },
+      header: esEdicion ? 'Editar proveedor' : 'Nuevo proveedor',
+      width: '600px',
+      breakpoints: { '660px': '94vw' },
       closable: true,
       dismissableMask: true,
       data: proveedor ? { proveedor } : undefined,

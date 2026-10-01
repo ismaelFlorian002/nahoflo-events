@@ -11,6 +11,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
+import { TagModule } from 'primeng/tag';
+import { InputTextModule } from 'primeng/inputtext';
 import { Evento } from '../../../../core/models/event.model';
 import { InvitadoModel } from '../../../../core/models/invitado.model';
 import { QrScannerService } from '../../services/qr-scanner.service';
@@ -19,7 +21,7 @@ import { AudioFeedbackService } from '../../services/audio-feedback.service';
 @Component({
   selector: 'app-scanner-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, TooltipModule],
+  imports: [CommonModule, FormsModule, ButtonModule, TooltipModule, TagModule, InputTextModule],
   templateUrl: './scanner-view.component.html',
   styleUrl: '../../anfitrion-asistencias.component.scss',
 })

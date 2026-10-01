@@ -1,191 +1,274 @@
-<div class="seccion-recepcion">
+@let controlTotal = evento()?.modulos?.tipoControlInvitados === 'total';
+<div class="flex flex-col gap-5">
 
-  <!-- 1. MÉTRICAS DE AFORO EN VIVO (SLIM HORIZONTAL) -->
-  <div class="kpi-grid-recepcion">
-    <div class="kpi-card-recepcion ingresados">
-      <div class="kpi-left">
-        <div class="kpi-badge-porcentaje">
-          {{ porcentajeAsistencia() }}%
-        </div>
-        <span class="kpi-label">Pases en Sala</span>
-      </div>
-      <span class="kpi-value">{{ totalIngresados() }}</span>
+  <!-- CABECERA -->
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
+      <i class="pi pi-sign-in"></i>
     </div>
-
-    <div class="kpi-card-recepcion pendientes">
-      <div class="kpi-left">
-        <div class="kpi-icon"><i class="pi pi-clock"></i></div>
-        <span class="kpi-label">Pases Pendientes</span>
+    <div>
+      <div class="flex items-center gap-2">
+        <h2 class="text-lg font-semibold text-gray-900 m-0">Recepción</h2>
+        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium">
+          {{ controlTotal ? 'Pases con QR' : 'Lista en puerta' }}
+        </span>
       </div>
-      <span class="kpi-value">{{ totalPendientes() }}</span>
-    </div>
-
-    <div class="kpi-card-recepcion totales">
-      <div class="kpi-left">
-        <div class="kpi-icon"><i class="pi pi-ticket"></i></div>
-        <span class="kpi-label">Pases Totales</span>
-      </div>
-      <span class="kpi-value">{{ totalPases() }}</span>
+      <p class="text-sm text-gray-500 m-0">
+        {{ controlTotal ? 'Escanea los pases o busca al invitado para registrar su llegada.' : 'Busca al invitado para registrar su llegada.' }}
+      </p>
     </div>
   </div>
 
-  <!-- 2. PANEL DUAL: ESCÁNER DE CÁMARA (IZQ) Y BÚSQUEDA MANUAL (DER) -->
-  <div class="grid-puerta" [class.solo-manual]="evento()?.modulos?.tipoControlInvitados !== 'total'">
+  <!-- INDICADORES -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex flex-col gap-2.5">
+      <div class="flex items-center gap-3">
+        <span class="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+          <i class="pi pi-users text-sm"></i>
+        </span>
+        <div class="min-w-0 flex-1">
+          <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight">
+            {{ totalIngresados() }}<span class="text-sm font-medium text-gray-400"> / {{ totalPases() }}</span>
+          </span>
+          <span class="block text-xs text-gray-500 truncate">Pases en sala</span>
+        </div>
+        <span class="text-xs font-semibold text-emerald-600 tabular-nums">{{ porcentajeAsistencia() }}%</span>
+      </div>
+      <div class="h-1.5 w-full rounded-full bg-gray-100 overflow-hidden">
+        <div class="h-full rounded-full bg-emerald-500 transition-all duration-500"
+          [style.width.%]="porcentajeAsistencia()"></div>
+      </div>
+    </div>
 
-    <!-- COLUMNA A: ESCÁNER DE CÁMARA QR (SOLO EN MODO CONTROL TOTAL VIP) -->
-    @if (evento()?.modulos?.tipoControlInvitados === 'total') {
-      <div class="col-escaner">
-        <div class="card-escaner">
-          <div class="cabecera-card-puerta">
-            <h3><i class="pi pi-camera"></i> Escáner en Puerta</h3>
-            <button pButton
-             
-              [severity]="escanerActivo() ? 'danger' : 'primary'"
-              size="small"
-              (click)="toggleEscaner()">
-  <i [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
-  <span>{{ escanerActivo() ? 'Detener Cámara' : 'Activar Cámara' }}</span>
- </button>
-          </div>
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-clock text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight">{{ totalPendientes() }}</span>
+        <span class="block text-xs text-gray-500 truncate">Pases por llegar</span>
+      </div>
+    </div>
 
-          <!-- VISOR DE CÁMARA -->
-          <div class="contenedor-visor">
-            <div id="qr-reader" class="visor-camara"></div>
+    <div class="bg-white rounded-xl border border-gray-100 px-3.5 py-3 flex items-center gap-3">
+      <span class="w-9 h-9 rounded-lg bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-ticket text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-lg font-bold text-gray-900 tabular-nums leading-tight">{{ totalPases() }}</span>
+        <span class="block text-xs text-gray-500 truncate">Pases totales</span>
+      </div>
+    </div>
+  </div>
 
-            @if (!escanerActivo()) {
-              <div class="camara-placeholder" (click)="iniciarEscaner()">
-                <i class="pi pi-qrcode"></i>
-                <p>Haz clic para encender la cámara y escanear pases VIP</p>
-              </div>
+  <!-- PANEL DE PUERTA -->
+  <div class="grid grid-cols-1 gap-5" [ngClass]="controlTotal ? 'lg:grid-cols-2' : ''">
+
+    <!-- ESCÁNER QR (SOLO CONTROL TOTAL) -->
+    @if (controlTotal) {
+      <section class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col gap-4">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+              <i class="pi pi-camera text-xs"></i>
+            </span>
+            <h3 class="text-sm font-semibold text-gray-900 m-0">Escáner en puerta</h3>
+            @if (escanerActivo()) {
+              <span class="inline-flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                En vivo
+              </span>
             }
           </div>
+          <button pButton size="small"
+            [severity]="escanerActivo() ? 'danger' : 'primary'"
+            [outlined]="escanerActivo()"
+            (click)="toggleEscaner()">
+            <i [class]="escanerActivo() ? 'pi pi-power-off' : 'pi pi-video'"></i>
+            <span>{{ escanerActivo() ? 'Detener' : 'Activar cámara' }}</span>
+          </button>
+        </div>
 
-          <!-- TARJETA DINÁMICA DE RESULTADO DE ESCANEO -->
-          @if (resultadoEscaneo(); as res) {
-            <div class="alerta-escaneo" [class]="res.tipo">
-              <div class="alerta-icono">
-                @if (res.tipo === 'exito') {
-                  <i class="pi pi-check-circle"></i>
-                } @else if (res.tipo === 'duplicado') {
-                  <i class="pi pi-exclamation-triangle"></i>
-                } @else {
-                  <i class="pi pi-times-circle"></i>
-                }
-              </div>
-              <div class="alerta-contenido">
-                <h4>{{ res.mensaje }}</h4>
-                @if (res.invitado; as inv) {
-                  <p class="alerta-detalles flex flex-wrap items-center gap-2 mt-1">
-                    <strong>{{ inv.nombre }}</strong> · {{ inv.pasesIngresados || inv.pasesConfirmados }} pases
-                    @if (inv.mesa) {
-                      <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded text-xs">
-                        <i class="pi pi-th-large text-[11px]"></i> {{ inv.mesa }}
-                      </span>
-                    }
-                    @if (res.hora) {
-                      <span>({{ res.hora }})</span>
-                    }
-                  </p>
-                  @if (inv.restriccionesAlimentarias) {
-                    <div class="mt-2 bg-red-100 border border-red-300 text-red-900 text-xs font-semibold p-1.5 rounded flex items-center gap-1.5">
-                      <i class="pi pi-exclamation-triangle text-red-600"></i>
-                      <span>ALERTA ALERGIAS: {{ inv.restriccionesAlimentarias }}</span>
-                    </div>
-                  }
-                  @if (res.tipo === 'exito') {
-                    <button pButton size="small"
-                      [text]="true"
-                      severity="secondary"
-                      (click)="revertirCheckIn(inv)">
-  <i class="pi pi-undo"></i>
-  <span>Deshacer ingreso</span>
-</button>
-                  }
-                }
-              </div>
-            </div>
+        <!-- VISOR DE CÁMARA -->
+        <div class="relative min-h-[280px] rounded-xl bg-slate-900 overflow-hidden flex items-center justify-center">
+          <div id="qr-reader" class="w-full [&_video]:object-cover [&_video]:rounded-xl"></div>
+
+          @if (!escanerActivo()) {
+            <button type="button"
+              class="group absolute inset-0 w-full flex flex-col items-center justify-center gap-3 p-6 text-center bg-transparent border-0 cursor-pointer"
+              (click)="iniciarEscaner()">
+              <span class="w-16 h-16 rounded-2xl bg-white/10 text-gold-400 flex items-center justify-center transition-transform group-hover:scale-105">
+                <i class="pi pi-qrcode text-3xl"></i>
+              </span>
+              <span class="text-sm font-medium text-white">Toca para encender la cámara</span>
+              <span class="text-xs text-slate-400 max-w-[240px]">Apunta al código QR del pase del invitado para registrar su acceso.</span>
+            </button>
           }
         </div>
-      </div>
-    }
 
-    <!-- COLUMNA B: BÚSQUEDA Y CHECK-IN MANUAL -->
-    <div class="col-manual">
-      <div class="card-manual">
-        <div class="cabecera-card-puerta">
-          <h3><i
-            class="pi pi-list"></i> {{ evento()?.modulos?.tipoControlInvitados === 'total' ? 'Búsqueda Nominal de Respaldo' : 'Lista de Recepción en Puerta' }}
-          </h3>
-          <span
-            class="subtexto-puerta">{{ evento()?.modulos?.tipoControlInvitados === 'total' ? 'Por si el invitado no tiene celular' : 'Busca por nombre o apellido para registrar el acceso' }}</span>
-        </div>
+        <!-- RESULTADO DEL ESCANEO -->
+        @if (resultadoEscaneo(); as res) {
+          <div class="flex items-start gap-3 rounded-xl border p-3.5"
+            [ngClass]="{
+              'bg-emerald-50 border-emerald-200': res.tipo === 'exito',
+              'bg-amber-50 border-amber-200': res.tipo === 'duplicado',
+              'bg-rose-50 border-rose-200': res.tipo === 'invalido'
+            }">
+            <span class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+              [ngClass]="{
+                'bg-emerald-100 text-emerald-600': res.tipo === 'exito',
+                'bg-amber-100 text-amber-600': res.tipo === 'duplicado',
+                'bg-rose-100 text-rose-600': res.tipo === 'invalido'
+              }">
+              <i class="pi"
+                [ngClass]="res.tipo === 'exito' ? 'pi-check' : res.tipo === 'duplicado' ? 'pi-exclamation-triangle' : 'pi-times'"></i>
+            </span>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-semibold m-0"
+                [ngClass]="{
+                  'text-emerald-800': res.tipo === 'exito',
+                  'text-amber-800': res.tipo === 'duplicado',
+                  'text-rose-800': res.tipo === 'invalido'
+                }">{{ res.mensaje }}</p>
 
-        <!-- BUSCADOR RÁPIDO EN PUERTA -->
-        <div class="buscador-recepcion">
-          <i class="pi pi-search"></i>
-          <input
-            type="text"
-            [ngModel]="busquedaRecepcion()"
-            (ngModelChange)="busquedaRecepcion.set($event)"
-            placeholder="Buscar por nombre o familia..."
-            class="input-busqueda-recepcion" />
-        </div>
-
-        <!-- LISTADO DE INVITADOS CON CHECK-IN RÁPIDO -->
-        <div class="lista-invitados-recepcion">
-          @for (inv of invitadosRecepcionFiltrados(); track inv.id) {
-            <div class="item-recepcion" [class.ingresado]="inv.haIngresado">
-              <div class="info-invitado-puerta flex flex-col gap-0.5">
-                <span class="nombre-puerta">{{ inv.nombre }}</span>
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="pases-puerta">
-                    <i class="pi pi-ticket"></i> {{ inv.pasesConfirmados || 1 }} pases confirmados
+              @if (res.invitado; as inv) {
+                <div class="flex flex-wrap items-center gap-1.5 mt-1.5 text-xs text-gray-600">
+                  <span class="font-semibold text-gray-900">{{ inv.nombre }}</span>
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/70 border border-gray-200">
+                    <i class="pi pi-ticket text-[10px]"></i>
+                    {{ inv.pasesIngresados || inv.pasesConfirmados }} pases
                   </span>
                   @if (inv.mesa) {
-                    <span class="inline-flex items-center gap-1 text-[11px] bg-amber-100 text-amber-900 font-bold px-1.5 py-0.2 rounded">
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 font-medium">
                       <i class="pi pi-th-large text-[10px]"></i> {{ inv.mesa }}
                     </span>
                   }
-                  @if (inv.restriccionesAlimentarias) {
-                    <span class="inline-flex items-center gap-1 text-[10px] bg-red-100 text-red-700 px-1.5 py-0.2 rounded font-semibold" [pTooltip]="inv.restriccionesAlimentarias" tooltipPosition="top">
-                      <i class="pi pi-exclamation-triangle"></i> Alergias
+                  @if (res.hora) {
+                    <span class="inline-flex items-center gap-1 text-gray-500">
+                      <i class="pi pi-clock text-[10px]"></i> {{ res.hora }}
                     </span>
                   }
                 </div>
-              </div>
 
-              <div class="accion-invitado-puerta">
-                @if (inv.haIngresado) {
-                  <span class="badge-ingresado">
-                    <i class="pi pi-check"></i> Ingresó {{ formatearFecha(inv.horaIngreso) }}
-                  </span>
-                  <button pButton [rounded]="true"
-                    [text]="true"
-                    severity="secondary"
-                    size="small"
-                    pTooltip="Revertir ingreso"
-                    tooltipPosition="left"
+                @if (inv.restriccionesAlimentarias) {
+                  <div class="mt-2 flex items-center gap-1.5 rounded-lg bg-rose-100 text-rose-800 text-xs font-medium px-2.5 py-1.5">
+                    <i class="pi pi-exclamation-triangle text-rose-600"></i>
+                    <span>Alergias: {{ inv.restriccionesAlimentarias }}</span>
+                  </div>
+                }
+
+                @if (res.tipo === 'exito') {
+                  <button pButton size="small" severity="secondary" [text]="true" class="mt-1 -ml-2"
                     (click)="revertirCheckIn(inv)">
-  <i class="pi pi-undo"></i>
-</button>
-                } @else {
-                  <button pButton size="small"
-                    (click)="hacerCheckIn(inv)">
-  <i class="pi pi-sign-in"></i>
-  <span>Dar Acceso</span>
-</button>
+                    <i class="pi pi-undo"></i>
+                    <span>Deshacer ingreso</span>
+                  </button>
+                }
+              }
+            </div>
+          </div>
+        }
+      </section>
+    }
+
+    <!-- BÚSQUEDA Y CHECK-IN MANUAL -->
+    <section class="bg-white rounded-2xl border border-gray-100 p-4 sm:p-5 flex flex-col gap-4 min-w-0">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+              <i class="pi pi-list text-xs"></i>
+            </span>
+            <h3 class="text-sm font-semibold text-gray-900 m-0">
+              {{ controlTotal ? 'Búsqueda manual' : 'Lista de recepción' }}
+            </h3>
+          </div>
+          <p class="text-xs text-gray-500 mt-1 mb-0">
+            {{ controlTotal ? 'Para invitados que no traen su pase en el celular.' : 'Busca por nombre o teléfono para registrar el acceso.' }}
+          </p>
+        </div>
+        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs font-medium whitespace-nowrap">
+          {{ invitadosRecepcionFiltrados().length }} {{ invitadosRecepcionFiltrados().length === 1 ? 'invitado' : 'invitados' }}
+        </span>
+      </div>
+
+      <!-- BUSCADOR -->
+      <span class="p-input-icon-left w-full">
+        <i class="pi pi-search text-gray-400"></i>
+        <input pInputText type="text"
+          class="w-full rounded-xl border border-gray-200 text-sm py-2 pl-9 pr-3"
+          [ngModel]="busquedaRecepcion()"
+          (ngModelChange)="busquedaRecepcion.set($event)"
+          placeholder="Buscar por nombre o teléfono..." />
+      </span>
+
+      <!-- LISTADO -->
+      <div class="flex flex-col gap-2 max-h-[460px] overflow-y-auto -mx-1 px-1">
+        @for (inv of invitadosRecepcionFiltrados(); track inv.id) {
+          <div class="flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-colors"
+            [ngClass]="inv.haIngresado ? 'bg-emerald-50/50 border-emerald-100' : 'bg-white border-gray-100 hover:border-gold-200'">
+            <span class="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
+              [ngClass]="inv.haIngresado ? 'bg-emerald-100 text-emerald-700' : 'bg-gold-50 text-gold-700'">
+              @if (inv.haIngresado) {
+                <i class="pi pi-check text-xs"></i>
+              } @else {
+                {{ (inv.nombre || '?').trim().charAt(0).toUpperCase() }}
+              }
+            </span>
+
+            <div class="min-w-0 flex-1">
+              <span class="block text-sm font-medium text-gray-900 truncate">{{ inv.nombre }}</span>
+              <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                <span class="inline-flex items-center gap-1 text-xs text-gray-500">
+                  <i class="pi pi-ticket text-[10px]"></i>
+                  {{ inv.pasesConfirmados || 1 }} {{ (inv.pasesConfirmados || 1) === 1 ? 'pase' : 'pases' }}
+                </span>
+                @if (inv.mesa) {
+                  <span class="inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded-md bg-gold-50 text-gold-700 font-medium">
+                    <i class="pi pi-th-large text-[9px]"></i> {{ inv.mesa }}
+                  </span>
+                }
+                @if (inv.restriccionesAlimentarias) {
+                  <span class="inline-flex items-center gap-1 text-[11px] px-1.5 py-0.5 rounded-md bg-rose-50 text-rose-600 font-medium"
+                    [pTooltip]="inv.restriccionesAlimentarias" tooltipPosition="top">
+                    <i class="pi pi-exclamation-triangle text-[9px]"></i> Alergias
+                  </span>
                 }
               </div>
             </div>
-          } @empty {
-            <div class="vacio-recepcion">
-              <p>No se encontraron invitados confirmados con ese nombre.</p>
+
+            <div class="flex items-center gap-1 shrink-0">
+              @if (inv.haIngresado) {
+                <div class="hidden sm:flex flex-col items-end leading-tight">
+                  <span class="text-xs font-semibold text-emerald-700">Ingresó</span>
+                  <span class="text-[11px] text-gray-500">{{ formatearFecha(inv.horaIngreso) }}</span>
+                </div>
+                <p-tag class="sm:hidden" severity="success" value="Ingresó" icon="pi pi-check" [rounded]="true"></p-tag>
+                <button pButton [rounded]="true" [text]="true" severity="secondary" size="small"
+                  pTooltip="Revertir ingreso" tooltipPosition="left"
+                  (click)="revertirCheckIn(inv)">
+                  <i class="pi pi-undo"></i>
+                </button>
+              } @else {
+                <button pButton size="small" (click)="hacerCheckIn(inv)">
+                  <i class="pi pi-sign-in"></i>
+                  <span>Dar acceso</span>
+                </button>
+              }
             </div>
-          }
-        </div>
+          </div>
+        } @empty {
+          <div class="flex flex-col items-center justify-center gap-2 py-10 text-center">
+            <span class="w-12 h-12 rounded-full bg-gray-50 text-gray-400 flex items-center justify-center">
+              <i class="pi pi-search"></i>
+            </span>
+            <p class="text-sm text-gray-500 m-0">
+              {{ busquedaRecepcion().trim() ? 'No hay invitados confirmados con ese nombre.' : 'Aún no hay invitados confirmados.' }}
+            </p>
+          </div>
+        }
       </div>
-    </div>
+    </section>
 
   </div>
-
 </div>

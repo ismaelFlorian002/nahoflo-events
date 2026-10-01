@@ -5,6 +5,8 @@
     [invitados]="vm.invitados()"
     (eventoActualizado)="vm.onEventoActualizado($event)"
     (invitadosActualizados)="vm.cargarInvitados(ev.id!)"
+    (abrirDetalle)="vm.abrirModalDetalle($event)"
+    (abrirEditar)="vm.abrirModalInvitado($event)"
   >
   </app-croquis-mesas-designer>
 </div>
