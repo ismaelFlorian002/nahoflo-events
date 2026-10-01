@@ -290,6 +290,18 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     return cleanTel ? `https://wa.me/${cleanTel}` : '';
   });
 
+  readonly marcaPortal = computed(() => {
+    const nombre = this.evento()?.agenciaNombre;
+    return this.permiteMarcaBlanca() && nombre ? nombre : 'NahoFlo Creative Studio';
+  });
+
+  readonly ayudaWhatsappUrl = computed(() => {
+    const titulo = this.evento()?.titulo || 'mi evento';
+    const msg = `Hola, necesito ayuda con el portal de anfitrión de ${titulo}.`;
+    const base = (this.permiteMarcaBlanca() && this.whatsappAgenciaUrl()) || 'https://wa.me/524461449505';
+    return `${base}?text=${encodeURIComponent(msg)}`;
+  });
+
   tieneModulosAsistencias = computed(() => {
     return this.tieneControlInvitados() || this.tieneAlbum() || this.tienePlannerSuite();
   });
@@ -582,11 +594,14 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     if (!ev) return;
 
     this.dialogService.open(QrMesaModalComponent, {
-      header: 'Tarjeta QR para Centros de Mesa',
-      width: '560px',
-      breakpoints: { '640px': '95vw' },
+      header: 'QR para mesas',
+      width: '480px',
+      breakpoints: { '540px': '94vw' },
+      closable: true,
       dismissableMask: true,
+      draggable: false,
       focusOnShow: false,
+      closeOnEscape: true,
       data: { evento: ev },
     });
   }

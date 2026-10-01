@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, input, output, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, computed, input, output, signal, viewChild } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
 import { DrawerModule } from 'primeng/drawer';
@@ -21,7 +21,10 @@ export interface PortalNavigationItem {
   templateUrl: './portal-navigation.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './portal-navigation.component.scss',
-  host: { '(document:click)': 'closeOnOutsideClick($event)' },
+  host: {
+    '(document:click)': 'closeOnOutsideClick($event)',
+    '(window:scroll)': 'onWindowScroll()',
+  },
 })
 export class PortalNavigationComponent {
   readonly paths = PORTAL_PATHS;
@@ -35,6 +38,7 @@ export class PortalNavigationComponent {
   readonly exit = output<void>();
   drawerVisible = false;
   collapsed = false;
+  readonly showBackToTop = signal(false);
 
   private readonly desktopMenu = viewChild<ElementRef<HTMLElement>>('desktopMenu');
   private readonly desktopToggle = viewChild<ElementRef<HTMLButtonElement>>('desktopToggle');
@@ -78,6 +82,16 @@ export class PortalNavigationComponent {
     event.stopPropagation();
     this.drawerVisible = false;
     this.exit.emit();
+  }
+
+  onWindowScroll(): void {
+    const visible = window.scrollY > 400;
+    if (visible !== this.showBackToTop()) this.showBackToTop.set(visible);
+  }
+
+  scrollToTop(): void {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
   }
 
   select(section: PortalSection): void {

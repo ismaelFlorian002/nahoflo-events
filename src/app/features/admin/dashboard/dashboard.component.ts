@@ -467,6 +467,8 @@ export class DashboardComponent implements OnInit {
       header: `Código QR para Mesas — ${evento.titulo || evento.nombreEvento}`,
       width: '560px',
       breakpoints: { '640px': '95vw' },
+      closable: true,
+      closeOnEscape: true,
       dismissableMask: true,
       focusOnShow: false,
       data: { evento },

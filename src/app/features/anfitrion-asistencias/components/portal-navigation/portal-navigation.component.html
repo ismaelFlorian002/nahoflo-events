@@ -62,6 +62,18 @@
   </div>
 </div>
 
+<button
+  type="button"
+  class="back-to-top"
+  [class.back-to-top--visible]="showBackToTop()"
+  [attr.aria-hidden]="!showBackToTop()"
+  [attr.tabindex]="showBackToTop() ? 0 : -1"
+  aria-label="Volver al inicio"
+  pTooltip="Volver al inicio"
+  tooltipPosition="left"
+  (click)="scrollToTop()"
+><i class="pi pi-arrow-up" aria-hidden="true"></i></button>
+
 <p-drawer
   [(visible)]="drawerVisible"
   appendTo="body"
