@@ -22,6 +22,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventService } from '../../core/services/event.service';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { Evento } from '../../core/models/event.model';
+import { PerfilUsuario } from '../../core/models/usuario.model';
 import { InvitadoModel } from '../../core/models/invitado.model';
 import { RecuerdoModel } from '../../core/models/RecuerdoModel';
 import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
@@ -295,11 +296,35 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     return this.permiteMarcaBlanca() && nombre ? nombre : 'NahoFlo Creative Studio';
   });
 
-  readonly ayudaWhatsappUrl = computed(() => {
-    const titulo = this.evento()?.titulo || 'mi evento';
-    const msg = `Hola, necesito ayuda con el portal de anfitrión de ${titulo}.`;
-    const base = (this.permiteMarcaBlanca() && this.whatsappAgenciaUrl()) || 'https://wa.me/524461449505';
-    return `${base}?text=${encodeURIComponent(msg)}`;
+  // Contacto del partner dueño del evento (para anfitriones que entran con PIN)
+  readonly esEventoPartner = signal(false);
+  readonly contactoPartner = signal<{ nombre: string; telefono: string } | null>(null);
+
+  // Staff con sesión → soporte NahoFlo; evento de partner → partner; evento directo → NahoFlo
+  readonly ayudaContacto = computed<{ url: string; etiqueta: string } | null>(() => {
+    const ev = this.evento();
+    const msg = `Hola, necesito ayuda con el portal de anfitrión de ${ev?.titulo || 'mi evento'}.`;
+    const urlDe = (tel?: string | null) => {
+      let digitos = (tel || '').replace(/[^0-9]/g, '');
+      if (digitos.length === 10) digitos = `52${digitos}`;
+      return digitos ? `https://wa.me/${digitos}?text=${encodeURIComponent(msg)}` : '';
+    };
+    const soporte = { url: urlDe('4461449505'), etiqueta: '¿Necesitas ayuda? Escríbenos' };
+
+    if (this.accesoStaff()) return soporte;
+
+    if (this.esEventoPartner() || ev?.contactoPartnerTelefono) {
+      const partner = this.contactoPartner();
+      const url = urlDe(ev?.contactoPartnerTelefono) || urlDe(ev?.agenciaTelefono) || urlDe(partner?.telefono);
+      if (!url) return null;
+      const nombre = ev?.contactoPartnerNombre || ev?.agenciaNombre || partner?.nombre;
+      return { url, etiqueta: nombre ? `¿Necesitas ayuda? Escribe a ${nombre}` : '¿Necesitas ayuda? Escribe a tu organizador' };
+    }
+
+    if (this.permiteMarcaBlanca() && ev?.agenciaTelefono) {
+      return { url: urlDe(ev.agenciaTelefono), etiqueta: soporte.etiqueta };
+    }
+    return soporte;
   });
 
   tieneModulosAsistencias = computed(() => {
@@ -404,8 +429,10 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
         if (puedeAdministrarSinPin(perfil, ev)) {
           this.accesoStaff.set(true);
           this.rutaPanelStaff = perfil?.rol === 'admin' ? '/admin/eventos' : '/partner/eventos';
+          void this.respaldarContactoPartner(ev, perfil);
           await this.desbloquearYCargar(ev);
         } else {
+          void this.cargarContactoPartner(ev);
           const pinSesion = sessionStorage.getItem(`pin_${ev.id}`);
           if (pinSesion && pinSesion === ev.pinAnfitrion) {
             await this.desbloquearYCargar(ev);
@@ -419,6 +446,44 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       this.notFound.set(true);
     } finally {
       this.cargando.set(false);
+    }
+  }
+
+  // Eventos creados antes de guardar el contacto del partner: el staff (con permisos) lo copia al abrirlos
+  private async respaldarContactoPartner(ev: Evento, perfil: PerfilUsuario | null): Promise<void> {
+    if (!ev.id || !ev.ownerId || ev.esDirecto === true) return;
+    try {
+      const owner = perfil?.uid === ev.ownerId ? perfil : await this.usuarioService.obtenerPerfilPorUid(ev.ownerId);
+      if (owner?.rol !== 'partner') return;
+      const contacto = {
+        contactoPartnerNombre: owner.agenciaNombre || owner.displayName || null,
+        contactoPartnerTelefono: owner.agenciaTelefono || null,
+      };
+      if (
+        ev.contactoPartnerNombre === contacto.contactoPartnerNombre &&
+        ev.contactoPartnerTelefono === contacto.contactoPartnerTelefono
+      ) return;
+      await this.eventService.updateEvent(ev.id, contacto);
+      this.evento.update((e) => (e ? { ...e, ...contacto } : e));
+      this.portalAccess.update(this.evento()!);
+    } catch (error) {
+      console.error('No se pudo respaldar el contacto del partner en el evento:', error);
+    }
+  }
+
+  private async cargarContactoPartner(ev: Evento): Promise<void> {
+    if (ev.esDirecto === false) this.esEventoPartner.set(true);
+    if (!ev.ownerId || ev.esDirecto === true || ev.contactoPartnerTelefono) return;
+    try {
+      const owner = await this.usuarioService.obtenerPerfilPorUid(ev.ownerId);
+      if (owner?.rol !== 'partner') return;
+      this.esEventoPartner.set(true);
+      this.contactoPartner.set({
+        nombre: owner.agenciaNombre || owner.displayName || '',
+        telefono: owner.agenciaTelefono || '',
+      });
+    } catch {
+      // Sin permiso de lectura sobre /usuarios: se usa el teléfono guardado en el evento
     }
   }
 

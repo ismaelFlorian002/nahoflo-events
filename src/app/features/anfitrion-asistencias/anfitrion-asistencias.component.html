@@ -97,12 +97,14 @@
         <footer class="mt-4 pb-6 px-4 flex flex-col items-center gap-1.5 text-xs text-gray-400 text-center">
           <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
             <span>{{ marcaPortal() }}</span>
-            <span aria-hidden="true">&bull;</span>
-            <a [href]="ayudaWhatsappUrl()" target="_blank" rel="noopener noreferrer"
-              class="inline-flex items-center gap-1 font-medium text-gray-500 no-underline hover:text-gold-600 transition-colors">
-              <i class="pi pi-whatsapp text-[11px]" aria-hidden="true"></i>
-              ¿Necesitas ayuda? Escríbenos
-            </a>
+            @if (ayudaContacto(); as ayuda) {
+              <span aria-hidden="true">&bull;</span>
+              <a [href]="ayuda.url" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 font-medium text-gray-500 no-underline hover:text-gold-600 transition-colors">
+                <i class="pi pi-whatsapp text-[11px]" aria-hidden="true"></i>
+                {{ ayuda.etiqueta }}
+              </a>
+            }
           </div>
           <span class="inline-flex items-center gap-1">
             <i class="pi text-[10px]" [class.pi-shield]="accesoStaff()" [class.pi-lock]="!accesoStaff()" aria-hidden="true"></i>

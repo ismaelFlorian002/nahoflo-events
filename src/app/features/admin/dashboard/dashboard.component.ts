@@ -184,6 +184,12 @@ export class DashboardComponent implements OnInit {
             this.mapaPartners.set(u.uid, u.agenciaNombre || u.displayName);
           }
         });
+        if (!sessionStorage.getItem('contactoPartnerRespaldado')) {
+          this.partnerService
+            .respaldarContactoEnEventos(usuarios)
+            .then(() => sessionStorage.setItem('contactoPartnerRespaldado', '1'))
+            .catch((e) => console.warn('No se pudo respaldar el contacto de partners en eventos:', e));
+        }
       } catch (e) {
         console.warn('No se pudo precargar mapa de usuarios en Dashboard:', e);
       }

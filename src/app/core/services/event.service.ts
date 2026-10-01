@@ -169,6 +169,10 @@ export class EventService {
       creadoPorUid:    perfil?.uid || currentUser?.uid || null,
       creadoPorNombre: creadoPorNombre,
       esDirecto:       !esPartner,
+      ...(esPartner && {
+        contactoPartnerNombre:   perfil?.agenciaNombre || perfil?.displayName || null,
+        contactoPartnerTelefono: perfil?.agenciaTelefono || null,
+      }),
       urlPublica:      event.urlPublica ?? event.enlace ?? '',
       creadoEn:        serverTimestamp(),
       actualizadoEn:   serverTimestamp(),

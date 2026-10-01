@@ -36,6 +36,9 @@ export interface Evento {
   creadoPorUid?:  string | null;
   creadoPorNombre?: string | null;
   esDirecto?:     boolean;
+  /** Copia del contacto del Partner dueño; el portal del anfitrión (sin sesión) no puede leer /usuarios. */
+  contactoPartnerNombre?:   string | null;
+  contactoPartnerTelefono?: string | null;
   // ──────────────────────────────────────────────────────────────────────────
 
   // Paquete y servicios activos

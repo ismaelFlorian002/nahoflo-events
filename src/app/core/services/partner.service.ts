@@ -8,6 +8,7 @@ import {
   setDoc,
   updateDoc,
   serverTimestamp,
+  writeBatch,
   Firestore,
 } from '@angular/fire/firestore';
 import { initializeApp, deleteApp } from '@angular/fire/app';
@@ -156,6 +157,68 @@ export class PartnerService {
       console.error('[PartnerService] Error al actualizar usuario:', error);
       throw error;
     }
+
+    if (data.rol !== 'admin' && (data.agenciaTelefono !== undefined || data.agenciaNombre !== undefined)) {
+      await this.sincronizarContactoEnEventos(uid, data);
+    }
+  }
+
+  private async sincronizarContactoEnEventos(
+    uid: string,
+    data: { displayName?: string; agenciaNombre?: string; agenciaTelefono?: string },
+  ): Promise<void> {
+    try {
+      const snapshot = await getDocs(query(collection(this.firestore, 'eventos'), where('ownerId', '==', uid)));
+      const eventosPartner = snapshot.docs.filter((d) => d.data()['esDirecto'] !== true);
+      if (!eventosPartner.length) return;
+
+      const contacto: Record<string, string | null> = {};
+      if (data.agenciaNombre !== undefined || data.displayName !== undefined) {
+        contacto['contactoPartnerNombre'] = data.agenciaNombre?.trim() || data.displayName?.trim() || null;
+      }
+      if (data.agenciaTelefono !== undefined) {
+        contacto['contactoPartnerTelefono'] = data.agenciaTelefono.trim() || null;
+      }
+
+      for (let i = 0; i < eventosPartner.length; i += 450) {
+        const batch = writeBatch(this.firestore);
+        eventosPartner.slice(i, i + 450).forEach((d) => batch.update(d.ref, contacto));
+        await batch.commit();
+      }
+    } catch (error) {
+      console.error('[PartnerService] Error al sincronizar contacto en eventos:', error);
+    }
+  }
+
+  /**
+   * Copia el contacto de cada Partner a sus eventos que no lo tengan o lo tengan desactualizado.
+   * Requiere sesión de Admin (lectura de todos los eventos). Devuelve cuántos eventos se actualizaron.
+   */
+  async respaldarContactoEnEventos(usuarios: UsuarioModel[]): Promise<number> {
+    const partners = new Map(usuarios.filter((u) => u.rol === 'partner').map((u) => [u.uid, u]));
+    if (!partners.size) return 0;
+
+    const snapshot = await getDocs(collection(this.firestore, 'eventos'));
+    const pendientes = snapshot.docs.flatMap((d) => {
+      const ev = d.data();
+      const partner = partners.get(ev['ownerId']);
+      if (!partner || ev['esDirecto'] === true) return [];
+      const contacto = {
+        contactoPartnerNombre: partner.agenciaNombre?.trim() || partner.displayName?.trim() || null,
+        contactoPartnerTelefono: partner.agenciaTelefono?.trim() || null,
+      };
+      const igual =
+        ev['contactoPartnerNombre'] === contacto.contactoPartnerNombre &&
+        ev['contactoPartnerTelefono'] === contacto.contactoPartnerTelefono;
+      return igual ? [] : [{ ref: d.ref, contacto }];
+    });
+
+    for (let i = 0; i < pendientes.length; i += 450) {
+      const batch = writeBatch(this.firestore);
+      pendientes.slice(i, i + 450).forEach(({ ref, contacto }) => batch.update(ref, contacto));
+      await batch.commit();
+    }
+    return pendientes.length;
   }
 
   async updatePartner(

@@ -1,0 +1,144 @@
+<div class="flex flex-col gap-4 pt-1">
+  <div class="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_320px] gap-4">
+
+    <!-- CARRUSEL -->
+    <div class="relative rounded-xl bg-gray-950 overflow-hidden flex items-center justify-center h-[52vh] md:h-[64vh] select-none"
+      (touchstart)="onTouchStart($event)"
+      (touchend)="onTouchEnd($event)">
+      @if (fotoActual()) {
+        <img [src]="fotoActual()" [alt]="'Foto ' + (indice() + 1) + ' de ' + recuerdo.nombreAutor"
+          class="max-w-full max-h-full object-contain" />
+      }
+
+      @if (fotos.length > 1) {
+        <button type="button"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-800 border-0 shadow-md flex items-center justify-center cursor-pointer transition-colors"
+          aria-label="Foto anterior"
+          (click)="mover(-1)">
+          <i class="pi pi-chevron-left text-sm"></i>
+        </button>
+        <button type="button"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-800 border-0 shadow-md flex items-center justify-center cursor-pointer transition-colors"
+          aria-label="Foto siguiente"
+          (click)="mover(1)">
+          <i class="pi pi-chevron-right text-sm"></i>
+        </button>
+
+        <span class="absolute top-3 right-3 rounded-full bg-black/60 text-white text-xs font-medium px-2.5 py-1 tabular-nums">
+          {{ indice() + 1 }} / {{ fotos.length }}
+        </span>
+
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1.5">
+          @for (f of fotos; track $index) {
+            <button type="button"
+              class="h-1.5 rounded-full border-0 p-0 cursor-pointer transition-all"
+              [ngClass]="$index === indice() ? 'w-4 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/80'"
+              [attr.aria-label]="'Ir a la foto ' + ($index + 1)"
+              (click)="irA($index)"></button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- DETALLE -->
+    <aside class="flex flex-col min-h-0 md:h-[64vh] rounded-xl border border-gray-100">
+      <!-- AUTOR -->
+      <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100">
+        <span class="w-9 h-9 rounded-full bg-gold-50 text-gold-700 text-sm font-semibold flex items-center justify-center shrink-0">
+          {{ (recuerdo.nombreAutor || '?').trim().charAt(0).toUpperCase() }}
+        </span>
+        <div class="min-w-0">
+          <span class="block text-sm font-semibold text-gray-900 truncate">{{ recuerdo.nombreAutor }}</span>
+          <span class="block text-[11px] text-gray-400">{{ formatearFecha(recuerdo.creadoEn) }}</span>
+        </div>
+      </div>
+
+      <div class="flex-1 min-h-0 overflow-y-auto px-4 py-3 flex flex-col gap-3">
+        @if (recuerdo.mensaje) {
+          <p class="text-sm text-gray-700 leading-relaxed m-0 whitespace-pre-line">{{ recuerdo.mensaje }}</p>
+        }
+
+        <!-- INTERACCIONES -->
+        <div class="flex items-center gap-4 text-sm text-gray-600" [class.pt-1]="recuerdo.mensaje">
+          <span class="inline-flex items-center gap-1.5">
+            <i class="pi pi-heart-fill text-rose-500"></i>
+            <span class="font-semibold tabular-nums">{{ recuerdo.meGusta || 0 }}</span>
+            <span class="text-xs text-gray-400">me gusta</span>
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <i class="pi pi-comment text-sky-500"></i>
+            <span class="font-semibold tabular-nums">{{ totalComentarios }}</span>
+            <span class="text-xs text-gray-400">{{ totalComentarios === 1 ? 'comentario' : 'comentarios' }}</span>
+          </span>
+        </div>
+
+        <!-- COMENTARIOS -->
+        <div class="border-t border-gray-100 pt-3 flex flex-col gap-3">
+          @for (c of recuerdo.comentarios ?? []; track c.id) {
+            <ng-container *ngTemplateOutlet="comentarioTpl; context: { $implicit: c }"></ng-container>
+          } @empty {
+            <div class="flex flex-col items-center text-center py-6 text-gray-400">
+              <i class="pi pi-comments text-xl mb-1.5"></i>
+              <span class="text-xs">Aún no hay comentarios en esta publicación.</span>
+            </div>
+          }
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky bottom-0 z-10 -mx-5 -mb-5 px-5 pt-3 pb-5 bg-white border-t border-gray-100 flex items-center justify-between gap-2">
+    <button pButton type="button" size="small" severity="danger" [text]="true" (click)="eliminar()">
+      <i class="pi pi-trash"></i>
+      <span class="hidden sm:inline">Eliminar</span>
+    </button>
+    <div class="flex items-center gap-2">
+      <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="ref.close()">
+        <span>Cerrar</span>
+      </button>
+      <button pButton type="button" size="small" severity="secondary" [outlined]="true"
+        [disabled]="descargando()"
+        (click)="descargar()">
+        <i [class]="descargando() ? 'pi pi-spin pi-spinner' : 'pi pi-download'"></i>
+        <span>{{ fotos.length > 1 ? 'Descargar ' + fotos.length + ' fotos' : 'Descargar' }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- COMENTARIO (RECURSIVO PARA RESPUESTAS) -->
+<ng-template #comentarioTpl let-c>
+  <div class="flex gap-2.5">
+    <span class="w-7 h-7 rounded-full bg-gray-100 text-gray-600 text-[11px] font-semibold flex items-center justify-center shrink-0">
+      {{ (c.autor || '?').trim().charAt(0).toUpperCase() }}
+    </span>
+    <div class="flex-1 min-w-0">
+      <div class="rounded-xl bg-gray-50 px-3 py-2">
+        <span class="block text-xs font-semibold text-gray-900">{{ c.autor }}</span>
+        <p class="text-xs text-gray-700 m-0 mt-0.5 break-words">
+          @if (c.respondiendoA) {
+            <span class="font-medium text-gold-700">&#64;{{ c.respondiendoA }}</span>
+          }
+          {{ c.texto }}
+        </p>
+      </div>
+      <div class="flex items-center gap-3 px-1 mt-1 text-[11px] text-gray-400">
+        <span>{{ formatearFecha(c.creadoEn) }}</span>
+        @if (c.meGusta) {
+          <span class="inline-flex items-center gap-1">
+            <i class="pi pi-heart-fill text-rose-400 text-[10px]"></i>{{ c.meGusta }}
+          </span>
+        }
+      </div>
+
+      @if (c.respuestas?.length) {
+        <div class="flex flex-col gap-2.5 mt-2.5">
+          @for (r of c.respuestas; track r.id) {
+            <ng-container *ngTemplateOutlet="comentarioTpl; context: { $implicit: r }"></ng-container>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</ng-template>
