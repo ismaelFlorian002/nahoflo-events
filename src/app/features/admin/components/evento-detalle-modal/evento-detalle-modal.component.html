@@ -1,82 +1,67 @@
 <div class="evento-detalle-modal">
 <!--  overflow-x: hidden;-->
-  <!-- CABECERA HERO DEL EVENTO -->
-  <div class="relative overflow-hidden rounded-2xl bg-slate-950 text-white p-4 sm:p-6 mb-5 shadow-sm">
-    @if (evento.fotoPrincipalUrl) {
-      <div
-        class="absolute inset-0 bg-cover bg-center opacity-25 filter blur-xs"
-        [style.background-image]="'url(' + evento.fotoPrincipalUrl + ')'">
-      </div>
-      <div class="absolute inset-0 bg-gradient-to-t sm:bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-900/80"></div>
-    }
-
-    <div class="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div class="flex items-start gap-3.5 sm:gap-4 min-w-0">
-        @if (evento.fotoPrincipalUrl) {
-          <img
-            [src]="evento.fotoPrincipalUrl"
-            [alt]="evento.titulo"
-            class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl object-cover border border-white/20 shadow-md shrink-0" />
-        } @else {
-          <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center shrink-0 border border-white/15">
-            <i class="pi pi-calendar-plus text-xl sm:text-2xl text-gold-400"></i>
-          </div>
-        }
-
-        <div class="flex flex-col gap-1 min-w-0">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gold-600/90 text-white border border-gold-400/30 uppercase tracking-wider">
-              {{ evento.tipo || 'Evento' }}
-            </span>
-            <p-tag
-              [value]="evento.estaActivo ? 'Activo' : 'Borrador'"
-              [severity]="evento.estaActivo ? 'success' : 'warn'"
-              [rounded]="true">
-            </p-tag>
-          </div>
-
-          <h2 class="text-lg sm:text-2xl font-bold tracking-tight text-white m-0 truncate">
-            {{ evento.titulo }}
-          </h2>
-
-          @if (evento.preTitulo) {
-            <span class="text-xs text-gold-400 font-medium tracking-wide truncate">
-              {{ evento.preTitulo }}
-            </span>
-          }
-
-          @if (evento.nombreEvento && evento.nombreEvento !== evento.titulo) {
-            <span class="text-xs text-slate-300 truncate">
-              Ref. interna: {{ evento.nombreEvento }}
-            </span>
-          }
-        </div>
-      </div>
-
-      <!-- PIN DE ANFITRIÓN RÁPIDO -->
-      @if (evento.pinAnfitrion) {
-        <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-xl p-3 flex items-center justify-between sm:justify-start gap-3 w-full sm:w-auto shrink-0">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-gold-500/20 text-gold-400 border border-gold-500/30 flex items-center justify-center shrink-0">
-              <i class="pi pi-key text-sm sm:text-base"></i>
-            </div>
-            <div>
-              <span class="block text-[10px] uppercase tracking-wider text-gold-400 font-semibold">PIN Anfitrión</span>
-              <span class="text-sm sm:text-base font-bold  tracking-widest text-white">{{ evento.pinAnfitrion }}</span>
-            </div>
-          </div>
-          <button
-            type="button"
-            (click)="copiarPin()"
-            class="cursor-pointer flex items-center gap-1 shrink-0"
-            [pTooltip]="copiadoPin ? '¡Copiado!' : 'Copiar PIN'"
-            tooltipPosition="top">
-            <i [class]="copiadoPin ? 'pi pi-check text-emerald-400' : 'pi pi-copy'"></i>
-            <span>{{ copiadoPin ? 'Copiado' : 'Copiar' }}</span>
-          </button>
+  <!-- ENCABEZADO DEL EVENTO -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-5 border-b border-gray-100">
+    <div class="flex items-center gap-3.5 min-w-0">
+      @if (evento.fotoPrincipalUrl) {
+        <img
+          [src]="evento.fotoPrincipalUrl"
+          [alt]="evento.titulo"
+          class="w-12 h-12 rounded-lg object-cover border border-gray-200 shrink-0" />
+      } @else {
+        <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+          <i class="pi pi-calendar text-lg text-gray-400"></i>
         </div>
       }
+
+      <div class="flex flex-col gap-1 min-w-0">
+        <div class="flex items-center gap-2 min-w-0">
+          <h2 class="text-lg font-semibold text-gray-900 m-0 truncate">
+            {{ evento.titulo }}
+          </h2>
+          <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-gray-100 text-gray-600 capitalize shrink-0">
+            {{ evento.tipo || 'Evento' }}
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-gray-100 text-gray-600 shrink-0">
+            <span
+              class="w-1.5 h-1.5 rounded-full"
+              [class.bg-emerald-500]="evento.estaActivo"
+              [class.bg-amber-500]="!evento.estaActivo">
+            </span>
+            {{ evento.estaActivo ? 'Activo' : 'Borrador' }}
+          </span>
+        </div>
+
+        @if (evento.preTitulo || (evento.nombreEvento && evento.nombreEvento !== evento.titulo)) {
+          <span class="text-xs text-gray-500 truncate">
+            {{ evento.preTitulo }}
+            @if (evento.preTitulo && evento.nombreEvento && evento.nombreEvento !== evento.titulo) {
+              <span class="mx-1 text-gray-300">·</span>
+            }
+            @if (evento.nombreEvento && evento.nombreEvento !== evento.titulo) {
+              Ref. interna: {{ evento.nombreEvento }}
+            }
+          </span>
+        }
+      </div>
     </div>
+
+    @if (evento.pinAnfitrion) {
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="text-xs text-gray-400">PIN anfitrión</span>
+        <span class="text-sm font-semibold font-mono tracking-widest text-gray-800">{{ evento.pinAnfitrion }}</span>
+        <button pButton
+          size="small"
+          [text]="true"
+          [rounded]="true"
+          [severity]="copiadoPin ? 'success' : 'secondary'"
+          (click)="copiarPin()"
+          [pTooltip]="copiadoPin ? '¡Copiado!' : 'Copiar PIN'"
+          tooltipPosition="top">
+          <i [class]="copiadoPin ? 'pi pi-check' : 'pi pi-copy'"></i>
+        </button>
+      </div>
+    }
   </div>
 
   <!-- ENLACE PÚBLICO OFICIAL -->

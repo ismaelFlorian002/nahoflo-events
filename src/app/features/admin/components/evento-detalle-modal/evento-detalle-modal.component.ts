@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Evento } from '../../../../core/models/event.model';
@@ -9,7 +8,7 @@ import { Evento } from '../../../../core/models/event.model';
 @Component({
   selector: 'app-evento-detalle-modal',
   standalone: true,
-  imports: [CommonModule, ButtonModule, TagModule, TooltipModule],
+  imports: [CommonModule, ButtonModule, TooltipModule],
   templateUrl: './evento-detalle-modal.component.html',
   styleUrl: './evento-detalle-modal.component.scss',
 })
