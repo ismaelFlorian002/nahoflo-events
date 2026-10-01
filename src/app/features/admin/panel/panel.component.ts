@@ -270,8 +270,8 @@ export class PanelComponent implements OnInit {
   nuevoEvento(): void {
     const ref = this.dialogService.open(EventFormComponent, {
       header: 'Crear Nuevo Evento',
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '95vw' },
+      width: '1000px',
+      breakpoints: { '1060px': '94vw' },
       closable: true,
       focusOnShow: false,
       styleClass: 'event-form-dialog',

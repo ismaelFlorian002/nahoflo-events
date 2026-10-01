@@ -14,7 +14,6 @@ import { ImagePreviewComponent } from './image-preview.component';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PrimeNG } from 'primeng/config';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { SelectButtonModule } from 'primeng/selectbutton';
 import { SelectModule } from 'primeng/select';
 import { TooltipModule } from 'primeng/tooltip';
 import { ClienteService } from '../../../../core/services/cliente.service';
@@ -37,7 +36,6 @@ import { firstValueFrom } from 'rxjs';
     FileUploadModule,
     DialogModule,
     ToggleSwitchModule,
-    SelectButtonModule,
     SelectModule,
     TooltipModule,
     FloatLabelModule,
@@ -84,10 +82,17 @@ export class EventFormComponent implements OnInit {
   galeriaFiles: File[] = [];
 
   opcionesControlInvitados = [
-    { label: 'Inactivo', value: 'inactivo' },
-    { label: 'Solo Lista (Puerta)', value: 'lista_puerta' },
-    { label: 'Confirmación (RSVP)', value: 'basico' },
-    { label: 'Control Total VIP (QR)', value: 'total' },
+    { label: 'Inactivo', value: 'inactivo', icono: 'pi pi-ban', descripcion: 'Sin lista de invitados' },
+    { label: 'Solo Lista (Puerta)', value: 'lista_puerta', icono: 'pi pi-list-check', descripcion: 'Registro de llegada en puerta' },
+    { label: 'Confirmación (RSVP)', value: 'basico', icono: 'pi pi-envelope', descripcion: 'Los invitados confirman asistencia' },
+    { label: 'Control Total VIP (QR)', value: 'total', icono: 'pi pi-qrcode', descripcion: 'Pases con QR y escáner en recepción' },
+  ];
+
+  modulosDisponibles = [
+    { control: 'tieneInvitacion', titulo: 'Invitación web', descripcion: 'Página pública del evento (/e/:slug)', icono: 'pi pi-globe' },
+    { control: 'tieneAlbum', titulo: 'Álbum digital en mesas', descripcion: 'Los invitados suben fotos con un QR', icono: 'pi pi-camera' },
+    { control: 'tienePlannerSuite', titulo: 'Suite de Wedding Planner', descripcion: 'Cronograma, presupuesto, proveedores y checklist', icono: 'pi pi-briefcase' },
+    { control: 'permiteMarcaBlanca', titulo: 'Marca blanca de agencia', descripcion: 'Branding de la agencia y dossier en PDF', icono: 'pi pi-palette' },
   ];
 
   eventForm = this.fb.group({
@@ -276,8 +281,8 @@ export class EventFormComponent implements OnInit {
       icon: 'pi pi-question-circle text-gold-500',
       acceptLabel: this.isEditMode ? 'Guardar Cambios' : 'Crear Evento',
       rejectLabel: 'Cancelar',
-      acceptButtonStyleClass: 'bg-gold-500 hover:bg-gold-600 text-white border-0',
-      rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
+      acceptButtonStyleClass: 'p-button-sm bg-gold-500 hover:bg-gold-600 text-white border-0',
+      rejectButtonStyleClass: 'p-button-sm p-button-secondary p-button-outlined',
       accept: async () => {
         await this.ejecutarGuardadoEvento();
       },
