@@ -582,10 +582,10 @@
       }
     </span>
     <div class="flex items-center gap-2 ml-auto">
-      <button pButton type="button" severity="secondary" [text]="true" (click)="ref.close()">
+      <button pButton type="button" severity="secondary" size="small" [text]="true" (click)="ref.close()">
         <span>Cancelar</span>
       </button>
-      <button pButton type="submit" [loading]="isSaving">
+      <button pButton type="submit" [loading]="isSaving" size="small">
         <i [class]="isEditMode ? 'pi pi-check' : 'pi pi-plus'"></i>
         <span>{{ isEditMode ? 'Guardar cambios' : 'Crear evento' }}</span>
       </button>
