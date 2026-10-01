@@ -1,99 +1,136 @@
-<div class="min-h-screen w-full bg-slate-950 flex flex-col justify-between items-center relative overflow-hidden select-none p-4 sm:p-6">
+<div class="flex min-h-screen w-full bg-[#fcfbf9]">
 
-  <!-- FONDOS DECORATIVOS AMBIENTALES -->
-  <div class="absolute -top-32 -left-32 w-96 h-96 bg-gold-500/15 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-pastel-pink-300/15 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-500/5 rounded-full blur-3xl pointer-events-none"></div>
+  <!-- PANEL DE MARCA (ESCRITORIO) -->
+  <aside class="relative hidden overflow-hidden bg-slate-950 text-white lg:flex lg:w-1/2 xl:w-[45%] flex-col justify-between p-12 xl:p-16">
+    <div aria-hidden="true" class="pointer-events-none absolute -top-40 -left-40 h-[28rem] w-[28rem] rounded-full bg-gold-500/20 blur-3xl"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute -bottom-48 -right-32 h-[30rem] w-[30rem] rounded-full bg-pastel-pink-400/10 blur-3xl"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-gold-500/40 to-transparent"></div>
 
-  <!-- ESPACIADOR SUPERIOR PARA CENTRADO VERTICAL -->
-  <div></div>
+    <p class="relative m-0 flex items-center gap-2.5 text-sm font-semibold uppercase tracking-[0.3em] text-white">
+      <span aria-hidden="true" class="h-px w-8 bg-gold-500"></span>
+      NahoFlo
+      <span class="font-normal tracking-[0.2em] text-slate-400">Creative Studio</span>
+    </p>
 
-  <!-- TARJETA PRINCIPAL GLASSMORPHIC DE LOGIN -->
-  <div class="relative z-10 w-full max-w-[420px] bg-white/95 backdrop-blur-2xl border border-white/50 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] rounded-3xl p-6 sm:p-9 transition-all duration-300 my-auto">
-    
-    <!-- CABECERA: LOGO Y TÍTULOS DE MARCA -->
-    <div class="flex flex-col items-center text-center mb-7">
-      <div class="mb-3.5 p-3 rounded-2xl bg-white shadow-xs border border-gray-100 inline-flex items-center justify-center">
-        <img
-          src="logo.png"
-          alt="NahoFlo Creative Studio"
-          class="h-10 sm:h-11 w-auto max-w-[140px] object-contain" />
-      </div>
-      <span class="text-[11px] font-bold text-gold-600 uppercase tracking-widest bg-gold-50 border border-gold-200/60 px-2.5 py-0.5 rounded-full mb-1">
-        Panel Administrativo
-      </span>
-      <h1 class="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight m-0">
-        Iniciar Sesión
-      </h1>
-      <p class="text-xs text-gray-400 m-0 mt-1">
-        Ingresa tus credenciales para acceder a la gestión de eventos
+    <div class="relative max-w-md">
+      <p class="m-0 text-4xl xl:text-[2.75rem] font-semibold leading-tight tracking-tight">
+        Cada detalle de tus eventos,
+        <span class="bg-gradient-to-r from-gold-300 to-gold-500 bg-clip-text text-transparent">en un solo lugar.</span>
       </p>
+      <p class="mt-5 mb-0 text-sm leading-relaxed text-slate-400">
+        Administra invitados, confirmaciones y accesos desde un panel diseñado para tu equipo.
+      </p>
+
+      <ul class="mt-10 mb-0 flex list-none flex-col gap-4 p-0">
+        <li class="flex items-center gap-3 text-sm text-slate-300">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+            <i class="pi pi-users text-gold-400"></i>
+          </span>
+          Invitados y confirmaciones en tiempo real
+        </li>
+        <li class="flex items-center gap-3 text-sm text-slate-300">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+            <i class="pi pi-qrcode text-gold-400"></i>
+          </span>
+          Pases digitales con código QR
+        </li>
+        <li class="flex items-center gap-3 text-sm text-slate-300">
+          <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+            <i class="pi pi-chart-bar text-gold-400"></i>
+          </span>
+          Reportes listos para compartir
+        </li>
+      </ul>
     </div>
 
-    <!-- FORMULARIO DE ACCESO -->
-    <form (ngSubmit)="onLogin()" class="flex flex-col gap-4">
+    <p class="relative m-0 text-xs text-slate-500">
+      &copy; {{ currentYear }} NahoFlo Creative Studio. Todos los derechos reservados.
+    </p>
+  </aside>
 
-      <!-- CAMPO: CORREO ELECTRÓNICO -->
-      <div class="flex flex-col gap-1.5">
-        <label for="email" class="text-xs font-semibold text-gray-700 tracking-wide">
-          Correo Electrónico
-        </label>
-        <div class="relative flex items-center">
-          <i class="pi pi-envelope absolute left-3.5 text-gray-400 text-sm z-10 pointer-events-none"></i>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            pInputText
-            [(ngModel)]="email"
-            placeholder="admin@nahoflo.com"
-            autocomplete="username"
-            class="w-full pl-10 pr-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-100 transition-all bg-gray-50/50 focus:bg-white text-gray-900 outline-none" />
+  <!-- PANEL DE ACCESO -->
+  <main class="flex flex-1 flex-col">
+    <div class="flex flex-1 items-center justify-center px-6 py-12 sm:px-10">
+      <div class="w-full max-w-sm">
+
+        <div class="mb-8 flex justify-center">
+          <div class="h-24 w-36 overflow-hidden sm:h-28 sm:w-[10.5rem]">
+            <img src="logo.png" alt="NahoFlo Creative Studio" class="h-full w-full scale-[1.4] object-contain mix-blend-multiply" />
+          </div>
         </div>
+
+        <header class="text-center">
+          <span class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-gold-600">
+            <span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-gold-500"></span>
+            Panel administrativo
+          </span>
+          <h1 class="mt-3 mb-0 text-3xl font-bold tracking-tight text-slate-900">
+            Bienvenido de nuevo
+          </h1>
+          <p class="mt-2 mb-0 text-sm text-slate-500">
+            Ingresa tus credenciales para acceder a la gestión de eventos.
+          </p>
+        </header>
+
+        <form (ngSubmit)="onLogin()" class="mt-8 flex flex-col gap-5">
+
+          <div class="flex flex-col gap-2">
+            <label for="email" class="text-sm font-medium text-slate-700">Correo electrónico</label>
+            <p-iconfield>
+              <p-inputicon class="pi pi-envelope" />
+              <input
+                id="email"
+                name="email"
+                type="email"
+                pInputText
+                [(ngModel)]="email"
+                placeholder="admin@nahoflo.com"
+                autocomplete="username"
+                class="w-full" />
+            </p-iconfield>
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label for="password" class="text-sm font-medium text-slate-700">Contraseña</label>
+            <p-iconfield>
+              <p-inputicon class="pi pi-lock" />
+              <p-password
+                inputId="password"
+                name="password"
+                [(ngModel)]="password"
+                [feedback]="false"
+                toggleMask
+                fluid
+                placeholder="••••••••"
+                autocomplete="current-password" />
+            </p-iconfield>
+          </div>
+
+          @if (errorMessage) {
+            <p-message severity="error" icon="pi pi-exclamation-circle">{{ errorMessage }}</p-message>
+          }
+
+          <p-button
+            type="submit"
+            label="Ingresar al panel"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            size="large"
+            [loading]="loading"
+            fluid
+            styleClass="mt-1" />
+        </form>
+
+        <p class="mt-8 mb-0 flex items-center justify-center gap-2 text-xs text-slate-400">
+          <i class="pi pi-shield text-[0.8rem]"></i>
+          Acceso exclusivo para personal autorizado
+        </p>
       </div>
+    </div>
 
-      <!-- CAMPO: CONTRASEÑA CON TOGGLE EYE -->
-      <div class="flex flex-col gap-1.5">
-        <label for="password" class="text-xs font-semibold text-gray-700 tracking-wide">
-          Contraseña
-        </label>
-        <p-password
-          id="password"
-          name="password"
-          [(ngModel)]="password"
-          [toggleMask]="true"
-          [feedback]="false"
-          placeholder="••••••••"
-          styleClass="w-full login-password-input"
-          inputStyleClass="w-full py-2.5 rounded-xl border border-gray-200 text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-100 transition-all bg-gray-50/50 focus:bg-white text-gray-900 outline-none"
-          (keyup.enter)="onLogin()">
-        </p-password>
-      </div>
-
-      <!-- ALERTA DE ERROR -->
-      <div *ngIf="errorMessage" class="flex items-center gap-2.5 p-3 rounded-xl bg-red-50 border border-red-200/80 text-red-600 text-xs font-medium">
-        <i class="pi pi-exclamation-circle text-base shrink-0"></i>
-        <span>{{ errorMessage }}</span>
-      </div>
-
-      <!-- BOTÓN DE INGRESO -->
-      <button pButton type="submit"
-       
-       
-       
-        [loading]="loading"
-        class="w-full cursor-pointer mt-1">
-  <i class="pi pi-arrow-right"></i>
-  <span>Ingresar al Panel</span>
-</button>
-
-    </form>
-  </div>
-
-  <!-- PIE DE PÁGINA RESTRITO -->
-  <footer class="text-xs text-slate-400 font-medium text-center relative z-10 py-4">
-    &copy; {{ currentYear }} NahoFlo Creative Studio. Todos los derechos reservados.
-  </footer>
+    <footer class="py-6 text-center text-xs text-slate-400 lg:hidden">
+      &copy; {{ currentYear }} NahoFlo Creative Studio. Todos los derechos reservados.
+    </footer>
+  </main>
 
 </div>
-

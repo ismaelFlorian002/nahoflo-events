@@ -1,13 +1,14 @@
 import { Component, inject, NgZone } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 // PrimeNG
 import { ButtonModule } from 'primeng/button';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
+import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
-import { CardModule } from 'primeng/card';
 
 import { AuthService } from '../../../core/services/auth';
 import { UsuarioService } from '../../../core/services/usuario.service';
@@ -16,12 +17,13 @@ import { UsuarioService } from '../../../core/services/usuario.service';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ButtonModule,
+    IconFieldModule,
+    InputIconModule,
     InputTextModule,
+    MessageModule,
     PasswordModule,
-    CardModule,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],

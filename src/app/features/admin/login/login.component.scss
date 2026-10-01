@@ -1,32 +1,4 @@
 :host {
   display: block;
-  width: 100%;
   min-height: 100vh;
-
-  ::ng-deep {
-    .login-password-input {
-      width: 100%;
-      position: relative;
-
-      .p-password-input {
-        width: 100%;
-      }
-
-      .p-password-mask-icon,
-      .p-password-unmask-icon {
-        position: absolute;
-        right: 0.85rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
-        cursor: pointer;
-        font-size: 0.95rem;
-
-        &:hover {
-          color: #4b5563;
-        }
-      }
-    }
-  }
 }
-
