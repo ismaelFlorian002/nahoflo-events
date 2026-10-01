@@ -19,7 +19,7 @@ export const adminGuard: CanActivateFn = async () => {
     return router.createUrlTree(['/login']);
   }
   if (perfil.rol === 'partner' && perfil.estaActivo) {
-    return router.createUrlTree(['/partner/eventos']);
+    return router.createUrlTree(['/partner/dashboard']);
   }
   if (perfil.rol === 'admin' && perfil.estaActivo) {
     return true; // ✅ Admin válido

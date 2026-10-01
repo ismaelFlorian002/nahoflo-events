@@ -83,6 +83,19 @@
         </span>
         <nav class="flex flex-col gap-1.5" aria-label="Navegación del Panel">
 
+          <a
+            [routerLink]="workspaceBase() + '/dashboard'"
+            routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
+            [class.text-gray-500]="true"
+            [pTooltip]="!sidebarExpandido ? 'Dashboard' : ''"
+            tooltipPosition="right"
+            class="sidebar-link flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
+            <i class="pi pi-th-large text-base shrink-0"></i>
+            <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
+              Dashboard
+            </span>
+          </a>
+
           <!-- Enlace: Eventos — apunta dinámicamente a /admin/eventos o /partner/eventos -->
           <a
             [routerLink]="workspaceBase() + '/eventos'"

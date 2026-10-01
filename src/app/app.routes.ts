@@ -39,8 +39,13 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'eventos',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/admin/panel/panel.component').then(m => m.PanelComponent),
       },
       {
         path: 'eventos',
@@ -75,8 +80,13 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'eventos',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/admin/panel/panel.component').then(m => m.PanelComponent),
       },
       {
         path: 'eventos',
