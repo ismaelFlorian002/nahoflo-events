@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { Router } from '@angular/router';
 import { Evento } from '../../../../core/models/event.model';
+import { UsuarioService } from '../../../../core/services/usuario.service';
+import { puedeAdministrarSinPin } from '../../../anfitrion-asistencias/portal-access';
 
 @Component({
   selector: 'app-evento-detalle-modal',
@@ -16,15 +19,20 @@ export class EventoDetalleModalComponent implements OnInit, AfterViewInit {
   private elementRef = inject(ElementRef);
   public config = inject(DynamicDialogConfig);
   public ref = inject(DynamicDialogRef);
+  private router = inject(Router);
+  private usuarioService = inject(UsuarioService);
 
   @ViewChild('headerAcciones') headerAccionesRef?: ElementRef<HTMLElement>;
 
   evento!: Evento;
   copiadoEnlace = false;
   copiadoPin = false;
+  puedeAdministrar = false;
 
   ngOnInit(): void {
     this.evento = this.config.data;
+    this.puedeAdministrar =
+      Boolean(this.evento?.enlace) && puedeAdministrarSinPin(this.usuarioService.getPerfilActual(), this.evento);
   }
 
   ngAfterViewInit(): void {
@@ -132,6 +140,12 @@ export class EventoDetalleModalComponent implements OnInit, AfterViewInit {
     if (url) {
       window.open(url, '_blank');
     }
+  }
+
+  administrar(): void {
+    if (!this.puedeAdministrar) return;
+    this.ref.close();
+    void this.router.navigate(['/e', this.evento.enlace, 'asistencias']);
   }
 
   getWhatsappUrl(telefono?: string): string {

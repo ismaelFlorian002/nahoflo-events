@@ -96,6 +96,14 @@
   <i class="pi pi-external-link"></i>
   <span>Abrir</span>
 </button>
+
+      @if (puedeAdministrar) {
+        <button pButton size="small"
+          (click)="administrar()">
+  <i class="pi pi-sliders-h"></i>
+  <span>Administrar</span>
+</button>
+      }
     </div>
   </div>
 

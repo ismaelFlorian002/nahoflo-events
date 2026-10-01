@@ -13,7 +13,8 @@ export const pinSessionKey = (eventoId: string) => `pin_${eventoId}`;
  * Flujo de decisión:
  *
  * 1. ¿El usuario tiene sesión Firebase real (no anónima)?
- *    → Acceso directo sin PIN (Admin o Partner ya autenticado).
+ *    → Deja pasar. AnfitrionAsistenciasComponent desbloquea sin PIN solo si es
+ *      Admin o el Partner dueño del evento (puedeAdministrarSinPin); si no, pide PIN.
  *
  * 2. ¿Existe un PIN válido en sessionStorage para este evento?
  *    → Verifica el PIN contra /eventos/{id}/privado/acceso en Firestore.

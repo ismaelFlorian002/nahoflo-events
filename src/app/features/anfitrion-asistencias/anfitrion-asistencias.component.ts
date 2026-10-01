@@ -14,12 +14,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { PORTAL_CONTEXT } from './portal-context';
 import { PORTAL_PATHS, PortalSection } from './portal-sections';
-import { PortalEventAccess, initialPortalSection } from './portal-access';
+import { PortalEventAccess, initialPortalSection, puedeAdministrarSinPin } from './portal-access';
 import { ButtonModule } from 'primeng/button';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventService } from '../../core/services/event.service';
+import { UsuarioService } from '../../core/services/usuario.service';
 import { Evento } from '../../core/models/event.model';
 import { InvitadoModel } from '../../core/models/invitado.model';
 import { RecuerdoModel } from '../../core/models/RecuerdoModel';
@@ -83,6 +84,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     this.pestanaActiva.set(section);
   }
   private eventService = inject(EventService);
+  private usuarioService = inject(UsuarioService);
   private dialogService = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
@@ -162,6 +164,9 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
   // Control de PIN
   pinDesbloqueado = signal<boolean>(false);
+  // Admin o partner dueño del evento: entra sin PIN y "Salir" regresa a su panel
+  accesoStaff = signal<boolean>(false);
+  private rutaPanelStaff = '/partner';
 
   // Pestañas del portal anfitrión
   pestanaActiva = signal<PortalSection>('resumen');
@@ -383,17 +388,16 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
 
         this.sincronizarRuta();
 
-        const pinSesion = sessionStorage.getItem(`pin_${ev.id}`);
-        if (pinSesion && pinSesion === ev.pinAnfitrion && ev.id) {
-          const tareas: Promise<any>[] = [];
-          this.pinDesbloqueado.set(true);
-          if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
-            tareas.push(this.cargarInvitados(ev.id));
+        const perfil = await this.usuarioService.esperarInicializacion();
+        if (puedeAdministrarSinPin(perfil, ev)) {
+          this.accesoStaff.set(true);
+          this.rutaPanelStaff = perfil?.rol === 'admin' ? '/admin' : '/partner';
+          await this.desbloquearYCargar(ev);
+        } else {
+          const pinSesion = sessionStorage.getItem(`pin_${ev.id}`);
+          if (pinSesion && pinSesion === ev.pinAnfitrion) {
+            await this.desbloquearYCargar(ev);
           }
-          if (!ev.modulos || ev.modulos.tieneAlbum) {
-            tareas.push(this.cargarRecuerdos(ev.id));
-          }
-          await Promise.all(tareas);
         }
       } else {
         this.notFound.set(true);
@@ -411,8 +415,13 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
     const ev = this.evento();
     if (!ev || !ev.id) return;
 
-    this.pinDesbloqueado.set(true);
     sessionStorage.setItem(`pin_${ev.id}`, pin);
+    await this.desbloquearYCargar(ev);
+  }
+
+  private async desbloquearYCargar(ev: Evento): Promise<void> {
+    if (!ev.id) return;
+    this.pinDesbloqueado.set(true);
 
     const tareas: Promise<any>[] = [];
     if (!ev.modulos || ev.modulos.tipoControlInvitados !== 'inactivo') {
@@ -425,6 +434,12 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   }
 
   salir(): void {
+    if (this.accesoStaff()) {
+      this.qrScannerService.detenerEscaner();
+      void this.router.navigate([this.rutaPanelStaff]);
+      return;
+    }
+
     const ev = this.evento();
 
     this.confirmationService.confirm({

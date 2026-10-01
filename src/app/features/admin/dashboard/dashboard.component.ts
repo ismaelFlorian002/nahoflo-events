@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -52,6 +53,7 @@ export class DashboardComponent implements OnInit {
   private dialogService  = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
   private messageService      = inject(MessageService);
+  private router              = inject(Router);
 
   // Signals reactivos de rol — el template los usa para adaptar la UI
   readonly perfil    = toSignal(this.usuarioService.perfil$, { initialValue: null });
@@ -430,6 +432,15 @@ export class DashboardComponent implements OnInit {
       focusOnShow: false,
       data: evento,
     });
+  }
+
+  puedeAdministrar(evento: any): boolean {
+    return Boolean(evento?.enlace) && (this.esAdmin() || this.esEventoMio(evento));
+  }
+
+  administrarEvento(evento: any) {
+    if (!this.puedeAdministrar(evento)) return;
+    void this.router.navigate(['/e', evento.enlace, 'asistencias']);
   }
 
   tieneControlInvitados(evento: any): boolean {

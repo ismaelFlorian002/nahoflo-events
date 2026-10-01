@@ -80,14 +80,25 @@
 </button>
               }
 
-              <button pButton size="small"
-                [text]="true"
-                severity="danger"
-                (click)="salir()"
-                aria-label="Cerrar sesión de anfitrión">
+              @if (accesoStaff()) {
+                <button pButton size="small"
+                  [text]="true"
+                  severity="secondary"
+                  (click)="salir()"
+                  aria-label="Volver al panel">
+  <i class="pi pi-arrow-left"></i>
+  <span>Volver al panel</span>
+</button>
+              } @else {
+                <button pButton size="small"
+                  [text]="true"
+                  severity="danger"
+                  (click)="salir()"
+                  aria-label="Cerrar sesión de anfitrión">
   <i class="pi pi-sign-out"></i>
   <span>Salir</span>
 </button>
+              }
             </div>
           </div>
         </div>

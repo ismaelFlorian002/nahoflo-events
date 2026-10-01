@@ -2,7 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { CanActivateChildFn, Router } from '@angular/router';
 import { EventService } from '../../core/services/event.service';
 import { Evento } from '../../core/models/event.model';
+import { PerfilUsuario } from '../../core/models/usuario.model';
 import { PORTAL_PATHS, PortalSection } from './portal-sections';
+
+export function puedeAdministrarSinPin(perfil: PerfilUsuario | null, event: Evento): boolean {
+  if (!perfil?.estaActivo) return false;
+  if (perfil.rol === 'admin') return true;
+  return perfil.rol === 'partner' && (event.ownerId === perfil.uid || event.creadoPorUid === perfil.uid);
+}
 
 export function initialPortalSection(event: Evento): PortalSection {
   return event.modulos?.tipoControlInvitados === 'inactivo' && event.modulos?.tieneAlbum

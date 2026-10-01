@@ -380,6 +380,17 @@
   <i class="pi pi-eye"></i>
 </button>
 
+              @if (puedeAdministrar(evento)) {
+                <button pButton [rounded]="true"
+                  [text]="true"
+                  severity="secondary"
+                  pTooltip="Administrar evento"
+                  tooltipPosition="top"
+                  (click)="administrarEvento(evento)">
+  <i class="pi pi-sliders-h"></i>
+</button>
+              }
+
               <!-- BOTÓN QR PARA MESAS (Solo si tiene Álbum contratado) -->
               <button pButton *ngIf="!evento.modulos || evento.modulos.tieneAlbum"
                
