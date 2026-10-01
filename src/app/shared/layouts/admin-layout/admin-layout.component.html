@@ -83,10 +83,9 @@
         </span>
         <nav class="flex flex-col gap-1.5" aria-label="Navegación del Panel">
 
-          <!-- Enlace: Eventos — apunta dinámicamente a /admin o /partner -->
+          <!-- Enlace: Eventos — apunta dinámicamente a /admin/eventos o /partner/eventos -->
           <a
-            [routerLink]="workspaceBase()"
-            [routerLinkActiveOptions]="{ exact: true }"
+            [routerLink]="workspaceBase() + '/eventos'"
             routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
             [class.text-gray-500]="true"
             [pTooltip]="!sidebarExpandido ? 'Eventos' : ''"

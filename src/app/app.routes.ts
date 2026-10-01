@@ -39,13 +39,13 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        loadComponent: () =>
-          import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        redirectTo: 'eventos',
+        pathMatch: 'full',
       },
       {
         path: 'eventos',
-        redirectTo: '',
-        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
       },
       {
         path: 'clientes',
@@ -75,6 +75,11 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        redirectTo: 'eventos',
+        pathMatch: 'full',
+      },
+      {
+        path: 'eventos',
         loadComponent: () =>
           import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
         // El DashboardComponent filtrará automáticamente por ownerId en el Paso 4

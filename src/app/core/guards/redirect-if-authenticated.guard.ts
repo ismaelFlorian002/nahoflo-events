@@ -20,8 +20,8 @@ export const redirectIfAuthenticatedGuard: CanActivateFn = async () => {
   }
 
   // Si ya tiene sesión activa, redirigir
-  if (perfil.rol === 'admin')   return router.createUrlTree(['/admin']);
-  if (perfil.rol === 'partner') return router.createUrlTree(['/partner']);
+  if (perfil.rol === 'admin')   return router.createUrlTree(['/admin/eventos']);
+  if (perfil.rol === 'partner') return router.createUrlTree(['/partner/eventos']);
 
   return true;
 };
