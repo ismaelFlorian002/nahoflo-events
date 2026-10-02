@@ -1,82 +1,90 @@
-<form [formGroup]="clienteForm" (ngSubmit)="guardarCliente()" class="grid grid-cols-12 gap-x-5 gap-y-8 pt-7 pb-2">
-<!--  class="grid grid-cols-12 gap-5 pt-4"-->
-  <!-- Nombre Completo (Fila completa - 12 columnas) -->
-  <div class="col-span-12">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        id="modalNombre"
-        pInputText
-        formControlName="nombreCompleto"
-        class="w-full"
-        autocomplete="off"
-      />
-      <label for="modalNombre">Nombre Completo *</label>
-    </p-floatlabel>
-  </div>
+@let c = clienteForm.controls;
 
-  <!-- Teléfono / WhatsApp (Media fila en desktop - 6 columnas) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        id="modalTelefono"
-        pInputText
-        formControlName="telefono"
-        class="w-full"
-        autocomplete="off"
-        placeholder="Ej. 6671234567"
-      />
-      <label for="modalTelefono">Teléfono / WhatsApp *</label>
-    </p-floatlabel>
-  </div>
+<form [formGroup]="clienteForm" (ngSubmit)="guardarCliente()" class="flex flex-col gap-6 pt-1">
 
-  <!-- Correo Electrónico (Media fila en desktop - 6 columnas) -->
-  <div class="col-span-12 sm:col-span-6">
-    <p-floatlabel variant="on" class="w-full block">
-      <input
-        id="modalEmail"
-        pInputText
-        formControlName="email"
-        type="email"
-        class="w-full"
-        autocomplete="off"
-        placeholder="correo@ejemplo.com"
-      />
-      <label for="modalEmail">Correo Electrónico (Opcional)</label>
-    </p-floatlabel>
-  </div>
+  <!-- DATOS DEL CLIENTE -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-id-card text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Datos de contacto</h3>
+    </div>
 
-  <!-- Notas internas (Fila completa - 12 columnas) -->
-  <div class="col-span-12">
-    <p-floatlabel variant="on" class="w-full block">
-      <textarea
-        id="modalNotas"
-        pTextarea
-        formControlName="notas"
-        rows="3"
-        class="w-full resize-none"
-      ></textarea>
-      <label for="modalNotas">Notas o preferencias de atención</label>
-    </p-floatlabel>
-  </div>
+    <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+      <div class="col-span-12 flex flex-col gap-1">
+        <p-floatlabel variant="on" class="w-full block">
+          <input id="modalNombre" pInputText formControlName="nombreCompleto" class="w-full" autocomplete="off" />
+          <label for="modalNombre">Nombre completo *</label>
+        </p-floatlabel>
+        @if (c.nombreCompleto.touched && c.nombreCompleto.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Escribe al menos 3 caracteres.</span>
+        } @else {
+          <span class="text-[11px] text-gray-400 pl-1">Como aparecerá en el catálogo y en sus eventos.</span>
+        }
+      </div>
 
-  <!-- Acciones del Modal (Alineadas al final) -->
-  <div class="col-span-12 flex justify-end gap-3 pt-3 mt-2 border-t border-slate-100">
-    <button pButton type="button"
-     
-      severity="danger"
-      [text]="true"
-      size="small"
-      (click)="cancelar()"
-    >
-  <span>Cancelar</span>
-</button>
-    <button pButton type="submit"
-     
-      [loading]="guardando"
-      size="small"
-    >
-  <span>{{ clienteEnEdicion ? 'Actualizar Cliente' : 'Guardar Cliente' }}</span>
- </button>
+      <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+        <p-floatlabel variant="on" class="w-full block">
+          <input id="modalTelefono" pInputText formControlName="telefono" class="w-full"
+            inputmode="tel" autocomplete="off" />
+          <label for="modalTelefono">Teléfono / WhatsApp *</label>
+        </p-floatlabel>
+        @if (c.telefono.touched && c.telefono.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Ingresa un teléfono válido.</span>
+        } @else {
+          <span class="text-[11px] text-gray-400 pl-1">Ej. 6671234567</span>
+        }
+      </div>
+
+      <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+        <p-floatlabel variant="on" class="w-full block">
+          <input id="modalEmail" pInputText formControlName="email" type="email" class="w-full" autocomplete="off" />
+          <label for="modalEmail">Correo electrónico</label>
+        </p-floatlabel>
+        <span class="text-[11px] text-gray-400 pl-1">Opcional</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTAS -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-bookmark text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Notas internas</h3>
+      <span class="text-xs text-gray-400">Solo las ve tu equipo</span>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <p-floatlabel variant="on" class="w-full block">
+        <textarea id="modalNotas" pTextarea formControlName="notas" rows="3" class="w-full resize-none"></textarea>
+        <label for="modalNotas">Preferencias de atención</label>
+      </p-floatlabel>
+      <span class="text-[11px] text-gray-400 pl-1">Horario preferido para llamadas, requerimientos especiales…</span>
+    </div>
+  </section>
+
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky -bottom-6 z-10 -mx-6 -mb-6 px-6 py-4 bg-white border-t border-gray-100 flex items-center justify-between gap-3">
+    <span class="hidden sm:inline text-xs"
+      [ngClass]="clienteForm.invalid && clienteForm.touched ? 'text-rose-500' : 'text-gray-400'">
+      @if (clienteForm.invalid && clienteForm.touched) {
+        <i class="pi pi-exclamation-circle text-[11px] mr-1"></i>Revisa los campos marcados
+      } @else {
+        * Obligatorios: nombre y teléfono
+      }
+    </span>
+    <div class="flex items-center gap-2 ml-auto">
+      <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="cancelar()">
+        <span>Cancelar</span>
+      </button>
+      <button pButton type="submit" size="small" [loading]="guardando">
+        <i [class]="clienteEnEdicion ? 'pi pi-check' : 'pi pi-user-plus'"></i>
+        <span>{{ clienteEnEdicion ? 'Guardar cambios' : 'Registrar cliente' }}</span>
+      </button>
+    </div>
   </div>
 
 </form>

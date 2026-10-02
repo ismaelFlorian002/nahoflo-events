@@ -197,10 +197,11 @@ export class ClientesComponent implements OnInit {
 
   openDialog(clienteAEditar?: ClienteModel) {
     const ref = this.dialogService.open(ClienteModalComponent, {
-      header: clienteAEditar ? 'Editar Cliente' : 'Registrar Nuevo Cliente',
-      width: '1200px',
-      breakpoints: { '960px': '75vw', '640px': '90vw' },
+      header: clienteAEditar ? 'Editar cliente' : 'Registrar nuevo cliente',
+      width: '640px',
+      breakpoints: { '700px': '94vw' },
       closable: true,
+      draggable: false,
       dismissableMask: true,
       focusOnShow: false,
       data: clienteAEditar,
@@ -214,14 +215,21 @@ export class ClientesComponent implements OnInit {
   }
 
   verDetalle(cliente: ClienteModel) {
-    this.dialogService.open(ClienteDetalleModalComponent, {
-      header: `Expediente — ${cliente.nombreCompleto}`,
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '95vw' },
+    const ref = this.dialogService.open(ClienteDetalleModalComponent, {
+      header: 'Expediente del cliente',
+      width: '860px',
+      breakpoints: { '920px': '94vw' },
       closable: true,
+      draggable: false,
       dismissableMask: true,
       focusOnShow: false,
       data: cliente,
+    });
+
+    ref?.onClose.subscribe((res?: { accion?: string; cliente?: ClienteModel }) => {
+      if (res?.accion === 'editar') {
+        this.openDialog(res.cliente);
+      }
     });
   }
 
