@@ -17,8 +17,8 @@
       @for (r of rolesDisponibles; track r.value) {
         @let activo = c.rol.value === r.value;
         @let lila = r.value === 'partner';
-        <button type="button"
-          class="flex items-start gap-3 rounded-xl border px-3.5 py-3 text-left cursor-pointer transition-colors"
+        <button type="button" [disabled]="esMiCuenta"
+          class="flex items-start gap-3 rounded-xl border px-3.5 py-3 text-left cursor-pointer transition-colors disabled:cursor-not-allowed disabled:opacity-60"
           [ngClass]="activo
             ? (lila ? 'bg-violet-50/70 border-violet-400' : 'bg-gold-50/60 border-gold-400')
             : (lila ? 'bg-white border-gray-200 hover:border-violet-200 hover:bg-violet-50/40' : 'bg-white border-gray-200 hover:border-gold-200 hover:bg-gold-50/40')"
@@ -39,6 +39,13 @@
         </button>
       }
     </div>
+
+    @if (esMiCuenta) {
+      <span class="flex items-center gap-1.5 text-xs text-gray-500">
+        <i class="pi pi-lock text-[10px]"></i>
+        No puedes cambiar tu propio rol. Pídeselo a otro administrador.
+      </span>
+    }
   </section>
 
   <!-- CUENTA -->

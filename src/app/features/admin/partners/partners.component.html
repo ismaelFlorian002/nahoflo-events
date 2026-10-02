@@ -315,8 +315,11 @@
                   {{ usuario.displayName ? usuario.displayName.substring(0, 2).toUpperCase() : 'US' }}
                 </div>
                 <div>
-                  <div>
+                  <div class="flex items-center gap-1.5">
                     {{ usuario.displayName }}
+                    @if (esYo(usuario)) {
+                      <span class="px-1.5 py-0.5 rounded-md bg-gray-100 text-gray-600 text-[10px] font-semibold uppercase tracking-wider">Tú</span>
+                    }
                   </div>
                   <div class="text-xs text-gray-400 font-normal mt-0.5 flex items-center gap-1.5">
                     <span>{{ usuario.email }}</span>
@@ -403,15 +406,24 @@
                 </button>
 
                 <!-- BOTÓN TOGGLE ACTIVAR / DESACTIVAR -->
-                <button pButton
-                        [rounded]="true"
-                        [text]="true"
-                        [severity]="usuario.estaActivo ? 'warn' : 'success'"
-                        [pTooltip]="usuario.estaActivo ? 'Desactivar Cuenta' : 'Activar Cuenta'"
-                        tooltipPosition="top"
-                        (click)="toggleEstado(usuario)">
-                  <i [class]="usuario.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"></i>
-                </button>
+                @if (esYo(usuario)) {
+                  <span class="inline-flex" pTooltip="No puedes desactivar tu propia cuenta" tooltipPosition="top">
+                    <button pButton [rounded]="true" [text]="true" severity="secondary" [disabled]="true"
+                            aria-label="No puedes desactivar tu propia cuenta">
+                      <i class="pi pi-lock"></i>
+                    </button>
+                  </span>
+                } @else {
+                  <button pButton
+                          [rounded]="true"
+                          [text]="true"
+                          [severity]="usuario.estaActivo ? 'warn' : 'success'"
+                          [pTooltip]="usuario.estaActivo ? 'Desactivar Cuenta' : 'Activar Cuenta'"
+                          tooltipPosition="top"
+                          (click)="toggleEstado(usuario)">
+                    <i [class]="usuario.estaActivo ? 'pi pi-power-off' : 'pi pi-check-circle'"></i>
+                  </button>
+                }
 
               </div>
             </td>

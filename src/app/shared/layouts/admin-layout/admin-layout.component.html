@@ -148,6 +148,18 @@
       <span class="sidebar-label block px-3 text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
         Sistema
       </span>
+      <a
+        routerLink="/panel/perfil"
+        routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
+        [class.text-gray-500]="true"
+        [pTooltip]="!sidebarExpandido ? 'Mi perfil' : ''"
+        tooltipPosition="right"
+        class="sidebar-link mb-1.5 flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
+        <i class="pi pi-user text-base shrink-0"></i>
+        <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
+          Mi perfil
+        </span>
+      </a>
       <button
         type="button"
         (click)="logout()"
@@ -209,15 +221,17 @@
             </span>
           }
         </div>
-        <div
-          class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs shadow-xs shrink-0 select-none border"
-          [class]="esPartner()
+        <a
+          routerLink="/panel/perfil"
+          aria-label="Mi perfil"
+          class="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs shadow-xs shrink-0 select-none border no-underline transition-transform hover:scale-105"
+          [ngClass]="esPartner()
             ? 'bg-gradient-to-tr from-violet-100 to-violet-50 border-violet-200/60 text-violet-700'
             : 'bg-gradient-to-tr from-gold-100 to-pastel-pink-100 border-gold-200/60 text-gold-700'"
-          [pTooltip]="usuarioEmail ? usuarioEmail : (esAdmin() ? 'Administrador' : 'Partner')"
+          pTooltip="Mi perfil"
           tooltipPosition="left">
           {{ inicialesUsuario }}
-        </div>
+        </a>
       </div>
 
     </header>

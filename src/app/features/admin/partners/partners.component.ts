@@ -16,6 +16,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 
 import { PartnerService } from '../../../core/services/partner.service';
+import { UsuarioService } from '../../../core/services/usuario.service';
 import { UsuarioModel } from '../../../core/models/usuario.model';
 import { PartnerModalComponent } from './partner-modal/partner-modal.component';
 
@@ -42,6 +43,7 @@ import { PartnerModalComponent } from './partner-modal/partner-modal.component';
 })
 export class PartnersComponent implements OnInit {
   private partnerService = inject(PartnerService);
+  private usuarioService = inject(UsuarioService);
   private dialogService = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
@@ -310,7 +312,19 @@ export class PartnersComponent implements OnInit {
     });
   }
 
+  esYo(usuario: UsuarioModel): boolean {
+    return !!usuario?.uid && usuario.uid === this.usuarioService.getPerfilActual()?.uid;
+  }
+
   toggleEstado(usuario: UsuarioModel) {
+    if (this.esYo(usuario)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Acción no permitida',
+        detail: 'No puedes desactivar tu propia cuenta.',
+      });
+      return;
+    }
     const nuevoEstado = !usuario.estaActivo;
     const accion = nuevoEstado ? 'activar' : 'desactivar';
 

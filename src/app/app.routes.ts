@@ -72,6 +72,11 @@ export const routes: Routes = [
         redirectTo: 'usuarios',
         pathMatch: 'full',
       },
+      {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./features/admin/perfil/perfil.component').then(m => m.PerfilComponent),
+      },
     ],
   },
   { path: 'admin', children: redireccionesPanel },

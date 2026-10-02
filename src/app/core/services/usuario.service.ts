@@ -1,6 +1,6 @@
 import { Injectable, inject, NgZone } from '@angular/core';
 import { Auth, authState, signInAnonymously } from '@angular/fire/auth';
-import { doc, getDoc, Firestore } from '@angular/fire/firestore';
+import { doc, getDoc, updateDoc, Firestore } from '@angular/fire/firestore';
 import { Observable, BehaviorSubject, map } from 'rxjs';
 import { PerfilUsuario } from '../models/usuario.model';
 
@@ -115,10 +115,26 @@ export class UsuarioService {
         return null;
       }
 
-      return { uid: docSnap.id, ...docSnap.data() } as PerfilUsuario;
+      const perfil = { uid: docSnap.id, ...docSnap.data() } as PerfilUsuario;
+      return this.sincronizarCorreo(perfil);
     } catch (error) {
       console.error('[UsuarioService] Error al consultar perfil en Firestore:', error);
       throw error;
+    }
+  }
+
+  /** Tras confirmar un cambio de correo, Auth ya tiene el nuevo; lo reflejamos en /usuarios. */
+  private async sincronizarCorreo(perfil: PerfilUsuario): Promise<PerfilUsuario> {
+    const user = this.auth.currentUser;
+    if (!user || user.isAnonymous || user.uid !== perfil.uid || !user.email || user.email === perfil.email) {
+      return perfil;
+    }
+    try {
+      await updateDoc(doc(this.firestore, `usuarios/${perfil.uid}`), { email: user.email });
+      return { ...perfil, email: user.email };
+    } catch (error) {
+      console.warn('[UsuarioService] No se pudo sincronizar el correo:', error);
+      return perfil;
     }
   }
 

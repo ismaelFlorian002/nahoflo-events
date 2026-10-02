@@ -64,9 +64,13 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   private userSub?: Subscription;
   private routerSub?: Subscription;
 
+  private get nombreUsuario(): string {
+    return (this.perfil()?.displayName || this.usuarioActual?.displayName || '').trim();
+  }
+
   get saludoUsuario(): string {
     if (!this.usuarioActual) return '¡Bienvenido!';
-    const nombre = this.usuarioActual.displayName?.trim();
+    const nombre = this.nombreUsuario;
     if (nombre) {
       const partes = nombre.split(/\s+/);
       const nombreCorto = partes.length > 1 ? `${partes[0]} ${partes[1]}` : partes[0];
@@ -86,8 +90,8 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   get inicialesUsuario(): string {
     if (!this.usuarioActual) return 'A';
-    if (this.usuarioActual.displayName) {
-      const parts = this.usuarioActual.displayName.trim().split(/\s+/);
+    if (this.nombreUsuario) {
+      const parts = this.nombreUsuario.split(/\s+/);
       if (parts.length >= 2) {
         return (parts[0][0] + parts[1][0]).toUpperCase();
       }

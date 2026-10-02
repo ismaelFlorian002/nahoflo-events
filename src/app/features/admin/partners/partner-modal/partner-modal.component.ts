@@ -9,6 +9,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PartnerService } from '../../../../core/services/partner.service';
+import { UsuarioService } from '../../../../core/services/usuario.service';
 import { UsuarioModel, RolUsuario } from '../../../../core/models/usuario.model';
 
 @Component({
@@ -29,6 +30,7 @@ import { UsuarioModel, RolUsuario } from '../../../../core/models/usuario.model'
 export class PartnerModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private partnerService = inject(PartnerService);
+  private usuarioService = inject(UsuarioService);
   public config = inject(DynamicDialogConfig);
   public ref = inject(DynamicDialogRef);
   private confirmationService = inject(ConfirmationService);
@@ -37,6 +39,7 @@ export class PartnerModalComponent implements OnInit {
   guardando = false;
   partnerEnEdicion: UsuarioModel | null = null;
   esEdicion = false;
+  esMiCuenta = false;
   copiadoPassword = false;
 
   rolesDisponibles: { value: RolUsuario; titulo: string; descripcion: string; icono: string }[] = [
@@ -69,6 +72,7 @@ export class PartnerModalComponent implements OnInit {
     if (this.config.data) {
       this.partnerEnEdicion = this.config.data;
       this.esEdicion = true;
+      this.esMiCuenta = this.partnerEnEdicion?.uid === this.usuarioService.getPerfilActual()?.uid;
 
       this.partnerForm.patchValue({
         displayName: this.partnerEnEdicion?.displayName || '',
@@ -93,6 +97,7 @@ export class PartnerModalComponent implements OnInit {
   }
 
   setRol(rol: RolUsuario) {
+    if (this.esMiCuenta) return;
     this.partnerForm.get('rol')?.setValue(rol);
     this.actualizarValidacionAgencia(rol);
   }
@@ -148,7 +153,9 @@ export class PartnerModalComponent implements OnInit {
 
     const formVal = this.partnerForm.getRawValue();
     const nombre = formVal.displayName?.trim() || '';
-    const rol = (formVal.rol as RolUsuario) || 'partner';
+    const rol = this.esMiCuenta
+      ? this.partnerEnEdicion!.rol
+      : (formVal.rol as RolUsuario) || 'partner';
     const agencia = rol === 'partner' ? formVal.agenciaNombre?.trim() || '' : 'NahoFlo Studio';
 
     this.confirmationService.confirm({
@@ -179,12 +186,20 @@ export class PartnerModalComponent implements OnInit {
 
     try {
       if (this.esEdicion && this.partnerEnEdicion?.uid) {
-        await this.partnerService.updateUsuario(this.partnerEnEdicion.uid, {
+        const cambios = {
           displayName: nombre,
-          rol: rol,
           agenciaNombre: rol === 'partner' ? agencia : '',
           agenciaTelefono: formVal.agenciaTelefono?.trim() || '',
-        });
+        };
+        await this.partnerService.updateUsuario(
+          this.partnerEnEdicion.uid,
+          this.esMiCuenta ? cambios : { ...cambios, rol },
+        );
+
+        const perfil = this.usuarioService.getPerfilActual();
+        if (this.esMiCuenta && perfil) {
+          this.usuarioService.setPerfil({ ...perfil, ...cambios });
+        }
 
         this.messageService.add({
           severity: 'success',
