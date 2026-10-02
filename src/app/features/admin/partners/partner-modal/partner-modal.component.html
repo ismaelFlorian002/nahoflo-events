@@ -1,178 +1,175 @@
-<form [formGroup]="partnerForm" (ngSubmit)="guardarPartner()" class="flex flex-col gap-4 pt-2">
+@let c = partnerForm.controls;
+@let esPartner = c.rol.value === 'partner';
 
-  <!-- SELECTOR DE ROL -->
-  <div>
-    <label class="block text-xs font-semibold text-gray-600 mb-2">Selecciona el Rol del Usuario *</label>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<form [formGroup]="partnerForm" (ngSubmit)="guardarPartner()" class="flex flex-col gap-6 pt-1">
 
-      <!-- Opción Partner -->
-      <div
-        (click)="setRol('partner')"
-        [class]="partnerForm.get('rol')?.value === 'partner'
-          ? 'border-violet-500 bg-violet-50/70 ring-2 ring-violet-400/30'
-          : 'border-gray-200 hover:border-gray-300 bg-white'"
-        class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all">
-        <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center text-violet-700 shrink-0 mt-0.5">
-          <i class="pi pi-briefcase text-sm"></i>
-        </div>
-        <div>
-          <span class="text-xs font-bold text-gray-800 block">Partner (Wedding Planner)</span>
-          <span class="text-[11px] text-gray-500 leading-tight block mt-0.5">Workspace privado para coordinar sus propios eventos</span>
-        </div>
-      </div>
-
-      <!-- Opción Admin -->
-      <div
-        (click)="setRol('admin')"
-        [class]="partnerForm.get('rol')?.value === 'admin'
-          ? 'border-gold-500 bg-gold-50/70 ring-2 ring-gold-400/30'
-          : 'border-gray-200 hover:border-gray-300 bg-white'"
-        class="flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all">
-        <div class="w-8 h-8 rounded-lg bg-gold-100 flex items-center justify-center text-gold-700 shrink-0 mt-0.5">
-          <i class="pi pi-shield text-sm"></i>
-        </div>
-        <div>
-          <span class="text-xs font-bold text-gray-800 block">Administrador</span>
-          <span class="text-[11px] text-gray-500 leading-tight block mt-0.5">Acceso total al panel de NahoFlo y gestión de usuarios</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-1">
-
-    <!-- NOMBRE COMPLETO -->
-    <div class="flex flex-col gap-1.5">
-      <p-floatlabel variant="on">
-        <input
-          id="displayName"
-          type="text"
-          pInputText
-          formControlName="displayName"
-          class="w-full text-sm" />
-        <label for="displayName">Nombre Completo *</label>
-      </p-floatlabel>
-      <small
-        *ngIf="partnerForm.get('displayName')?.invalid && partnerForm.get('displayName')?.touched"
-        class="text-red-500 text-xs pl-1">
-        El nombre es requerido (mínimo 3 caracteres).
-      </small>
+  <!-- ROL -->
+  <section class="flex flex-col gap-3">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-shield text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Rol del usuario</h3>
+      <span class="text-xs text-gray-400">Define a qué tiene acceso</span>
     </div>
 
-    <!-- CORREO ELECTRÓNICO -->
-    <div class="flex flex-col gap-1.5">
-      <p-floatlabel variant="on">
-        <input
-          id="email"
-          type="email"
-          pInputText
-          formControlName="email"
-          class="w-full text-sm" />
-        <label for="email">Correo Electrónico (Acceso al panel) *</label>
-      </p-floatlabel>
-      <small
-        *ngIf="partnerForm.get('email')?.invalid && partnerForm.get('email')?.touched"
-        class="text-red-500 text-xs pl-1">
-        Ingresa un correo electrónico válido.
-      </small>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      @for (r of rolesDisponibles; track r.value) {
+        @let activo = c.rol.value === r.value;
+        <button type="button"
+          class="flex items-start gap-3 rounded-xl border px-3.5 py-3 text-left cursor-pointer transition-colors"
+          [ngClass]="activo ? 'bg-gold-50/60 border-gold-400' : 'bg-white border-gray-200 hover:border-gold-200 hover:bg-gold-50/40'"
+          [attr.aria-pressed]="activo"
+          (click)="setRol(r.value)">
+          <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
+            [ngClass]="activo ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-400'">
+            <i [class]="r.icono + ' text-sm'"></i>
+          </span>
+          <span class="flex-1 min-w-0 flex flex-col gap-0.5">
+            <span class="text-sm font-medium" [ngClass]="activo ? 'text-gray-900' : 'text-gray-600'">{{ r.titulo }}</span>
+            <span class="text-xs text-gray-400 leading-snug">{{ r.descripcion }}</span>
+          </span>
+          <i class="pi text-sm mt-0.5 shrink-0"
+            [ngClass]="activo ? 'pi-check-circle text-gold-600' : 'pi-circle text-gray-300'"></i>
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- CUENTA -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i class="pi pi-user text-[11px]"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">Datos de la cuenta</h3>
     </div>
 
-  </div>
-
-  <!-- CAMPOS DE AGENCIA (Obligatorios si es Partner) -->
-  @if (partnerForm.get('rol')?.value === 'partner') {
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-      <!-- NOMBRE DE LA AGENCIA -->
-      <div class="flex flex-col gap-1.5">
-        <p-floatlabel variant="on">
-          <input
-            id="agenciaNombre"
-            type="text"
-            pInputText
-            formControlName="agenciaNombre"
-            class="w-full text-sm" />
-          <label for="agenciaNombre">Nombre de la Agencia / Marca *</label>
+    <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+      <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+        <p-floatlabel variant="on" class="w-full block">
+          <input id="displayName" pInputText formControlName="displayName" class="w-full" autocomplete="off" />
+          <label for="displayName">Nombre completo *</label>
         </p-floatlabel>
-        <small
-          *ngIf="partnerForm.get('agenciaNombre')?.invalid && partnerForm.get('agenciaNombre')?.touched"
-          class="text-red-500 text-xs pl-1">
-          El nombre de la agencia es requerido para Partners.
-        </small>
+        @if (c.displayName.touched && c.displayName.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Escribe al menos 3 caracteres.</span>
+        } @else {
+          <span class="text-[11px] text-gray-400 pl-1">Así aparecerá en el panel.</span>
+        }
       </div>
 
-      <!-- TELÉFONO / WHATSAPP -->
-      <div class="flex flex-col gap-1.5">
-        <p-floatlabel variant="on">
-          <input
-            id="agenciaTelefono"
-            type="tel"
-            pInputText
-            formControlName="agenciaTelefono"
-            class="w-full text-sm" />
-          <label for="agenciaTelefono">Teléfono de Contacto (WhatsApp)</label>
+      <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+        <p-floatlabel variant="on" class="w-full block">
+          <input id="email" pInputText formControlName="email" type="email" class="w-full" autocomplete="off" />
+          <label for="email">Correo electrónico *</label>
         </p-floatlabel>
+        @if (c.email.touched && c.email.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Ingresa un correo válido.</span>
+        } @else if (esEdicion) {
+          <span class="text-[11px] text-gray-400 pl-1"><i class="pi pi-lock text-[9px] mr-1"></i>El correo de acceso no se puede cambiar.</span>
+        } @else {
+          <span class="text-[11px] text-gray-400 pl-1">Con este correo inicia sesión.</span>
+        }
       </div>
-
     </div>
-  }
+  </section>
 
-  <!-- TELÉFONO PARA ADMIN -->
-  @if (partnerForm.get('rol')?.value === 'admin') {
-    <div class="flex flex-col gap-1.5">
-      <p-floatlabel variant="on">
-        <input
-          id="agenciaTelefonoAdmin"
-          type="tel"
-          pInputText
-          formControlName="agenciaTelefono"
-          class="w-full text-sm" />
-        <label for="agenciaTelefonoAdmin">Teléfono de Contacto (Opcional)</label>
-      </p-floatlabel>
+  <!-- AGENCIA / CONTACTO -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-center gap-2">
+      <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+        <i [class]="(esPartner ? 'pi pi-briefcase' : 'pi pi-phone') + ' text-[11px]'"></i>
+      </span>
+      <h3 class="text-sm font-semibold text-gray-900 m-0">{{ esPartner ? 'Agencia' : 'Contacto' }}</h3>
     </div>
-  }
 
-  <!-- CONTRASEÑA INICIAL (Solo en creación) -->
+    <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+      @if (esPartner) {
+        <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+          <p-floatlabel variant="on" class="w-full block">
+            <input id="agenciaNombre" pInputText formControlName="agenciaNombre" class="w-full" autocomplete="off" />
+            <label for="agenciaNombre">Nombre de la agencia / marca *</label>
+          </p-floatlabel>
+          @if (c.agenciaNombre.touched && c.agenciaNombre.invalid) {
+            <span class="text-xs text-rose-500 pl-1">El nombre de la agencia es obligatorio para Partners.</span>
+          } @else {
+            <span class="text-[11px] text-gray-400 pl-1">Se usa en su workspace y en la marca blanca.</span>
+          }
+        </div>
+      }
+
+      <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+        <p-floatlabel variant="on" class="w-full block">
+          <input id="agenciaTelefono" pInputText formControlName="agenciaTelefono" type="tel" class="w-full"
+            inputmode="tel" autocomplete="off" />
+          <label for="agenciaTelefono">Teléfono / WhatsApp</label>
+        </p-floatlabel>
+        @if (c.agenciaTelefono.touched && c.agenciaTelefono.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Ingresa un teléfono válido.</span>
+        } @else {
+          <span class="text-[11px] text-gray-400 pl-1">Opcional</span>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTRASEÑA INICIAL -->
   @if (!esEdicion) {
-    <div class="flex flex-col gap-1.5 p-3.5 bg-gray-50/70 border border-gray-100 rounded-xl">
-      <div class="flex items-center gap-2 mb-1">
-        <i class="pi pi-key text-gold-500 text-sm"></i>
-        <span>Contraseña Inicial de Acceso</span>
+    <section class="flex flex-col gap-4">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+          <i class="pi pi-key text-[11px]"></i>
+        </span>
+        <h3 class="text-sm font-semibold text-gray-900 m-0">Acceso inicial</h3>
       </div>
-      <p-password
-        id="password"
-        formControlName="password"
-        [toggleMask]="true"
-        [feedback]="false"
-        styleClass="w-full"
-        inputStyleClass="w-full text-sm">
-      </p-password>
-      <small>
-        Contraseña provisional que usará para ingresar por primera vez en /login.
-      </small>
-    </div>
+
+      <div class="flex flex-col gap-1 sm:max-w-[calc(50%-0.5rem)]">
+        <div class="flex items-center gap-1">
+          <p-floatlabel variant="on" class="block flex-1 min-w-0">
+            <p-password inputId="password" formControlName="password" [toggleMask]="true" [feedback]="false"
+              [fluid]="true" autocomplete="new-password" />
+            <label for="password">Contraseña provisional *</label>
+          </p-floatlabel>
+          <button pButton type="button" [rounded]="true" [text]="true" severity="secondary"
+            pTooltip="Generar otra" tooltipPosition="top" aria-label="Generar otra contraseña"
+            (click)="generarPassword()">
+            <i class="pi pi-refresh"></i>
+          </button>
+          <button pButton type="button" [rounded]="true" [text]="true"
+            [severity]="copiadoPassword ? 'success' : 'secondary'"
+            [pTooltip]="copiadoPassword ? '¡Copiada!' : 'Copiar'" tooltipPosition="top" aria-label="Copiar contraseña"
+            (click)="copiarPassword()">
+            <i [class]="copiadoPassword ? 'pi pi-check' : 'pi pi-copy'"></i>
+          </button>
+        </div>
+        @if (c.password.touched && c.password.invalid) {
+          <span class="text-xs text-rose-500 pl-1">Mínimo 6 caracteres.</span>
+        } @else {
+          <span class="text-[11px] text-gray-400 pl-1">Compártela con el usuario para su primer ingreso en /login.</span>
+        }
+      </div>
+    </section>
   }
 
-  <!-- BOTONES DE ACCIÓN -->
-  <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-gray-100 mt-2">
-    <button pButton [text]="true"
-      severity="secondary"
-      size="small"
-      (click)="cancelar()">
-  <i class="pi pi-times"></i>
-  <span>Cancelar</span>
-</button>
-
-    <button pButton
-     
-      [loading]="guardando"
-      type="submit"
-      size="small"
-     >
-  <i [class]="guardando ? 'pi pi-spin pi-spinner' : (esEdicion ? 'pi pi-check' : 'pi pi-plus')"></i>
-  <span>{{ esEdicion ? 'Guardar Cambios' : 'Crear Usuario' }}</span>
- </button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky -bottom-6 z-10 -mx-6 -mb-6 px-6 py-4 bg-white border-t border-gray-100 flex items-center justify-between gap-3">
+    <span class="hidden sm:inline text-xs"
+      [ngClass]="partnerForm.invalid && partnerForm.touched ? 'text-rose-500' : 'text-gray-400'">
+      @if (partnerForm.invalid && partnerForm.touched) {
+        <i class="pi pi-exclamation-circle text-[11px] mr-1"></i>Revisa los campos marcados
+      } @else {
+        * Campos obligatorios
+      }
+    </span>
+    <div class="flex items-center gap-2 ml-auto">
+      <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="cancelar()">
+        <span>Cancelar</span>
+      </button>
+      <button pButton type="submit" size="small" [loading]="guardando">
+        <i [class]="esEdicion ? 'pi pi-check' : 'pi pi-user-plus'"></i>
+        <span>{{ esEdicion ? 'Guardar cambios' : 'Crear usuario' }}</span>
+      </button>
+    </div>
   </div>
 
 </form>

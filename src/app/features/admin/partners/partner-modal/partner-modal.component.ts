@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { PartnerService } from '../../../../core/services/partner.service';
 import { UsuarioModel, RolUsuario } from '../../../../core/models/usuario.model';
@@ -20,6 +21,7 @@ import { UsuarioModel, RolUsuario } from '../../../../core/models/usuario.model'
     InputTextModule,
     PasswordModule,
     FloatLabelModule,
+    TooltipModule,
   ],
   templateUrl: './partner-modal.component.html',
   styleUrl: './partner-modal.component.scss',
@@ -35,6 +37,22 @@ export class PartnerModalComponent implements OnInit {
   guardando = false;
   partnerEnEdicion: UsuarioModel | null = null;
   esEdicion = false;
+  copiadoPassword = false;
+
+  rolesDisponibles: { value: RolUsuario; titulo: string; descripcion: string; icono: string }[] = [
+    {
+      value: 'partner',
+      titulo: 'Partner (Wedding Planner)',
+      descripcion: 'Workspace privado para coordinar sus propios eventos',
+      icono: 'pi pi-briefcase',
+    },
+    {
+      value: 'admin',
+      titulo: 'Administrador',
+      descripcion: 'Acceso total al panel de NahoFlo y gestión de usuarios',
+      icono: 'pi pi-shield',
+    },
+  ];
 
   partnerForm = this.fb.group({
     displayName: ['', [Validators.required, Validators.minLength(3)]],
@@ -77,6 +95,26 @@ export class PartnerModalComponent implements OnInit {
   setRol(rol: RolUsuario) {
     this.partnerForm.get('rol')?.setValue(rol);
     this.actualizarValidacionAgencia(rol);
+  }
+
+  generarPassword() {
+    const caracteres = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    const valores = crypto.getRandomValues(new Uint32Array(9));
+    const base = Array.from(valores, (v) => caracteres[v % caracteres.length]).join('');
+    this.partnerForm.get('password')?.setValue(`${base}*`);
+    this.partnerForm.get('password')?.markAsTouched();
+  }
+
+  async copiarPassword() {
+    const password = this.partnerForm.get('password')?.value;
+    if (!password) return;
+    try {
+      await navigator.clipboard.writeText(password);
+      this.copiadoPassword = true;
+      setTimeout(() => (this.copiadoPassword = false), 2000);
+    } catch {
+      console.warn('No se pudo copiar la contraseña');
+    }
   }
 
   private configurarValidacionesRol() {

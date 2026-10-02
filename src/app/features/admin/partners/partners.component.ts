@@ -293,12 +293,11 @@ export class PartnersComponent implements OnInit {
 
   openDialog(usuarioAEditar?: UsuarioModel) {
     const ref = this.dialogService.open(PartnerModalComponent, {
-      header: usuarioAEditar
-        ? `Editar Usuario — ${usuarioAEditar.displayName}`
-        : 'Registrar Nuevo Usuario',
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '95vw' },
+      header: usuarioAEditar ? `Editar usuario — ${usuarioAEditar.displayName}` : 'Registrar nuevo usuario',
+      width: '760px',
+      breakpoints: { '820px': '94vw' },
       closable: true,
+      draggable: false,
       dismissableMask: true,
       focusOnShow: false,
       data: usuarioAEditar,
