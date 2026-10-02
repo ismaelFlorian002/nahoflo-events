@@ -3,11 +3,10 @@ import { CanActivateFn, Router } from '@angular/router';
 import { UsuarioService } from '../services/usuario.service';
 
 /**
- * Guard para rutas /admin/**
+ * Guard para secciones exclusivas de administrador dentro de /panel.
  *
- * Permite el acceso SOLO a usuarios con rol 'admin' y estaActivo=true.
- * Resuelve de forma asíncrona esperando a que Firebase y UsuarioService
- * tengan el perfil real en memoria, sin lecturas desfasadas de observables viejos.
+ * Los demás roles regresan al inicio del panel; si no hay sesión,
+ * panelGuard los envía al login.
  */
 export const adminGuard: CanActivateFn = async () => {
   const usuarioService = inject(UsuarioService);
@@ -15,15 +14,9 @@ export const adminGuard: CanActivateFn = async () => {
 
   const perfil = await usuarioService.esperarInicializacion();
 
-  if (!perfil) {
-    return router.createUrlTree(['/login']);
-  }
-  if (perfil.rol === 'partner' && perfil.estaActivo) {
-    return router.createUrlTree(['/partner/dashboard']);
-  }
-  if (perfil.rol === 'admin' && perfil.estaActivo) {
-    return true; // ✅ Admin válido
+  if (perfil?.estaActivo && perfil.rol === 'admin') {
+    return true;
   }
 
-  return router.createUrlTree(['/login']);
+  return router.createUrlTree(['/panel']);
 };

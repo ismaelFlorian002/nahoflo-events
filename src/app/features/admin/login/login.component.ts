@@ -74,10 +74,8 @@ export class LoginComponent {
 
       // 4. Redirigir de inmediato dentro de la zona de Angular
       this.ngZone.run(async () => {
-        if (perfil.rol === 'admin') {
-          await this.router.navigate(['/admin/dashboard']);
-        } else if (perfil.rol === 'partner') {
-          await this.router.navigate(['/partner/dashboard']);
+        if (perfil.rol === 'admin' || perfil.rol === 'partner') {
+          await this.router.navigate(['/panel']);
         } else {
           await this.authService.logout();
           this.errorMessage = `Rol '${perfil.rol}' no reconocido. Contacta al administrador.`;

@@ -14,14 +14,9 @@ export const redirectIfAuthenticatedGuard: CanActivateFn = async () => {
 
   const perfil = await usuarioService.esperarInicializacion();
 
-  // Si no hay perfil, mostrar login
-  if (!perfil || !perfil.estaActivo || !perfil.rol) {
-    return true;
+  if (perfil?.estaActivo && (perfil.rol === 'admin' || perfil.rol === 'partner')) {
+    return router.createUrlTree(['/panel']);
   }
-
-  // Si ya tiene sesión activa, redirigir
-  if (perfil.rol === 'admin')   return router.createUrlTree(['/admin/dashboard']);
-  if (perfil.rol === 'partner') return router.createUrlTree(['/partner/dashboard']);
 
   return true;
 };

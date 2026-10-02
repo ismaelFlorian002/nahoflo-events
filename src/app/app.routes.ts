@@ -5,12 +5,19 @@ import { EventLayout } from './shared/layouts/event-layout/event-layout.componen
 
 // Guards RBAC (Paso 3)
 import { adminGuard }                   from './core/guards/admin.guard';
-import { partnerGuard }                 from './core/guards/partner.guard';
+import { panelGuard }                   from './core/guards/panel.guard';
 import { redirectIfAuthenticatedGuard } from './core/guards/redirect-if-authenticated.guard';
 import { pinGuard }                     from './core/guards/pin.guard';
 
 // Guard de sección del portal (existente - Paso 1 original)
 import { PortalEventAccess, portalSectionGuard } from './features/anfitrion-asistencias/portal-access';
+
+/** Redirige las URLs anteriores por rol (/admin/**, /partner/**) a su equivalente en /panel. */
+const redireccionesPanel: Routes = [
+  { path: '', redirectTo: '/panel', pathMatch: 'full' },
+  { path: 'dashboard', redirectTo: '/panel', pathMatch: 'full' },
+  { path: ':seccion', redirectTo: '/panel/:seccion' },
+];
 
 export const routes: Routes = [
 
@@ -30,20 +37,17 @@ export const routes: Routes = [
       import('./features/admin/login/login.component').then(m => m.LoginComponent),
   },
 
-  // ── Panel Admin ──────────────────────────────────────────────────────────
-  // adminGuard: solo usuarios con rol 'admin' y estaActivo=true
+  // ── Panel (admin y partner) ──────────────────────────────────────────────
+  // panelGuard: usuarios activos con rol 'admin' o 'partner'.
+  // Cada pantalla filtra datos y opciones según el rol del perfil.
   {
-    path: 'admin',
+    path: 'panel',
     component: AdminLayoutComponent,
-    canActivate: [adminGuard],
+    canActivate: [panelGuard],
     children: [
       {
         path: '',
-        redirectTo: 'dashboard',
         pathMatch: 'full',
-      },
-      {
-        path: 'dashboard',
         loadComponent: () =>
           import('./features/admin/panel/panel.component').then(m => m.PanelComponent),
       },
@@ -59,6 +63,7 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios',
+        canActivate: [adminGuard],
         loadComponent: () =>
           import('./features/admin/partners/partners.component').then(m => m.PartnersComponent),
       },
@@ -69,38 +74,8 @@ export const routes: Routes = [
       },
     ],
   },
-
-  // ── Workspace Partner ────────────────────────────────────────────────────
-  // partnerGuard: Partners activos + Admins (para soporte)
-  // Usa AdminLayoutComponent temporalmente hasta crear PartnerLayoutComponent en Paso 4
-  {
-    path: 'partner',
-    component: AdminLayoutComponent,
-    canActivate: [partnerGuard],
-    children: [
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-      },
-      {
-        path: 'dashboard',
-        loadComponent: () =>
-          import('./features/admin/panel/panel.component').then(m => m.PanelComponent),
-      },
-      {
-        path: 'eventos',
-        loadComponent: () =>
-          import('./features/admin/dashboard/dashboard.component').then(m => m.DashboardComponent),
-        // El DashboardComponent filtrará automáticamente por ownerId en el Paso 4
-      },
-      {
-        path: 'clientes',
-        loadComponent: () =>
-          import('./features/admin/clientes/clientes.component').then(m => m.ClientesComponent),
-      },
-    ],
-  },
+  { path: 'admin', children: redireccionesPanel },
+  { path: 'partner', children: redireccionesPanel },
 
   // ── Rutas del Evento (públicas con sub-rutas protegidas por PIN) ──────────
   {

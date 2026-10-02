@@ -84,7 +84,6 @@ export class PanelComponent implements OnInit {
   readonly perfil    = toSignal(this.usuarioService.perfil$, { initialValue: null });
   readonly esAdmin   = computed(() => this.perfil()?.rol === 'admin');
   readonly esPartner = computed(() => this.perfil()?.rol === 'partner');
-  readonly workspaceBase = computed(() => (this.esPartner() ? '/partner' : '/admin'));
 
   cargando = signal(true);
   eventos = signal<EventoResumen[]>([]);

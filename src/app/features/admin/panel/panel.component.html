@@ -9,7 +9,7 @@
     </div>
 
     <div class="flex items-center gap-2">
-      <a pButton size="small" severity="secondary" [outlined]="true" [routerLink]="workspaceBase() + '/eventos'">
+      <a pButton size="small" severity="secondary" [outlined]="true" routerLink="/panel/eventos">
         <i class="pi pi-calendar"></i>
         <span>Ver eventos</span>
       </a>
@@ -92,7 +92,7 @@
           <h2 class="panel-title">Próximos eventos</h2>
           <p class="panel-subtitle">Ordenados por fecha</p>
         </div>
-        <a [routerLink]="workspaceBase() + '/eventos'" class="panel-link">Ver todos <i class="pi pi-arrow-right text-[10px]"></i></a>
+        <a routerLink="/panel/eventos" class="panel-link">Ver todos <i class="pi pi-arrow-right text-[10px]"></i></a>
       </header>
 
       @if (cargando()) {

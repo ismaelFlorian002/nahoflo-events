@@ -167,7 +167,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   pinDesbloqueado = signal<boolean>(false);
   // Admin o partner dueño del evento: entra sin PIN y "Salir" regresa a su panel
   accesoStaff = signal<boolean>(false);
-  private rutaPanelStaff = '/partner/eventos';
+  private readonly rutaPanelStaff = '/panel/eventos';
 
   // Pestañas del portal anfitrión
   pestanaActiva = signal<PortalSection>('resumen');
@@ -428,7 +428,6 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
         const perfil = await this.usuarioService.esperarInicializacion();
         if (puedeAdministrarSinPin(perfil, ev)) {
           this.accesoStaff.set(true);
-          this.rutaPanelStaff = perfil?.rol === 'admin' ? '/admin/eventos' : '/partner/eventos';
           void this.respaldarContactoPartner(ev, perfil);
           await this.desbloquearYCargar(ev);
         } else {

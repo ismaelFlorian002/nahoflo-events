@@ -84,8 +84,9 @@
         <nav class="flex flex-col gap-1.5" aria-label="Navegación del Panel">
 
           <a
-            [routerLink]="workspaceBase() + '/dashboard'"
+            routerLink="/panel"
             routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
+            [routerLinkActiveOptions]="{ exact: true }"
             [class.text-gray-500]="true"
             [pTooltip]="!sidebarExpandido ? 'Dashboard' : ''"
             tooltipPosition="right"
@@ -96,9 +97,8 @@
             </span>
           </a>
 
-          <!-- Enlace: Eventos — apunta dinámicamente a /admin/eventos o /partner/eventos -->
           <a
-            [routerLink]="workspaceBase() + '/eventos'"
+            routerLink="/panel/eventos"
             routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
             [class.text-gray-500]="true"
             [pTooltip]="!sidebarExpandido ? 'Eventos' : ''"
@@ -110,9 +110,8 @@
             </span>
           </a>
 
-          <!-- Enlace: Clientes — apunta dinámicamente a /admin/clientes o /partner/clientes -->
           <a
-            [routerLink]="workspaceBase() + '/clientes'"
+            routerLink="/panel/clientes"
             routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
             [class.text-gray-500]="true"
             [pTooltip]="!sidebarExpandido ? 'Clientes' : ''"
@@ -127,7 +126,7 @@
           <!-- Enlace: Usuarios (Exclusivo para Administrador) -->
           @if (esAdmin()) {
             <a
-              routerLink="/admin/usuarios"
+              routerLink="/panel/usuarios"
               routerLinkActive="bg-gold-50 text-gold-600 font-semibold"
               [class.text-gray-500]="true"
               [pTooltip]="!sidebarExpandido ? 'Usuarios' : ''"

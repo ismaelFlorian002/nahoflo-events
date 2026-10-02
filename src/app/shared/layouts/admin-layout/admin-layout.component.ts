@@ -53,9 +53,6 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
     return 'Panel';
   });
 
-  /** Ruta base del workspace para los links del menú lateral */
-  readonly workspaceBase = computed(() => this.esPartner() ? '/partner' : '/admin');
-
   // Control de estado expandido / minimizado (Escritorio)
   sidebarExpandido = true;
 
