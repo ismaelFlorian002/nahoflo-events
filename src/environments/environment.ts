@@ -9,4 +9,7 @@ export const environment = {
     appId: '1:459984917398:web:5adfbbb796b5c3fdfc83b7',
     measurementId: 'G-TVZVJCRLK1',
   },
+  // Site key de reCAPTCHA Enterprise registrada en Firebase App Check.
+  appCheckSiteKey: '6LeTYdotAAAAAJeHqaGLtPDZrnpljUrLSsxXGmN7',
+  functionsRegion: 'us-central1',
 };

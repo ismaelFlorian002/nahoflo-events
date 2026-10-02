@@ -1,6 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -62,6 +62,10 @@ export class EventFormComponent implements OnInit {
 
   isSaving = false; // Bandera para bloquear el botón y mostrar spinner
 
+  cargandoPin = signal(false);
+  /** PIN guardado al abrir el formulario; los de 4 dígitos se aceptan mientras no se cambien. */
+  private pinOriginal: string | null = null;
+
   // Estado del catálogo de clientes
   clientes: ClienteModel[] = [];
   cargandoClientes = false;
@@ -106,7 +110,7 @@ export class EventFormComponent implements OnInit {
     }),
 
     nombreEvento: ['', Validators.required], // <-- NUEVO: Para uso interno del panel
-    pinAnfitrion: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(6)]], // <-- NUEVO
+    pinAnfitrion: ['', [Validators.required, (c: AbstractControl) => this.validarPin(c)]],
 
     // Datos del Cliente / Contacto responsable
     clienteId: [null as string | null],
@@ -190,9 +194,7 @@ export class EventFormComponent implements OnInit {
         }
       }
 
-      // 2. Retrocompatibilidad para eventos existentes sin PIN o nombreEvento
-      const pinRecuperado =
-        this.config.data.pinAnfitrion || Math.floor(1000 + Math.random() * 9000).toString();
+      // 2. Retrocompatibilidad para eventos existentes sin nombreEvento
       const nombreRecuperado = this.config.data.nombreEvento || this.config.data.titulo || 'Evento';
 
       const clienteIdExistente = this.config.data.clienteId || null;
@@ -204,7 +206,7 @@ export class EventFormComponent implements OnInit {
       this.eventForm.patchValue({
         ...this.config.data,
         nombreEvento: nombreRecuperado,
-        pinAnfitrion: pinRecuperado,
+        pinAnfitrion: '',
         fecha: fechaDate,
         clienteId: clienteIdExistente,
         contactoNombre: contactoNombre,
@@ -226,6 +228,8 @@ export class EventFormComponent implements OnInit {
           },
         });
       }
+
+      void this.cargarPin(this.config.data.id, this.config.data.pinAnfitrion);
     } else {
       // Para un evento nuevo, asignamos un PIN aleatorio por defecto
       this.generarPinAleatorio();
@@ -235,7 +239,33 @@ export class EventFormComponent implements OnInit {
     this.cargarClientes();
   }
 
+  /** Lee el PIN de privado/acceso; los eventos sin migrar aún lo traen en el documento público. */
+  private async cargarPin(eventoId: string | undefined, pinPublico?: string) {
+    this.cargandoPin.set(true);
+    try {
+      const pin = (eventoId ? await this.eventService.getPinAnfitrion(eventoId) : null) || pinPublico || null;
+      this.pinOriginal = pin;
+      if (pin) this.eventForm.patchValue({ pinAnfitrion: pin });
+      else this.generarPinAleatorio();
+    } catch (error) {
+      console.error('No se pudo leer el PIN del anfitrión:', error);
+      this.pinOriginal = pinPublico || null;
+      if (pinPublico) this.eventForm.patchValue({ pinAnfitrion: pinPublico });
+    } finally {
+      this.cargandoPin.set(false);
+    }
+  }
+
+  private validarPin(control: AbstractControl): ValidationErrors | null {
+    const pin = String(control.value ?? '');
+    if (!pin) return null;
+    if (/^\d{6}$/.test(pin)) return null;
+    if (pin === this.pinOriginal && /^\d{4,6}$/.test(pin)) return null;
+    return { pin: true };
+  }
+
   saveEvent() {
+    if (this.cargandoPin()) return;
     // Si falta PIN, lo generamos de inmediato
     if (!this.eventForm.get('pinAnfitrion')?.value) {
       this.generarPinAleatorio();
@@ -373,7 +403,6 @@ export class EventFormComponent implements OnInit {
 
       const eventData: any = {
         nombreEvento: formVal.nombreEvento || '',
-        pinAnfitrion: formVal.pinAnfitrion || '',
         clienteId: clienteIdFinal || null,
         contactoNombre: formVal.contactoNombre?.trim() || '',
         contactoTelefono: formVal.contactoTelefono?.trim() || '',
@@ -403,19 +432,22 @@ export class EventFormComponent implements OnInit {
         musicaFondoUrl: musicaFondoUrl || null,
       };
 
-      // 5. Guardar en Firestore
+      // 5. Guardar en Firestore (el PIN va aparte, en privado/acceso)
+      const pin = formVal.pinAnfitrion || '';
       if (this.isEditMode && this.eventId) {
         await this.eventService.updateEvent(this.eventId, eventData);
+        await this.eventService.guardarPinAnfitrion(this.eventId, pin);
         this.messageService.add({
           severity: 'success',
           summary: 'Evento Actualizado',
           detail: `Los cambios en "${formVal.titulo}" fueron guardados correctamente.`,
         });
       } else {
-        await this.eventService.createEvent({
+        const nuevo = await this.eventService.createEvent({
           ...eventData,
           estaActivo: true,
         });
+        await this.eventService.guardarPinAnfitrion(nuevo.id, pin);
         this.messageService.add({
           severity: 'success',
           summary: 'Evento Creado',
@@ -485,9 +517,9 @@ export class EventFormComponent implements OnInit {
     this.galeriaFiles = this.galeriaFiles.filter((f) => f !== file);
   }
 
-  // Genera un código PIN aleatorio de 4 dígitos (ej: 4821)
   generarPinAleatorio() {
-    const pin = Math.floor(1000 + Math.random() * 9000).toString();
+    const [valor] = crypto.getRandomValues(new Uint32Array(1));
+    const pin = String(valor % 1_000_000).padStart(6, '0');
     this.eventForm.patchValue({ pinAnfitrion: pin });
   }
 

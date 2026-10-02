@@ -1,0 +1,299 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════════════ Helpers de sesión y rol ═══════════════════════
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    // Sesión con correo/contraseña (no anónima)
+    function esUsuarioRegistrado() {
+      return autenticado() && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function rutaUsuario(uid) {
+      return /databases/$(database)/documents/usuarios/$(uid);
+    }
+
+    function perfilActual() {
+      return get(rutaUsuario(request.auth.uid)).data;
+    }
+
+    function esStaffActivo() {
+      return esUsuarioRegistrado()
+        && exists(rutaUsuario(request.auth.uid))
+        && perfilActual().estaActivo == true;
+    }
+
+    function esAdmin() {
+      return esStaffActivo() && perfilActual().rol == 'admin';
+    }
+
+    function esPartner() {
+      return esStaffActivo() && perfilActual().rol == 'partner';
+    }
+
+    // ═══════════════════════ Helpers de validación ═══════════════════════
+
+    function cambiaAlguno(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(campos);
+    }
+
+    function soloCambia(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
+
+    function textoValido(valor, min, max) {
+      return valor is string && valor.size() >= min && valor.size() <= max;
+    }
+
+    function textoOpcional(valor, max) {
+      return valor is string && valor.size() <= max;
+    }
+
+    function telefonoValido(valor) {
+      return valor is string
+        && (valor.size() == 0 || (valor.size() >= 7 && valor.size() <= 20 && valor.matches('^[0-9+ ()-]+$')));
+    }
+
+    function camposDePerfilValidos() {
+      let d = request.resource.data;
+      return textoValido(d.displayName, 1, 80)
+        && telefonoValido(d.get('agenciaTelefono', ''))
+        && textoOpcional(d.get('agenciaNombre', ''), 120);
+    }
+
+    // ═══════════════════════ Helpers de eventos ═══════════════════════
+
+    function rutaEvento(eventoId) {
+      return /databases/$(database)/documents/eventos/$(eventoId);
+    }
+
+    function rutaAcceso(eventoId) {
+      return /databases/$(database)/documents/eventos/$(eventoId)/privado/acceso;
+    }
+
+    function esDuenoDe(evento) {
+      return esPartner()
+        && (evento.get('ownerId', null) == request.auth.uid || evento.get('creadoPorUid', null) == request.auth.uid);
+    }
+
+    function esStaffDelEvento(eventoId) {
+      return esAdmin() || esDuenoDe(get(rutaEvento(eventoId)).data);
+    }
+
+    // Anfitrión verificado por la Cloud Function verificarPinAnfitrion con el PIN vigente
+    function esAnfitrion(eventoId) {
+      return autenticado() && sesionAnfitrionVigente(eventoId, request.auth.uid);
+    }
+
+    function sesionAnfitrionVigente(eventoId, uid) {
+      let sesion = /databases/$(database)/documents/eventos/$(eventoId)/anfitriones/$(uid);
+      return exists(sesion)
+        && exists(rutaAcceso(eventoId))
+        && get(sesion).data.pinVersion == get(rutaAcceso(eventoId)).data.pinVersion;
+    }
+
+    function puedeAdministrar(eventoId) {
+      return esStaffDelEvento(eventoId) || esAnfitrion(eventoId);
+    }
+
+    function eventoActivo(eventoId) {
+      return get(rutaEvento(eventoId)).data.get('estaActivo', false) == true;
+    }
+
+    // El PIN ya no vive en el documento público: solo se permite quitarlo
+    function noExponePin() {
+      return !('pinAnfitrion' in request.resource.data);
+    }
+
+    function noAgregaPin() {
+      return !cambiaAlguno(['pinAnfitrion']) || noExponePin();
+    }
+
+    // Confirmación de asistencia desde la invitación pública
+    function rsvpCamposValidos(d) {
+      return textoValido(d.nombre, 2, 120)
+        && d.asistira is bool
+        && d.get('estado', 'confirmado') in ['confirmado', 'declinado']
+        && d.pasesConfirmados is int
+        && d.pasesConfirmados >= 0
+        && d.pasesConfirmados <= 20
+        && textoOpcional(d.get('telefono', ''), 30)
+        && textoOpcional(d.get('mensaje', ''), 1000)
+        && d.fechaConfirmacion is timestamp;
+    }
+
+    // ═══════════════════════ /usuarios ═══════════════════════
+
+    function esAutoEdicionValida(uid) {
+      return esUsuarioRegistrado()
+        && request.auth.uid == uid
+        && resource.data.estaActivo == true
+        && soloCambia(['displayName', 'agenciaTelefono', 'agenciaNombre', 'email'])
+        && (!cambiaAlguno(['agenciaNombre']) || resource.data.rol == 'partner')
+        && (!cambiaAlguno(['email'])
+            || (request.resource.data.email == request.auth.token.email
+                && request.auth.token.email_verified == true))
+        && camposDePerfilValidos();
+    }
+
+    function esEdicionAdminValida(uid) {
+      return esAdmin()
+        && !cambiaAlguno(['uid', 'email', 'creadoEn'])
+        && (request.auth.uid != uid || !cambiaAlguno(['rol', 'estaActivo']))
+        && request.resource.data.rol in ['admin', 'partner']
+        && request.resource.data.estaActivo is bool;
+    }
+
+    match /usuarios/{uid} {
+      allow read: if (esUsuarioRegistrado() && request.auth.uid == uid) || esAdmin();
+
+      allow create: if esAdmin()
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'displayName', 'rol', 'agenciaNombre', 'agenciaTelefono', 'estaActivo', 'creadoEn'])
+        && request.resource.data.keys().hasAll(['uid', 'email', 'displayName', 'rol', 'agenciaNombre', 'agenciaTelefono', 'estaActivo', 'creadoEn'])
+        && request.resource.data.uid == uid
+        && textoValido(request.resource.data.email, 3, 254)
+        && request.resource.data.rol in ['admin', 'partner']
+        && request.resource.data.estaActivo == true
+        && request.resource.data.creadoEn == request.time
+        && camposDePerfilValidos();
+
+      allow update: if esAutoEdicionValida(uid) || esEdicionAdminValida(uid);
+      allow delete: if false;
+    }
+
+    // ═══════════════════════ /clientes ═══════════════════════
+
+    match /clientes/{clienteId} {
+      allow read: if esAdmin()
+        || (esPartner() && resource.data.partnerId == request.auth.uid);
+
+      allow create: if esAdmin()
+        || (esPartner() && request.resource.data.partnerId == request.auth.uid);
+
+      allow update: if esAdmin()
+        || (esPartner()
+            && resource.data.partnerId == request.auth.uid
+            && request.resource.data.partnerId == request.auth.uid);
+
+      allow delete: if esAdmin()
+        || (esPartner() && resource.data.partnerId == request.auth.uid);
+    }
+
+    // ═══════════════════════ /eventos ═══════════════════════
+
+    match /eventos/{eventoId} {
+      // Invitación pública y portal leen el evento por su slug
+      allow read: if true;
+
+      allow create: if noExponePin()
+        && (esAdmin() || (esPartner() && request.resource.data.ownerId == request.auth.uid));
+
+      allow update: if noAgregaPin() && (
+        esAdmin()
+        || (esDuenoDe(resource.data) && request.resource.data.ownerId == resource.data.ownerId)
+        || (esAnfitrion(eventoId) && soloCambia([
+              'presupuesto', 'proveedores', 'checklist', 'minutario', 'mesasLayout',
+              'agenciaNombre', 'agenciaLogoUrl', 'agenciaTelefono', 'agenciaNotas',
+              'actualizadoEn'
+            ]))
+      );
+
+      allow delete: if esAdmin() || esDuenoDe(resource.data);
+
+      // ── PIN del anfitrión: solo staff. pinVersion sube cuando el PIN cambia ──
+      match /privado/{docId} {
+        allow read: if docId == 'acceso' && esStaffDelEvento(eventoId);
+
+        allow create: if docId == 'acceso'
+          && esStaffDelEvento(eventoId)
+          && request.resource.data.keys().hasOnly(['pinAnfitrion', 'pinVersion', 'actualizadoEn'])
+          && request.resource.data.pinAnfitrion is string
+          && request.resource.data.pinAnfitrion.matches('^[0-9]{4,6}$')
+          && request.resource.data.pinVersion is int
+          && request.resource.data.pinVersion >= 1;
+
+        allow update: if docId == 'acceso'
+          && esStaffDelEvento(eventoId)
+          && request.resource.data.keys().hasOnly(['pinAnfitrion', 'pinVersion', 'actualizadoEn'])
+          && request.resource.data.pinAnfitrion is string
+          && (request.resource.data.pinAnfitrion == resource.data.pinAnfitrion
+              ? request.resource.data.pinVersion == resource.data.pinVersion
+              : (request.resource.data.pinAnfitrion.matches('^[0-9]{6}$')
+                 && request.resource.data.pinVersion == resource.data.pinVersion + 1));
+
+        allow delete: if false;
+      }
+
+      // ── Sesiones de anfitrión: solo las crea la Cloud Function ──
+      match /anfitriones/{uid} {
+        allow get: if autenticado()
+          && request.auth.uid == uid
+          && exists(rutaAcceso(eventoId))
+          && resource.data.pinVersion == get(rutaAcceso(eventoId)).data.pinVersion;
+        allow list: if esStaffDelEvento(eventoId);
+        allow delete: if (autenticado() && request.auth.uid == uid) || esStaffDelEvento(eventoId);
+        allow create, update: if false;
+      }
+
+      // ── Invitados ──
+      match /invitados/{invitadoId} {
+        // Fase 2: la confirmación pública dejará de leer la lista completa
+        allow read: if true;
+
+        allow create: if puedeAdministrar(eventoId)
+          || (eventoActivo(eventoId)
+              && request.resource.data.keys().hasOnly([
+                   'nombre', 'asistira', 'estado', 'pasesConfirmados', 'telefono', 'mensaje',
+                   'haIngresado', 'pasesIngresados', 'fechaConfirmacion'
+                 ])
+              && request.resource.data.haIngresado == false
+              && request.resource.data.pasesIngresados == 0
+              && rsvpCamposValidos(request.resource.data));
+
+        allow update: if puedeAdministrar(eventoId)
+          || (eventoActivo(eventoId)
+              && soloCambia(['nombre', 'asistira', 'estado', 'pasesConfirmados', 'telefono', 'mensaje', 'fechaConfirmacion'])
+              && rsvpCamposValidos(request.resource.data));
+
+        allow delete: if puedeAdministrar(eventoId);
+      }
+
+      // ── Álbum colaborativo ──
+      match /recuerdos/{recuerdoId} {
+        allow read: if true;
+
+        allow create: if puedeAdministrar(eventoId)
+          || (eventoActivo(eventoId)
+              && request.resource.data.keys().hasOnly([
+                   'nombreAutor', 'mensaje', 'fotoUrl', 'fotosUrls', 'creadoEn',
+                   'estaAprobado', 'meGusta', 'comentarios'
+                 ])
+              && textoValido(request.resource.data.nombreAutor, 1, 80)
+              && textoOpcional(request.resource.data.get('mensaje', ''), 1000)
+              && request.resource.data.fotosUrls is list
+              && request.resource.data.fotosUrls.size() <= 20
+              && request.resource.data.meGusta == 0
+              && request.resource.data.comentarios.size() == 0);
+
+        allow update: if puedeAdministrar(eventoId)
+          || (soloCambia(['meGusta'])
+              && request.resource.data.meGusta is int
+              && request.resource.data.meGusta >= 0
+              && (request.resource.data.meGusta - resource.data.get('meGusta', 0)) in [1, -1])
+          || (soloCambia(['comentarios'])
+              && request.resource.data.comentarios is list
+              && request.resource.data.comentarios.size() >= resource.data.get('comentarios', []).size()
+              && request.resource.data.comentarios.size() <= 500);
+
+        allow delete: if puedeAdministrar(eventoId);
+      }
+    }
+
+    // /pinIntentos y cualquier otra ruta: sin acceso desde el cliente (solo Cloud Functions)
+  }
+}

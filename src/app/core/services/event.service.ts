@@ -5,12 +5,15 @@ import {
   arrayUnion,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   Firestore,
+  getDoc,
   getDocs,
   increment,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
@@ -185,6 +188,34 @@ export class EventService {
   async updateEvent(id: string, data: any): Promise<void> {
     const eventDoc = doc(this.firestore, `eventos/${id}`);
     await updateDoc(eventDoc, { ...data, actualizadoEn: serverTimestamp() });
+  }
+
+  // ─── PIN DEL ANFITRIÓN (eventos/{id}/privado/acceso, solo staff) ─────────
+  async getPinAnfitrion(eventoId: string): Promise<string | null> {
+    const snap = await getDoc(doc(this.firestore, `eventos/${eventoId}/privado/acceso`));
+    return (snap.get('pinAnfitrion') as string | undefined) ?? null;
+  }
+
+  /**
+   * Guarda el PIN fuera del documento público. Si cambia, sube pinVersion
+   * y las sesiones de anfitrión abiertas con el PIN anterior pierden acceso.
+   */
+  async guardarPinAnfitrion(eventoId: string, pin: string): Promise<void> {
+    const accesoRef = doc(this.firestore, `eventos/${eventoId}/privado/acceso`);
+    const actual    = await getDoc(accesoRef);
+    const versionActual = (actual.get('pinVersion') as number | undefined) ?? 0;
+
+    if (!actual.exists() || actual.get('pinAnfitrion') !== pin) {
+      await setDoc(accesoRef, {
+        pinAnfitrion:  pin,
+        pinVersion:    versionActual + 1,
+        actualizadoEn: serverTimestamp(),
+      });
+    }
+    await updateDoc(doc(this.firestore, `eventos/${eventoId}`), {
+      pinAnfitrion: deleteField(),
+      pinLongitud:  pin.length,
+    });
   }
 
   // Actualiza el minutario / cronograma técnico de un evento

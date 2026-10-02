@@ -21,6 +21,7 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventService } from '../../core/services/event.service';
 import { UsuarioService } from '../../core/services/usuario.service';
+import { AccesoAnfitrionService } from '../../core/services/acceso-anfitrion.service';
 import { Evento } from '../../core/models/event.model';
 import { PerfilUsuario } from '../../core/models/usuario.model';
 import { InvitadoModel } from '../../core/models/invitado.model';
@@ -86,6 +87,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   }
   private eventService = inject(EventService);
   private usuarioService = inject(UsuarioService);
+  private accesoAnfitrion = inject(AccesoAnfitrionService);
   private dialogService = inject(DialogService);
   private confirmationService = inject(ConfirmationService);
   private messageService = inject(MessageService);
@@ -432,8 +434,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
           await this.desbloquearYCargar(ev);
         } else {
           void this.cargarContactoPartner(ev);
-          const pinSesion = sessionStorage.getItem(`pin_${ev.id}`);
-          if (pinSesion && pinSesion === ev.pinAnfitrion) {
+          if (ev.id && (await this.accesoAnfitrion.tieneSesionVigente(ev.id))) {
             await this.desbloquearYCargar(ev);
           }
         }
@@ -487,11 +488,10 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
   }
 
   // Manejador del evento emitido por <app-pin-login>
-  async onPinValido(pin: string): Promise<void> {
+  async onPinValido(): Promise<void> {
     const ev = this.evento();
     if (!ev || !ev.id) return;
 
-    sessionStorage.setItem(`pin_${ev.id}`, pin);
     await this.desbloquearYCargar(ev);
   }
 
@@ -528,7 +528,7 @@ export class AnfitrionAsistenciasComponent implements OnInit, OnDestroy {
       rejectButtonStyleClass: 'p-button-secondary p-button-outlined',
       accept: () => {
         if (ev?.id) {
-          sessionStorage.removeItem(`pin_${ev.id}`);
+          void this.accesoAnfitrion.cerrarSesion(ev.id);
         }
         this.qrScannerService.detenerEscaner();
         this.pinDesbloqueado.set(false);

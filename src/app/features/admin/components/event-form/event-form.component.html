@@ -111,7 +111,7 @@
                 <div class="flex items-center gap-1.5">
                   <p-floatlabel variant="on" class="block flex-1">
                     <input id="pinAnfitrion" pInputText formControlName="pinAnfitrion" class="w-full tracking-[0.3em] font-semibold"
-                      maxlength="6" inputmode="numeric" autocomplete="off" />
+                      maxlength="6" inputmode="numeric" autocomplete="off" [readOnly]="cargandoPin()" />
                     <label for="pinAnfitrion">PIN del anfitrión *</label>
                   </p-floatlabel>
                   <button pButton type="button" [rounded]="true" [text]="true" severity="secondary"
@@ -120,10 +120,12 @@
                     <i class="pi pi-refresh"></i>
                   </button>
                 </div>
-                @if (c.pinAnfitrion.touched && c.pinAnfitrion.invalid) {
-                  <span class="text-xs text-rose-500 pl-1">El PIN debe tener de 4 a 6 dígitos.</span>
+                @if (cargandoPin()) {
+                  <span class="text-[11px] text-gray-400 pl-1"><i class="pi pi-spin pi-spinner text-[10px] mr-1"></i>Cargando PIN…</span>
+                } @else if (c.pinAnfitrion.touched && c.pinAnfitrion.invalid) {
+                  <span class="text-xs text-rose-500 pl-1">El PIN debe tener 6 dígitos.</span>
                 } @else {
-                  <span class="text-[11px] text-gray-400 pl-1">Con este PIN entra a su portal.</span>
+                  <span class="text-[11px] text-gray-400 pl-1">Con este PIN entra a su portal. Si lo cambias, se cierran sus sesiones abiertas.</span>
                 }
               </div>
             </div>

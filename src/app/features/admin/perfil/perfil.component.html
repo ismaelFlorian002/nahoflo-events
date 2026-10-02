@@ -1,0 +1,281 @@
+@let p = perfil();
+@let d = datosForm.controls;
+@let pw = passwordForm.controls;
+@let ce = correoForm.controls;
+
+<div class="w-full max-w-6xl">
+
+  <!-- ENCABEZADO -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">Mi perfil</h1>
+    <p class="text-sm text-gray-500 m-0 mt-1">Administra tus datos de contacto y la seguridad de tu cuenta.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+
+    <!-- RESUMEN -->
+    <aside class="lg:sticky lg:top-24 flex flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+      <div class="flex flex-col items-center text-center gap-3">
+        <span class="w-20 h-20 rounded-3xl text-2xl font-semibold flex items-center justify-center select-none border"
+          [ngClass]="esPartner() ? 'bg-violet-50 text-violet-700 border-violet-100' : 'bg-gold-50 text-gold-700 border-gold-100'">
+          {{ iniciales() }}
+        </span>
+        <div class="min-w-0 w-full">
+          <h2 class="m-0 text-lg font-semibold text-gray-900 truncate">{{ p?.displayName }}</h2>
+          <span class="block text-sm text-gray-500 truncate">{{ p?.email }}</span>
+        </div>
+        @if (esPartner()) {
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200/60 text-xs font-semibold">
+            <i class="pi pi-briefcase text-[10px]"></i> Partner
+          </span>
+        } @else {
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold-50 text-gold-700 border border-gold-200/60 text-xs font-semibold">
+            <i class="pi pi-shield text-[10px]"></i> Administrador
+          </span>
+        }
+      </div>
+
+      <div class="flex flex-col divide-y divide-gray-100 rounded-xl border border-gray-100">
+        @if (esPartner()) {
+          <div class="flex items-center gap-3 px-3.5 py-3">
+            <i class="pi pi-building text-sm text-gray-400"></i>
+            <div class="min-w-0">
+              <span class="block text-xs text-gray-400">Agencia</span>
+              <span class="block text-sm font-medium text-gray-900 truncate">{{ p?.agenciaNombre || '—' }}</span>
+            </div>
+          </div>
+        }
+        <div class="flex items-center gap-3 px-3.5 py-3">
+          <i class="pi pi-calendar text-sm text-gray-400"></i>
+          <div class="min-w-0">
+            <span class="block text-xs text-gray-400">Miembro desde</span>
+            <span class="block text-sm font-medium text-gray-900">{{ formatearFecha(p?.creadoEn) }}</span>
+          </div>
+        </div>
+        @if (ultimoAcceso) {
+          <div class="flex items-center gap-3 px-3.5 py-3">
+            <i class="pi pi-clock text-sm text-gray-400"></i>
+            <div class="min-w-0">
+              <span class="block text-xs text-gray-400">Último inicio de sesión</span>
+              <span class="block text-sm font-medium text-gray-900">{{ ultimoAcceso }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </aside>
+
+    <div class="lg:col-span-2 flex flex-col gap-5">
+
+      <!-- DATOS PERSONALES -->
+      <form [formGroup]="datosForm" (ngSubmit)="guardarDatos()"
+        class="flex flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+            <i class="pi pi-user text-[11px]"></i>
+          </span>
+          <h3 class="text-sm font-semibold text-gray-900 m-0">Datos personales</h3>
+        </div>
+
+        <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+            <p-floatlabel variant="on" class="w-full block">
+              <input id="perfilNombre" pInputText formControlName="displayName" class="w-full" autocomplete="name" />
+              <label for="perfilNombre">Nombre completo *</label>
+            </p-floatlabel>
+            @if (d.displayName.touched && d.displayName.invalid) {
+              <span class="text-xs text-rose-500 pl-1">Escribe al menos 3 caracteres.</span>
+            } @else {
+              <span class="text-[11px] text-gray-400 pl-1">Así te verán en el panel.</span>
+            }
+          </div>
+
+          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+            <p-floatlabel variant="on" class="w-full block">
+              <input id="perfilTelefono" pInputText formControlName="agenciaTelefono" type="tel" inputmode="tel"
+                class="w-full" autocomplete="tel" />
+              <label for="perfilTelefono">Teléfono / WhatsApp</label>
+            </p-floatlabel>
+            @if (d.agenciaTelefono.touched && d.agenciaTelefono.invalid) {
+              <span class="text-xs text-rose-500 pl-1">Ingresa un teléfono válido (solo números).</span>
+            } @else {
+              <span class="text-[11px] text-gray-400 pl-1">Opcional</span>
+            }
+          </div>
+
+          @if (esPartner()) {
+            <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+              <p-floatlabel variant="on" class="w-full block">
+                <input id="perfilAgencia" pInputText formControlName="agenciaNombre" class="w-full" autocomplete="organization" />
+                <label for="perfilAgencia">Nombre de la agencia *</label>
+              </p-floatlabel>
+              @if (d.agenciaNombre.touched && d.agenciaNombre.invalid) {
+                <span class="text-xs text-rose-500 pl-1">El nombre de la agencia es obligatorio.</span>
+              } @else {
+                <span class="text-[11px] text-gray-400 pl-1">Se muestra en tu workspace y en tus eventos.</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-100">
+          <button pButton type="button" size="small" severity="secondary" [text]="true"
+            [disabled]="datosForm.pristine || guardandoDatos()" (click)="descartarDatos()">
+            <span>Descartar</span>
+          </button>
+          <button pButton type="submit" size="small" [loading]="guardandoDatos()" [disabled]="datosForm.pristine">
+            <i class="pi pi-check"></i>
+            <span>Guardar cambios</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- CORREO DE ACCESO -->
+      <section class="flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+            <i class="pi pi-envelope text-[11px]"></i>
+          </span>
+          <h3 class="text-sm font-semibold text-gray-900 m-0">Correo de acceso</h3>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl bg-gray-50 px-4 py-3">
+          <div class="flex items-center gap-3 flex-1 min-w-0">
+            <i class="pi pi-lock text-sm text-gray-400"></i>
+            <div class="min-w-0">
+              <span class="block text-sm font-medium text-gray-900 truncate">{{ p?.email }}</span>
+              <span class="block text-xs text-gray-500">Con este correo inicias sesión.</span>
+            </div>
+          </div>
+          @if (!mostrarCambioCorreo()) {
+            <button pButton type="button" size="small" severity="secondary" [outlined]="true" class="shrink-0"
+              (click)="abrirCambioCorreo()">
+              <i class="pi pi-pencil"></i>
+              <span>Cambiar correo</span>
+            </button>
+          }
+        </div>
+
+        @if (correoPendiente()) {
+          <div class="flex items-start gap-3 rounded-xl border border-sky-100 bg-sky-50 px-4 py-3">
+            <i class="pi pi-send text-sky-500 mt-0.5"></i>
+            <div class="flex-1 min-w-0">
+              <span class="block text-sm font-medium text-sky-800">Revisa tu bandeja en {{ correoPendiente() }}</span>
+              <span class="block text-xs text-sky-700 leading-snug mt-0.5">
+                Te enviamos un enlace para confirmar el cambio. Tu correo actual sigue activo hasta que lo confirmes;
+                después tendrás que iniciar sesión con el nuevo.
+              </span>
+            </div>
+            <button pButton type="button" [text]="true" [rounded]="true" size="small" severity="secondary"
+              aria-label="Cerrar aviso" (click)="correoPendiente.set(null)">
+              <i class="pi pi-times"></i>
+            </button>
+          </div>
+        }
+
+        @if (mostrarCambioCorreo()) {
+          <form [formGroup]="correoForm" (ngSubmit)="solicitarCambioCorreo()" class="flex flex-col gap-4">
+            <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+              <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                <p-floatlabel variant="on" class="w-full block">
+                  <input id="correoNuevo" pInputText formControlName="nuevo" type="email" class="w-full" autocomplete="email" />
+                  <label for="correoNuevo">Correo nuevo *</label>
+                </p-floatlabel>
+                @if (ce.nuevo.touched && ce.nuevo.invalid) {
+                  <span class="text-xs text-rose-500 pl-1">Ingresa un correo válido.</span>
+                } @else {
+                  <span class="text-[11px] text-gray-400 pl-1">Te enviaremos un enlace de confirmación.</span>
+                }
+              </div>
+              <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                <p-floatlabel variant="on" class="w-full block">
+                  <p-password inputId="correoPassword" formControlName="password" [toggleMask]="true" [feedback]="false"
+                    [fluid]="true" autocomplete="current-password" />
+                  <label for="correoPassword">Contraseña actual *</label>
+                </p-floatlabel>
+                @if (ce.password.touched && ce.password.invalid) {
+                  <span class="text-xs text-rose-500 pl-1">Confirma con tu contraseña actual.</span>
+                } @else {
+                  <span class="text-[11px] text-gray-400 pl-1">Por seguridad, confirma que eres tú.</span>
+                }
+              </div>
+            </div>
+            <div class="flex items-center justify-end gap-2">
+              <button pButton type="button" size="small" severity="secondary" [text]="true"
+                [disabled]="enviandoCorreo()" (click)="cancelarCambioCorreo()">
+                <span>Cancelar</span>
+              </button>
+              <button pButton type="submit" size="small" [loading]="enviandoCorreo()">
+                <i class="pi pi-send"></i>
+                <span>Enviar enlace</span>
+              </button>
+            </div>
+          </form>
+        }
+      </section>
+
+      <!-- CONTRASEÑA -->
+      <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()"
+        class="flex flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+            <i class="pi pi-key text-[11px]"></i>
+          </span>
+          <h3 class="text-sm font-semibold text-gray-900 m-0">Cambiar contraseña</h3>
+        </div>
+
+        <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+            <p-floatlabel variant="on" class="w-full block">
+              <p-password inputId="pwActual" formControlName="actual" [toggleMask]="true" [feedback]="false"
+                [fluid]="true" autocomplete="current-password" />
+              <label for="pwActual">Contraseña actual *</label>
+            </p-floatlabel>
+            @if (pw.actual.touched && pw.actual.invalid) {
+              <span class="text-xs text-rose-500 pl-1">Escribe tu contraseña actual.</span>
+            }
+          </div>
+
+          <div class="hidden sm:block sm:col-span-6"></div>
+
+          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+            <p-floatlabel variant="on" class="w-full block">
+              <p-password inputId="pwNueva" formControlName="nueva" [toggleMask]="true" [feedback]="true"
+                promptLabel="Mínimo 8 caracteres con letras y números" weakLabel="Débil" mediumLabel="Aceptable" strongLabel="Fuerte"
+                appendTo="body" [fluid]="true" autocomplete="new-password" />
+              <label for="pwNueva">Contraseña nueva *</label>
+            </p-floatlabel>
+            @if (pw.nueva.touched && pw.nueva.invalid) {
+              <span class="text-xs text-rose-500 pl-1">Mínimo 8 caracteres, con al menos una letra y un número.</span>
+            } @else if (passwordForm.hasError('igualAActual')) {
+              <span class="text-xs text-rose-500 pl-1">Debe ser distinta de la actual.</span>
+            } @else {
+              <span class="text-[11px] text-gray-400 pl-1">Mínimo 8 caracteres, con letras y números.</span>
+            }
+          </div>
+
+          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+            <p-floatlabel variant="on" class="w-full block">
+              <p-password inputId="pwConfirmar" formControlName="confirmar" [toggleMask]="true" [feedback]="false"
+                [fluid]="true" autocomplete="new-password" />
+              <label for="pwConfirmar">Confirmar contraseña nueva *</label>
+            </p-floatlabel>
+            @if (pw.confirmar.touched && (pw.confirmar.invalid || passwordForm.hasError('noCoinciden'))) {
+              <span class="text-xs text-rose-500 pl-1">Las contraseñas no coinciden.</span>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between gap-3 pt-4 border-t border-gray-100">
+          <span class="hidden sm:inline text-xs text-gray-400">
+            <i class="pi pi-shield text-[11px] mr-1"></i>Te pediremos tu contraseña actual para confirmar.
+          </span>
+          <button pButton type="submit" size="small" class="ml-auto" [loading]="guardandoPassword()">
+            <i class="pi pi-lock"></i>
+            <span>Actualizar contraseña</span>
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>

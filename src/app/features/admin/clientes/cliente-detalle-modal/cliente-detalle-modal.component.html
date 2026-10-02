@@ -165,10 +165,10 @@
                       <span class="truncate">{{ evento.recepcionLugar }}</span>
                     </span>
                   }
-                  @if (evento.pinAnfitrion) {
+                  @if (evento.id && pines[evento.id]) {
                     <span class="inline-flex items-center gap-1">
                       <i class="pi pi-lock text-[10px] text-gray-400"></i>
-                      PIN <span class="font-mono font-medium text-gray-700 tracking-wider">{{ evento.pinAnfitrion }}</span>
+                      PIN <span class="font-mono font-medium text-gray-700 tracking-wider">{{ pines[evento.id] }}</span>
                     </span>
                   }
                 </div>

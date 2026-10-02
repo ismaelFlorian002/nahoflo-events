@@ -5,12 +5,14 @@ import {
   EventEmitter,
   signal,
   AfterViewInit,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { InputOtpModule } from 'primeng/inputotp';
 import { Evento } from '../../../../core/models/event.model';
+import { AccesoAnfitrionService } from '../../../../core/services/acceso-anfitrion.service';
 import { OtpNumericoDirective } from '../../directives/otp-numerico.directive';
 
 @Component({
@@ -27,16 +29,22 @@ import { OtpNumericoDirective } from '../../directives/otp-numerico.directive';
   styleUrl: '../../anfitrion-asistencias.component.scss',
 })
 export class PinLoginComponent implements AfterViewInit {
+  private accesoAnfitrion = inject(AccesoAnfitrionService);
+
   @Input({ required: true }) evento!: Evento;
   @Input() tieneInvitacion: boolean = true;
 
-  @Output() pinValido = new EventEmitter<string>();
+  @Output() pinValido = new EventEmitter<void>();
 
   pinIngresado = '';
-  errorPin = signal<boolean>(false);
+  verificando = signal<boolean>(false);
+  errorPin = signal<string | null>(null);
   errorSoloNumeros = signal<boolean>(false);
   private timerAlertaNumeros: any;
-  private timerErrorPin: any;
+
+  get longitudPin(): number {
+    return this.evento?.pinLongitud || this.evento?.pinAnfitrion?.length || 4;
+  }
 
   ngAfterViewInit(): void {
     this.activarTecladoNumericoMovil();
@@ -65,39 +73,58 @@ export class PinLoginComponent implements AfterViewInit {
 
   // Se dispara en cada pulsación del InputOtp
   onPinChange(): void {
-    this.errorPin.set(false);
-    clearTimeout(this.timerErrorPin);
+    if (this.pinIngresado) this.errorPin.set(null);
     if (this.pinIngresado && /\D/.test(this.pinIngresado)) {
       this.mostrarAlertaSoloNumeros();
       this.pinIngresado = this.pinIngresado.replace(/\D/g, '');
     }
-    const pinEsperado = this.evento?.pinAnfitrion;
-    const longitud = pinEsperado ? pinEsperado.length : 4;
-    if (this.pinIngresado && this.pinIngresado.length === longitud) {
-      this.verificarPin();
+    if (this.pinIngresado?.length === this.longitudPin) {
+      void this.verificarPin();
     }
   }
 
-  verificarPin(): void {
-    if (!this.evento || !this.evento.id) return;
+  async verificarPin(): Promise<void> {
+    const pin = this.pinIngresado.trim();
+    if (!this.evento?.id || this.verificando() || pin.length !== this.longitudPin) return;
 
-    if (this.pinIngresado.trim() === this.evento.pinAnfitrion) {
-      this.errorPin.set(false);
-      clearTimeout(this.timerErrorPin);
-      this.pinValido.emit(this.pinIngresado.trim());
-    } else {
-      this.errorPin.set(true);
-      clearTimeout(this.timerErrorPin);
-      this.timerErrorPin = setTimeout(() => {
-        this.errorPin.set(false);
-      }, 3000);
+    this.verificando.set(true);
+    this.errorPin.set(null);
+    const resultado = await this.accesoAnfitrion.verificarPin(this.evento.id, pin);
 
-      // Limpia el PIN para que el usuario pueda volver a ingresarlo de inmediato
-      setTimeout(() => {
-        this.pinIngresado = '';
-        const firstInput = document.querySelector<HTMLInputElement>('.pin-otp-contenedor input');
-        firstInput?.focus();
-      }, 350);
+    if (resultado.ok) {
+      this.verificando.set(false);
+      this.pinValido.emit();
+      return;
     }
+
+    this.pinIngresado = '';
+    this.verificando.set(false);
+
+    switch (resultado.motivo) {
+      case 'incorrecto':
+        this.errorPin.set(
+          resultado.intentosRestantes && resultado.intentosRestantes <= 3
+            ? `PIN incorrecto. Te quedan ${resultado.intentosRestantes} ${resultado.intentosRestantes === 1 ? 'intento' : 'intentos'}.`
+            : 'PIN incorrecto. Intenta de nuevo.',
+        );
+        break;
+      case 'bloqueado':
+        this.errorPin.set(
+          `Demasiados intentos. Espera ${resultado.minutos} ${resultado.minutos === 1 ? 'minuto' : 'minutos'} para volver a intentar.`,
+        );
+        break;
+      case 'no-disponible':
+        this.errorPin.set('Este portal no está disponible. Contacta a tu organizador.');
+        break;
+      case 'dispositivo':
+        this.errorPin.set('No pudimos verificar tu dispositivo. Recarga la página e intenta de nuevo.');
+        break;
+      default:
+        this.errorPin.set('No pudimos conectar. Revisa tu internet e intenta de nuevo.');
+    }
+
+    setTimeout(() => {
+      document.querySelector<HTMLInputElement>('.pin-otp-contenedor input')?.focus();
+    }, 50);
   }
 }

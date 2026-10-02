@@ -1,5 +1,5 @@
 import { Injectable, inject, NgZone } from '@angular/core';
-import { Auth, authState, signInAnonymously } from '@angular/fire/auth';
+import { Auth, authState } from '@angular/fire/auth';
 import { doc, getDoc, updateDoc, Firestore } from '@angular/fire/firestore';
 import { Observable, BehaviorSubject, map } from 'rxjs';
 import { PerfilUsuario } from '../models/usuario.model';
@@ -135,13 +135,6 @@ export class UsuarioService {
     } catch (error) {
       console.warn('[UsuarioService] No se pudo sincronizar el correo:', error);
       return perfil;
-    }
-  }
-
-  async iniciarSesionAnonimaHost(): Promise<void> {
-    const user = this.auth.currentUser;
-    if (!user) {
-      await signInAnonymously(this.auth);
     }
   }
 

@@ -67,7 +67,10 @@ export interface Evento {
   galeriaUrls?: string[];
   musicaFondoUrl?: string;
 
-  pinAnfitrion?: string; // <-- NUEVO: PIN de 4 a 6 dígitos para los novios/anfitriones
+  /** @deprecated El PIN vive en eventos/{id}/privado/acceso; solo lo traen eventos sin migrar. */
+  pinAnfitrion?: string;
+  /** Cantidad de dígitos del PIN, para dibujar las casillas sin exponerlo. */
+  pinLongitud?: number;
 
   // Datos del Cliente / Contacto responsable del evento
   clienteId?: string; // Referencia al documento en la colección 'clientes'

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
@@ -7,6 +7,7 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Router } from '@angular/router';
 import { Evento } from '../../../../core/models/event.model';
 import { UsuarioService } from '../../../../core/services/usuario.service';
+import { EventService } from '../../../../core/services/event.service';
 import { puedeAdministrarSinPin } from '../../../anfitrion-asistencias/portal-access';
 
 interface ServicioResumen {
@@ -34,8 +35,10 @@ export class EventoDetalleModalComponent implements OnInit {
   public ref = inject(DynamicDialogRef);
   private router = inject(Router);
   private usuarioService = inject(UsuarioService);
+  private eventService = inject(EventService);
 
   evento!: Evento;
+  pin = signal<string | null>(null);
   copiadoEnlace = false;
   copiadoPin = false;
   puedeAdministrar = false;
@@ -50,6 +53,18 @@ export class EventoDetalleModalComponent implements OnInit {
     this.servicios = this.construirServicios();
     this.serviciosActivos = this.servicios.filter((s) => s.activo).length;
     this.diasRestantes = this.calcularDiasRestantes(this.evento?.fecha);
+    void this.cargarPin();
+  }
+
+  private async cargarPin(): Promise<void> {
+    this.pin.set(this.evento?.pinAnfitrion || null);
+    if (!this.evento?.id) return;
+    try {
+      const privado = await this.eventService.getPinAnfitrion(this.evento.id);
+      if (privado) this.pin.set(privado);
+    } catch (error) {
+      console.warn('No se pudo leer el PIN del anfitrión:', error);
+    }
   }
 
   private construirServicios(): ServicioResumen[] {
@@ -169,9 +184,10 @@ export class EventoDetalleModalComponent implements OnInit {
   }
 
   async copiarPin(): Promise<void> {
-    if (!this.evento?.pinAnfitrion) return;
+    const pin = this.pin();
+    if (!pin) return;
     try {
-      await navigator.clipboard.writeText(this.evento.pinAnfitrion);
+      await navigator.clipboard.writeText(pin);
       this.copiadoPin = true;
       setTimeout(() => (this.copiadoPin = false), 2200);
     } catch {

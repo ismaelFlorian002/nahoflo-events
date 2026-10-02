@@ -8,6 +8,7 @@ import { RouterTestingHarness } from '@angular/router/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventService } from '../../core/services/event.service';
+import { AccesoAnfitrionService } from '../../core/services/acceso-anfitrion.service';
 import { Evento } from '../../core/models/event.model';
 import { AnfitrionAsistenciasComponent } from './anfitrion-asistencias.component';
 import { PortalEventAccess, portalSectionGuard } from './portal-access';
@@ -23,11 +24,16 @@ describe('Portal routes', () => {
   let event: Evento;
   const stop = vi.fn();
   const events = { getEventBySlug: vi.fn(), getInvitados: vi.fn(), getRecuerdos: vi.fn() };
+  let sesionVigente = false;
+  const acceso = {
+    tieneSesionVigente: vi.fn(async () => sesionVigente),
+    cerrarSesion: vi.fn(async () => undefined),
+  };
 
   beforeEach(async () => {
-    sessionStorage.clear();
+    sesionVigente = false;
     vi.clearAllMocks();
-    event = { id: 'test-event', enlace: 'test', titulo: 'Test', pinAnfitrion: '1234' } as Evento;
+    event = { id: 'test-event', enlace: 'test', titulo: 'Test', pinLongitud: 6 } as Evento;
     events.getEventBySlug.mockImplementation(async () => event);
     events.getInvitados.mockResolvedValue([]);
     events.getRecuerdos.mockResolvedValue([]);
@@ -38,6 +44,7 @@ describe('Portal routes', () => {
         ConfirmationService,
         MessageService,
         { provide: EventService, useValue: events },
+        { provide: AccesoAnfitrionService, useValue: acceso },
         { provide: QrScannerService, useValue: { detenerEscaner: stop, escanerActivo: signal(false) } },
         { provide: PdfReportService, useValue: {} },
         {
@@ -59,12 +66,10 @@ describe('Portal routes', () => {
     }).compileComponents();
   });
 
-  afterEach(() => sessionStorage.clear());
-
   it('renders every real lazy page with the shared event context', async () => {
     const router = TestBed.inject(Router);
     router.resetConfig(router.config.map(route => ({ ...route, children: PORTAL_ROUTES })));
-    sessionStorage.setItem('pin_test-event', '1234');
+    sesionVigente = true;
     const harness = await RouterTestingHarness.create();
     for (const route of PORTAL_ROUTES.filter(route => route.loadComponent)) {
       const shell = await harness.navigateByUrl(`/e/test/asistencias/${route.path}`, AnfitrionAsistenciasComponent);
@@ -89,14 +94,14 @@ describe('Portal routes', () => {
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('PIN');
     expect(shell.pestanaActiva()).toBe('croquis');
-    await shell.onPinValido('1234');
+    await shell.onPinValido();
     harness.detectChanges();
     expect(harness.routeNativeElement?.textContent).toContain('Section content');
     expect(TestBed.inject(Router).url).toBe('/e/test/asistencias/mesas');
   });
 
   it('preserves the container and loaded data when changing sections and stops the scanner', async () => {
-    sessionStorage.setItem('pin_test-event', '1234');
+    sesionVigente = true;
     const harness = await RouterTestingHarness.create();
     const first = await harness.navigateByUrl(
       '/e/test/asistencias/recepcion',

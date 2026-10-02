@@ -35,6 +35,7 @@ export class ClienteDetalleModalComponent implements OnInit {
 
   cliente!: ClienteModel;
   eventosAsociados: Evento[] = [];
+  pines: Record<string, string> = {};
   cargandoEventos = true;
 
   copiadoId = false;
@@ -56,6 +57,7 @@ export class ClienteDetalleModalComponent implements OnInit {
         this.cliente?.telefono,
         this.cliente?.nombreCompleto,
       );
+      void this.cargarPines();
     } catch (error) {
       console.error('Error al cargar eventos del cliente:', error);
       this.eventosAsociados = [];
@@ -63,6 +65,19 @@ export class ClienteDetalleModalComponent implements OnInit {
       this.cargandoEventos = false;
       this.cdr.detectChanges();
     }
+  }
+
+  private async cargarPines(): Promise<void> {
+    const entradas = await Promise.all(
+      this.eventosAsociados
+        .filter((e) => e.id)
+        .map(async (e) => {
+          const pin = await this.eventService.getPinAnfitrion(e.id!).catch(() => null);
+          return [e.id!, pin || e.pinAnfitrion || ''] as const;
+        }),
+    );
+    this.pines = Object.fromEntries(entradas.filter(([, pin]) => pin));
+    this.cdr.detectChanges();
   }
 
   copiarDato(texto: string | undefined, tipo: 'id' | 'telefono' | 'email'): void {

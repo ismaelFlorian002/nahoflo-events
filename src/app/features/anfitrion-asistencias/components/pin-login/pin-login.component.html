@@ -26,22 +26,28 @@
           (caracterInvalido)="mostrarAlertaSoloNumeros()"
           [(ngModel)]="pinIngresado"
           name="pin"
-          [length]="evento.pinAnfitrion?.length || 4"
-          [invalid]="errorPin() || errorSoloNumeros()"
+          [length]="longitudPin"
+          [invalid]="!!errorPin() || errorSoloNumeros()"
+          [disabled]="verificando()"
           (onChange)="onPinChange()"
           autofocus />
       </div>
 
       <!-- Banner Suave de Error -->
-      @if (errorSoloNumeros()) {
+      @if (verificando()) {
+        <div class="text-gray-500 text-sm font-medium px-4 py-2 mb-6 inline-flex items-center gap-2">
+          <i class="pi pi-spin pi-spinner text-base shrink-0"></i>
+          <span>Verificando PIN…</span>
+        </div>
+      } @else if (errorSoloNumeros()) {
         <div class="bg-red-50 text-red-500 text-sm font-medium px-4 py-2 rounded-lg mb-6 inline-flex items-center gap-2">
           <i class="pi pi-exclamation-circle text-base shrink-0"></i>
           <span>Solo se permiten números en el PIN.</span>
         </div>
-      } @else if (errorPin()) {
-        <div class="bg-red-50 text-red-500 text-sm font-medium px-4 py-2 rounded-lg mb-6 inline-flex items-center gap-2">
+      } @else if (errorPin(); as mensaje) {
+        <div class="bg-red-50 text-red-500 text-sm font-medium px-4 py-2 rounded-lg mb-6 inline-flex items-center gap-2 text-left">
           <i class="pi pi-exclamation-triangle text-base shrink-0"></i>
-          <span>PIN incorrecto. Intenta de nuevo.</span>
+          <span>{{ mensaje }}</span>
         </div>
       }
 
