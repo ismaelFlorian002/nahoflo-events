@@ -16,13 +16,18 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
       @for (r of rolesDisponibles; track r.value) {
         @let activo = c.rol.value === r.value;
+        @let lila = r.value === 'partner';
         <button type="button"
           class="flex items-start gap-3 rounded-xl border px-3.5 py-3 text-left cursor-pointer transition-colors"
-          [ngClass]="activo ? 'bg-gold-50/60 border-gold-400' : 'bg-white border-gray-200 hover:border-gold-200 hover:bg-gold-50/40'"
+          [ngClass]="activo
+            ? (lila ? 'bg-violet-50/70 border-violet-400' : 'bg-gold-50/60 border-gold-400')
+            : (lila ? 'bg-white border-gray-200 hover:border-violet-200 hover:bg-violet-50/40' : 'bg-white border-gray-200 hover:border-gold-200 hover:bg-gold-50/40')"
           [attr.aria-pressed]="activo"
           (click)="setRol(r.value)">
           <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors"
-            [ngClass]="activo ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-400'">
+            [ngClass]="activo
+              ? (lila ? 'bg-violet-100 text-violet-700' : 'bg-gold-100 text-gold-700')
+              : (lila ? 'bg-violet-50 text-violet-400' : 'bg-gold-50 text-gold-500')">
             <i [class]="r.icono + ' text-sm'"></i>
           </span>
           <span class="flex-1 min-w-0 flex flex-col gap-0.5">
@@ -30,7 +35,7 @@
             <span class="text-xs text-gray-400 leading-snug">{{ r.descripcion }}</span>
           </span>
           <i class="pi text-sm mt-0.5 shrink-0"
-            [ngClass]="activo ? 'pi-check-circle text-gold-600' : 'pi-circle text-gray-300'"></i>
+            [ngClass]="activo ? ('pi-check-circle ' + (lila ? 'text-violet-600' : 'text-gold-600')) : 'pi-circle text-gray-300'"></i>
         </button>
       }
     </div>
