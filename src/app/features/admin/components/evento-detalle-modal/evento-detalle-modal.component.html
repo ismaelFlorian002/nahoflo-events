@@ -1,396 +1,343 @@
-<div class="evento-detalle-modal">
-<!--  overflow-x: hidden;-->
-  <!-- ENCABEZADO DEL EVENTO -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 mb-5 border-b border-gray-100">
-    <div class="flex items-center gap-3.5 min-w-0">
+@let hora = formatearHora(evento.fecha);
+@let refInterna = evento.nombreEvento && evento.nombreEvento !== evento.titulo ? evento.nombreEvento : '';
+
+<div class="flex flex-col gap-5">
+
+  <!-- ENCABEZADO -->
+  <section class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex items-center gap-4 min-w-0">
       @if (evento.fotoPrincipalUrl) {
-        <img
-          [src]="evento.fotoPrincipalUrl"
-          [alt]="evento.titulo"
-          class="w-12 h-12 rounded-lg object-cover border border-gray-200 shrink-0" />
+        <img [src]="evento.fotoPrincipalUrl" [alt]="evento.titulo"
+          class="w-16 h-16 rounded-2xl object-cover border border-gray-100 shrink-0" />
       } @else {
-        <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
-          <i class="pi pi-calendar text-lg text-gray-400"></i>
-        </div>
+        <span class="w-16 h-16 rounded-2xl bg-gold-50 text-gold-700 border border-gold-100 text-2xl font-semibold flex items-center justify-center shrink-0 select-none">
+          {{ (evento.titulo || '?').trim().charAt(0).toUpperCase() }}
+        </span>
       }
 
-      <div class="flex flex-col gap-1 min-w-0">
-        <div class="flex items-center gap-2 min-w-0">
-          <h2 class="text-lg font-semibold text-gray-900 m-0 truncate">
-            {{ evento.titulo }}
-          </h2>
-          <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-gray-100 text-gray-600 capitalize shrink-0">
-            {{ evento.tipo || 'Evento' }}
-          </span>
-          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-gray-100 text-gray-600 shrink-0">
-            <span
-              class="w-1.5 h-1.5 rounded-full"
-              [class.bg-emerald-500]="evento.estaActivo"
-              [class.bg-amber-500]="!evento.estaActivo">
-            </span>
-            {{ evento.estaActivo ? 'Activo' : 'Borrador' }}
-          </span>
-        </div>
-
-        @if (evento.preTitulo || (evento.nombreEvento && evento.nombreEvento !== evento.titulo)) {
-          <span class="text-xs text-gray-500 truncate">
-            {{ evento.preTitulo }}
-            @if (evento.preTitulo && evento.nombreEvento && evento.nombreEvento !== evento.titulo) {
-              <span class="mx-1 text-gray-300">·</span>
-            }
-            @if (evento.nombreEvento && evento.nombreEvento !== evento.titulo) {
-              Ref. interna: {{ evento.nombreEvento }}
-            }
-          </span>
+      <div class="min-w-0">
+        @if (evento.preTitulo) {
+          <span class="block text-[11px] font-medium uppercase tracking-wider text-gold-600">{{ evento.preTitulo }}</span>
         }
+        <h2 class="m-0 text-xl font-semibold text-gray-900 truncate">{{ evento.titulo }}</h2>
+        <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+          <p-tag [value]="evento.tipo || 'Evento'" severity="secondary" [rounded]="true" />
+          <p-tag
+            [value]="evento.estaActivo ? 'Activo' : 'Borrador'"
+            [severity]="evento.estaActivo ? 'success' : 'warn'"
+            [icon]="evento.estaActivo ? 'pi pi-check' : 'pi pi-pencil'"
+            [rounded]="true" />
+          @if (refInterna) {
+            <span class="text-xs text-gray-400 truncate">Ref. interna: {{ refInterna }}</span>
+          }
+        </div>
       </div>
     </div>
 
     @if (evento.pinAnfitrion) {
-      <div class="flex items-center gap-2 shrink-0">
-        <span class="text-xs text-gray-400">PIN anfitrión</span>
-        <span class="text-sm font-semibold font-mono tracking-widest text-gray-800">{{ evento.pinAnfitrion }}</span>
-        <button pButton
-          size="small"
-          [text]="true"
-          [rounded]="true"
+      <div class="flex items-center gap-3 rounded-xl border border-gray-100 bg-gray-50 pl-3.5 pr-1.5 py-1.5 shrink-0 self-start sm:self-auto">
+        <div class="flex flex-col">
+          <span class="text-[11px] text-gray-400">PIN del anfitrión</span>
+          <span class="text-base font-semibold font-mono tracking-[0.3em] text-gray-900">{{ evento.pinAnfitrion }}</span>
+        </div>
+        <button pButton type="button" [text]="true" [rounded]="true"
           [severity]="copiadoPin ? 'success' : 'secondary'"
-          (click)="copiarPin()"
-          [pTooltip]="copiadoPin ? '¡Copiado!' : 'Copiar PIN'"
-          tooltipPosition="top">
+          [pTooltip]="copiadoPin ? '¡Copiado!' : 'Copiar PIN'" tooltipPosition="top" aria-label="Copiar PIN"
+          (click)="copiarPin()">
           <i [class]="copiadoPin ? 'pi pi-check' : 'pi pi-copy'"></i>
         </button>
       </div>
     }
-  </div>
+  </section>
 
-  <!-- ENLACE PÚBLICO OFICIAL -->
-  <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-    <div class="flex items-center gap-2.5 overflow-hidden">
-      <div class="w-8 h-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center text-slate-600 shrink-0">
-        <i class="pi pi-link text-sm"></i>
-      </div>
+  <!-- FECHA, HORA Y CUENTA REGRESIVA -->
+  <section class="grid grid-cols-1 sm:grid-cols-3 rounded-xl border border-gray-100 overflow-hidden">
+    <div class="flex items-start gap-3 p-4 border-b sm:border-b-0 sm:border-r border-gray-100">
+      <span class="w-9 h-9 rounded-lg bg-gold-50 text-gold-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-calendar text-sm"></i>
+      </span>
       <div class="min-w-0">
-        <span class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Enlace Público de la Invitación</span>
-        <span class="text-sm  text-slate-700 truncate block font-medium">
-          {{ obtenerUrlPublica() }}
+        <span class="block text-xs text-gray-400">Fecha</span>
+        <span class="block text-sm font-medium text-gray-900 first-letter:uppercase">{{ formatearFechaCompleta(evento.fecha) }}</span>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3 p-4 border-b sm:border-b-0 sm:border-r border-gray-100">
+      <span class="w-9 h-9 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center shrink-0">
+        <i class="pi pi-clock text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-xs text-gray-400">Hora</span>
+        @if (hora) {
+          <span class="block text-sm font-medium text-gray-900">{{ hora }}</span>
+        } @else {
+          <span class="block text-sm text-gray-400 italic">Sin hora definida</span>
+        }
+      </div>
+    </div>
+
+    <div class="flex items-start gap-3 p-4">
+      <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+        [ngClass]="diasRestantes !== null && diasRestantes < 0 ? 'bg-gray-100 text-gray-500' : 'bg-emerald-50 text-emerald-600'">
+        <i class="pi pi-hourglass text-sm"></i>
+      </span>
+      <div class="min-w-0">
+        <span class="block text-xs text-gray-400">Cuenta regresiva</span>
+        <span class="block text-sm font-medium text-gray-900">
+          @if (diasRestantes === null) {
+            <span class="text-gray-400 italic font-normal">Sin fecha</span>
+          } @else if (diasRestantes > 1) {
+            Faltan {{ diasRestantes }} días
+          } @else if (diasRestantes === 1) {
+            Es mañana
+          } @else if (diasRestantes === 0) {
+            <span class="text-emerald-600">¡Es hoy!</span>
+          } @else {
+            <span class="text-gray-500">Fue hace {{ -diasRestantes }} {{ diasRestantes === -1 ? 'día' : 'días' }}</span>
+          }
         </span>
       </div>
     </div>
+  </section>
 
-    <div class="flex items-center gap-2 shrink-0">
-      <button pButton
-       
-        size="small"
-        [severity]="copiadoEnlace ? 'success' : 'secondary'"
-        [outlined]="!copiadoEnlace"
-        (click)="copiarEnlace()">
-  <i [class]="copiadoEnlace ? 'pi pi-check' : 'pi pi-copy'"></i>
-  <span>{{ copiadoEnlace ? '¡Copiado!' : 'Copiar Enlace' }}</span>
- </button>
-
-      <button pButton size="small"
-        severity="secondary"
-        [outlined]="true"
-        (click)="abrirInvitacion()">
-  <i class="pi pi-external-link"></i>
-  <span>Abrir</span>
-</button>
-
-      @if (puedeAdministrar) {
-        <button pButton size="small"
-          (click)="administrar()">
-  <i class="pi pi-sliders-h"></i>
-  <span>Administrar</span>
-</button>
-      }
-    </div>
-  </div>
-
-  <!-- CONTENIDO PRINCIPAL EN DOS COLUMNAS -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-
-    <!-- COLUMNA IZQUIERDA: FECHA Y CONTACTO -->
-    <div class="flex flex-col gap-4">
-
-      <!-- TARJETA: FECHA Y HORA -->
-      <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
-          <i class="pi pi-calendar text-gold-500 text-base"></i>
-          <h4 class="text-sm font-bold text-gray-800 m-0">Fecha y Horario</h4>
-        </div>
-        <div class="space-y-2">
-          <div>
-            <span class="block text-xs text-gray-400">Fecha del Evento</span>
-            <span class="text-sm font-semibold text-gray-800 capitalize">
-              {{ formatearFechaCompleta(evento.fecha) }}
-            </span>
-          </div>
-          @if (formatearHora(evento.fecha); as hora) {
-            <div>
-              <span class="block text-xs text-gray-400">Hora Programada</span>
-              <span>
-                <i class="pi pi-clock text-xs text-slate-400 mr-1"></i>{{ hora }}
-              </span>
-            </div>
-          }
+  <!-- ENLACE PÚBLICO -->
+  @if (evento.enlace) {
+    <section class="flex flex-col md:flex-row md:items-center gap-3 rounded-xl border border-gold-100 bg-gold-50/40 p-3.5">
+      <div class="flex items-center gap-3 min-w-0 flex-1">
+        <span class="w-9 h-9 rounded-lg bg-white border border-gold-100 text-gold-600 flex items-center justify-center shrink-0">
+          <i class="pi pi-link text-sm"></i>
+        </span>
+        <div class="min-w-0">
+          <span class="block text-xs text-gray-500">Enlace público de la invitación</span>
+          <a [href]="obtenerUrlPublica()" target="_blank" rel="noopener noreferrer"
+            class="block text-sm font-medium text-gray-900 hover:text-gold-700 no-underline truncate transition-colors">
+            {{ obtenerUrlPublica() }}
+          </a>
         </div>
       </div>
 
-      <!-- TARJETA: CLIENTE Y CONTACTO -->
-      <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
-          <i class="pi pi-user text-gold-500 text-base"></i>
-          <h4 class="text-sm font-bold text-gray-800 m-0">Cliente Responsable</h4>
+      <div class="flex flex-wrap items-center gap-2 shrink-0">
+        <button pButton type="button" size="small"
+          [severity]="copiadoEnlace ? 'success' : 'secondary'" [outlined]="!copiadoEnlace"
+          (click)="copiarEnlace()">
+          <i [class]="copiadoEnlace ? 'pi pi-check' : 'pi pi-copy'"></i>
+          <span>{{ copiadoEnlace ? '¡Copiado!' : 'Copiar' }}</span>
+        </button>
+        <button pButton type="button" size="small" severity="secondary" [outlined]="true" (click)="abrirInvitacion()">
+          <i class="pi pi-external-link"></i>
+          <span>Abrir</span>
+        </button>
+        @if (puedeAdministrar) {
+          <button pButton type="button" size="small" (click)="administrar()">
+            <i class="pi pi-sliders-h"></i>
+            <span>Administrar</span>
+          </button>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- CONTENIDO EN DOS COLUMNAS -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+    <div class="flex flex-col gap-5">
+
+      <!-- CLIENTE -->
+      <section class="flex flex-col gap-4 rounded-xl border border-gray-100 p-4">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+            <i class="pi pi-user text-[11px]"></i>
+          </span>
+          <h4 class="m-0 text-sm font-semibold text-gray-900">Cliente responsable</h4>
         </div>
 
         @if (evento.contactoNombre) {
-          <div class="space-y-2.5">
-            <div>
-              <span class="block text-xs text-gray-400">Nombre</span>
-              <span>{{ evento.contactoNombre }}</span>
-            </div>
+          <div class="flex items-center gap-3">
+            <span class="w-10 h-10 rounded-full bg-gold-50 text-gold-700 text-sm font-semibold flex items-center justify-center shrink-0 select-none">
+              {{ evento.contactoNombre.trim().charAt(0).toUpperCase() }}
+            </span>
+            <span class="text-sm font-semibold text-gray-900 capitalize min-w-0 truncate">{{ evento.contactoNombre.toLowerCase() }}</span>
+          </div>
 
-            @if (evento.contactoTelefono) {
-              <div>
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                <i class="pi pi-whatsapp text-sm"></i>
+              </span>
+              <div class="flex-1 min-w-0">
                 <span class="block text-xs text-gray-400">Teléfono / WhatsApp</span>
-                <div class="flex items-center gap-2 mt-0.5">
-                  <a
-                    [href]="'tel:' + evento.contactoTelefono"
-                    class="text-sm font-medium text-gray-700 hover:text-gray-900 no-underline">
+                @if (evento.contactoTelefono) {
+                  <a [href]="'tel:' + evento.contactoTelefono"
+                    class="block text-sm font-medium text-gray-900 hover:text-gold-700 no-underline transition-colors">
                     {{ evento.contactoTelefono }}
                   </a>
-                  <a
-                    [href]="getWhatsappUrl(evento.contactoTelefono)"
-                    target="_blank"
-                    class="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-medium no-underline">
-                    <i class="pi pi-whatsapp"></i> WhatsApp
-                  </a>
-                </div>
+                } @else {
+                  <span class="block text-sm text-gray-400">No registrado</span>
+                }
               </div>
-            }
-
-            @if (evento.contactoEmail) {
-              <div>
-                <span class="block text-xs text-gray-400">Correo Electrónico</span>
-                <a
-                  [href]="'mailto:' + evento.contactoEmail"
-                  class="text-sm font-medium text-slate-700 hover:underline">
-                  {{ evento.contactoEmail }}
+              @if (evento.contactoTelefono) {
+                <a [href]="getWhatsappUrl(evento.contactoTelefono)" target="_blank" rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 no-underline hover:bg-emerald-100 transition-colors shrink-0">
+                  <i class="pi pi-whatsapp text-[11px]"></i> Escribir
                 </a>
-              </div>
-            }
+              }
+            </div>
 
-            @if (evento.contactoNotas) {
-              <div class="pt-2 border-t border-gray-100">
-                <span class="block text-xs text-gray-400">Notas de Atención</span>
-                <p class="text-xs text-gray-600 italic m-0 mt-0.5 bg-gray-50 p-2 rounded-lg">
-                  {{ evento.contactoNotas }}
-                </p>
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center shrink-0">
+                <i class="pi pi-envelope text-sm"></i>
+              </span>
+              <div class="flex-1 min-w-0">
+                <span class="block text-xs text-gray-400">Correo electrónico</span>
+                @if (evento.contactoEmail) {
+                  <a [href]="'mailto:' + evento.contactoEmail"
+                    class="block text-sm font-medium text-gray-900 hover:text-gold-700 no-underline lowercase truncate transition-colors">
+                    {{ evento.contactoEmail }}
+                  </a>
+                } @else {
+                  <span class="block text-sm text-gray-400">No registrado</span>
+                }
               </div>
-            }
+            </div>
           </div>
+
+          @if (evento.contactoNotas) {
+            <div class="rounded-lg bg-gray-50 px-3 py-2.5">
+              <span class="flex items-center gap-1.5 text-xs font-medium text-gray-500">
+                <i class="pi pi-bookmark text-[10px]"></i> Notas internas
+              </span>
+              <p class="m-0 mt-1 text-sm text-gray-700 whitespace-pre-wrap break-words">{{ evento.contactoNotas }}</p>
+            </div>
+          }
         } @else {
-          <p class="text-xs text-gray-400 italic m-0">No se ha asignado un cliente o contacto directo a este evento.</p>
+          <div class="flex flex-col items-center gap-1.5 rounded-lg border border-dashed border-gray-200 py-6 text-center">
+            <i class="pi pi-user-plus text-lg text-gray-300"></i>
+            <span class="text-sm text-gray-500">Sin cliente asignado</span>
+            <span class="text-xs text-gray-400">Agrégalo desde “Editar evento”.</span>
+          </div>
         }
-      </div>
+      </section>
+
+      <!-- UBICACIONES -->
+      <section class="flex flex-col gap-3 rounded-xl border border-gray-100 p-4">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+            <i class="pi pi-map-marker text-[11px]"></i>
+          </span>
+          <h4 class="m-0 text-sm font-semibold text-gray-900">Ubicaciones</h4>
+        </div>
+
+        <ng-container *ngTemplateOutlet="ubicacion; context: { etiqueta: 'Ceremonia', icono: 'pi pi-building', lugar: evento.ceremoniaLugar, url: evento.ceremoniaUrl, foto: evento.fotoCeremoniaUrl }"></ng-container>
+        <ng-container *ngTemplateOutlet="ubicacion; context: { etiqueta: 'Recepción', icono: 'pi pi-map-marker', lugar: evento.recepcionLugar, url: evento.recepcionUrl, foto: evento.fotoRecepcionUrl }"></ng-container>
+      </section>
 
     </div>
 
-    <!-- COLUMNA DERECHA: MÓDULOS Y UBICACIONES -->
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-5">
 
-      <!-- TARJETA: MÓDULOS CONTRATADOS -->
-      <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
-          <i class="pi pi-th-large text-gold-500 text-base"></i>
-          <h4 class="text-sm font-bold text-gray-800 m-0">Servicios y Módulos</h4>
+      <!-- SERVICIOS -->
+      <section class="flex flex-col gap-3 rounded-xl border border-gray-100 p-4">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+            <i class="pi pi-sparkles text-[11px]"></i>
+          </span>
+          <h4 class="m-0 text-sm font-semibold text-gray-900">Servicios contratados</h4>
+          <span class="ml-auto px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs">
+            {{ serviciosActivos }} de {{ servicios.length }}
+          </span>
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <!-- Invitación Web -->
-          <div class="p-2.5 rounded-lg border flex items-center gap-2.5"
-            [class.bg-emerald-50]="!evento.modulos || evento.modulos.tieneInvitacion"
-            [class.border-emerald-100]="!evento.modulos || evento.modulos.tieneInvitacion"
-            [class.bg-gray-50]="evento.modulos && !evento.modulos.tieneInvitacion"
-            [class.border-gray-100]="evento.modulos && !evento.modulos.tieneInvitacion">
-            <i class="pi pi-globe text-sm"
-              [class.text-emerald-600]="!evento.modulos || evento.modulos.tieneInvitacion"
-              [class.text-gray-400]="evento.modulos && !evento.modulos.tieneInvitacion">
-            </i>
-            <div class="min-w-0">
-              <span class="block text-xs font-semibold text-gray-800">Invitación Web</span>
-              <span class="text-[11px]"
-                [class.text-emerald-700]="!evento.modulos || evento.modulos.tieneInvitacion"
-                [class.text-gray-400]="evento.modulos && !evento.modulos.tieneInvitacion">
-                {{ (!evento.modulos || evento.modulos.tieneInvitacion) ? 'Habilitada' : 'Inactiva' }}
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          @for (s of servicios; track s.titulo) {
+            <div class="flex items-center gap-2.5 rounded-lg border px-3 py-2.5"
+              [ngClass]="s.activo ? 'bg-gold-50/60 border-gold-200' : 'bg-white border-gray-100'">
+              <span class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                [ngClass]="s.activo ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-400'">
+                <i [class]="s.icono + ' text-sm'"></i>
               </span>
-            </div>
-          </div>
-
-          <!-- Control de Invitados -->
-          <div class="p-2.5 rounded-lg border flex items-center gap-2.5"
-            [class.bg-blue-50]="evento.modulos?.tipoControlInvitados && evento.modulos?.tipoControlInvitados !== 'inactivo'"
-            [class.border-blue-100]="evento.modulos?.tipoControlInvitados && evento.modulos?.tipoControlInvitados !== 'inactivo'"
-            [class.bg-gray-50]="!evento.modulos || evento.modulos?.tipoControlInvitados === 'inactivo'"
-            [class.border-gray-100]="!evento.modulos || evento.modulos?.tipoControlInvitados === 'inactivo'">
-            <i class="pi pi-users text-sm"
-              [class.text-blue-600]="evento.modulos?.tipoControlInvitados && evento.modulos?.tipoControlInvitados !== 'inactivo'"
-              [class.text-gray-400]="!evento.modulos || evento.modulos?.tipoControlInvitados === 'inactivo'">
-            </i>
-            <div class="min-w-0">
-              <span class="block text-xs font-semibold text-gray-800">Invitados</span>
-              <span class="text-[11px] truncate block"
-                [class.text-blue-700]="evento.modulos?.tipoControlInvitados && evento.modulos?.tipoControlInvitados !== 'inactivo'"
-                [class.text-gray-400]="!evento.modulos || evento.modulos?.tipoControlInvitados === 'inactivo'">
-                @if (evento.modulos?.tipoControlInvitados === 'total') {
-                  Pases QR & Escáner
-                } @else if (evento.modulos?.tipoControlInvitados === 'basico') {
-                  RSVP Web
-                } @else if (evento.modulos?.tipoControlInvitados === 'lista_puerta') {
-                  Puerta
-                } @else {
-                  Inactivo
-                }
-              </span>
-            </div>
-          </div>
-
-          <!-- Álbum Digital -->
-          <div class="p-2.5 rounded-lg border flex items-center gap-2.5"
-            [class.bg-purple-50]="!evento.modulos || evento.modulos.tieneAlbum"
-            [class.border-purple-100]="!evento.modulos || evento.modulos.tieneAlbum"
-            [class.bg-gray-50]="evento.modulos && !evento.modulos.tieneAlbum"
-            [class.border-gray-100]="evento.modulos && !evento.modulos.tieneAlbum">
-            <i class="pi pi-camera text-sm"
-              [class.text-purple-600]="!evento.modulos || evento.modulos.tieneAlbum"
-              [class.text-gray-400]="evento.modulos && !evento.modulos.tieneAlbum">
-            </i>
-            <div class="min-w-0">
-              <span class="block text-xs font-semibold text-gray-800">Álbum Digital</span>
-              <span class="text-[11px]"
-                [class.text-purple-700]="!evento.modulos || evento.modulos.tieneAlbum"
-                [class.text-gray-400]="evento.modulos && !evento.modulos.tieneAlbum">
-                {{ (!evento.modulos || evento.modulos.tieneAlbum) ? 'Habilitado' : 'Inactivo' }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Música de Fondo -->
-          <div class="p-2.5 rounded-lg border flex items-center gap-2.5"
-            [class.bg-amber-50]="evento.musicaFondoUrl"
-            [class.border-amber-100]="evento.musicaFondoUrl"
-            [class.bg-gray-50]="!evento.musicaFondoUrl"
-            [class.border-gray-100]="!evento.musicaFondoUrl">
-            <i class="pi pi-volume-up text-sm"
-              [class.text-amber-600]="evento.musicaFondoUrl"
-              [class.text-gray-400]="!evento.musicaFondoUrl">
-            </i>
-            <div class="min-w-0">
-              <span class="block text-xs font-semibold text-gray-800">Música Fondo</span>
-              <span class="text-[11px]"
-                [class.text-amber-700]="evento.musicaFondoUrl"
-                [class.text-gray-400]="!evento.musicaFondoUrl">
-                {{ evento.musicaFondoUrl ? 'Configurada' : 'Sin audio' }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- TARJETA: UBICACIONES -->
-      <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-        <div class="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
-          <i class="pi pi-map-marker text-gold-500 text-base"></i>
-          <h4 class="text-sm font-bold text-gray-800 m-0">Ubicaciones del Evento</h4>
-        </div>
-
-        <div class="space-y-3">
-          <!-- Ceremonia -->
-          <div>
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Ceremonia</span>
-              @if (evento.ceremoniaUrl) {
-                <a
-                  [href]="evento.ceremoniaUrl"
-                  target="_blank"
-                  class="text-xs text-gold-600 hover:text-gold-700 font-medium inline-flex items-center gap-1 no-underline">
-                  <span>Google Maps</span>
-                  <i class="pi pi-external-link text-[10px]"></i>
-                </a>
+              <div class="flex-1 min-w-0">
+                <span class="block text-xs font-semibold truncate" [ngClass]="s.activo ? 'text-gray-900' : 'text-gray-500'">{{ s.titulo }}</span>
+                <span class="block text-[11px] truncate" [ngClass]="s.activo ? 'text-gold-700' : 'text-gray-400'">{{ s.detalle }}</span>
+              </div>
+              @if (s.activo) {
+                <i class="pi pi-check-circle text-xs text-gold-600 shrink-0"></i>
               }
             </div>
-            <span class="text-sm text-gray-800 font-medium block mt-0.5">
-              {{ evento.ceremoniaLugar || 'No especificada' }}
-            </span>
-          </div>
-
-          <!-- Recepción -->
-          <div class="pt-2 border-t border-gray-100">
-            <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Recepción / Fiesta</span>
-              @if (evento.recepcionUrl) {
-                <a
-                  [href]="evento.recepcionUrl"
-                  target="_blank"
-                  class="text-xs text-gold-600 hover:text-gold-700 font-medium inline-flex items-center gap-1 no-underline">
-                  <span>Google Maps</span>
-                  <i class="pi pi-external-link text-[10px]"></i>
-                </a>
-              }
-            </div>
-            <span class="text-sm text-gray-800 font-medium block mt-0.5">
-              {{ evento.recepcionLugar || 'No especificada' }}
-            </span>
-          </div>
+          }
         </div>
-      </div>
+      </section>
+
+      <!-- MENSAJE -->
+      @if (evento.mensaje) {
+        <section class="rounded-xl border border-pastel-pink-100 bg-pastel-pink-50/60 px-4 py-3">
+          <span class="flex items-center gap-1.5 text-xs font-medium text-pastel-pink-500">
+            <i class="pi pi-heart-fill text-[11px]"></i>
+            Mensaje de la invitación
+          </span>
+          <p class="m-0 mt-1.5 text-sm italic text-gray-700 whitespace-pre-wrap break-words">“{{ evento.mensaje }}”</p>
+        </section>
+      }
 
     </div>
   </div>
 
-  <!-- DEDICATORIA / MENSAJE PÚBLICO (SI TIENE) -->
-  @if (evento.mensaje) {
-    <div class="bg-pastel-pink-50/50 border border-pastel-pink-100 rounded-xl p-4 mb-6">
-      <div class="flex items-center gap-2 mb-1.5 text-pastel-pink-500">
-        <i class="pi pi-heart-fill text-sm"></i>
-        <span class="text-xs font-bold uppercase tracking-wider">Dedicatoria del Evento</span>
-      </div>
-      <p class="text-sm text-gray-700 italic m-0">
-        "{{ evento.mensaje }}"
-      </p>
-    </div>
-  }
-
-  <!-- GALERÍA DE FOTOS (SI TIENE) -->
-  @if (evento.galeriaUrls && evento.galeriaUrls.length > 0) {
-    <div class="bg-white border border-gray-100 rounded-xl p-4 shadow-sm mb-6">
-      <div class="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
-        <div class="flex items-center gap-2">
-          <i class="pi pi-images text-gold-500 text-base"></i>
-          <h4 class="text-sm font-bold text-gray-800 m-0">Galería de Imágenes</h4>
-        </div>
-        <span>{{ evento.galeriaUrls.length }} fotos</span>
+  <!-- GALERÍA -->
+  @if (evento.galeriaUrls?.length) {
+    <section class="flex flex-col gap-3 rounded-xl border border-gray-100 p-4">
+      <div class="flex items-center gap-2">
+        <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+          <i class="pi pi-images text-[11px]"></i>
+        </span>
+        <h4 class="m-0 text-sm font-semibold text-gray-900">Galería</h4>
+        <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs">{{ evento.galeriaUrls!.length }} fotos</span>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2.5 pb-1">
+      <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-10 gap-2">
         @for (img of evento.galeriaUrls; track $index) {
-          <a [href]="img" target="_blank" class="block shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:opacity-90 transition-opacity">
-            <img [src]="img" alt="Foto de galería" class="w-16 h-16 object-cover" />
+          <a [href]="img" target="_blank" rel="noopener noreferrer"
+            class="block aspect-square rounded-lg overflow-hidden border border-gray-100 bg-gray-50 hover:opacity-90 transition-opacity">
+            <img [src]="img" alt="Foto de galería" class="w-full h-full object-cover" loading="lazy" />
           </a>
         }
       </div>
-    </div>
+    </section>
   }
 
-  <div
-    style="position: sticky; bottom: -1.5rem; margin: 1rem -1.5rem -1.5rem -1.5rem; padding: 1.5rem; background: #ffffff; z-index: 100; display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid #e2e8f0;">
-    <button pButton size="small"
-      [text]="true"
-      severity="secondary"
-      (click)="cerrar()">
-  <i class="pi pi-times"></i>
-  <span>Cerrar</span>
-</button>
+  <!-- ACCIONES FIJAS AL PIE -->
+  <div class="sticky -bottom-6 z-10 -mx-6 -mb-6 px-6 py-4 bg-white border-t border-gray-100 flex justify-end gap-2">
+    <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="cerrar()">
+      <span>Cerrar</span>
+    </button>
+    <button pButton type="button" size="small" (click)="editar()">
+      <i class="pi pi-pencil"></i>
+      <span>Editar evento</span>
+    </button>
   </div>
 </div>
+
+<ng-template #ubicacion let-etiqueta="etiqueta" let-icono="icono" let-lugar="lugar" let-url="url" let-foto="foto">
+  <div class="flex items-center gap-3 rounded-lg bg-gray-50 p-2.5">
+    @if (foto) {
+      <img [src]="foto" alt="" class="w-11 h-11 rounded-lg object-cover shrink-0" />
+    } @else {
+      <span class="w-11 h-11 rounded-lg bg-white border border-gray-100 text-gray-400 flex items-center justify-center shrink-0">
+        <i [class]="icono + ' text-sm'"></i>
+      </span>
+    }
+    <div class="flex-1 min-w-0">
+      <span class="block text-xs text-gray-400">{{ etiqueta }}</span>
+      @if (lugar) {
+        <span class="block text-sm font-medium text-gray-900 truncate">{{ lugar }}</span>
+      } @else {
+        <span class="block text-sm text-gray-400 italic">No especificada</span>
+      }
+    </div>
+    @if (url) {
+      <a [href]="url" target="_blank" rel="noopener noreferrer"
+        pTooltip="Abrir en Google Maps" tooltipPosition="top"
+        class="inline-flex items-center gap-1 rounded-full bg-white border border-gray-200 px-2.5 py-1 text-xs font-medium text-gold-700 no-underline hover:border-gold-300 transition-colors shrink-0">
+        <i class="pi pi-map text-[11px]"></i> Mapa
+      </a>
+    }
+  </div>
+</ng-template>

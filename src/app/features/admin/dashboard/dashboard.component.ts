@@ -432,12 +432,19 @@ export class DashboardComponent implements OnInit {
   // Abre el modal de vista detalle con DialogService
   verDetalleEvento(evento: any) {
     const ref = this.dialogService.open(EventoDetalleModalComponent, {
-      header: `Detalle del Evento — ${evento.titulo || evento.nombreEvento}`,
-      width: '1200px',
-      breakpoints: { '960px': '85vw', '640px': '95vw' },
+      header: 'Detalle del evento',
+      width: '1100px',
+      breakpoints: { '1160px': '94vw' },
       closable: true,
+      draggable: false,
       focusOnShow: false,
       data: evento,
+    });
+
+    ref?.onClose.subscribe((res?: { accion?: string; evento?: any }) => {
+      if (res?.accion === 'editar') {
+        this.openDialog(res.evento);
+      }
     });
   }
 
