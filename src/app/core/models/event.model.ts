@@ -56,8 +56,10 @@ export interface Evento {
 
   // Ubicaciones (Ceremonia y Recepción)
   ceremoniaLugar?: string;
+  ceremoniaDireccion?: string; // Dirección escrita (calle, número, colonia, ciudad)
   ceremoniaUrl?: string; // Enlace a Google Maps
   recepcionLugar?: string;
+  recepcionDireccion?: string;
   recepcionUrl?: string; // Enlace a Google Maps
 
   // URLs de las imágenes persistidas en Firebase Storage

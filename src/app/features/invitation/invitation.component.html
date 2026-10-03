@@ -63,367 +63,445 @@
       <ng-container *ngTemplateOutlet="plantillaPaseVip; context: { esSoloPase: true }"></ng-container>
     </div>
   } @else {
-  <main class="invitation-wrapper">
-    <!-- PANTALLA EDITORIAL DE BIENVENIDA / ABRIR INVITACIÓN -->
+  <main class="invitation-wrapper" [class.bloqueada]="!invitacionAbierta()">
 
-    <!-- PORTADA EDITORIAL DE CINE / BIENVENIDA -->
+    <!-- PORTADA DE BIENVENIDA -->
     @if (!invitacionAbierta()) {
-      <section class="portada-editorial" [class.desvanecer]="animandoSalida()">
-        <!-- Fotografía nítida a pantalla completa -->
+      <section class="portada-editorial" [class.desvanecer]="animandoSalida()" aria-label="Portada de la invitación">
         <div
           class="fondo-foto"
           [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'">
         </div>
-
-        <!-- Iluminación cinematográfica de contraste -->
         <div class="degradado-cine"></div>
+        <div class="marco-portada" aria-hidden="true"></div>
 
-        <!-- Contenido editorial de la portada -->
-        <div class="contenido-portada">
-          <!-- Emblema nupcial dorado -->
-          <div class="emblema-dorado">
-            <i class="pi pi-envelope"></i>
+        @if (fechaPortada()) {
+          <div class="fecha-portada">
+            <span class="linea"></span>
+            <span>{{ fechaPortada() }}</span>
+            <span class="linea"></span>
           </div>
+        }
 
+        <div class="contenido-portada">
           <span class="subtitulo-portada">{{ ev.preTitulo || ev.tipo }}</span>
           <h1 class="titulo-portada">{{ ev.titulo }}</h1>
-          <p class="frase-portada">Estás cordialmente invitado a celebrar con nosotros</p>
 
-          <div class="contenedor-accion">
-            <button pButton rounded
-              (click)="abrirInvitacion()"
-              class="boton-abrir-dorado">
-  <i class="pi pi-heart"></i>
-  <span>Abrir Invitación</span>
-</button>
+          <div class="ornamento" aria-hidden="true">
+            <span></span><i class="pi pi-star-fill"></i><span></span>
           </div>
+
+          @if (nombreInvitado()) {
+            <div class="invitado-portada">
+              <span class="invitado-label">Invitación especial para</span>
+              <span class="invitado-nombre">{{ nombreInvitado() }}</span>
+            </div>
+          } @else {
+            <p class="frase-portada">Estás cordialmente invitado a celebrar con nosotros</p>
+          }
+
+          <button type="button" class="boton-abrir-dorado" (click)="abrirInvitacion()" [disabled]="animandoSalida()">
+            <i class="pi pi-envelope"></i>
+            <span>Abrir invitación</span>
+          </button>
+
+          @if (ev.musicaFondoUrl) {
+            <p class="aviso-musica">
+              <i class="pi pi-volume-up"></i>
+              Sube el volumen, esta invitación tiene música
+            </p>
+          }
         </div>
       </section>
     }
-    <!-- SECCIÓN HERO / PORTADA -->
-    <header class="hero-section" [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'">
-      <div class="hero-overlay"></div>
 
-      <div class="hero-content">
-        <span class="hero-subtitle">{{ ev.preTitulo || ev.tipo }}</span>
-        <h1 class="hero-title">{{ ev.titulo }}</h1>
+    <!-- HERO: SE REVELA AL ABRIR LA INVITACIÓN -->
+    <header class="hero" [class.revelado]="invitacionAbierta() || animandoSalida()">
+      <div class="hero-foto" [style.background-image]="ev.fotoPrincipalUrl ? 'url(' + ev.fotoPrincipalUrl + ')' : 'none'"></div>
+      <div class="hero-velo"></div>
 
-        @if (ev.mensaje) {
-          <p class="hero-quote">"{{ ev.mensaje }}"</p>
-        }
-
-        <!-- CONTADOR REGRESIVO -->
-        <div class="countdown-card">
-          <p class="countdown-label">FALTAN</p>
-
-          @if (eventoFinalizado()) {
-            <p class="event-finished">¡Hoy es el gran día!</p>
-          } @else {
-            <div class="countdown-grid">
-              <div class="countdown-box">
-                <span class="countdown-number">{{ dias() }}</span>
-                <span class="countdown-text">Días</span>
-              </div>
-              <span class="countdown-separator">:</span>
-              <div class="countdown-box">
-                <span class="countdown-number">{{ horas() }}</span>
-                <span class="countdown-text">Hs</span>
-              </div>
-              <span class="countdown-separator">:</span>
-              <div class="countdown-box">
-                <span class="countdown-number">{{ minutos() }}</span>
-                <span class="countdown-text">Min</span>
-              </div>
-              <span class="countdown-separator">:</span>
-              <div class="countdown-box">
-                <span class="countdown-number">{{ segundos() }}</span>
-                <span class="countdown-text">Seg</span>
-              </div>
-            </div>
-          }
-        </div>
+      <div class="hero-monograma hero-anim" style="--d: 0.35s">
+        <span>{{ monograma() }}</span>
       </div>
+
+      <div class="hero-contenido">
+        <span class="eyebrow eyebrow--claro hero-anim" style="--d: 0.5s">{{ ev.preTitulo || ev.tipo }}</span>
+        <h1 class="hero-titulo hero-anim" style="--d: 0.62s">{{ ev.titulo }}</h1>
+        <div class="ornamento ornamento--claro hero-anim" style="--d: 0.76s" aria-hidden="true">
+          <span></span><i class="pi pi-star-fill"></i><span></span>
+        </div>
+        @if (fechaLarga()) {
+          <p class="hero-fecha hero-anim" style="--d: 0.88s">{{ fechaLarga() }}</p>
+        }
+      </div>
+
+      <button type="button" class="hero-scroll hero-anim" style="--d: 1.2s"
+        aria-label="Ver detalles del evento" (click)="seccionCuenta.scrollIntoView({ behavior: 'smooth' })">
+        <span>Desliza</span>
+        <i class="pi pi-angle-down"></i>
+      </button>
     </header>
-    <!-- SECCIÓN DE UBICACIONES -->
-    <section class="locations-section">
-      <div class="section-header">
-        <span class="section-subtitle">¿DÓNDE & CUÁNDO?</span>
-        <h2 class="section-title">Ubicaciones</h2>
-        <div class="golden-divider"></div>
-      </div>
 
-      <div class="locations-grid">
-
-        <!-- TARJETA: CEREMONIA -->
-        @if (ev.ceremoniaLugar || ev.fotoCeremoniaUrl) {
-          <article class="location-card">
-            @if (ev.fotoCeremoniaUrl) {
-              <div class="location-image-wrapper">
-                <img [src]="ev.fotoCeremoniaUrl" alt="Lugar de la Ceremonia" class="location-image" />
-              </div>
-            }
-
-            <div class="location-body">
-              <div class="location-badge">
-                <i class="pi pi-heart"></i>
-                <span>Ceremonia</span>
-              </div>
-
-              <h3 class="location-name">{{ ev.ceremoniaLugar || 'Lugar por confirmar' }}</h3>
-
-              @if (ev.ceremoniaUrl) {
-                <a [href]="ev.ceremoniaUrl" target="_blank" rel="noopener noreferrer" class="location-btn">
-                  <i class="pi pi-map-marker"></i>
-                  <span>Ver en Google Maps</span>
-                </a>
-              }
-            </div>
-          </article>
-        }
-
-        <!-- TARJETA: RECEPCIÓN -->
-        @if (ev.recepcionLugar || ev.fotoRecepcionUrl) {
-          <article class="location-card">
-            @if (ev.fotoRecepcionUrl) {
-              <div class="location-image-wrapper">
-                <img [src]="ev.fotoRecepcionUrl" alt="Lugar de la Recepción" class="location-image" />
-              </div>
-            }
-
-            <div class="location-body">
-              <div class="location-badge">
-                <i class="pi pi-sparkles"></i>
-                <span>Recepción</span>
-              </div>
-
-              <h3 class="location-name">{{ ev.recepcionLugar || 'Lugar por confirmar' }}</h3>
-
-              @if (ev.recepcionUrl) {
-                <a [href]="ev.recepcionUrl" target="_blank" rel="noopener noreferrer" class="location-btn">
-                  <i class="pi pi-map-marker"></i>
-                  <span>Ver en Google Maps</span>
-                </a>
-              }
-            </div>
-          </article>
-        }
-
-      </div>
-    </section>
-
-
-
-
-    <!-- SECCIÓN DE GALERÍA DE FOTOS -->
-    @if (ev.galeriaUrls && ev.galeriaUrls.length > 0) {
-      <section class="gallery-section">
-        <div class="section-header">
-          <span class="section-subtitle">MOMENTOS</span>
-          <h2 class="section-title">Nuestra Galería</h2>
-          <div class="golden-divider"></div>
-        </div>
-
-        <div class="gallery-grid">
-          @for (foto of ev.galeriaUrls; track $index) {
-            <div class="gallery-item">
-              <img [src]="foto" alt="Foto de la sesión" loading="lazy" class="gallery-thumb" />
-            </div>
+    <!-- ÁLBUM DIGITAL: solo el día del evento (en vivo) y después (recuerdos) -->
+    @if (ev.modulos?.tieneAlbum && etapaAlbum() !== 'antes') {
+      <section class="seccion album">
+        <div class="album-tarjeta" appRevelar="zoom">
+          @if (etapaAlbum() === 'en-vivo') {
+            <span class="album-en-vivo"><span class="punto"></span>En vivo</span>
           }
-        </div>
-      </section>
-    }
-    <!-- BANNER EDITORIAL: ÁLBUM DIGITAL COLABORATIVO (Solo si contrataron Álbum) -->
-    @if (ev.modulos?.tieneAlbum) {
-      <section class="album-invite-section">
-        <div class="album-invite-card">
-          <div class="album-invite-badge">
-            <i class="pi pi-camera"></i>
-            <span>DURANTE EL EVENTO</span>
+          <div class="album-iconos" aria-hidden="true">
+            <span><i class="pi pi-camera"></i></span>
+            <span><i class="pi pi-images"></i></span>
+            <span><i class="pi pi-heart-fill"></i></span>
           </div>
 
-          <h2 class="album-invite-title">Álbum de Recuerdos en Vivo</h2>
-          <div class="golden-divider"></div>
-
-          <p class="album-invite-desc">
-            ¡Queremos ver la fiesta a través de tus ojos! Durante la recepción, toma fotos de cada instante y compártelas en nuestro muro digital colaborativo.
-          </p>
-
-          <a [routerLink]="['/e', ev.enlace, 'album']" class="album-invite-btn">
-            <i class="pi pi-images"></i>
-            <span>Entrar al Álbum de Fotos</span>
-          </a>
+          @if (etapaAlbum() === 'en-vivo') {
+            <span class="eyebrow eyebrow--claro">Hoy es el gran día</span>
+            <h2 class="titulo-seccion titulo-seccion--claro">Álbum de recuerdos en vivo</h2>
+            <p class="album-texto">
+              ¡Queremos ver la fiesta a través de tus ojos! Toma fotos de cada instante y compártelas en nuestro muro colaborativo.
+              También encontrarás el código QR en tu mesa.
+            </p>
+            <a [routerLink]="['/e', ev.enlace, 'album']" class="boton-dorado">
+              <i class="pi pi-camera"></i>
+              <span>Subir mis fotos</span>
+            </a>
+          } @else {
+            <span class="eyebrow eyebrow--claro">Gracias por celebrar con nosotros</span>
+            <h2 class="titulo-seccion titulo-seccion--claro">Revive la fiesta</h2>
+            <p class="album-texto">
+              Mira todas las fotos que compartieron los invitados durante la celebración.
+            </p>
+            <a [routerLink]="['/e', ev.enlace, 'album']" class="boton-dorado">
+              <i class="pi pi-images"></i>
+              <span>Ver el álbum</span>
+            </a>
+          }
         </div>
       </section>
     }
-    <!-- SECCIÓN RSVP (CONFIRMACIÓN DE ASISTENCIA) -->
-    @if (ev.modulos?.tipoControlInvitados === 'basico' || ev.modulos?.tipoControlInvitados === 'total') {
-      <section class="rsvp-section">
-      <div class="section-header">
-        <span class="section-subtitle">¿NOS ACOMPAÑAS?</span>
-        <h2 class="section-title">Confirma tu Asistencia</h2>
-        <div class="golden-divider"></div>
-      </div>
 
-      <div class="rsvp-card">
-        @if (rsvpEnviado()) {
-          <!-- PANTALLA TRAS CONFIRMAR -->
-          @if (formRsvp.get('asistira')?.value === false) {
-            <!-- DECLINÓ ASISTENCIA -->
-            <div class="rsvp-success">
-              <i class="pi pi-heart success-icon" style="color: #94a3b8;"></i>
-              <h3>Gracias por avisarnos</h3>
-              <p>Lamentamos que no puedas acompañarnos físicamente, pero sabemos que celebrarás con nosotros en corazón.</p>
-            </div>
-          } @else if (ev.modulos?.tipoControlInvitados === 'total') {
-            <!-- CONFIRMACIÓN CONTROL TOTAL VIP: PASE QR DIGITAL O AVISO DE PASE -->
-            @if (paseGenerado()) {
-              <div class="vista-confirmacion-vip">
-                <ng-container *ngTemplateOutlet="plantillaPaseVip; context: { esSoloPase: false }"></ng-container>
-              </div>
-            } @else {
-              <div class="rsvp-success rsvp-success-vip">
-                <div class="vip-confirm-icon-wrap">
-                  <i class="pi pi-shield"></i>
-                </div>
-                <span class="vip-confirm-badge">ACCESO CONTROLADO VIP</span>
-                <h3>¡Confirmación Recibida!</h3>
-                <p class="vip-confirm-lead">
-                  Muchas gracias por confirmar tu asistencia, <strong>{{ formRsvp.get('nombre')?.value }}</strong>.
-                </p>
-                <div class="vip-confirm-notice">
-                  <i class="pi pi-whatsapp"></i>
-                  <p>
-                    Tus anfitriones validarán tus lugares asignados y te harán llegar tu <strong>Pase Digital VIP con Código QR</strong> directamente a tu WhatsApp.
-                  </p>
-                </div>
-              </div>
-            }
-          } @else {
-            <!-- CONFIRMACIÓN PAQUETE BÁSICO (SIN QR) -->
-            <div class="rsvp-success">
-              <i class="pi pi-check-circle success-icon"></i>
-              <h3>¡Muchas Gracias!</h3>
-              <p>Tu confirmación ha sido enviada con éxito. Nos entusiasma mucho compartir este día contigo.</p>
-            </div>
-          }
-        } @else {
-          <!-- FORMULARIO INTERACTIVO -->
-          <form [formGroup]="formRsvp" (ngSubmit)="enviarRsvp()" class="rsvp-form">
-
-            <!-- 1. Nombre completo -->
-            <div class="form-group">
-              <label for="nombre">Nombre completo o Familia *</label>
-              <input
-                id="nombre"
-                type="text"
-                formControlName="nombre"
-                placeholder="Ej. Familia Martínez o Juan Pérez"
-                class="form-control" />
-            </div>
-
-            <!-- 2. ¿Asistes? (Botones visuales de opción) -->
-            <div class="form-group">
-              <label>¿Podrás acompañarnos? *</label>
-              <div class="attendance-options">
-                <label
-                  class="attendance-btn"
-                  [class.selected]="formRsvp.get('asistira')?.value === true"
-                  (click)="formRsvp.patchValue({ asistira: true, pasesConfirmados: formRsvp.get('pasesConfirmados')?.value || 1 })">
-                  <input type="radio" [value]="true" formControlName="asistira" class="sr-only" />
-                  <i class="pi pi-check"></i>
-                  <span>¡Sí, ahí estaré!</span>
-                </label>
-
-                <label
-                  class="attendance-btn"
-                  [class.selected]="formRsvp.get('asistira')?.value === false"
-                  (click)="formRsvp.patchValue({ asistira: false, pasesConfirmados: 0 })">
-                  <input type="radio" [value]="false" formControlName="asistira" class="sr-only" />
-                  <i class="pi pi-times"></i>
-                  <span>No podré asistir</span>
-                </label>
-              </div>
-            </div>
-
-            <!-- 2.1 Selector amigable de número de personas (solo si asiste) -->
-            @if (formRsvp.get('asistira')?.value === true) {
-              <div class="form-group animar-fade-in">
-                <label>¿Cuántas personas asistirán en total (incluyéndote)? *</label>
-                <div class="selector-pases-rsvp">
-                  @for (n of [1, 2, 3, 4, 5, 6, 7, 8]; track n) {
-                    <button
-                      type="button"
-                      class="btn-num-pase"
-                      [class.seleccionado]="formRsvp.get('pasesConfirmados')?.value === n"
-                      (click)="formRsvp.patchValue({ pasesConfirmados: n })">
-                      {{ n }}
-                    </button>
-                  }
-                </div>
-              </div>
-            }
-
-            <!-- 3. Teléfono (WhatsApp) -->
-            <div class="form-group">
-              <label for="telefono">
-                Teléfono (WhatsApp)
-                @if (ev.modulos?.tipoControlInvitados === 'total') {
-                  <span class="label-hint">(Para recibir tu Pase Digital VIP)</span>
-                }
-              </label>
-              <input
-                id="telefono"
-                type="tel"
-                formControlName="telefono"
-                placeholder="Ej. 55 1234 5678"
-                class="form-control" />
-            </div>
-
-            <!-- 5. Mensaje / Dedicatoria -->
-            <div class="form-group">
-              <label for="mensaje">Dedicatoria o mensaje para los anfitriones</label>
-              <textarea
-                id="mensaje"
-                rows="3"
-                formControlName="mensaje"
-                placeholder="Escribe un mensaje cariñoso..."
-                class="form-control"></textarea>
-            </div>
-
-            <!-- Botón de Envío -->
-            <button
-              type="submit"
-              class="rsvp-submit-btn"
-              [disabled]="formRsvp.invalid || enviandoRsvp()">
-              @if (enviandoRsvp()) {
-                <span>Enviando confirmación...</span>
-              } @else {
-                <span>Confirmar Asistencia</span>
-              }
-            </button>
-
-          </form>
-        }
-      </div>
-    </section>
+    <!-- MENSAJE / DEDICATORIA -->
+    @if (ev.mensaje) {
+      <section class="seccion seccion--crema mensaje">
+        <div class="mensaje-tarjeta" appRevelar="desenfoque">
+          <span class="mensaje-comillas" aria-hidden="true">&ldquo;</span>
+          <p class="mensaje-texto">{{ ev.mensaje }}</p>
+          <span class="mensaje-firma">{{ ev.titulo }}</span>
+        </div>
+      </section>
     }
 
-    <!-- PIE DE PÁGINA CON ACCESO ANFITRIÓN DISCRETO -->
-    <footer class="invitation-footer">
-      <p class="studio-credit">Diseñado por <strong>NahoFlo Creative Studio</strong></p>
-      @if ((ev.modulos?.tipoControlInvitados && ev.modulos.tipoControlInvitados !== 'inactivo') || ev.modulos?.tieneAlbum) {
-        <a [routerLink]="['/e', ev.enlace, 'asistencias']" class="host-access-link">
-          <i class="pi pi-lock"></i>
-          <span>Acceso Anfitrión</span>
+    <!-- FECHA Y CUENTA REGRESIVA -->
+    <section #seccionCuenta class="seccion seccion--oscura cuenta">
+      <div class="cuenta-brillo" aria-hidden="true"></div>
+
+      <div class="encabezado" appRevelar>
+        <span class="eyebrow eyebrow--claro">Reserva la fecha</span>
+        <h2 class="titulo-seccion titulo-seccion--claro">El gran día</h2>
+      </div>
+
+      @if (partesFecha(); as f) {
+        <div class="cuenta-fecha" appRevelar="zoom" [revelarRetraso]="100">
+          <span class="cuenta-fecha-lado">{{ f.diaSemana }}</span>
+          <span class="cuenta-fecha-dia">{{ f.dia }}</span>
+          <span class="cuenta-fecha-lado">{{ f.mes }}<br />{{ f.anio }}</span>
+        </div>
+        <p class="cuenta-hora" appRevelar [revelarRetraso]="180">
+          <i class="pi pi-clock"></i> {{ f.hora }}
+        </p>
+      }
+
+      @if (eventoFinalizado()) {
+        <p class="cuenta-finalizado" appRevelar>¡Hoy es el gran día!</p>
+      } @else {
+        <div class="cuenta-grid" role="timer" aria-live="off">
+          @for (u of unidadesCuenta(); track u.etiqueta; let i = $index) {
+            <div class="cuenta-unidad" appRevelar [revelarRetraso]="220 + i * 90">
+              <span class="cuenta-numero">{{ u.valor }}</span>
+              <span class="cuenta-etiqueta">{{ u.etiqueta }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      @if (enlaceCalendario()) {
+        <a [href]="enlaceCalendario()" target="_blank" rel="noopener noreferrer" class="boton-contorno-claro"
+          appRevelar [revelarRetraso]="500">
+          <i class="pi pi-calendar-plus"></i>
+          <span>Agregar a mi calendario</span>
         </a>
       }
+    </section>
+
+    <!-- UBICACIONES -->
+    @let hayCeremonia = !!(ev.ceremoniaLugar || ev.ceremoniaDireccion || ev.fotoCeremoniaUrl);
+    @let hayRecepcion = !!(ev.recepcionLugar || ev.recepcionDireccion || ev.fotoRecepcionUrl);
+    @if (hayCeremonia || hayRecepcion) {
+      <section class="seccion ubicaciones">
+        <div class="encabezado" appRevelar>
+          <span class="eyebrow">¿Dónde &amp; cuándo?</span>
+          <h2 class="titulo-seccion">Ubicaciones</h2>
+          <div class="ornamento" aria-hidden="true"><span></span><i class="pi pi-star-fill"></i><span></span></div>
+        </div>
+
+        <div class="ubicaciones-lista">
+          @if (hayCeremonia) {
+            <ng-container *ngTemplateOutlet="tarjetaUbicacion; context: {
+              numero: '01', etiqueta: 'Ceremonia', icono: 'pi-heart',
+              lugar: ev.ceremoniaLugar, direccion: ev.ceremoniaDireccion, url: ev.ceremoniaUrl,
+              foto: ev.fotoCeremoniaUrl, efecto: 'izquierda'
+            }"></ng-container>
+          }
+          @if (hayRecepcion) {
+            <ng-container *ngTemplateOutlet="tarjetaUbicacion; context: {
+              numero: hayCeremonia ? '02' : '01', etiqueta: 'Recepción', icono: 'pi-sparkles',
+              lugar: ev.recepcionLugar, direccion: ev.recepcionDireccion, url: ev.recepcionUrl,
+              foto: ev.fotoRecepcionUrl, efecto: 'derecha'
+            }"></ng-container>
+          }
+        </div>
+      </section>
+
+      <ng-template #tarjetaUbicacion let-numero="numero" let-etiqueta="etiqueta" let-icono="icono"
+        let-lugar="lugar" let-direccion="direccion" let-url="url" let-foto="foto" let-efecto="efecto">
+        @let enlaceMapa = url || (direccion ? enlaceBusquedaMapa(lugar, direccion) : '');
+        <article class="ubicacion" [appRevelar]="efecto">
+          <div class="ubicacion-media" [class.sin-foto]="!foto">
+            @if (foto) {
+              <img [src]="foto" [alt]="'Lugar de la ' + etiqueta" loading="lazy" />
+            } @else {
+              <i class="pi {{ icono }}"></i>
+            }
+            <span class="ubicacion-numero">{{ numero }}</span>
+          </div>
+          <div class="ubicacion-cuerpo">
+            <span class="ubicacion-etiqueta"><i class="pi {{ icono }}"></i> {{ etiqueta }}</span>
+            <h3 class="ubicacion-lugar">{{ lugar || 'Lugar por confirmar' }}</h3>
+
+            @if (direccion) {
+              <div class="ubicacion-direccion">
+                <i class="pi pi-map-marker"></i>
+                <p>{{ direccion }}</p>
+              </div>
+            }
+
+            @if (enlaceMapa || direccion) {
+              <div class="ubicacion-acciones">
+                @if (enlaceMapa) {
+                  <a [href]="enlaceMapa" target="_blank" rel="noopener noreferrer" class="boton-oscuro">
+                    <i class="pi pi-directions"></i>
+                    <span>Cómo llegar</span>
+                    <i class="pi pi-arrow-up-right flecha"></i>
+                  </a>
+                }
+                @if (direccion) {
+                  <button type="button" class="boton-copiar" [class.copiado]="direccionCopiada() === etiqueta"
+                    [attr.aria-label]="'Copiar dirección de la ' + etiqueta" (click)="copiarDireccion(etiqueta, lugar, direccion)">
+                    <i class="pi" [class.pi-check]="direccionCopiada() === etiqueta" [class.pi-copy]="direccionCopiada() !== etiqueta"></i>
+                    <span>{{ direccionCopiada() === etiqueta ? 'Copiada' : 'Copiar' }}</span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        </article>
+      </ng-template>
+    }
+
+    <!-- GALERÍA -->
+    @if (ev.galeriaUrls && ev.galeriaUrls.length > 0) {
+      <section class="seccion seccion--crema galeria">
+        <div class="encabezado" appRevelar>
+          <span class="eyebrow">Momentos</span>
+          <h2 class="titulo-seccion">Nuestra galería</h2>
+          <div class="ornamento" aria-hidden="true"><span></span><i class="pi pi-star-fill"></i><span></span></div>
+        </div>
+
+        <div class="galeria-grid" [class.galeria-grid--pocas]="ev.galeriaUrls.length < 3">
+          @for (foto of ev.galeriaUrls; track $index; let i = $index) {
+            <button type="button" class="galeria-item" [class.galeria-item--destacada]="i % 5 === 0"
+              appRevelar="zoom" [revelarRetraso]="(i % 3) * 90"
+              [attr.aria-label]="'Ver foto ' + (i + 1) + ' de ' + ev.galeriaUrls.length" (click)="abrirFoto(i)">
+              <img [src]="foto" alt="" loading="lazy" />
+              <span class="galeria-lupa"><i class="pi pi-arrow-up-right-and-arrow-down-left-from-center"></i></span>
+            </button>
+          }
+        </div>
+      </section>
+
+      @if (fotoActiva() !== null) {
+        <div class="visor" role="dialog" aria-modal="true" aria-label="Visor de fotos" (click)="cerrarFoto()"
+          (touchstart)="inicioToque($event)" (touchend)="finToque($event)">
+          <button type="button" class="visor-cerrar" aria-label="Cerrar" (click)="cerrarFoto()">
+            <i class="pi pi-times"></i>
+          </button>
+          @if (ev.galeriaUrls.length > 1) {
+            <button type="button" class="visor-nav visor-nav--prev" aria-label="Foto anterior"
+              (click)="$event.stopPropagation(); moverFoto(-1)">
+              <i class="pi pi-chevron-left"></i>
+            </button>
+            <button type="button" class="visor-nav visor-nav--next" aria-label="Foto siguiente"
+              (click)="$event.stopPropagation(); moverFoto(1)">
+              <i class="pi pi-chevron-right"></i>
+            </button>
+          }
+          @let indice = fotoActiva()!;
+          @for (url of [ev.galeriaUrls[indice]]; track url) {
+            <img class="visor-img" [src]="url" alt="Foto ampliada de la galería" (click)="$event.stopPropagation()" />
+          }
+          <span class="visor-contador">{{ indice + 1 }} / {{ ev.galeriaUrls.length }}</span>
+        </div>
+      }
+    }
+
+    <!-- RSVP (CONFIRMACIÓN DE ASISTENCIA) -->
+    @if (ev.modulos?.tipoControlInvitados === 'basico' || ev.modulos?.tipoControlInvitados === 'total') {
+      <section class="seccion seccion--crema rsvp-section">
+        <div class="encabezado" appRevelar>
+          <span class="eyebrow">¿Nos acompañas?</span>
+          <h2 class="titulo-seccion">Confirma tu asistencia</h2>
+          <div class="ornamento" aria-hidden="true"><span></span><i class="pi pi-star-fill"></i><span></span></div>
+        </div>
+
+        <div class="rsvp-card" appRevelar [revelarRetraso]="120">
+          @if (rsvpEnviado()) {
+            @if (formRsvp.get('asistira')?.value === false) {
+              <div class="rsvp-success">
+                <i class="pi pi-heart success-icon" style="color: #94a3b8;"></i>
+                <h3>Gracias por avisarnos</h3>
+                <p>Lamentamos que no puedas acompañarnos físicamente, pero sabemos que celebrarás con nosotros en corazón.</p>
+              </div>
+            } @else if (ev.modulos?.tipoControlInvitados === 'total') {
+              @if (paseGenerado()) {
+                <div class="vista-confirmacion-vip">
+                  <ng-container *ngTemplateOutlet="plantillaPaseVip; context: { esSoloPase: false }"></ng-container>
+                </div>
+              } @else {
+                <div class="rsvp-success rsvp-success-vip">
+                  <div class="vip-confirm-icon-wrap">
+                    <i class="pi pi-shield"></i>
+                  </div>
+                  <span class="vip-confirm-badge">ACCESO CONTROLADO VIP</span>
+                  <h3>¡Confirmación Recibida!</h3>
+                  <p class="vip-confirm-lead">
+                    Muchas gracias por confirmar tu asistencia, <strong>{{ formRsvp.get('nombre')?.value }}</strong>.
+                  </p>
+                  <div class="vip-confirm-notice">
+                    <i class="pi pi-whatsapp"></i>
+                    <p>
+                      Tus anfitriones validarán tus lugares asignados y te harán llegar tu <strong>Pase Digital VIP con Código QR</strong> directamente a tu WhatsApp.
+                    </p>
+                  </div>
+                </div>
+              }
+            } @else {
+              <div class="rsvp-success">
+                <i class="pi pi-check-circle success-icon"></i>
+                <h3>¡Muchas Gracias!</h3>
+                <p>Tu confirmación ha sido enviada con éxito. Nos entusiasma mucho compartir este día contigo.</p>
+              </div>
+            }
+          } @else {
+            <form [formGroup]="formRsvp" (ngSubmit)="enviarRsvp()" class="rsvp-form">
+
+              <div class="form-group">
+                <label for="nombre">Nombre completo o familia *</label>
+                <input id="nombre" type="text" formControlName="nombre" autocomplete="name"
+                  placeholder="Ej. Familia Martínez o Juan Pérez" class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <span class="form-label">¿Podrás acompañarnos? *</span>
+                <div class="attendance-options">
+                  <label class="attendance-btn" [class.selected]="formRsvp.get('asistira')?.value === true"
+                    (click)="formRsvp.patchValue({ asistira: true, pasesConfirmados: formRsvp.get('pasesConfirmados')?.value || 1 })">
+                    <input type="radio" [value]="true" formControlName="asistira" class="sr-only" />
+                    <span class="attendance-icono"><i class="pi pi-check"></i></span>
+                    <span>¡Sí, ahí estaré!</span>
+                  </label>
+
+                  <label class="attendance-btn attendance-btn--no" [class.selected]="formRsvp.get('asistira')?.value === false"
+                    (click)="formRsvp.patchValue({ asistira: false, pasesConfirmados: 0 })">
+                    <input type="radio" [value]="false" formControlName="asistira" class="sr-only" />
+                    <span class="attendance-icono"><i class="pi pi-times"></i></span>
+                    <span>No podré asistir</span>
+                  </label>
+                </div>
+              </div>
+
+              @if (formRsvp.get('asistira')?.value === true) {
+                <div class="form-group animar-fade-in">
+                  <span class="form-label">¿Cuántas personas asistirán en total (incluyéndote)? *</span>
+                  <div class="selector-pases-rsvp">
+                    @for (n of [1, 2, 3, 4, 5, 6, 7, 8]; track n) {
+                      <button type="button" class="btn-num-pase"
+                        [class.seleccionado]="formRsvp.get('pasesConfirmados')?.value === n"
+                        (click)="formRsvp.patchValue({ pasesConfirmados: n })">
+                        {{ n }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+
+              <div class="form-group">
+                <label for="telefono">
+                  Teléfono (WhatsApp)
+                  @if (ev.modulos?.tipoControlInvitados === 'total') {
+                    <span class="label-hint">Para recibir tu pase digital VIP</span>
+                  }
+                </label>
+                <input id="telefono" type="tel" inputmode="tel" formControlName="telefono" autocomplete="tel"
+                  placeholder="Ej. 55 1234 5678" class="form-control" />
+              </div>
+
+              <div class="form-group">
+                <label for="mensaje">Dedicatoria o mensaje para los anfitriones</label>
+                <textarea id="mensaje" rows="3" formControlName="mensaje"
+                  placeholder="Escribe un mensaje cariñoso..." class="form-control"></textarea>
+              </div>
+
+              <button type="submit" class="rsvp-submit-btn" [disabled]="formRsvp.invalid || enviandoRsvp()">
+                @if (enviandoRsvp()) {
+                  <i class="pi pi-spin pi-spinner"></i>
+                  <span>Enviando confirmación...</span>
+                } @else {
+                  <i class="pi pi-send"></i>
+                  <span>Confirmar asistencia</span>
+                }
+              </button>
+            </form>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- CIERRE Y PIE DE PÁGINA -->
+    <footer class="cierre">
+      <div class="cierre-contenido" appRevelar>
+        <div class="hero-monograma hero-monograma--oscuro"><span>{{ monograma() }}</span></div>
+        <p class="cierre-frase">¡Te esperamos!</p>
+        <h2 class="cierre-titulo">{{ ev.titulo }}</h2>
+        @if (fechaPortada()) {
+          <span class="eyebrow">{{ fechaPortada() }}</span>
+        }
+      </div>
+
+      <div class="cierre-pie">
+        <p class="studio-credit">Diseñado por <strong>NahoFlo Creative Studio</strong></p>
+        @if ((ev.modulos?.tipoControlInvitados && ev.modulos.tipoControlInvitados !== 'inactivo') || ev.modulos?.tieneAlbum) {
+          <a [routerLink]="['/e', ev.enlace, 'asistencias']" class="host-access-link">
+            <i class="pi pi-lock"></i>
+            <span>Acceso anfitrión</span>
+          </a>
+        }
+      </div>
     </footer>
 
-    <!-- REPRODUCTOR FLOTANTE DE MÚSICA DE FONDO -->
     @if (ev.musicaFondoUrl) {
       <app-reproductor-musica [urlMusica]="ev.musicaFondoUrl"></app-reproductor-musica>
     }
   </main>
   }
 }
-

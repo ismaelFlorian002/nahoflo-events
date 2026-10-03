@@ -125,8 +125,10 @@ export class EventFormComponent implements OnInit {
     enlace: ['', Validators.required],
     fecha: [null, Validators.required], // <-- Ahora guardará un objeto Date con Fecha y Hora exacta
     ceremoniaLugar: [''],
+    ceremoniaDireccion: [''],
     ceremoniaUrl: [''],
     recepcionLugar: [''],
+    recepcionDireccion: [''],
     recepcionUrl: [''],
     mensaje: [''],
     tipo: ['Boda', Validators.required],
@@ -415,8 +417,10 @@ export class EventFormComponent implements OnInit {
         tipo: formVal.tipo || 'Boda',
         mensaje: formVal.mensaje || '',
         ceremoniaLugar: formVal.ceremoniaLugar || '',
+        ceremoniaDireccion: formVal.ceremoniaDireccion?.trim() || '',
         ceremoniaUrl: formVal.ceremoniaUrl || '',
         recepcionLugar: formVal.recepcionLugar || '',
+        recepcionDireccion: formVal.recepcionDireccion?.trim() || '',
         recepcionUrl: formVal.recepcionUrl || '',
         modulos: formVal.modulos || {
           tieneInvitacion: true,

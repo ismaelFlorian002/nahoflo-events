@@ -227,8 +227,8 @@
           <h4 class="m-0 text-sm font-semibold text-gray-900">Ubicaciones</h4>
         </div>
 
-        <ng-container *ngTemplateOutlet="ubicacion; context: { etiqueta: 'Ceremonia', icono: 'pi pi-building', lugar: evento.ceremoniaLugar, url: evento.ceremoniaUrl, foto: evento.fotoCeremoniaUrl }"></ng-container>
-        <ng-container *ngTemplateOutlet="ubicacion; context: { etiqueta: 'Recepción', icono: 'pi pi-map-marker', lugar: evento.recepcionLugar, url: evento.recepcionUrl, foto: evento.fotoRecepcionUrl }"></ng-container>
+        <ng-container *ngTemplateOutlet="ubicacion; context: { etiqueta: 'Ceremonia', icono: 'pi pi-building', lugar: evento.ceremoniaLugar, direccion: evento.ceremoniaDireccion, url: evento.ceremoniaUrl, foto: evento.fotoCeremoniaUrl }"></ng-container>
+        <ng-container *ngTemplateOutlet="ubicacion; context: { etiqueta: 'Recepción', icono: 'pi pi-map-marker', lugar: evento.recepcionLugar, direccion: evento.recepcionDireccion, url: evento.recepcionUrl, foto: evento.fotoRecepcionUrl }"></ng-container>
       </section>
 
     </div>
@@ -315,7 +315,7 @@
   </div>
 </div>
 
-<ng-template #ubicacion let-etiqueta="etiqueta" let-icono="icono" let-lugar="lugar" let-url="url" let-foto="foto">
+<ng-template #ubicacion let-etiqueta="etiqueta" let-icono="icono" let-lugar="lugar" let-direccion="direccion" let-url="url" let-foto="foto">
   <div class="flex items-center gap-3 rounded-lg bg-gray-50 p-2.5">
     @if (foto) {
       <img [src]="foto" alt="" class="w-11 h-11 rounded-lg object-cover shrink-0" />
@@ -330,6 +330,9 @@
         <span class="block text-sm font-medium text-gray-900 truncate">{{ lugar }}</span>
       } @else {
         <span class="block text-sm text-gray-400 italic">No especificada</span>
+      }
+      @if (direccion) {
+        <span class="block text-xs text-gray-500 truncate" [title]="direccion">{{ direccion }}</span>
       }
     </div>
     @if (url) {
