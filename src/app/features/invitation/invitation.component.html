@@ -309,6 +309,33 @@
       </ng-template>
     }
 
+    <!-- ITINERARIO -->
+    @if (itinerarioVisible().length) {
+      <section class="seccion seccion--crema itinerario">
+        <div class="encabezado" appRevelar>
+          <span class="eyebrow">El programa</span>
+          <h2 class="titulo-seccion">Itinerario</h2>
+          <div class="ornamento" aria-hidden="true"><span></span><i class="pi pi-star-fill"></i><span></span></div>
+        </div>
+
+        <ol class="itinerario-lista">
+          @for (m of itinerarioVisible(); track m.id; let i = $index; let par = $even) {
+            <li class="itinerario-item" [class.itinerario-item--der]="!par"
+              [appRevelar]="par ? 'izquierda' : 'derecha'" [revelarRetraso]="60">
+              <span class="itinerario-icono" aria-hidden="true"><i class="pi {{ m.icono }}"></i></span>
+              <div class="itinerario-tarjeta">
+                <time class="itinerario-hora">{{ m.horaTexto }}</time>
+                <h3 class="itinerario-titulo">{{ m.titulo }}</h3>
+                @if (m.descripcion) {
+                  <p class="itinerario-desc">{{ m.descripcion }}</p>
+                }
+              </div>
+            </li>
+          }
+        </ol>
+      </section>
+    }
+
     <!-- GALERÍA -->
     @if (ev.galeriaUrls && ev.galeriaUrls.length > 0) {
       <section class="seccion seccion--crema galeria">

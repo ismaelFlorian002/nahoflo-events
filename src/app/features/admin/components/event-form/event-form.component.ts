@@ -21,6 +21,16 @@ import { ClienteModel } from '../../../../core/models/cliente.model';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { firstValueFrom } from 'rxjs';
+import { ItemItinerario } from '../../../../core/models/event.model';
+import {
+  ICONOS_ITINERARIO,
+  PLANTILLAS_ITINERARIO,
+  PlantillaItinerario,
+  construirItinerario,
+  nuevoIdItinerario,
+  ordenarItinerario,
+  plantillaSugerida,
+} from '../../../../core/data/plantillas-itinerario';
 
 @Component({
   selector: 'app-event-form',
@@ -84,6 +94,12 @@ export class EventFormComponent implements OnInit {
   fotoCeremoniaFile: File | null = null;
   fotoRecepcionFile: File | null = null;
   galeriaFiles: File[] = [];
+
+  // Itinerario público (opcional)
+  mostrarItinerario = false;
+  itinerario: ItemItinerario[] = [];
+  readonly plantillasItinerario = PLANTILLAS_ITINERARIO;
+  readonly iconosItinerario = ICONOS_ITINERARIO;
 
   opcionesControlInvitados = [
     { label: 'Inactivo', value: 'inactivo', icono: 'pi pi-ban', descripcion: 'Sin lista de invitados' },
@@ -179,6 +195,8 @@ export class EventFormComponent implements OnInit {
       this.existingFotoRecepcionUrl = this.config.data.fotoRecepcionUrl;
       this.existingGaleriaUrls = this.config.data.galeriaUrls || [];
       this.existingMusicaFondoUrl = this.config.data.musicaFondoUrl;
+      this.mostrarItinerario = !!this.config.data.mostrarItinerario;
+      this.itinerario = (this.config.data.itinerario || []).map((i: ItemItinerario) => ({ ...i }));
 
       // 1. Convertir fecha a Date nativo de JavaScript para que PrimeNG Calendar funcione
       let fechaDate: Date | null = null;
@@ -434,6 +452,8 @@ export class EventFormComponent implements OnInit {
         fotoRecepcionUrl: fotoRecepcionUrl || null,
         galeriaUrls: galeriaUrls || [],
         musicaFondoUrl: musicaFondoUrl || null,
+        mostrarItinerario: this.mostrarItinerario && this.itinerarioLimpio().length > 0,
+        itinerario: this.itinerarioLimpio(),
       };
 
       // 5. Guardar en Firestore (el PIN va aparte, en privado/acceso)
@@ -564,6 +584,88 @@ export class EventFormComponent implements OnInit {
 
   removeExistingMusica() {
     this.existingMusicaFondoUrl = undefined;
+  }
+
+  // ─── Itinerario ───────────────────────────────────────────────────────────
+
+  get plantillaRecomendada(): string {
+    return plantillaSugerida(`${this.eventForm.get('preTitulo')?.value || ''} ${this.eventForm.get('tipo')?.value || ''}`);
+  }
+
+  /** Hora de inicio del evento ("HH:mm") tomada de la fecha capturada en Básico. */
+  private get horaInicioEvento(): string {
+    const fecha = this.eventForm.get('fecha')?.value as Date | null;
+    if (!(fecha instanceof Date) || isNaN(fecha.getTime())) return '17:00';
+    return `${String(fecha.getHours()).padStart(2, '0')}:${String(fecha.getMinutes()).padStart(2, '0')}`;
+  }
+
+  aplicarPlantillaItinerario(plantilla: PlantillaItinerario): void {
+    const aplicar = () => {
+      this.itinerario = construirItinerario(plantilla, this.horaInicioEvento);
+      this.mostrarItinerario = true;
+    };
+
+    if (!this.itinerario.length) {
+      aplicar();
+      return;
+    }
+
+    this.confirmationService.confirm({
+      header: 'Reemplazar itinerario',
+      message: `Se reemplazarán los ${this.itinerario.length} momentos actuales por la plantilla "${plantilla.nombre}". ¿Continuar?`,
+      icon: 'pi pi-exclamation-triangle text-amber-500',
+      acceptLabel: 'Reemplazar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-sm bg-gold-500 hover:bg-gold-600 text-white border-0',
+      rejectButtonStyleClass: 'p-button-sm p-button-secondary p-button-outlined',
+      accept: aplicar,
+    });
+  }
+
+  agregarMomentoItinerario(): void {
+    const ultimo = this.itinerario[this.itinerario.length - 1];
+    let hora = this.horaInicioEvento;
+    if (ultimo?.hora) {
+      const [h, m] = ultimo.hora.split(':').map(Number);
+      const total = (h * 60 + m + 60) % (24 * 60);
+      hora = `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
+    }
+    this.itinerario = [...this.itinerario, { id: nuevoIdItinerario(), hora, titulo: '', descripcion: '', icono: 'pi-star' }];
+  }
+
+  quitarMomentoItinerario(id: string): void {
+    this.itinerario = this.itinerario.filter((i) => i.id !== id);
+  }
+
+  ordenarItinerarioPorHora(): void {
+    this.itinerario = ordenarItinerario(this.itinerario, this.horaInicioEvento);
+  }
+
+  limpiarItinerario(): void {
+    this.confirmationService.confirm({
+      header: 'Vaciar itinerario',
+      message: '¿Quieres quitar todos los momentos del itinerario?',
+      icon: 'pi pi-exclamation-triangle text-amber-500',
+      acceptLabel: 'Vaciar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-sm p-button-danger',
+      rejectButtonStyleClass: 'p-button-sm p-button-secondary p-button-outlined',
+      accept: () => (this.itinerario = []),
+    });
+  }
+
+  /** Momentos con título, sin espacios sobrantes y ordenados por hora. */
+  private itinerarioLimpio(): ItemItinerario[] {
+    const limpios = this.itinerario
+      .filter((i) => i.titulo.trim() && i.hora)
+      .map((i) => ({
+        id: i.id,
+        hora: i.hora,
+        titulo: i.titulo.trim(),
+        descripcion: i.descripcion?.trim() || '',
+        icono: i.icono || 'pi-star',
+      }));
+    return ordenarItinerario(limpios, this.horaInicioEvento);
   }
 
   // Permite saber en el HTML si debemos mostrar las pestañas de la invitación

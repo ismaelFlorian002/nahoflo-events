@@ -69,6 +69,10 @@ export interface Evento {
   galeriaUrls?: string[];
   musicaFondoUrl?: string;
 
+  // Itinerario público que ven los invitados (opcional, distinto del minutario técnico)
+  mostrarItinerario?: boolean;
+  itinerario?: ItemItinerario[];
+
   /** @deprecated El PIN vive en eventos/{id}/privado/acceso; solo lo traen eventos sin migrar. */
   pinAnfitrion?: string;
   /** Cantidad de dígitos del PIN, para dibujar las casillas sin exponerlo. */
@@ -121,6 +125,14 @@ export interface PlantillaWhatsapp {
   mensaje: string;
 }
 
+
+export interface ItemItinerario {
+  id: string;
+  hora: string; // "HH:mm" en formato 24 h
+  titulo: string; // ej. "Ceremonia religiosa"
+  descripcion?: string; // ej. "Parroquia de San José"
+  icono: string; // Clase de PrimeIcons sin el prefijo "pi ", ej. "pi-heart"
+}
 
 export interface ItemMinutario {
   id: string;

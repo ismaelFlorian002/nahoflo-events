@@ -12,6 +12,7 @@ import QRCode from 'qrcode';
 import { capturarYDescargarTarjetaPaseWeb } from '../../core/utils/image-compresor';
 import { RevelarDirective } from '../../shared/directives/revelar.directive';
 import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
+import { ordenarItinerario } from '../../core/data/plantillas-itinerario';
 
 @Component({
   selector: 'app-invitation',
@@ -113,6 +114,20 @@ export class InvitationComponent implements OnInit, OnDestroy {
     const ahora = Date.now();
     if (ahora < inicioDia) return 'antes';
     return ahora < finEnVivo ? 'en-vivo' : 'despues';
+  });
+
+  readonly itinerarioVisible = computed(() => {
+    const ev = this.evento();
+    if (!ev?.mostrarItinerario || !ev.itinerario?.length) return [];
+    const inicio = this.fechaEvento();
+    const horaInicio = inicio ? `${inicio.getHours()}:${inicio.getMinutes()}` : ev.itinerario[0].hora;
+    return ordenarItinerario(ev.itinerario, horaInicio)
+      .map((m) => {
+        const [h, min] = m.hora.split(':').map(Number);
+        const fecha = new Date(2000, 0, 1, h || 0, min || 0);
+        const horaTexto = new Intl.DateTimeFormat('es-MX', { hour: 'numeric', minute: '2-digit', hour12: true }).format(fecha);
+        return { ...m, horaTexto };
+      });
   });
 
   readonly unidadesCuenta = computed(() => [

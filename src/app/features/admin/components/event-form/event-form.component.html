@@ -12,6 +12,14 @@
         <p-tab value="ubicaciones">
           <span class="inline-flex items-center gap-2"><i class="pi pi-map-marker text-xs"></i> Ubicaciones</span>
         </p-tab>
+        <p-tab value="itinerario">
+          <span class="inline-flex items-center gap-2">
+            <i class="pi pi-list text-xs"></i> Itinerario
+            @if (mostrarItinerario && itinerario.length) {
+              <span class="px-1.5 rounded-full bg-gold-100 text-gold-700 text-[10px] font-semibold">{{ itinerario.length }}</span>
+            }
+          </span>
+        </p-tab>
       }
       <p-tab value="galeria">
         <span class="inline-flex items-center gap-2"><i class="pi pi-images text-xs"></i> Galería</span>
@@ -433,6 +441,152 @@
               </div>
             </section>
 
+          </div>
+        </p-tabpanel>
+
+        <!-- ═════════════ PESTAÑA: ITINERARIO (OPCIONAL) ═════════════ -->
+        <p-tabpanel value="itinerario">
+          <div class="flex flex-col gap-5 pt-5 pb-8">
+
+            <!-- ACTIVAR -->
+            <label for="mostrarItinerario"
+              class="flex items-center gap-3 rounded-xl border p-4 cursor-pointer transition-colors"
+              [ngClass]="mostrarItinerario ? 'border-gold-200 bg-gold-50/50' : 'border-gray-100 bg-white'">
+              <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                [ngClass]="mostrarItinerario ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-400'">
+                <i class="pi pi-list text-sm"></i>
+              </span>
+              <div class="flex-1 min-w-0">
+                <span class="block text-sm font-semibold text-gray-900">Mostrar itinerario en la invitación</span>
+                <span class="block text-xs text-gray-500">Opcional · los invitados verán el programa del día con horarios.</span>
+              </div>
+              <p-toggleswitch inputId="mostrarItinerario" [(ngModel)]="mostrarItinerario" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            @if (mostrarItinerario) {
+              <!-- PLANTILLAS -->
+              <section class="flex flex-col gap-3">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+                      <i class="pi pi-sparkles text-[11px]"></i>
+                    </span>
+                    <h3 class="text-sm font-semibold text-gray-900 m-0">Empezar con una plantilla</h3>
+                    <span class="text-xs text-gray-400">Opcional</span>
+                  </div>
+                </div>
+                <p class="m-0 text-xs text-gray-500">
+                  Los horarios se calculan a partir de la hora del evento capturada en Básico. Después puedes editar cada momento.
+                </p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+                  @for (p of plantillasItinerario; track p.id) {
+                    @let recomendada = p.id === plantillaRecomendada;
+                    <button type="button" (click)="aplicarPlantillaItinerario(p)"
+                      class="relative flex flex-col items-start gap-2 rounded-xl border bg-white p-3 text-left cursor-pointer transition-all hover:border-gold-300 hover:shadow-sm"
+                      [ngClass]="recomendada ? 'border-gold-200' : 'border-gray-100'">
+                      @if (recomendada) {
+                        <span class="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-gold-100 text-gold-700 text-[9px] font-bold uppercase tracking-wide">Sugerida</span>
+                      }
+                      <span class="w-8 h-8 rounded-lg bg-gold-50 text-gold-600 flex items-center justify-center">
+                        <i class="pi {{ p.icono }} text-sm"></i>
+                      </span>
+                      <span class="text-sm font-semibold text-gray-900 leading-tight">{{ p.nombre }}</span>
+                      <span class="text-[11px] text-gray-400">{{ p.pasos.length }} momentos</span>
+                    </button>
+                  }
+                </div>
+              </section>
+
+              <!-- MOMENTOS -->
+              <section class="flex flex-col gap-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+                      <i class="pi pi-clock text-[11px]"></i>
+                    </span>
+                    <h3 class="text-sm font-semibold text-gray-900 m-0">Momentos del día</h3>
+                    @if (itinerario.length) {
+                      <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs">{{ itinerario.length }}</span>
+                    }
+                  </div>
+                  @if (itinerario.length > 1) {
+                    <div class="flex items-center gap-1">
+                      <button pButton type="button" size="small" severity="secondary" [text]="true" (click)="ordenarItinerarioPorHora()">
+                        <i class="pi pi-sort-amount-down-alt"></i>
+                        <span>Ordenar por hora</span>
+                      </button>
+                      <button pButton type="button" size="small" severity="danger" [text]="true" (click)="limpiarItinerario()">
+                        <i class="pi pi-trash"></i>
+                        <span>Vaciar</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+
+                @if (!itinerario.length) {
+                  <div class="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/60 px-4 py-8 text-center">
+                    <i class="pi pi-list text-2xl text-gray-300"></i>
+                    <span class="text-sm font-medium text-gray-600">Aún no hay momentos</span>
+                    <span class="text-xs text-gray-400">Elige una plantilla o agrega los momentos uno por uno.</span>
+                  </div>
+                } @else {
+                  <div class="flex flex-col gap-2">
+                    @for (momento of itinerario; track momento.id; let i = $index) {
+                      <div class="grid grid-cols-12 gap-2 items-start rounded-xl border border-gray-100 bg-white p-3">
+                        <div class="col-span-12 sm:col-span-2 flex flex-col gap-1">
+                          <label [for]="'itHora' + i" class="text-[11px] font-medium text-gray-500">Hora</label>
+                          <input [id]="'itHora' + i" type="time" pInputText class="w-full"
+                            [(ngModel)]="momento.hora" [ngModelOptions]="{ standalone: true }" />
+                        </div>
+                        <div class="col-span-12 sm:col-span-3 flex flex-col gap-1">
+                          <span class="text-[11px] font-medium text-gray-500">Ícono</span>
+                          <p-select [options]="iconosItinerario" optionLabel="label" optionValue="icono" appendTo="body"
+                            [(ngModel)]="momento.icono" [ngModelOptions]="{ standalone: true }" styleClass="w-full"
+                            [attr.aria-label]="'Ícono del momento ' + (i + 1)">
+                            <ng-template #selectedItem let-sel>
+                              <span class="inline-flex items-center gap-2 text-sm">
+                                <i class="pi {{ sel.icono }} text-gold-600"></i> {{ sel.label }}
+                              </span>
+                            </ng-template>
+                            <ng-template #item let-op>
+                              <span class="inline-flex items-center gap-2 text-sm">
+                                <i class="pi {{ op.icono }} text-gold-600"></i> {{ op.label }}
+                              </span>
+                            </ng-template>
+                          </p-select>
+                        </div>
+                        <div class="col-span-12 sm:col-span-6 flex flex-col gap-2">
+                          <div class="flex flex-col gap-1">
+                            <label [for]="'itTitulo' + i" class="text-[11px] font-medium text-gray-500">Momento *</label>
+                            <input [id]="'itTitulo' + i" pInputText class="w-full" placeholder="Ej. Ceremonia religiosa" maxlength="60"
+                              [(ngModel)]="momento.titulo" [ngModelOptions]="{ standalone: true }" />
+                          </div>
+                          <input pInputText class="w-full" placeholder="Detalle opcional (ej. Jardín principal)" maxlength="120"
+                            [attr.aria-label]="'Detalle del momento ' + (i + 1)"
+                            [(ngModel)]="momento.descripcion" [ngModelOptions]="{ standalone: true }" />
+                        </div>
+                        <div class="col-span-12 sm:col-span-1 flex sm:flex-col items-center justify-end sm:justify-start sm:pt-5">
+                          <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                            pTooltip="Quitar" tooltipPosition="top" [attr.aria-label]="'Quitar momento ' + (i + 1)"
+                            (click)="quitarMomentoItinerario(momento.id)">
+                            <i class="pi pi-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <button pButton type="button" size="small" severity="secondary" [outlined]="true" class="self-start"
+                  (click)="agregarMomentoItinerario()">
+                  <i class="pi pi-plus"></i>
+                  <span>Agregar momento</span>
+                </button>
+                <span class="text-[11px] text-gray-400">
+                  Los momentos sin nombre no se guardan. Al guardar se ordenan automáticamente por hora.
+                </span>
+              </section>
+            }
           </div>
         </p-tabpanel>
       }
