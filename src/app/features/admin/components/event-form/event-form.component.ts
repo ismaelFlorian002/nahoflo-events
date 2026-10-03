@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormsModule, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -78,6 +78,8 @@ export class EventFormComponent implements OnInit {
   private dialogService    = inject(DialogService);
   private primeng          = inject(PrimeNG);
   private confirmationService = inject(ConfirmationService);
+  // Los callbacks del p-confirmdialog global no refrescan la vista de este diálogo dinámico (app zoneless)
+  private cdr = inject(ChangeDetectorRef);
   private messageService      = inject(MessageService);
   previewVisible = false;
   previewUrl = '';
@@ -111,6 +113,7 @@ export class EventFormComponent implements OnInit {
 
   // Itinerario público (opcional)
   mostrarItinerario = false;
+  plantillaAplicada: string | null = null;
   itinerario: ItemItinerario[] = [];
   readonly plantillasItinerario = PLANTILLAS_ITINERARIO;
   readonly iconosItinerario = ICONOS_ITINERARIO;
@@ -223,6 +226,7 @@ export class EventFormComponent implements OnInit {
       this.existingMusicaFondoUrl = this.config.data.musicaFondoUrl;
       this.mostrarItinerario = !!this.config.data.mostrarItinerario;
       this.itinerario = (this.config.data.itinerario || []).map((i: ItemItinerario) => ({ ...i }));
+      this.plantillaAplicada = this.itinerario.length ? this.config.data.plantillaItinerario ?? null : null;
       if (this.config.data.mesaRegalos) {
         const base = mesaRegalosVacia();
         const guardada: MesaRegalos = this.config.data.mesaRegalos;
@@ -500,6 +504,7 @@ export class EventFormComponent implements OnInit {
         musicaFondoUrl: musicaFondoUrl || null,
         mostrarItinerario: this.mostrarItinerario && this.itinerarioLimpio().length > 0,
         itinerario: this.itinerarioLimpio(),
+        plantillaItinerario: this.itinerarioLimpio().length ? this.plantillaAplicada : null,
         mesaRegalos: this.mesaRegalosLimpia(),
         dressCode: this.dressCodeLimpio(),
       };
@@ -650,7 +655,9 @@ export class EventFormComponent implements OnInit {
   aplicarPlantillaItinerario(plantilla: PlantillaItinerario): void {
     const aplicar = () => {
       this.itinerario = construirItinerario(plantilla, this.horaInicioEvento);
+      this.plantillaAplicada = plantilla.id;
       this.mostrarItinerario = true;
+      this.cdr.markForCheck();
     };
 
     if (!this.itinerario.length) {
@@ -683,6 +690,7 @@ export class EventFormComponent implements OnInit {
 
   quitarMomentoItinerario(id: string): void {
     this.itinerario = this.itinerario.filter((i) => i.id !== id);
+    if (!this.itinerario.length) this.plantillaAplicada = null;
   }
 
   ordenarItinerarioPorHora(): void {
@@ -698,7 +706,11 @@ export class EventFormComponent implements OnInit {
       rejectLabel: 'Cancelar',
       acceptButtonStyleClass: 'p-button-sm p-button-danger',
       rejectButtonStyleClass: 'p-button-sm p-button-secondary p-button-outlined',
-      accept: () => (this.itinerario = []),
+      accept: () => {
+        this.itinerario = [];
+        this.plantillaAplicada = null;
+        this.cdr.markForCheck();
+      },
     });
   }
 

@@ -497,17 +497,25 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
                   @for (p of plantillasItinerario; track p.id) {
                     @let recomendada = p.id === plantillaRecomendada;
-                    <button type="button" (click)="aplicarPlantillaItinerario(p)"
-                      class="relative flex flex-col items-start gap-2 rounded-xl border bg-white p-3 text-left cursor-pointer transition-all hover:border-gold-300 hover:shadow-sm"
-                      [ngClass]="recomendada ? 'border-gold-200' : 'border-gray-100'">
-                      @if (recomendada) {
+                    @let aplicada = p.id === plantillaAplicada;
+                    <button type="button" (click)="aplicarPlantillaItinerario(p)" [attr.aria-pressed]="aplicada"
+                      class="relative flex flex-col items-start gap-2 rounded-xl border p-3 text-left cursor-pointer transition-all hover:shadow-sm"
+                      [ngClass]="aplicada
+                        ? 'border-gold-500 bg-gold-50 ring-2 ring-gold-200 shadow-sm'
+                        : recomendada ? 'border-gold-200 bg-white hover:border-gold-300' : 'border-gray-100 bg-white hover:border-gold-300'">
+                      @if (aplicada) {
+                        <span class="absolute top-2 right-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-gold-500 text-white text-[9px] font-bold uppercase tracking-wide">
+                          <i class="pi pi-check text-[8px]"></i> Aplicada
+                        </span>
+                      } @else if (recomendada) {
                         <span class="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-gold-100 text-gold-700 text-[9px] font-bold uppercase tracking-wide">Sugerida</span>
                       }
-                      <span class="w-8 h-8 rounded-lg bg-gold-50 text-gold-600 flex items-center justify-center">
+                      <span class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                        [ngClass]="aplicada ? 'bg-gold-500 text-white' : 'bg-gold-50 text-gold-600'">
                         <i class="pi {{ p.icono }} text-sm"></i>
                       </span>
-                      <span class="text-sm font-semibold text-gray-900 leading-tight">{{ p.nombre }}</span>
-                      <span class="text-[11px] text-gray-400">{{ p.pasos.length }} momentos</span>
+                      <span class="text-sm font-semibold leading-tight" [ngClass]="aplicada ? 'text-gold-700' : 'text-gray-900'">{{ p.nombre }}</span>
+                      <span class="text-[11px]" [ngClass]="aplicada ? 'text-gold-700' : 'text-gray-400'">{{ p.pasos.length }} momentos</span>
                     </button>
                   }
                 </div>
@@ -641,7 +649,7 @@
                       class="flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center cursor-pointer transition-all"
                       [ngClass]="elegido ? 'border-gold-400 bg-gold-50 shadow-sm' : 'border-gray-100 bg-white hover:border-gold-200'">
                       <i class="pi {{ e.icono }} text-base" [ngClass]="elegido ? 'text-gold-600' : 'text-gray-400'"></i>
-                      <span class="text-xs font-semibold leading-tight" [ngClass]="elegido ? 'text-gold-800' : 'text-gray-700'">{{ e.titulo }}</span>
+                      <span class="text-xs font-semibold leading-tight" [ngClass]="elegido ? 'text-gold-700' : 'text-gray-700'">{{ e.titulo }}</span>
                     </button>
                   }
                 </div>

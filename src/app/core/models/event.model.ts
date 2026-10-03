@@ -72,6 +72,7 @@ export interface Evento {
   // Itinerario público que ven los invitados (opcional, distinto del minutario técnico)
   mostrarItinerario?: boolean;
   itinerario?: ItemItinerario[];
+  plantillaItinerario?: string | null;
 
   // Mesa de regalos (opcional)
   mesaRegalos?: MesaRegalos;
