@@ -13,6 +13,7 @@ import { capturarYDescargarTarjetaPaseWeb } from '../../core/utils/image-compres
 import { RevelarDirective } from '../../shared/directives/revelar.directive';
 import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
 import { ordenarItinerario } from '../../core/data/plantillas-itinerario';
+import { agruparDigitos } from '../../core/data/mesa-regalos';
 
 @Component({
   selector: 'app-invitation',
@@ -137,7 +138,8 @@ export class InvitationComponent implements OnInit, OnDestroy {
     { valor: String(this.segundos()).padStart(2, '0'), etiqueta: 'Seg' },
   ]);
 
-  direccionCopiada = signal<string | null>(null);
+  /** Clave del último dato copiado, para mostrar "Copiado" junto al botón correcto. */
+  copiado = signal<string | null>(null);
   private temporizadorCopiado?: ReturnType<typeof setTimeout>;
 
   enlaceBusquedaMapa(lugar: string | undefined, direccion: string): string {
@@ -145,12 +147,51 @@ export class InvitationComponent implements OnInit, OnDestroy {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(consulta)}`;
   }
 
-  async copiarDireccion(etiqueta: string, lugar: string | undefined, direccion: string): Promise<void> {
-    const texto = [lugar, direccion].filter(Boolean).join('\n');
+  async copiar(clave: string, texto: string): Promise<void> {
     if (!(await copiarAlPortapapeles(texto))) return;
-    this.direccionCopiada.set(etiqueta);
+    this.copiado.set(clave);
     clearTimeout(this.temporizadorCopiado);
-    this.temporizadorCopiado = setTimeout(() => this.direccionCopiada.set(null), 2000);
+    this.temporizadorCopiado = setTimeout(() => this.copiado.set(null), 2000);
+  }
+
+  copiarDireccion(etiqueta: string, lugar: string | undefined, direccion: string): void {
+    void this.copiar(`dir-${etiqueta}`, [lugar, direccion].filter(Boolean).join('\n'));
+  }
+
+  // Mesa de regalos
+  datosBancariosVisibles = signal(false);
+
+  readonly regalos = computed(() => {
+    const mesa = this.evento()?.mesaRegalos;
+    if (!mesa?.activa) return null;
+    const t = mesa.transferencia;
+    const tiendas = (mesa.tiendas || []).filter((x) => x.nombre && (x.numeroEvento || x.url));
+    const transferencia = t?.activa && (t.clabe || t.cuenta || t.tarjeta) ? t : null;
+    const sobres = mesa.sobres?.activo ? mesa.sobres : null;
+    if (!tiendas.length && !transferencia && !sobres) return null;
+    return { mensaje: mesa.mensaje, tiendas, sobres, transferencia };
+  });
+
+  readonly agruparDigitos = agruparDigitos;
+
+  copiarDatosBancarios(): void {
+    const t = this.regalos()?.transferencia;
+    if (!t) return;
+    const lineas = [
+      t.titular && `Titular: ${t.titular}`,
+      t.banco && `Banco: ${t.banco}`,
+      t.clabe && `CLABE: ${t.clabe}`,
+      t.cuenta && `Cuenta: ${t.cuenta}`,
+      t.tarjeta && `Tarjeta: ${t.tarjeta}`,
+      t.concepto && `Concepto: ${t.concepto}`,
+    ].filter(Boolean);
+    void this.copiar('banco-todo', lineas.join('\n'));
+  }
+
+  enlaceComprobante(telefono: string): string {
+    const ev = this.evento();
+    const mensaje = `¡Hola! Les comparto el comprobante de mi regalo para ${ev?.titulo || 'su evento'}.`;
+    return `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
   }
 
   // Visor de la galería

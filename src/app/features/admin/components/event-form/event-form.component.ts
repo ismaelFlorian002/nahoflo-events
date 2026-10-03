@@ -21,7 +21,14 @@ import { ClienteModel } from '../../../../core/models/cliente.model';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { firstValueFrom } from 'rxjs';
-import { ItemItinerario } from '../../../../core/models/event.model';
+import { ItemItinerario, MesaRegalos } from '../../../../core/models/event.model';
+import {
+  TIENDAS_REGALOS,
+  bancoDesdeClabe,
+  clabeValida,
+  mesaRegalosVacia,
+  soloDigitos,
+} from '../../../../core/data/mesa-regalos';
 import {
   ICONOS_ITINERARIO,
   PLANTILLAS_ITINERARIO,
@@ -100,6 +107,10 @@ export class EventFormComponent implements OnInit {
   itinerario: ItemItinerario[] = [];
   readonly plantillasItinerario = PLANTILLAS_ITINERARIO;
   readonly iconosItinerario = ICONOS_ITINERARIO;
+
+  // Mesa de regalos (opcional)
+  mesaRegalos: MesaRegalos = mesaRegalosVacia();
+  readonly tiendasCatalogo = TIENDAS_REGALOS;
 
   opcionesControlInvitados = [
     { label: 'Inactivo', value: 'inactivo', icono: 'pi pi-ban', descripcion: 'Sin lista de invitados' },
@@ -197,6 +208,17 @@ export class EventFormComponent implements OnInit {
       this.existingMusicaFondoUrl = this.config.data.musicaFondoUrl;
       this.mostrarItinerario = !!this.config.data.mostrarItinerario;
       this.itinerario = (this.config.data.itinerario || []).map((i: ItemItinerario) => ({ ...i }));
+      if (this.config.data.mesaRegalos) {
+        const base = mesaRegalosVacia();
+        const guardada: MesaRegalos = this.config.data.mesaRegalos;
+        this.mesaRegalos = {
+          ...base,
+          ...guardada,
+          tiendas: (guardada.tiendas || []).map((t) => ({ ...t })),
+          sobres: { ...base.sobres, ...guardada.sobres },
+          transferencia: { ...base.transferencia, ...guardada.transferencia },
+        };
+      }
 
       // 1. Convertir fecha a Date nativo de JavaScript para que PrimeNG Calendar funcione
       let fechaDate: Date | null = null;
@@ -454,6 +476,7 @@ export class EventFormComponent implements OnInit {
         musicaFondoUrl: musicaFondoUrl || null,
         mostrarItinerario: this.mostrarItinerario && this.itinerarioLimpio().length > 0,
         itinerario: this.itinerarioLimpio(),
+        mesaRegalos: this.mesaRegalosLimpia(),
       };
 
       // 5. Guardar en Firestore (el PIN va aparte, en privado/acceso)
@@ -666,6 +689,80 @@ export class EventFormComponent implements OnInit {
         icono: i.icono || 'pi-star',
       }));
     return ordenarItinerario(limpios, this.horaInicioEvento);
+  }
+
+  // ─── Mesa de regalos ──────────────────────────────────────────────────────
+
+  agregarTiendaRegalos(): void {
+    const usadas = new Set(this.mesaRegalos.tiendas.map((t) => t.tienda));
+    const siguiente = this.tiendasCatalogo.find((t) => t.id !== 'otra' && !usadas.has(t.id)) || this.tiendasCatalogo[0];
+    this.mesaRegalos.tiendas = [
+      ...this.mesaRegalos.tiendas,
+      { id: nuevoIdItinerario(), tienda: siguiente.id, nombre: siguiente.nombre, numeroEvento: '', url: '' },
+    ];
+  }
+
+  quitarTiendaRegalos(id: string): void {
+    this.mesaRegalos.tiendas = this.mesaRegalos.tiendas.filter((t) => t.id !== id);
+  }
+
+  cambiarTiendaRegalos(tiendaId: string, index: number): void {
+    const tienda = this.mesaRegalos.tiendas[index];
+    const catalogo = this.tiendasCatalogo.find((t) => t.id === tiendaId);
+    tienda.tienda = tiendaId;
+    tienda.nombre = tiendaId === 'otra' ? '' : catalogo?.nombre || '';
+  }
+
+  get clabeCapturada(): string {
+    return soloDigitos(this.mesaRegalos.transferencia.clabe);
+  }
+
+  get clabeEsValida(): boolean {
+    return clabeValida(this.clabeCapturada);
+  }
+
+  get bancoDetectado(): string | null {
+    return bancoDesdeClabe(this.clabeCapturada);
+  }
+
+  usarBancoDetectado(): void {
+    if (this.bancoDetectado) this.mesaRegalos.transferencia.banco = this.bancoDetectado;
+  }
+
+  private mesaRegalosLimpia(): MesaRegalos {
+    const m = this.mesaRegalos;
+    const t = m.transferencia;
+    const tiendas = m.tiendas
+      .map((x) => ({
+        id: x.id,
+        tienda: x.tienda,
+        nombre: x.nombre.trim(),
+        numeroEvento: x.numeroEvento?.trim() || '',
+        url: x.url?.trim() || '',
+      }))
+      .filter((x) => x.nombre && (x.numeroEvento || x.url));
+
+    const transferencia = {
+      activa: t.activa,
+      titulo: t.titulo?.trim() || '',
+      mensaje: t.mensaje?.trim() || '',
+      banco: t.banco?.trim() || bancoDesdeClabe(t.clabe) || '',
+      titular: t.titular?.trim() || '',
+      clabe: soloDigitos(t.clabe),
+      cuenta: soloDigitos(t.cuenta),
+      tarjeta: soloDigitos(t.tarjeta),
+      concepto: t.concepto?.trim() || '',
+      whatsappComprobante: soloDigitos(t.whatsappComprobante),
+    };
+    transferencia.activa = transferencia.activa && !!(transferencia.clabe || transferencia.cuenta || transferencia.tarjeta);
+
+    return {
+      activa: m.activa && (tiendas.length > 0 || m.sobres.activo || transferencia.activa),
+      mensaje: m.mensaje?.trim() || '',
+      tiendas,
+      sobres: { activo: m.sobres.activo, texto: m.sobres.texto?.trim() || '' },
+      transferencia,
+    };
   }
 
   // Permite saber en el HTML si debemos mostrar las pestañas de la invitación

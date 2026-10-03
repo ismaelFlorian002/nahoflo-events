@@ -73,6 +73,9 @@ export interface Evento {
   mostrarItinerario?: boolean;
   itinerario?: ItemItinerario[];
 
+  // Mesa de regalos (opcional)
+  mesaRegalos?: MesaRegalos;
+
   /** @deprecated El PIN vive en eventos/{id}/privado/acceso; solo lo traen eventos sin migrar. */
   pinAnfitrion?: string;
   /** Cantidad de dígitos del PIN, para dibujar las casillas sin exponerlo. */
@@ -125,6 +128,38 @@ export interface PlantillaWhatsapp {
   mensaje: string;
 }
 
+
+export interface MesaRegalos {
+  activa: boolean;
+  mensaje?: string; // Intro, ej. "Tu presencia es nuestro mejor regalo..."
+  tiendas: TiendaRegalos[];
+  sobres: {
+    activo: boolean;
+    texto?: string;
+  };
+  transferencia: DatosTransferencia;
+}
+
+export interface TiendaRegalos {
+  id: string;
+  tienda: string; // Clave del catálogo (liverpool, amazon...) u "otra"
+  nombre: string; // Nombre visible
+  numeroEvento?: string;
+  url?: string;
+}
+
+export interface DatosTransferencia {
+  activa: boolean;
+  titulo?: string; // ej. "Si quieres ayudarnos con nuestra Luna de Miel"
+  mensaje?: string;
+  banco?: string;
+  titular?: string;
+  clabe?: string;
+  cuenta?: string;
+  tarjeta?: string;
+  concepto?: string;
+  whatsappComprobante?: string; // Teléfono para recibir el comprobante
+}
 
 export interface ItemItinerario {
   id: string;

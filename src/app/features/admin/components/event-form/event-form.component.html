@@ -20,6 +20,14 @@
             }
           </span>
         </p-tab>
+        <p-tab value="regalos">
+          <span class="inline-flex items-center gap-2">
+            <i class="pi pi-gift text-xs"></i> Regalos
+            @if (mesaRegalos.activa) {
+              <span class="w-1.5 h-1.5 rounded-full bg-gold-500"></span>
+            }
+          </span>
+        </p-tab>
       }
       <p-tab value="galeria">
         <span class="inline-flex items-center gap-2"><i class="pi pi-images text-xs"></i> Galería</span>
@@ -585,6 +593,237 @@
                 <span class="text-[11px] text-gray-400">
                   Los momentos sin nombre no se guardan. Al guardar se ordenan automáticamente por hora.
                 </span>
+              </section>
+            }
+          </div>
+        </p-tabpanel>
+
+        <!-- ═════════════ PESTAÑA: MESA DE REGALOS (OPCIONAL) ═════════════ -->
+        <p-tabpanel value="regalos">
+          @let mr = mesaRegalos;
+          @let tr = mesaRegalos.transferencia;
+          <div class="flex flex-col gap-5 pt-5 pb-8">
+
+            <label for="mesaRegalosActiva"
+              class="flex items-center gap-3 rounded-xl border p-4 cursor-pointer transition-colors"
+              [ngClass]="mr.activa ? 'border-gold-200 bg-gold-50/50' : 'border-gray-100 bg-white'">
+              <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                [ngClass]="mr.activa ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-400'">
+                <i class="pi pi-gift text-sm"></i>
+              </span>
+              <div class="flex-1 min-w-0">
+                <span class="block text-sm font-semibold text-gray-900">Mostrar mesa de regalos en la invitación</span>
+                <span class="block text-xs text-gray-500">Opcional · tiendas online, lluvia de sobres y datos para transferencia.</span>
+              </div>
+              <p-toggleswitch inputId="mesaRegalosActiva" [(ngModel)]="mr.activa" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            @if (mr.activa) {
+              <!-- MENSAJE -->
+              <p-floatlabel variant="on" class="w-full block">
+                <textarea id="regalosMensaje" pTextarea rows="2" class="w-full resize-none" maxlength="240"
+                  [(ngModel)]="mr.mensaje" [ngModelOptions]="{ standalone: true }"></textarea>
+                <label for="regalosMensaje">Mensaje para los invitados</label>
+              </p-floatlabel>
+
+              <!-- TIENDAS -->
+              <section class="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+                      <i class="pi pi-shopping-bag text-[11px]"></i>
+                    </span>
+                    <h3 class="text-sm font-semibold text-gray-900 m-0">Tiendas online</h3>
+                    @if (mr.tiendas.length) {
+                      <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs">{{ mr.tiendas.length }}</span>
+                    }
+                  </div>
+                  <button pButton type="button" size="small" severity="secondary" [outlined]="true"
+                    (click)="agregarTiendaRegalos()">
+                    <i class="pi pi-plus"></i>
+                    <span>Agregar tienda</span>
+                  </button>
+                </div>
+
+                @for (t of mr.tiendas; track t.id; let i = $index) {
+                  <div class="grid grid-cols-12 gap-2 items-start rounded-lg bg-gray-50/70 p-3">
+                    <div class="col-span-12 sm:col-span-4 flex flex-col gap-1">
+                      <span class="text-[11px] font-medium text-gray-500">Tienda</span>
+                      <p-select [options]="tiendasCatalogo" optionLabel="nombre" optionValue="id" appendTo="body" styleClass="w-full"
+                        [ngModel]="t.tienda" [ngModelOptions]="{ standalone: true }" (ngModelChange)="cambiarTiendaRegalos($event, i)"
+                        [attr.aria-label]="'Tienda ' + (i + 1)" />
+                      @if (t.tienda === 'otra') {
+                        <input pInputText class="w-full" placeholder="Nombre de la tienda" maxlength="40"
+                          [attr.aria-label]="'Nombre de la tienda ' + (i + 1)"
+                          [(ngModel)]="t.nombre" [ngModelOptions]="{ standalone: true }" />
+                      }
+                    </div>
+                    <div class="col-span-12 sm:col-span-3 flex flex-col gap-1">
+                      <label [for]="'tiendaNum' + i" class="text-[11px] font-medium text-gray-500">No. de evento o de mesa</label>
+                      <input [id]="'tiendaNum' + i" pInputText class="w-full" placeholder="Ej. 51234567" maxlength="30"
+                        [(ngModel)]="t.numeroEvento" [ngModelOptions]="{ standalone: true }" />
+                      <span class="text-[11px] text-gray-400 leading-snug">El número que les dio la tienda al abrir su mesa.</span>
+                    </div>
+                    <div class="col-span-12 sm:col-span-4 flex flex-col gap-1">
+                      <label [for]="'tiendaUrl' + i" class="text-[11px] font-medium text-gray-500">Enlace para compartir la mesa</label>
+                      <input [id]="'tiendaUrl' + i" pInputText type="url" class="w-full" placeholder="https://..."
+                        [(ngModel)]="t.url" [ngModelOptions]="{ standalone: true }" />
+                      <span class="text-[11px] text-gray-400 leading-snug">Cópialo desde "Compartir" en la tienda, no la página principal.</span>
+                    </div>
+                    <div class="col-span-12 sm:col-span-1 flex justify-end sm:pt-5">
+                      <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                        pTooltip="Quitar" tooltipPosition="top" [attr.aria-label]="'Quitar tienda ' + (i + 1)"
+                        (click)="quitarTiendaRegalos(t.id)">
+                        <i class="pi pi-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+                } @empty {
+                  <span class="text-xs text-gray-400">Sin tiendas todavía. Agrega las que quieras.</span>
+                }
+                @if (mr.tiendas.length) {
+                  <span class="text-[11px] text-gray-400">
+                    Llena al menos uno de los dos: con el número el invitado busca la mesa en la tienda; con el enlace llega directo a su lista de regalos.
+                    Las tiendas sin ninguno no se guardan.
+                  </span>
+                }
+              </section>
+
+              <!-- SOBRES -->
+              <section class="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4">
+                <label for="sobresActivo" class="flex items-center gap-2 cursor-pointer">
+                  <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+                    <i class="pi pi-envelope text-[11px]"></i>
+                  </span>
+                  <span class="flex-1">
+                    <span class="block text-sm font-semibold text-gray-900">Lluvia de sobres</span>
+                    <span class="block text-xs text-gray-400">Regalo en efectivo el día del evento</span>
+                  </span>
+                  <p-toggleswitch inputId="sobresActivo" [(ngModel)]="mr.sobres.activo" [ngModelOptions]="{ standalone: true }" />
+                </label>
+                @if (mr.sobres.activo) {
+                  <p-floatlabel variant="on" class="w-full block">
+                    <textarea id="sobresTexto" pTextarea rows="2" class="w-full resize-none" maxlength="200"
+                      [(ngModel)]="mr.sobres.texto" [ngModelOptions]="{ standalone: true }"></textarea>
+                    <label for="sobresTexto">Texto para los invitados</label>
+                  </p-floatlabel>
+                }
+              </section>
+
+              <!-- TRANSFERENCIA -->
+              <section class="flex flex-col gap-4 rounded-xl border border-gray-100 bg-white p-4">
+                <label for="transferenciaActiva" class="flex items-center gap-2 cursor-pointer">
+                  <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+                    <i class="pi pi-building-columns text-[11px]"></i>
+                  </span>
+                  <span class="flex-1">
+                    <span class="block text-sm font-semibold text-gray-900">Transferencia bancaria</span>
+                    <span class="block text-xs text-gray-400">Luna de miel, nuevo hogar o lo que prefieran</span>
+                  </span>
+                  <p-toggleswitch inputId="transferenciaActiva" [(ngModel)]="tr.activa" [ngModelOptions]="{ standalone: true }" />
+                </label>
+
+                @if (tr.activa) {
+                  <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+                    <div class="col-span-12">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input id="trTitulo" pInputText class="w-full" maxlength="80"
+                          [(ngModel)]="tr.titulo" [ngModelOptions]="{ standalone: true }" />
+                        <label for="trTitulo">Título</label>
+                      </p-floatlabel>
+                    </div>
+                    <div class="col-span-12">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <textarea id="trMensaje" pTextarea rows="2" class="w-full resize-none" maxlength="240"
+                          [(ngModel)]="tr.mensaje" [ngModelOptions]="{ standalone: true }"></textarea>
+                        <label for="trMensaje">Mensaje (opcional)</label>
+                      </p-floatlabel>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-7 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input id="trClabe" pInputText class="w-full font-mono tracking-wide" inputmode="numeric" maxlength="22"
+                          [(ngModel)]="tr.clabe" [ngModelOptions]="{ standalone: true }" />
+                        <label for="trClabe">CLABE interbancaria</label>
+                      </p-floatlabel>
+                      @if (clabeCapturada.length) {
+                        @if (clabeEsValida) {
+                          <span class="pl-1 text-[11px] text-emerald-600 inline-flex items-center gap-1">
+                            <i class="pi pi-check-circle text-[10px]"></i> CLABE válida
+                            @if (bancoDetectado) { · {{ bancoDetectado }} }
+                          </span>
+                        } @else {
+                          <span class="pl-1 text-[11px] text-rose-500 inline-flex items-center gap-1">
+                            <i class="pi pi-exclamation-circle text-[10px]"></i>
+                            {{ clabeCapturada.length !== 18 ? clabeCapturada.length + '/18 dígitos' : 'El dígito verificador no coincide, revisa la CLABE' }}
+                          </span>
+                        }
+                      } @else {
+                        <span class="pl-1 text-[11px] text-gray-400">18 dígitos · se valida automáticamente</span>
+                      }
+                    </div>
+                    <div class="col-span-12 sm:col-span-5 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input id="trBanco" pInputText class="w-full" maxlength="40"
+                          [(ngModel)]="tr.banco" [ngModelOptions]="{ standalone: true }" />
+                        <label for="trBanco">Banco</label>
+                      </p-floatlabel>
+                      @if (bancoDetectado && tr.banco !== bancoDetectado) {
+                        <button type="button" class="self-start pl-1 border-0 bg-transparent p-0 text-[11px] font-medium text-gold-600 cursor-pointer hover:text-gold-700"
+                          (click)="usarBancoDetectado()">
+                          Usar "{{ bancoDetectado }}"
+                        </button>
+                      }
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input id="trTitular" pInputText class="w-full" maxlength="80" autocomplete="off"
+                          [(ngModel)]="tr.titular" [ngModelOptions]="{ standalone: true }" />
+                        <label for="trTitular">Titular de la cuenta</label>
+                      </p-floatlabel>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input id="trConcepto" pInputText class="w-full" maxlength="40"
+                          [(ngModel)]="tr.concepto" [ngModelOptions]="{ standalone: true }" />
+                        <label for="trConcepto">Concepto sugerido (ej. Regalo Boda)</label>
+                      </p-floatlabel>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input id="trCuenta" pInputText class="w-full font-mono" inputmode="numeric" maxlength="20"
+                          [(ngModel)]="tr.cuenta" [ngModelOptions]="{ standalone: true }" />
+                        <label for="trCuenta">No. de cuenta (opcional)</label>
+                      </p-floatlabel>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input id="trTarjeta" pInputText class="w-full font-mono" inputmode="numeric" maxlength="19"
+                          [(ngModel)]="tr.tarjeta" [ngModelOptions]="{ standalone: true }" />
+                        <label for="trTarjeta">No. de tarjeta de débito (opcional)</label>
+                      </p-floatlabel>
+                    </div>
+
+                    <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input id="trWhatsapp" pInputText type="tel" inputmode="tel" class="w-full" maxlength="20"
+                          [(ngModel)]="tr.whatsappComprobante" [ngModelOptions]="{ standalone: true }" />
+                        <label for="trWhatsapp">WhatsApp para comprobante (opcional)</label>
+                      </p-floatlabel>
+                      <span class="pl-1 text-[11px] text-gray-400">Con lada, ej. 525512345678. Muestra el botón "Enviar comprobante".</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-start gap-2 rounded-lg border border-amber-100 bg-amber-50 px-3 py-2.5">
+                    <i class="pi pi-info-circle text-amber-500 text-xs mt-0.5"></i>
+                    <span class="text-[11px] text-amber-800 leading-snug">
+                      Estos datos serán visibles para cualquiera con el enlace de la invitación. En la invitación aparecen
+                      ocultos hasta que el invitado toca "Ver datos bancarios". Se recomienda compartir solo CLABE o tarjeta de débito.
+                    </span>
+                  </div>
+                }
               </section>
             }
           </div>

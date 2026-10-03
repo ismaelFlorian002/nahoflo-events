@@ -296,10 +296,11 @@
                   </a>
                 }
                 @if (direccion) {
-                  <button type="button" class="boton-copiar" [class.copiado]="direccionCopiada() === etiqueta"
+                  @let dirCopiada = copiado() === 'dir-' + etiqueta;
+                  <button type="button" class="boton-copiar" [class.copiado]="dirCopiada"
                     [attr.aria-label]="'Copiar dirección de la ' + etiqueta" (click)="copiarDireccion(etiqueta, lugar, direccion)">
-                    <i class="pi" [class.pi-check]="direccionCopiada() === etiqueta" [class.pi-copy]="direccionCopiada() !== etiqueta"></i>
-                    <span>{{ direccionCopiada() === etiqueta ? 'Copiada' : 'Copiar' }}</span>
+                    <i class="pi" [class.pi-check]="dirCopiada" [class.pi-copy]="!dirCopiada"></i>
+                    <span>{{ dirCopiada ? 'Copiada' : 'Copiar' }}</span>
                   </button>
                 }
               </div>
@@ -338,7 +339,7 @@
 
     <!-- GALERÍA -->
     @if (ev.galeriaUrls && ev.galeriaUrls.length > 0) {
-      <section class="seccion seccion--crema galeria">
+      <section class="seccion galeria">
         <div class="encabezado" appRevelar>
           <span class="eyebrow">Momentos</span>
           <h2 class="titulo-seccion">Nuestra galería</h2>
@@ -382,9 +383,120 @@
       }
     }
 
+    <!-- MESA DE REGALOS -->
+    @if (regalos(); as r) {
+      <section class="seccion seccion--crema regalos">
+        <div class="encabezado" appRevelar>
+          <span class="eyebrow">Con cariño</span>
+          <h2 class="titulo-seccion">Mesa de regalos</h2>
+          <div class="ornamento" aria-hidden="true"><span></span><i class="pi pi-star-fill"></i><span></span></div>
+          @if (r.mensaje) {
+            <p class="regalos-mensaje">{{ r.mensaje }}</p>
+          }
+        </div>
+
+        @if (r.tiendas.length || r.sobres) {
+          <div class="regalos-grid">
+            @for (t of r.tiendas; track t.id; let i = $index) {
+              <article class="regalo-tarjeta" appRevelar="zoom" [revelarRetraso]="i * 90">
+                <span class="regalo-icono"><i class="pi pi-shopping-bag"></i></span>
+                <h3 class="regalo-titulo">{{ t.nombre }}</h3>
+                @if (t.numeroEvento) {
+                  @let numCopiado = copiado() === 'tienda-' + t.id;
+                  <button type="button" class="regalo-numero" [class.copiado]="numCopiado"
+                    [attr.aria-label]="'Copiar número de evento de ' + t.nombre" (click)="copiar('tienda-' + t.id, t.numeroEvento)">
+                    <span class="regalo-numero-label">{{ numCopiado ? '¡Copiado!' : 'No. de evento / mesa' }}</span>
+                    <strong>{{ t.numeroEvento }}</strong>
+                    <i class="pi" [class.pi-check]="numCopiado" [class.pi-copy]="!numCopiado"></i>
+                  </button>
+                }
+                @if (t.url) {
+                  <a [href]="t.url" target="_blank" rel="noopener noreferrer" class="boton-oscuro">
+                    <span>Ver mesa de regalos</span>
+                    <i class="pi pi-arrow-up-right flecha"></i>
+                  </a>
+                }
+              </article>
+            }
+
+            @if (r.sobres; as s) {
+              <article class="regalo-tarjeta" appRevelar="zoom" [revelarRetraso]="r.tiendas.length * 90">
+                <span class="regalo-icono"><i class="pi pi-envelope"></i></span>
+                <h3 class="regalo-titulo">Lluvia de sobres</h3>
+                @if (s.texto) {
+                  <p class="regalo-texto">{{ s.texto }}</p>
+                }
+              </article>
+            }
+          </div>
+        }
+
+        @if (r.transferencia; as t) {
+          <article class="regalo-transferencia" appRevelar [revelarRetraso]="120">
+            <span class="regalo-icono regalo-icono--claro"><i class="pi pi-heart-fill"></i></span>
+            <h3 class="regalo-transferencia-titulo">{{ t.titulo || 'Transferencia bancaria' }}</h3>
+            @if (t.mensaje) {
+              <p class="regalo-transferencia-texto">{{ t.mensaje }}</p>
+            }
+
+            @if (!datosBancariosVisibles()) {
+              <button type="button" class="boton-dorado" (click)="datosBancariosVisibles.set(true)">
+                <i class="pi pi-eye"></i>
+                <span>Ver datos bancarios</span>
+              </button>
+            } @else {
+              <dl class="banco-datos">
+                @if (t.titular) {
+                  <div class="banco-fila"><dt>Titular</dt><dd>{{ t.titular }}</dd></div>
+                }
+                @if (t.banco) {
+                  <div class="banco-fila"><dt>Banco</dt><dd>{{ t.banco }}</dd></div>
+                }
+                @for (dato of [
+                  { clave: 'clabe', etiqueta: 'CLABE', valor: t.clabe },
+                  { clave: 'cuenta', etiqueta: 'Cuenta', valor: t.cuenta },
+                  { clave: 'tarjeta', etiqueta: 'Tarjeta', valor: t.tarjeta }
+                ]; track dato.clave) {
+                  @if (dato.valor) {
+                    @let datoCopiado = copiado() === 'banco-' + dato.clave;
+                    <div class="banco-fila banco-fila--copiable">
+                      <dt>{{ dato.etiqueta }}</dt>
+                      <dd class="banco-numero">{{ agruparDigitos(dato.valor) }}</dd>
+                      <button type="button" class="banco-copiar" [class.copiado]="datoCopiado"
+                        [attr.aria-label]="'Copiar ' + dato.etiqueta" (click)="copiar('banco-' + dato.clave, dato.valor)">
+                        <i class="pi" [class.pi-check]="datoCopiado" [class.pi-copy]="!datoCopiado"></i>
+                        <span>{{ datoCopiado ? 'Copiado' : 'Copiar' }}</span>
+                      </button>
+                    </div>
+                  }
+                }
+                @if (t.concepto) {
+                  <div class="banco-fila"><dt>Concepto</dt><dd>{{ t.concepto }}</dd></div>
+                }
+              </dl>
+
+              <div class="banco-acciones">
+                @let todoCopiado = copiado() === 'banco-todo';
+                <button type="button" class="boton-contorno-claro" (click)="copiarDatosBancarios()">
+                  <i class="pi" [class.pi-check]="todoCopiado" [class.pi-copy]="!todoCopiado"></i>
+                  <span>{{ todoCopiado ? 'Datos copiados' : 'Copiar todos los datos' }}</span>
+                </button>
+                @if (t.whatsappComprobante) {
+                  <a [href]="enlaceComprobante(t.whatsappComprobante)" target="_blank" rel="noopener noreferrer" class="boton-whatsapp">
+                    <i class="pi pi-whatsapp"></i>
+                    <span>Enviar comprobante</span>
+                  </a>
+                }
+              </div>
+            }
+          </article>
+        }
+      </section>
+    }
+
     <!-- RSVP (CONFIRMACIÓN DE ASISTENCIA) -->
     @if (ev.modulos?.tipoControlInvitados === 'basico' || ev.modulos?.tipoControlInvitados === 'total') {
-      <section class="seccion seccion--crema rsvp-section">
+      <section class="seccion rsvp-section">
         <div class="encabezado" appRevelar>
           <span class="eyebrow">¿Nos acompañas?</span>
           <h2 class="titulo-seccion">Confirma tu asistencia</h2>

@@ -1130,6 +1130,298 @@ $easing: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* =========================================================
+   MESA DE REGALOS
+   ========================================================= */
+.regalos-mensaje {
+  max-width: 520px;
+  margin: 1.25rem 0 0;
+  font-family: $serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  color: $tinta-suave;
+}
+
+.regalos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.regalo-tarjeta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid $linea;
+  box-shadow: 0 18px 40px -28px rgba(28, 25, 23, 0.35);
+}
+
+.regalo-icono {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fdf8ea;
+  border: 1px solid rgba(204, 166, 51, 0.35);
+  color: $oro-oscuro;
+
+  i {
+    font-size: 1.15rem;
+  }
+
+  &--claro {
+    background: rgba(226, 194, 117, 0.15);
+    border-color: rgba(226, 194, 117, 0.45);
+    color: $oro-claro;
+  }
+}
+
+.regalo-titulo {
+  margin: 0;
+  font-family: $serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: $tinta;
+}
+
+.regalo-texto {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: $tinta-suave;
+}
+
+.regalo-numero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 0.75rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 14px;
+  border: 1px dashed rgba(204, 166, 51, 0.55);
+  background: $crema;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+
+  .regalo-numero-label {
+    grid-column: 1;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: $oro-oscuro;
+  }
+
+  strong {
+    grid-column: 1;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: $tinta;
+    font-variant-numeric: tabular-nums;
+  }
+
+  i {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    font-size: 0.9rem;
+    color: $oro-oscuro;
+  }
+
+  &:hover {
+    border-color: $oro;
+  }
+
+  &.copiado {
+    border-style: solid;
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+
+    .regalo-numero-label,
+    i {
+      color: #047857;
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $oro;
+    outline-offset: 2px;
+  }
+}
+
+.regalo-transferencia {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: 640px;
+  margin: 1.5rem auto 0;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: #ffffff;
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(204, 166, 51, 0.3), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(204, 166, 51, 0.15), transparent 45%),
+    $tinta;
+  box-shadow: 0 30px 60px -30px rgba(28, 25, 23, 0.6);
+
+  @media (min-width: 640px) {
+    padding: 3rem 2.5rem;
+  }
+}
+
+.regalo-transferencia-titulo {
+  margin: 0;
+  max-width: 460px;
+  font-family: $serif;
+  font-size: clamp(1.7rem, 6vw, 2.2rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.regalo-transferencia-texto {
+  margin: 0 0 0.5rem;
+  max-width: 440px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.banco-datos {
+  width: 100%;
+  margin: 0.5rem 0 0;
+  padding: 0.35rem 0;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+  animation: fadeIn 0.35s ease-out;
+}
+
+.banco-fila {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.15rem;
+  padding: 0.75rem 1.1rem;
+
+  & + & {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  dt {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $oro-claro;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.98rem;
+    color: #ffffff;
+    word-break: break-word;
+  }
+
+  &--copiable {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 0.75rem;
+
+    dt,
+    dd {
+      grid-column: 1;
+    }
+  }
+}
+
+.banco-numero {
+  font-size: 1.08rem !important;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.banco-copiar {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(226, 194, 117, 0.45);
+  background: transparent;
+  color: $oro-claro;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  i {
+    font-size: 0.75rem;
+  }
+
+  &:hover {
+    background: rgba(226, 194, 117, 0.12);
+  }
+
+  &.copiado {
+    border-color: rgba(52, 211, 153, 0.6);
+    background: rgba(52, 211, 153, 0.12);
+    color: #6ee7b7;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $oro-claro;
+    outline-offset: 2px;
+  }
+}
+
+.banco-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.boton-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.5rem;
+  border-radius: 999px;
+  background: #22c55e;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: #16a34a;
+  }
+}
+
+/* =========================================================
    RSVP
    ========================================================= */
 .rsvp-card {
