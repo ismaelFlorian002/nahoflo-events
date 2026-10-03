@@ -21,7 +21,18 @@ import { ClienteModel } from '../../../../core/models/cliente.model';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { firstValueFrom } from 'rxjs';
-import { ColorSugerido, DressCode, ItemItinerario, MesaRegalos } from '../../../../core/models/event.model';
+import { ColorSugerido, DressCode, Hospedaje, HotelSugerido, ItemItinerario, MesaRegalos } from '../../../../core/models/event.model';
+import {
+  DISTANCIAS_HOTEL,
+  fechaDesdeIso,
+  hospedajeVacio,
+  isoDesdeFecha,
+  normalizarUrl,
+  nuevoHotel,
+} from '../../../../core/data/hospedaje';
+import { InputNumberModule } from 'primeng/inputnumber';
+
+type HotelEnFormulario = HotelSugerido & { plazoFecha?: Date | null };
 import {
   COLORES_EVITAR_RAPIDOS,
   ESTILOS_VESTIMENTA,
@@ -64,6 +75,7 @@ import {
     TooltipModule,
     FloatLabelModule,
     FormsModule,
+    InputNumberModule,
   ],
   templateUrl: './event-form.component.html',
   styleUrl: './event-form.component.scss',
@@ -120,6 +132,10 @@ export class EventFormComponent implements OnInit {
 
   // Mesa de regalos (opcional)
   mesaRegalos: MesaRegalos = mesaRegalosVacia();
+  hospedaje: Omit<Hospedaje, 'hoteles'> & { hoteles: HotelEnFormulario[] } = hospedajeVacio();
+  readonly estrellasHotel = [1, 2, 3, 4, 5];
+  readonly distanciasHotel = DISTANCIAS_HOTEL;
+  readonly hoy = new Date();
   readonly tiendasCatalogo = TIENDAS_REGALOS;
 
   // Código de vestimenta (opcional)
@@ -236,6 +252,22 @@ export class EventFormComponent implements OnInit {
           tiendas: (guardada.tiendas || []).map((t) => ({ ...t })),
           sobres: { ...base.sobres, ...guardada.sobres },
           transferencia: { ...base.transferencia, ...guardada.transferencia },
+        };
+      }
+      if (this.config.data.hospedaje) {
+        const guardado: Hospedaje = this.config.data.hospedaje;
+        this.hospedaje = {
+          ...hospedajeVacio(),
+          ...guardado,
+          hoteles: (guardado.hoteles || []).map((h) => {
+            const precioTexto = (h as { precio?: string }).precio;
+            return {
+              ...nuevoHotel(),
+              ...h,
+              precioNoche: h.precioNoche ?? (Number(String(precioTexto || '').replace(/\D/g, '')) || null),
+              plazoFecha: fechaDesdeIso(h.reservarAntes),
+            };
+          }),
         };
       }
       if (this.config.data.dressCode) {
@@ -506,6 +538,7 @@ export class EventFormComponent implements OnInit {
         itinerario: this.itinerarioLimpio(),
         plantillaItinerario: this.itinerarioLimpio().length ? this.plantillaAplicada : null,
         mesaRegalos: this.mesaRegalosLimpia(),
+        hospedaje: this.hospedajeLimpio(),
         dressCode: this.dressCodeLimpio(),
       };
 
@@ -799,6 +832,49 @@ export class EventFormComponent implements OnInit {
       tiendas,
       sobres: { activo: m.sobres.activo, texto: m.sobres.texto?.trim() || '' },
       transferencia,
+    };
+  }
+
+  // ─── Hospedaje sugerido ───────────────────────────────────────────────────
+
+  agregarHotel(): void {
+    this.hospedaje.hoteles = [...this.hospedaje.hoteles, nuevoHotel()];
+  }
+
+  quitarHotel(id: string): void {
+    this.hospedaje.hoteles = this.hospedaje.hoteles.filter((h) => h.id !== id);
+  }
+
+  /** Volver a tocar la estrella ya elegida quita la clasificación. */
+  calificarHotel(hotel: HotelEnFormulario, estrellas: number): void {
+    hotel.estrellas = hotel.estrellas === estrellas ? 0 : estrellas;
+  }
+
+  private hospedajeLimpio(): Hospedaje {
+    const h = this.hospedaje;
+    const hoteles = h.hoteles
+      .map((x) => ({
+        id: x.id,
+        nombre: x.nombre.trim(),
+        estrellas: Math.min(5, Math.max(0, Math.round(x.estrellas || 0))),
+        recomendado: !!x.recomendado,
+        direccion: x.direccion?.trim() || '',
+        mapsUrl: normalizarUrl(x.mapsUrl),
+        distancia: x.distancia?.trim() || '',
+        precioNoche: x.precioNoche && x.precioNoche > 0 ? Math.round(x.precioNoche) : null,
+        codigo: x.codigo?.trim() || '',
+        reservarAntes: isoDesdeFecha(x.plazoFecha),
+        telefono: soloDigitos(x.telefono),
+        whatsapp: soloDigitos(x.whatsapp),
+        url: normalizarUrl(x.url),
+        notas: x.notas?.trim() || '',
+      }))
+      .filter((x) => x.nombre);
+
+    return {
+      activo: h.activo && hoteles.length > 0,
+      mensaje: h.mensaje?.trim() || '',
+      hoteles,
     };
   }
 

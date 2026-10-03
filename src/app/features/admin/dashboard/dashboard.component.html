@@ -124,7 +124,7 @@
             <!-- 1. FILTRO DE ESTADO (BOTÓN + OVERLAYPANEL) -->
             <div class="filtro-dropdown-wrap">
               <button pButton
-               
+
                 badgeClass="p-badge-secondary"
                 size="small"
                 [outlined]="filtroEstado() === 'todos'"
@@ -153,6 +153,7 @@
                       <span class="filtro-item-left">
                         <i class="pi pi-th-large text-slate-500"></i>
                         <span>{{ esPartner() ? 'Todos mis eventos' : 'Todos los eventos' }}</span>
+<!--                        <span>{{ esPartner() ? 'Todos mis eventos' : 'Todos los eventos' }}</span>-->
                       </span>
                       <span class="badge-filtro-cant">{{ totalEventos() }}</span>
                     </button>
@@ -188,7 +189,7 @@
             <!-- 2. FILTRO DE FECHA DE EVENTO (BOTÓN + POPOVER DATEPICKER) -->
             <div class="filtro-dropdown-wrap">
               <button pButton
-               
+
                 badgeClass="p-badge-secondary"
                 size="small"
                 [outlined]="!filtroFecha()"
@@ -254,8 +255,8 @@
 
             <!-- BOTÓN RESTABLECER FILTROS (SI HAY FILTROS ACTIVOS) -->
             <button pButton *ngIf="hayFiltrosActivos()"
-             
-             
+
+
               size="small"
               [text]="true"
               severity="secondary"
@@ -393,7 +394,7 @@
 
               <!-- BOTÓN QR PARA MESAS (Solo si tiene Álbum contratado) -->
               <button pButton *ngIf="!evento.modulos || evento.modulos.tieneAlbum"
-               
+
                 [rounded]="true"
                 [text]="true"
                 severity="warn"
@@ -404,7 +405,7 @@
 </button>
 
               <button pButton *ngIf="tieneControlInvitados(evento)"
-               
+
                 [rounded]="true"
                 [text]="true"
                 severity="info"

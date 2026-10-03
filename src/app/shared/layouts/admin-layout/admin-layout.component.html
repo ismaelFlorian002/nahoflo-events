@@ -16,7 +16,8 @@
     [class.desktop-collapsed]="!sidebarExpandido">
     <div>
       <!-- Cabecera del Sidebar: Logo + Badge de Workspace -->
-      <div class="h-16 sm:h-20 flex items-center justify-center relative px-4 border-b border-gray-100/80 transition-all duration-300">
+      <div
+        class="h-16 sm:h-20 flex items-center justify-center relative px-4 border-b border-gray-100/80 transition-all duration-300">
         <div
           class="flex items-center justify-center"
           [pTooltip]="!sidebarExpandido ? 'Clic para maximizar' : ''"
@@ -106,7 +107,8 @@
             class="sidebar-link flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
             <i class="pi pi-calendar text-base shrink-0"></i>
             <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
-              @if (esPartner()) { Mis Eventos } @else { Todos los Eventos }
+              Eventos
+              <!--              @if (esPartner()) { Mis Eventos } @else { Todos los Eventos }-->
             </span>
           </a>
 
@@ -119,7 +121,12 @@
             class="sidebar-link flex items-center gap-3 py-2.5 px-3.5 rounded-xl text-sm transition-all duration-200 hover:bg-pastel-pink-50 hover:text-pastel-pink-500 no-underline cursor-pointer">
             <i class="pi pi-users text-base shrink-0"></i>
             <span class="sidebar-label whitespace-nowrap overflow-hidden text-ellipsis">
-              @if (esPartner()) { Mis Clientes } @else { Clientes }
+              Clientes
+<!--              @if (esPartner()) {-->
+<!--                Mis Clientes-->
+<!--              } @else {-->
+<!--                Clientes-->
+<!--              }-->
             </span>
           </a>
 
@@ -178,7 +185,8 @@
   <div class="flex-1 min-w-0 flex flex-col min-h-screen">
 
     <!-- BARRA SUPERIOR (TOPBAR) -->
-    <header class="h-16 sm:h-20 bg-white border-b border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] px-3.5 sm:px-8 flex items-center justify-between sticky top-0 z-10">
+    <header
+      class="h-16 sm:h-20 bg-white border-b border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.02)] px-3.5 sm:px-8 flex items-center justify-between sticky top-0 z-10">
 
       <!-- Lado Izquierdo: Botón Hamburguesa Móvil + Título de Marca + Badge de rol -->
       <div class="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -197,13 +205,15 @@
 
         <!-- Badge dinámico según rol -->
         @if (esAdmin()) {
-          <span class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 border border-gold-200/60 uppercase tracking-wider shrink-0 hidden sm:inline">
+          <span
+            class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gold-50 text-gold-700 border border-gold-200/60 uppercase tracking-wider shrink-0 hidden sm:inline">
             Admin
           </span>
         }
         @if (esPartner()) {
-          <span class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200/60 uppercase tracking-wider shrink-0 hidden sm:inline"
-                [pTooltip]="workspaceLabel()" tooltipPosition="bottom">
+          <span
+            class="text-[10px] sm:text-[11px] font-semibold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200/60 uppercase tracking-wider shrink-0 hidden sm:inline"
+            [pTooltip]="workspaceLabel()" tooltipPosition="bottom">
             Partner
           </span>
         }
@@ -212,7 +222,8 @@
       <!-- Lado Derecho: Saludo al Usuario Logueado -->
       <div class="flex items-center gap-2 sm:gap-3 shrink-0">
         <div class="flex flex-col text-right">
-          <span class="text-xs sm:text-sm font-semibold text-gray-800 leading-tight truncate max-w-[120px] sm:max-w-none">
+          <span
+            class="text-xs sm:text-sm font-semibold text-gray-800 leading-tight truncate max-w-[120px] sm:max-w-none">
             {{ saludoUsuario }}
           </span>
           @if (usuarioEmail) {

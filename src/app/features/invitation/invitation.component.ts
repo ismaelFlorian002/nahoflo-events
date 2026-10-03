@@ -15,6 +15,7 @@ import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
 import { ordenarItinerario } from '../../core/data/plantillas-itinerario';
 import { agruparDigitos } from '../../core/data/mesa-regalos';
 import { esColorClaro, iconoEstiloVestimenta } from '../../core/data/dress-code';
+import { fechaDesdeIso } from '../../core/data/hospedaje';
 
 @Component({
   selector: 'app-invitation',
@@ -174,6 +175,36 @@ export class InvitationComponent implements OnInit, OnDestroy {
   });
 
   readonly agruparDigitos = agruparDigitos;
+
+  // Hospedaje sugerido
+  readonly hospedaje = computed(() => {
+    const hs = this.evento()?.hospedaje;
+    if (!hs?.activo) return null;
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const moneda = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
+    const hoteles = (hs.hoteles || [])
+      .filter((h) => h.nombre)
+      .map((h) => {
+        const limite = fechaDesdeIso(h.reservarAntes);
+        const plazo = limite && limite >= hoy
+          ? limite.toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })
+          : '';
+        const precio = h.precioNoche ? moneda.format(h.precioNoche) : '';
+        return { ...h, plazo, precio, estrellasLista: Array.from({ length: h.estrellas || 0 }) };
+      })
+      .sort((x, y) => Number(!!y.recomendado) - Number(!!x.recomendado));
+    return hoteles.length ? { mensaje: hs.mensaje, hoteles } : null;
+  });
+
+  enlaceReservaWhatsapp(telefono: string, codigo?: string): string {
+    const ev = this.evento();
+    const partes = [`¡Hola! Me gustaría reservar una habitación para asistir a ${ev?.titulo || 'un evento'}`];
+    if (this.fechaLarga()) partes[0] += ` el ${this.fechaLarga().toLowerCase()}`;
+    partes[0] += '.';
+    if (codigo) partes.push(`Código de grupo: ${codigo}.`);
+    return `https://wa.me/${telefono}?text=${encodeURIComponent(partes.join(' '))}`;
+  }
 
   // Código de vestimenta
   readonly vestimenta = computed(() => {

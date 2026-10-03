@@ -333,7 +333,7 @@ export class DashboardComponent implements OnInit {
   openDialog(eventoAEditar?: any) {
     const ref = this.dialogService.open(EventFormComponent, {
       header: eventoAEditar ? 'Editar Evento' : 'Crear Nuevo Evento',
-      width: '1000px',
+      width: '1200px',
       breakpoints: { '1060px': '94vw' },
       closable: true,
       draggable:false,

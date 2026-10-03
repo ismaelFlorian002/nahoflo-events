@@ -12,6 +12,14 @@
         <p-tab value="ubicaciones">
           <span class="inline-flex items-center gap-2"><i class="pi pi-map-marker text-xs"></i> Ubicaciones</span>
         </p-tab>
+        <p-tab value="hospedaje">
+          <span class="inline-flex items-center gap-2">
+            <i class="pi pi-building text-xs"></i> Hospedaje
+            @if (hospedaje.activo && hospedaje.hoteles.length) {
+              <span class="px-1.5 rounded-full bg-gold-100 text-gold-700 text-[10px] font-semibold">{{ hospedaje.hoteles.length }}</span>
+            }
+          </span>
+        </p-tab>
         <p-tab value="itinerario">
           <span class="inline-flex items-center gap-2">
             <i class="pi pi-list text-xs"></i> Itinerario
@@ -457,6 +465,183 @@
               </div>
             </section>
 
+          </div>
+        </p-tabpanel>
+
+        <!-- ═════════════ PESTAÑA: HOSPEDAJE SUGERIDO (OPCIONAL) ═════════════ -->
+        <p-tabpanel value="hospedaje">
+          @let hs = hospedaje;
+          <div class="flex flex-col gap-5 pt-5 pb-8">
+
+            <label for="hospedajeActivo"
+              class="flex items-center gap-3 rounded-xl border p-4 cursor-pointer transition-colors"
+              [ngClass]="hs.activo ? 'border-gold-200 bg-gold-50/50' : 'border-gray-100 bg-white'">
+              <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                [ngClass]="hs.activo ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-400'">
+                <i class="pi pi-building text-sm"></i>
+              </span>
+              <div class="flex-1 min-w-0">
+                <span class="block text-sm font-semibold text-gray-900">Mostrar hospedaje sugerido en la invitación</span>
+                <span class="block text-xs text-gray-500">Opcional · ideal para invitados que viajan de otra ciudad.</span>
+              </div>
+              <p-toggleswitch inputId="hospedajeActivo" [(ngModel)]="hs.activo" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            @if (hs.activo) {
+              <p-floatlabel variant="on" class="w-full block">
+                <textarea id="hospedajeMensaje" pTextarea rows="2" class="w-full resize-none" maxlength="240"
+                  [(ngModel)]="hs.mensaje" [ngModelOptions]="{ standalone: true }"></textarea>
+                <label for="hospedajeMensaje">Mensaje para los invitados</label>
+              </p-floatlabel>
+
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+                    <i class="pi pi-building text-[11px]"></i>
+                  </span>
+                  <h3 class="text-sm font-semibold text-gray-900 m-0">Hoteles</h3>
+                  @if (hs.hoteles.length) {
+                    <span class="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-xs">{{ hs.hoteles.length }}</span>
+                  }
+                </div>
+                <button pButton type="button" size="small" severity="secondary" [outlined]="true" (click)="agregarHotel()">
+                  <i class="pi pi-plus"></i>
+                  <span>Agregar hotel</span>
+                </button>
+              </div>
+
+              @for (h of hs.hoteles; track h.id; let i = $index) {
+                <section class="flex flex-col gap-4 rounded-xl border bg-white p-4"
+                  [ngClass]="h.recomendado ? 'border-gold-300' : 'border-gray-100'">
+                  <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-1" role="group" [attr.aria-label]="'Estrellas del hotel ' + (i + 1)">
+                      @for (n of estrellasHotel; track n) {
+                        <button type="button" class="w-7 h-7 border-0 bg-transparent cursor-pointer rounded-md flex items-center justify-center hover:bg-gold-50"
+                          [attr.aria-label]="n + (n === 1 ? ' estrella' : ' estrellas')" [attr.aria-pressed]="(h.estrellas || 0) >= n"
+                          (click)="calificarHotel(h, n)">
+                          <i class="pi text-sm" [ngClass]="(h.estrellas || 0) >= n ? 'pi-star-fill text-gold-500' : 'pi-star text-gray-300'"></i>
+                        </button>
+                      }
+                      <span class="ml-1 text-[11px] text-gray-400">{{ h.estrellas ? h.estrellas + ' estrellas' : 'Sin clasificación' }}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <label [for]="'hotelRec' + i" class="flex items-center gap-2 text-xs font-medium text-gray-600 cursor-pointer">
+                        <p-toggleswitch [inputId]="'hotelRec' + i" [(ngModel)]="h.recomendado" [ngModelOptions]="{ standalone: true }" />
+                        Nuestra recomendación
+                      </label>
+                      <button pButton type="button" [text]="true" [rounded]="true" severity="danger"
+                        pTooltip="Quitar" tooltipPosition="top" [attr.aria-label]="'Quitar hotel ' + (i + 1)"
+                        (click)="quitarHotel(h.id)">
+                        <i class="pi pi-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-12 gap-x-4 gap-y-5">
+                    <div class="col-span-12 sm:col-span-6">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input [id]="'hotelNombre' + i" pInputText class="w-full" maxlength="60"
+                          [(ngModel)]="h.nombre" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelNombre' + i">Nombre del hotel *</label>
+                      </p-floatlabel>
+                    </div>
+                    <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <p-select [inputId]="'hotelDistancia' + i" [options]="distanciasHotel" [editable]="true" [showClear]="true"
+                          appendTo="body" styleClass="w-full" [maxlength]="60"
+                          [(ngModel)]="h.distancia" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelDistancia' + i">Distancia al evento</label>
+                      </p-floatlabel>
+                      <span class="pl-1 text-[11px] text-gray-400">Elige una opción o escribe la tuya.</span>
+                    </div>
+                    <div class="col-span-12 sm:col-span-7 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <textarea [id]="'hotelDireccion' + i" pTextarea rows="2" class="w-full resize-none" maxlength="200"
+                          [(ngModel)]="h.direccion" [ngModelOptions]="{ standalone: true }"></textarea>
+                        <label [for]="'hotelDireccion' + i">Dirección</label>
+                      </p-floatlabel>
+                      <span class="pl-1 text-[11px] text-gray-400">Calle, número, colonia y ciudad. Se muestra en la invitación.</span>
+                    </div>
+                    <div class="col-span-12 sm:col-span-5 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input [id]="'hotelMaps' + i" pInputText class="w-full" autocomplete="off"
+                          [(ngModel)]="h.mapsUrl" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelMaps' + i">Enlace de Google Maps</label>
+                      </p-floatlabel>
+                      @if (h.mapsUrl) {
+                        <a [href]="h.mapsUrl" target="_blank" rel="noopener noreferrer"
+                          class="self-start inline-flex items-center gap-1 pl-1 text-[11px] font-medium text-gold-600 no-underline hover:text-gold-700">
+                          <i class="pi pi-external-link text-[10px]"></i> Probar enlace
+                        </a>
+                      } @else {
+                        <span class="pl-1 text-[11px] text-gray-400">Si lo dejas vacío, "Cómo llegar" busca el hotel por nombre y dirección.</span>
+                      }
+                    </div>
+                    <div class="col-span-12 sm:col-span-4 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <p-inputnumber [inputId]="'hotelPrecio' + i" mode="currency" currency="MXN" locale="es-MX"
+                          [minFractionDigits]="0" [maxFractionDigits]="0" [min]="0" [fluid]="true"
+                          [(ngModel)]="h.precioNoche" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelPrecio' + i">Precio aprox. por noche</label>
+                      </p-floatlabel>
+                      <span class="pl-1 text-[11px] text-gray-400 leading-snug">Se mostrará como costo aproximado.</span>
+                    </div>
+                    <div class="col-span-12 sm:col-span-4 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input [id]="'hotelCodigo' + i" pInputText class="w-full" maxlength="30"
+                          [(ngModel)]="h.codigo" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelCodigo' + i">Código de grupo (opcional)</label>
+                      </p-floatlabel>
+                      <span class="pl-1 text-[11px] text-gray-400 leading-snug">El que da el hotel para la tarifa especial del evento.</span>
+                    </div>
+                    <div class="col-span-12 sm:col-span-4 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <p-datepicker [inputId]="'hotelPlazo' + i" [showIcon]="true" iconDisplay="input" dateFormat="dd/mm/yy"
+                          [minDate]="hoy" [showButtonBar]="true" appendTo="body" [fluid]="true"
+                          [(ngModel)]="h.plazoFecha" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelPlazo' + i">Tarifa válida hasta</label>
+                      </p-floatlabel>
+                      <span class="pl-1 text-[11px] text-gray-400 leading-snug">Opcional. Se oculta sola cuando pasa la fecha.</span>
+                    </div>
+                    <div class="col-span-12 sm:col-span-4 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input [id]="'hotelTel' + i" pInputText type="tel" inputmode="tel" class="w-full" maxlength="20"
+                          [(ngModel)]="h.telefono" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelTel' + i">Teléfono de reservaciones</label>
+                      </p-floatlabel>
+                    </div>
+                    <div class="col-span-12 sm:col-span-4 flex flex-col gap-1">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input [id]="'hotelWa' + i" pInputText type="tel" inputmode="tel" class="w-full" maxlength="20"
+                          [(ngModel)]="h.whatsapp" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelWa' + i">WhatsApp (opcional)</label>
+                      </p-floatlabel>
+                      <span class="pl-1 text-[11px] text-gray-400">Con lada, ej. 525512345678.</span>
+                    </div>
+                    <div class="col-span-12 sm:col-span-4">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input [id]="'hotelUrl' + i" pInputText type="url" class="w-full"
+                          [(ngModel)]="h.url" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelUrl' + i">Enlace para reservar</label>
+                      </p-floatlabel>
+                    </div>
+                    <div class="col-span-12">
+                      <p-floatlabel variant="on" class="w-full block">
+                        <input [id]="'hotelNotas' + i" pInputText class="w-full" maxlength="160"
+                          [(ngModel)]="h.notas" [ngModelOptions]="{ standalone: true }" />
+                        <label [for]="'hotelNotas' + i">Notas (ej. Incluye desayuno · Transporte al evento)</label>
+                      </p-floatlabel>
+                    </div>
+                  </div>
+                </section>
+              } @empty {
+                <div class="flex flex-col items-center gap-2 rounded-xl border border-dashed border-gray-200 bg-gray-50/60 p-6 text-center">
+                  <i class="pi pi-building text-xl text-gray-300"></i>
+                  <span class="text-sm text-gray-500">Agrega los hoteles que quieras sugerir.</span>
+                  <span class="text-xs text-gray-400">Solo el nombre es obligatorio; los botones de reservar, llamar o WhatsApp aparecen según lo que captures.</span>
+                </div>
+              }
+            }
           </div>
         </p-tabpanel>
 

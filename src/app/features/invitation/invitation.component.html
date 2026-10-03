@@ -310,6 +310,106 @@
       </ng-template>
     }
 
+    <!-- HOSPEDAJE SUGERIDO -->
+    @if (hospedaje(); as hs) {
+      <section class="seccion seccion--crema hospedaje">
+        <div class="encabezado" appRevelar>
+          <span class="eyebrow">Si vienes de fuera</span>
+          <h2 class="titulo-seccion">Hospedaje sugerido</h2>
+          <div class="ornamento" aria-hidden="true"><span></span><i class="pi pi-star-fill"></i><span></span></div>
+          @if (hs.mensaje) {
+            <p class="regalos-mensaje">{{ hs.mensaje }}</p>
+          }
+        </div>
+
+        <div class="hoteles-grid" [class.hoteles-grid--uno]="hs.hoteles.length === 1">
+          @for (h of hs.hoteles; track h.id; let i = $index) {
+            <article class="hotel" [class.hotel--recomendado]="h.recomendado" appRevelar="zoom" [revelarRetraso]="(i % 3) * 90">
+              @if (h.recomendado) {
+                <span class="hotel-sello"><i class="pi pi-heart-fill" aria-hidden="true"></i> Nuestra recomendación</span>
+              }
+
+              <header class="hotel-cabecera">
+                <span class="regalo-icono" aria-hidden="true"><i class="pi pi-building"></i></span>
+                <div class="hotel-titulos">
+                  <h3 class="hotel-nombre">{{ h.nombre }}</h3>
+                  @if (h.estrellasLista.length) {
+                    <span class="hotel-estrellas" role="img" [attr.aria-label]="h.estrellas + ' estrellas'">
+                      @for (s of h.estrellasLista; track $index) {
+                        <i class="pi pi-star-fill"></i>
+                      }
+                    </span>
+                  }
+                </div>
+              </header>
+
+              @if (h.distancia || h.precio || h.direccion) {
+                <ul class="hotel-datos">
+                  @if (h.distancia) {
+                    <li><i class="pi pi-car" aria-hidden="true"></i>{{ h.distancia }}</li>
+                  }
+                  @if (h.precio) {
+                    <li>
+                      <i class="pi pi-tag" aria-hidden="true"></i>
+                      <span>Aprox. <strong class="hotel-precio">{{ h.precio }} MXN</strong> por noche</span>
+                    </li>
+                  }
+                  @if (h.direccion) {
+                    <li><i class="pi pi-map-marker" aria-hidden="true"></i>{{ h.direccion }}</li>
+                  }
+                </ul>
+              }
+
+              @if (h.codigo) {
+                @let codCopiado = copiado() === 'hotel-' + h.id;
+                <button type="button" class="regalo-numero" [class.copiado]="codCopiado"
+                  [attr.aria-label]="'Copiar código de grupo de ' + h.nombre" (click)="copiar('hotel-' + h.id, h.codigo)">
+                  <span class="regalo-numero-label">{{ codCopiado ? '¡Copiado!' : 'Código de grupo' }}</span>
+                  <strong>{{ h.codigo }}</strong>
+                  <i class="pi" [class.pi-check]="codCopiado" [class.pi-copy]="!codCopiado"></i>
+                </button>
+              }
+
+              @if (h.plazo) {
+                <p class="hotel-plazo"><i class="pi pi-clock" aria-hidden="true"></i>Tarifa especial hasta el {{ h.plazo }}</p>
+              }
+
+              @if (h.notas) {
+                <p class="hotel-notas">{{ h.notas }}</p>
+              }
+
+              <div class="hotel-acciones">
+                @if (h.url) {
+                  <a [href]="h.url" target="_blank" rel="noopener noreferrer" class="boton-oscuro">
+                    <span>Reservar</span>
+                    <i class="pi pi-arrow-up-right flecha"></i>
+                  </a>
+                }
+                @if (h.whatsapp) {
+                  <a [href]="enlaceReservaWhatsapp(h.whatsapp, h.codigo)" target="_blank" rel="noopener noreferrer"
+                    class="boton-whatsapp" [attr.aria-label]="'Reservar por WhatsApp en ' + h.nombre">
+                    <i class="pi pi-whatsapp"></i>
+                    <span>WhatsApp</span>
+                  </a>
+                }
+                @if (h.telefono) {
+                  <a [href]="'tel:' + h.telefono" class="boton-copiar" [attr.aria-label]="'Llamar a ' + h.nombre">
+                    <i class="pi pi-phone"></i>
+                    <span>Llamar</span>
+                  </a>
+                }
+                <a [href]="h.mapsUrl || enlaceBusquedaMapa(h.nombre, h.direccion || '')" target="_blank" rel="noopener noreferrer"
+                  class="boton-copiar" [attr.aria-label]="'Cómo llegar a ' + h.nombre">
+                  <i class="pi pi-map"></i>
+                  <span>Cómo llegar</span>
+                </a>
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+    }
+
     <!-- ITINERARIO -->
     @if (itinerarioVisible().length) {
       <section class="seccion seccion--crema itinerario">

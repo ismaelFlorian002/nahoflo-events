@@ -854,6 +854,166 @@ $easing: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* =========================================================
+   HOSPEDAJE SUGERIDO
+   ========================================================= */
+.hoteles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  max-width: 1040px;
+  margin: 0 auto;
+
+  &--uno {
+    grid-template-columns: minmax(0, 480px);
+    justify-content: center;
+  }
+}
+
+.hotel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.75rem 1.5rem 1.5rem;
+  background: #ffffff;
+  border-radius: 22px;
+  border: 1px solid $linea;
+  box-shadow: 0 18px 40px -28px rgba(28, 25, 23, 0.35);
+
+  &--recomendado {
+    border-color: rgba(204, 166, 51, 0.55);
+    box-shadow: 0 0 0 1px rgba(204, 166, 51, 0.25), 0 22px 46px -26px rgba(168, 133, 31, 0.5);
+  }
+}
+
+.hotel-sello {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e9cf86 0%, $oro 55%, $oro-oscuro 100%);
+  color: $tinta;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 8px 18px -8px rgba(168, 133, 31, 0.7);
+
+  i {
+    font-size: 0.6rem;
+  }
+}
+
+.hotel-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+
+  .regalo-icono {
+    flex-shrink: 0;
+  }
+}
+
+.hotel-titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.hotel-nombre {
+  margin: 0;
+  font-family: $serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: $tinta;
+}
+
+.hotel-estrellas {
+  display: inline-flex;
+  gap: 0.2rem;
+  color: $oro;
+
+  i {
+    font-size: 0.72rem;
+  }
+}
+
+.hotel-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  list-style: none;
+  border-radius: 14px;
+  background: $crema;
+  border: 1px solid $linea;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    font-size: 0.88rem;
+    line-height: 1.45;
+    color: $tinta-suave;
+    white-space: pre-line;
+  }
+
+  i {
+    margin-top: 0.2rem;
+    font-size: 0.82rem;
+    color: $oro;
+  }
+}
+
+.hotel-precio {
+  font-weight: 700;
+  color: $tinta;
+}
+
+.hotel-plazo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $oro-oscuro;
+
+  i {
+    font-size: 0.8rem;
+  }
+}
+
+.hotel-notas {
+  margin: 0;
+  font-size: 0.86rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: $tinta-suave;
+}
+
+.hotel-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.4rem;
+
+  a {
+    text-decoration: none;
+  }
+}
+
+/* =========================================================
    CÓDIGO DE VESTIMENTA
    ========================================================= */
 .vestimenta-estilo {

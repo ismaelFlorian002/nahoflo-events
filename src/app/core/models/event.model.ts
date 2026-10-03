@@ -79,6 +79,7 @@ export interface Evento {
 
   // Código de vestimenta y colores sugeridos (opcional)
   dressCode?: DressCode;
+  hospedaje?: Hospedaje;
 
   /** @deprecated El PIN vive en eventos/{id}/privado/acceso; solo lo traen eventos sin migrar. */
   pinAnfitrion?: string;
@@ -132,6 +133,31 @@ export interface PlantillaWhatsapp {
   mensaje: string;
 }
 
+
+export interface HotelSugerido {
+  id: string;
+  nombre: string;
+  estrellas?: number;
+  recomendado?: boolean;
+  direccion?: string;
+  mapsUrl?: string;
+  distancia?: string;
+  /** Precio aproximado por noche en MXN */
+  precioNoche?: number | null;
+  codigo?: string;
+  /** Fecha límite de la tarifa especial, formato YYYY-MM-DD */
+  reservarAntes?: string;
+  telefono?: string;
+  whatsapp?: string;
+  url?: string;
+  notas?: string;
+}
+
+export interface Hospedaje {
+  activo: boolean;
+  mensaje?: string;
+  hoteles: HotelSugerido[];
+}
 
 export interface ColorSugerido {
   hex: string; // "#c9a227"
