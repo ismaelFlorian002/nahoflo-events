@@ -7,9 +7,6 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { TagModule } from 'primeng/tag';
-import { TooltipModule } from 'primeng/tooltip';
 import { UsuarioService } from '../../../core/services/usuario.service';
 import { PerfilService } from '../../../core/services/perfil.service';
 
@@ -34,11 +31,15 @@ function validarPasswords(group: AbstractControl): ValidationErrors | null {
     ButtonModule,
     InputTextModule,
     PasswordModule,
-    FloatLabelModule,
-    TagModule,
-    TooltipModule,
   ],
   templateUrl: './perfil.component.html',
+  styles: [`
+    .perfil-entrada { animation: perfil-entrada 0.35s ease-out both; }
+    @keyframes perfil-entrada {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
+  `],
 })
 export class PerfilComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -80,6 +81,31 @@ export class PerfilComponent implements OnInit {
   correoForm = this.fb.nonNullable.group({
     nuevo: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
+  });
+
+  readonly emailVerificado = this.auth.currentUser?.emailVerified ?? false;
+  readonly etiquetaFuerza = ['Sin definir', 'Débil', 'Aceptable', 'Fuerte'];
+
+  private readonly nuevaPw = toSignal(this.passwordForm.controls.nueva.valueChanges, { initialValue: '' });
+  private readonly confirmarPw = toSignal(this.passwordForm.controls.confirmar.valueChanges, { initialValue: '' });
+
+  readonly requisitosPw = computed(() => {
+    const nueva = this.nuevaPw() || '';
+    const confirmar = this.confirmarPw() || '';
+    return [
+      { texto: 'Mínimo 8 caracteres', ok: nueva.length >= 8 },
+      { texto: 'Al menos una letra', ok: /[A-Za-z]/.test(nueva) },
+      { texto: 'Al menos un número', ok: /\d/.test(nueva) },
+      { texto: 'Ambas contraseñas coinciden', ok: !!nueva && nueva === confirmar },
+    ];
+  });
+
+  readonly fuerzaPw = computed(() => {
+    const v = this.nuevaPw() || '';
+    if (!v) return 0;
+    if (!PASSWORD_SEGURA.test(v)) return 1;
+    const extra = v.length >= 12 || /[^A-Za-z0-9]/.test(v) || (/[a-z]/.test(v) && /[A-Z]/.test(v));
+    return extra ? 3 : 2;
   });
 
   ngOnInit(): void {

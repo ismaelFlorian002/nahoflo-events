@@ -2,148 +2,176 @@
 @let d = datosForm.controls;
 @let pw = passwordForm.controls;
 @let ce = correoForm.controls;
+@let req = requisitosPw();
+@let nivel = fuerzaPw();
 
-<div class="w-full max-w-6xl">
+<div class="perfil-entrada w-full flex flex-col gap-6">
 
   <!-- ENCABEZADO -->
-  <div class="mb-6">
+  <div>
     <h1 class="text-2xl font-bold text-gray-900 tracking-tight m-0">Mi perfil</h1>
     <p class="text-sm text-gray-500 m-0 mt-1">Administra tus datos de contacto y la seguridad de tu cuenta.</p>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+  <!-- HERO -->
+  <section class="relative overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div class="relative h-28 sm:h-32 overflow-hidden"
+      [ngClass]="esPartner() ? 'bg-gradient-to-br from-violet-100 via-violet-50 to-white' : 'bg-gradient-to-br from-gold-200 via-gold-50 to-white'">
+      <span class="absolute -top-10 -right-6 w-48 h-48 rounded-full blur-3xl opacity-60"
+        [ngClass]="esPartner() ? 'bg-violet-200' : 'bg-gold-300'"></span>
+      <span class="absolute -bottom-16 left-1/3 w-56 h-40 rounded-full blur-3xl opacity-50"
+        [ngClass]="esPartner() ? 'bg-fuchsia-100' : 'bg-pastel-pink-100'"></span>
+    </div>
 
-    <!-- RESUMEN -->
-    <aside class="lg:sticky lg:top-24 flex flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
-      <div class="flex flex-col items-center text-center gap-3">
-        <span class="w-20 h-20 rounded-3xl text-2xl font-semibold flex items-center justify-center select-none border"
-          [ngClass]="esPartner() ? 'bg-violet-50 text-violet-700 border-violet-100' : 'bg-gold-50 text-gold-700 border-gold-100'">
+    <div class="relative px-5 sm:px-8 pb-6">
+      <div class="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12">
+        <span class="w-24 h-24 shrink-0 rounded-full ring-4 ring-white shadow-md text-3xl font-semibold flex items-center justify-center select-none"
+          [ngClass]="esPartner() ? 'bg-violet-100 text-violet-700' : 'bg-gold-100 text-gold-700'">
           {{ iniciales() }}
         </span>
-        <div class="min-w-0 w-full">
-          <h2 class="m-0 text-lg font-semibold text-gray-900 truncate">{{ p?.displayName }}</h2>
-          <span class="block text-sm text-gray-500 truncate">{{ p?.email }}</span>
+
+        <div class="flex-1 min-w-0 sm:pb-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <h2 class="m-0 text-xl font-semibold text-gray-900 truncate">{{ p?.displayName || 'Sin nombre' }}</h2>
+            @if (esPartner()) {
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200/70 text-xs font-semibold">
+                <i class="pi pi-briefcase text-[10px]"></i> Partner
+              </span>
+            } @else {
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-gold-50 text-gold-700 border border-gold-200/70 text-xs font-semibold">
+                <i class="pi pi-shield text-[10px]"></i> Administrador
+              </span>
+            }
+          </div>
+          <span class="block text-sm text-gray-500 truncate mt-0.5">{{ p?.email }}</span>
         </div>
-        @if (esPartner()) {
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-50 text-violet-700 border border-violet-200/60 text-xs font-semibold">
-            <i class="pi pi-briefcase text-[10px]"></i> Partner
-          </span>
-        } @else {
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gold-50 text-gold-700 border border-gold-200/60 text-xs font-semibold">
-            <i class="pi pi-shield text-[10px]"></i> Administrador
-          </span>
-        }
       </div>
 
-      <div class="flex flex-col divide-y divide-gray-100 rounded-xl border border-gray-100">
+      <div class="flex flex-wrap gap-2 mt-5">
         @if (esPartner()) {
-          <div class="flex items-center gap-3 px-3.5 py-3">
-            <i class="pi pi-building text-sm text-gray-400"></i>
-            <div class="min-w-0">
-              <span class="block text-xs text-gray-400">Agencia</span>
-              <span class="block text-sm font-medium text-gray-900 truncate">{{ p?.agenciaNombre || '—' }}</span>
-            </div>
-          </div>
+          <span class="inline-flex items-center gap-2 rounded-lg border border-gray-100 bg-gray-50/80 px-3 py-1.5 text-xs text-gray-500">
+            <i class="pi pi-building text-[11px] text-gray-400"></i>
+            Agencia <strong class="font-semibold text-gray-800">{{ p?.agenciaNombre || '—' }}</strong>
+          </span>
         }
-        <div class="flex items-center gap-3 px-3.5 py-3">
-          <i class="pi pi-calendar text-sm text-gray-400"></i>
-          <div class="min-w-0">
-            <span class="block text-xs text-gray-400">Miembro desde</span>
-            <span class="block text-sm font-medium text-gray-900">{{ formatearFecha(p?.creadoEn) }}</span>
-          </div>
-        </div>
+        <span class="inline-flex items-center gap-2 rounded-lg border border-gray-100 bg-gray-50/80 px-3 py-1.5 text-xs text-gray-500">
+          <i class="pi pi-calendar text-[11px] text-gray-400"></i>
+          Miembro desde <strong class="font-semibold text-gray-800">{{ formatearFecha(p?.creadoEn) }}</strong>
+        </span>
         @if (ultimoAcceso) {
-          <div class="flex items-center gap-3 px-3.5 py-3">
-            <i class="pi pi-clock text-sm text-gray-400"></i>
-            <div class="min-w-0">
-              <span class="block text-xs text-gray-400">Último inicio de sesión</span>
-              <span class="block text-sm font-medium text-gray-900">{{ ultimoAcceso }}</span>
-            </div>
-          </div>
+          <span class="inline-flex items-center gap-2 rounded-lg border border-gray-100 bg-gray-50/80 px-3 py-1.5 text-xs text-gray-500">
+            <i class="pi pi-clock text-[11px] text-gray-400"></i>
+            Último acceso <strong class="font-semibold text-gray-800">{{ ultimoAcceso }}</strong>
+          </span>
         }
       </div>
-    </aside>
+    </div>
+  </section>
 
-    <div class="lg:col-span-2 flex flex-col gap-5">
-
-      <!-- DATOS PERSONALES -->
-      <form [formGroup]="datosForm" (ngSubmit)="guardarDatos()"
-        class="flex flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
-        <div class="flex items-center gap-2">
-          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
-            <i class="pi pi-user text-[11px]"></i>
-          </span>
-          <h3 class="text-sm font-semibold text-gray-900 m-0">Datos personales</h3>
+  <!-- DATOS PERSONALES -->
+  <form [formGroup]="datosForm" (ngSubmit)="guardarDatos()"
+    class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-8 p-5 sm:p-6">
+      <div class="flex lg:flex-col items-start gap-3">
+        <span class="w-9 h-9 shrink-0 rounded-xl bg-gold-50 text-gold-600 border border-gold-100 flex items-center justify-center">
+          <i class="pi pi-user text-sm"></i>
+        </span>
+        <div>
+          <h3 class="m-0 text-base font-semibold text-gray-900">Datos personales</h3>
+          <p class="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">Tu nombre y forma de contacto dentro del panel.</p>
         </div>
+      </div>
 
-        <div class="grid grid-cols-12 gap-x-4 gap-y-5">
-          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-            <p-floatlabel variant="on" class="w-full block">
-              <input id="perfilNombre" pInputText formControlName="displayName" class="w-full" autocomplete="name" />
-              <label for="perfilNombre">Nombre completo *</label>
-            </p-floatlabel>
-            @if (d.displayName.touched && d.displayName.invalid) {
-              <span class="text-xs text-rose-500 pl-1">Escribe al menos 3 caracteres.</span>
-            } @else {
-              <span class="text-[11px] text-gray-400 pl-1">Así te verán en el panel.</span>
-            }
-          </div>
-
-          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-            <p-floatlabel variant="on" class="w-full block">
-              <input id="perfilTelefono" pInputText formControlName="agenciaTelefono" type="tel" inputmode="tel"
-                class="w-full" autocomplete="tel" />
-              <label for="perfilTelefono">Teléfono / WhatsApp</label>
-            </p-floatlabel>
-            @if (d.agenciaTelefono.touched && d.agenciaTelefono.invalid) {
-              <span class="text-xs text-rose-500 pl-1">Ingresa un teléfono válido (solo números).</span>
-            } @else {
-              <span class="text-[11px] text-gray-400 pl-1">Opcional</span>
-            }
-          </div>
-
-          @if (esPartner()) {
-            <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-              <p-floatlabel variant="on" class="w-full block">
-                <input id="perfilAgencia" pInputText formControlName="agenciaNombre" class="w-full" autocomplete="organization" />
-                <label for="perfilAgencia">Nombre de la agencia *</label>
-              </p-floatlabel>
-              @if (d.agenciaNombre.touched && d.agenciaNombre.invalid) {
-                <span class="text-xs text-rose-500 pl-1">El nombre de la agencia es obligatorio.</span>
-              } @else {
-                <span class="text-[11px] text-gray-400 pl-1">Se muestra en tu workspace y en tus eventos.</span>
-              }
-            </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-5 content-start">
+        <div class="flex flex-col gap-1.5 sm:col-span-2 xl:col-span-1">
+          <label for="perfilNombre" class="text-sm font-medium text-gray-700">Nombre completo <span class="text-rose-500">*</span></label>
+          <input id="perfilNombre" pInputText formControlName="displayName" class="w-full" autocomplete="name"
+            placeholder="Ej. Ana López" />
+          @if (d.displayName.touched && d.displayName.invalid) {
+            <span class="text-xs text-rose-500">Escribe al menos 3 caracteres.</span>
+          } @else {
+            <span class="text-xs text-gray-400">Así te verán en el panel.</span>
           }
         </div>
 
-        <div class="flex items-center justify-end gap-2 pt-4 border-t border-gray-100">
-          <button pButton type="button" size="small" severity="secondary" [text]="true"
-            [disabled]="datosForm.pristine || guardandoDatos()" (click)="descartarDatos()">
-            <span>Descartar</span>
-          </button>
-          <button pButton type="submit" size="small" [loading]="guardandoDatos()" [disabled]="datosForm.pristine">
-            <i class="pi pi-check"></i>
-            <span>Guardar cambios</span>
-          </button>
-        </div>
-      </form>
-
-      <!-- CORREO DE ACCESO -->
-      <section class="flex flex-col gap-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
-        <div class="flex items-center gap-2">
-          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
-            <i class="pi pi-envelope text-[11px]"></i>
-          </span>
-          <h3 class="text-sm font-semibold text-gray-900 m-0">Correo de acceso</h3>
+        <div class="flex flex-col gap-1.5">
+          <label for="perfilTelefono" class="text-sm font-medium text-gray-700">
+            Teléfono / WhatsApp <span class="font-normal text-gray-400">(opcional)</span>
+          </label>
+          <input id="perfilTelefono" pInputText formControlName="agenciaTelefono" type="tel" inputmode="tel"
+            class="w-full" autocomplete="tel" placeholder="Ej. 55 1234 5678" />
+          @if (d.agenciaTelefono.touched && d.agenciaTelefono.invalid) {
+            <span class="text-xs text-rose-500">Ingresa un teléfono válido (solo números).</span>
+          }
         </div>
 
-        <div class="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl bg-gray-50 px-4 py-3">
+        @if (esPartner()) {
+          <div class="flex flex-col gap-1.5">
+            <label for="perfilAgencia" class="text-sm font-medium text-gray-700">Nombre de la agencia <span class="text-rose-500">*</span></label>
+            <input id="perfilAgencia" pInputText formControlName="agenciaNombre" class="w-full" autocomplete="organization" />
+            @if (d.agenciaNombre.touched && d.agenciaNombre.invalid) {
+              <span class="text-xs text-rose-500">El nombre de la agencia es obligatorio.</span>
+            } @else {
+              <span class="text-xs text-gray-400">Se muestra en tu workspace y en tus eventos.</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col-reverse sm:flex-row sm:items-center gap-3 px-5 sm:px-6 py-3 bg-gray-50/70 border-t border-gray-100">
+      <span class="text-xs sm:mr-auto inline-flex items-center gap-2"
+        [ngClass]="datosForm.dirty ? 'text-amber-600' : 'text-gray-400'">
+        <span class="w-1.5 h-1.5 rounded-full" [ngClass]="datosForm.dirty ? 'bg-amber-500' : 'bg-gray-300'"></span>
+        {{ datosForm.dirty ? 'Tienes cambios sin guardar' : 'Todo está al día' }}
+      </span>
+      <div class="flex gap-2 sm:justify-end">
+        <button pButton type="button" size="small" severity="secondary" [text]="true" class="flex-1 sm:flex-none"
+          [disabled]="datosForm.pristine || guardandoDatos()" (click)="descartarDatos()">
+          <span>Descartar</span>
+        </button>
+        <button pButton type="submit" size="small" class="flex-1 sm:flex-none"
+          [loading]="guardandoDatos()" [disabled]="datosForm.pristine">
+          <i class="pi pi-check"></i>
+          <span>Guardar cambios</span>
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- CORREO DE ACCESO -->
+  <section class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-8 p-5 sm:p-6">
+      <div class="flex lg:flex-col items-start gap-3">
+        <span class="w-9 h-9 shrink-0 rounded-xl bg-sky-50 text-sky-600 border border-sky-100 flex items-center justify-center">
+          <i class="pi pi-envelope text-sm"></i>
+        </span>
+        <div>
+          <h3 class="m-0 text-base font-semibold text-gray-900">Correo de acceso</h3>
+          <p class="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">El correo con el que inicias sesión y recibes avisos.</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/70 px-4 py-3">
           <div class="flex items-center gap-3 flex-1 min-w-0">
-            <i class="pi pi-lock text-sm text-gray-400"></i>
+            <span class="w-9 h-9 shrink-0 rounded-full bg-white border border-gray-100 flex items-center justify-center">
+              <i class="pi pi-at text-sm text-gray-500"></i>
+            </span>
             <div class="min-w-0">
-              <span class="block text-sm font-medium text-gray-900 truncate">{{ p?.email }}</span>
-              <span class="block text-xs text-gray-500">Con este correo inicias sesión.</span>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="text-sm font-medium text-gray-900 truncate">{{ p?.email }}</span>
+                @if (emailVerificado) {
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[11px] font-semibold">
+                    <i class="pi pi-verified text-[10px]"></i> Verificado
+                  </span>
+                } @else {
+                  <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-100 text-[11px] font-semibold">
+                    <i class="pi pi-exclamation-circle text-[10px]"></i> Sin verificar
+                  </span>
+                }
+              </div>
+              <span class="block text-xs text-gray-500 mt-0.5">Correo principal de la cuenta</span>
             </div>
           </div>
           @if (!mostrarCambioCorreo()) {
@@ -156,7 +184,7 @@
         </div>
 
         @if (correoPendiente()) {
-          <div class="flex items-start gap-3 rounded-xl border border-sky-100 bg-sky-50 px-4 py-3">
+          <div class="perfil-entrada flex items-start gap-3 rounded-xl border border-sky-100 bg-sky-50 px-4 py-3">
             <i class="pi pi-send text-sky-500 mt-0.5"></i>
             <div class="flex-1 min-w-0">
               <span class="block text-sm font-medium text-sky-800">Revisa tu bandeja en {{ correoPendiente() }}</span>
@@ -173,29 +201,27 @@
         }
 
         @if (mostrarCambioCorreo()) {
-          <form [formGroup]="correoForm" (ngSubmit)="solicitarCambioCorreo()" class="flex flex-col gap-4">
-            <div class="grid grid-cols-12 gap-x-4 gap-y-5">
-              <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                <p-floatlabel variant="on" class="w-full block">
-                  <input id="correoNuevo" pInputText formControlName="nuevo" type="email" class="w-full" autocomplete="email" />
-                  <label for="correoNuevo">Correo nuevo *</label>
-                </p-floatlabel>
+          <form [formGroup]="correoForm" (ngSubmit)="solicitarCambioCorreo()"
+            class="perfil-entrada flex flex-col gap-4 rounded-xl border border-gray-100 p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5">
+              <div class="flex flex-col gap-1.5">
+                <label for="correoNuevo" class="text-sm font-medium text-gray-700">Correo nuevo <span class="text-rose-500">*</span></label>
+                <input id="correoNuevo" pInputText formControlName="nuevo" type="email" class="w-full"
+                  autocomplete="email" placeholder="nombre@correo.com" />
                 @if (ce.nuevo.touched && ce.nuevo.invalid) {
-                  <span class="text-xs text-rose-500 pl-1">Ingresa un correo válido.</span>
+                  <span class="text-xs text-rose-500">Ingresa un correo válido.</span>
                 } @else {
-                  <span class="text-[11px] text-gray-400 pl-1">Te enviaremos un enlace de confirmación.</span>
+                  <span class="text-xs text-gray-400">Te enviaremos un enlace de confirmación.</span>
                 }
               </div>
-              <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-                <p-floatlabel variant="on" class="w-full block">
-                  <p-password inputId="correoPassword" formControlName="password" [toggleMask]="true" [feedback]="false"
-                    [fluid]="true" autocomplete="current-password" />
-                  <label for="correoPassword">Contraseña actual *</label>
-                </p-floatlabel>
+              <div class="flex flex-col gap-1.5">
+                <label for="correoPassword" class="text-sm font-medium text-gray-700">Contraseña actual <span class="text-rose-500">*</span></label>
+                <p-password inputId="correoPassword" formControlName="password" [toggleMask]="true" [feedback]="false"
+                  [fluid]="true" autocomplete="current-password" />
                 @if (ce.password.touched && ce.password.invalid) {
-                  <span class="text-xs text-rose-500 pl-1">Confirma con tu contraseña actual.</span>
+                  <span class="text-xs text-rose-500">Confirma con tu contraseña actual.</span>
                 } @else {
-                  <span class="text-[11px] text-gray-400 pl-1">Por seguridad, confirma que eres tú.</span>
+                  <span class="text-xs text-gray-400">Por seguridad, confirma que eres tú.</span>
                 }
               </div>
             </div>
@@ -211,71 +237,88 @@
             </div>
           </form>
         }
-      </section>
-
-      <!-- CONTRASEÑA -->
-      <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()"
-        class="flex flex-col gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
-        <div class="flex items-center gap-2">
-          <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
-            <i class="pi pi-key text-[11px]"></i>
-          </span>
-          <h3 class="text-sm font-semibold text-gray-900 m-0">Cambiar contraseña</h3>
-        </div>
-
-        <div class="grid grid-cols-12 gap-x-4 gap-y-5">
-          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-            <p-floatlabel variant="on" class="w-full block">
-              <p-password inputId="pwActual" formControlName="actual" [toggleMask]="true" [feedback]="false"
-                [fluid]="true" autocomplete="current-password" />
-              <label for="pwActual">Contraseña actual *</label>
-            </p-floatlabel>
-            @if (pw.actual.touched && pw.actual.invalid) {
-              <span class="text-xs text-rose-500 pl-1">Escribe tu contraseña actual.</span>
-            }
-          </div>
-
-          <div class="hidden sm:block sm:col-span-6"></div>
-
-          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-            <p-floatlabel variant="on" class="w-full block">
-              <p-password inputId="pwNueva" formControlName="nueva" [toggleMask]="true" [feedback]="true"
-                promptLabel="Mínimo 8 caracteres con letras y números" weakLabel="Débil" mediumLabel="Aceptable" strongLabel="Fuerte"
-                appendTo="body" [fluid]="true" autocomplete="new-password" />
-              <label for="pwNueva">Contraseña nueva *</label>
-            </p-floatlabel>
-            @if (pw.nueva.touched && pw.nueva.invalid) {
-              <span class="text-xs text-rose-500 pl-1">Mínimo 8 caracteres, con al menos una letra y un número.</span>
-            } @else if (passwordForm.hasError('igualAActual')) {
-              <span class="text-xs text-rose-500 pl-1">Debe ser distinta de la actual.</span>
-            } @else {
-              <span class="text-[11px] text-gray-400 pl-1">Mínimo 8 caracteres, con letras y números.</span>
-            }
-          </div>
-
-          <div class="col-span-12 sm:col-span-6 flex flex-col gap-1">
-            <p-floatlabel variant="on" class="w-full block">
-              <p-password inputId="pwConfirmar" formControlName="confirmar" [toggleMask]="true" [feedback]="false"
-                [fluid]="true" autocomplete="new-password" />
-              <label for="pwConfirmar">Confirmar contraseña nueva *</label>
-            </p-floatlabel>
-            @if (pw.confirmar.touched && (pw.confirmar.invalid || passwordForm.hasError('noCoinciden'))) {
-              <span class="text-xs text-rose-500 pl-1">Las contraseñas no coinciden.</span>
-            }
-          </div>
-        </div>
-
-        <div class="flex items-center justify-between gap-3 pt-4 border-t border-gray-100">
-          <span class="hidden sm:inline text-xs text-gray-400">
-            <i class="pi pi-shield text-[11px] mr-1"></i>Te pediremos tu contraseña actual para confirmar.
-          </span>
-          <button pButton type="submit" size="small" class="ml-auto" [loading]="guardandoPassword()">
-            <i class="pi pi-lock"></i>
-            <span>Actualizar contraseña</span>
-          </button>
-        </div>
-      </form>
-
+      </div>
     </div>
-  </div>
+  </section>
+
+  <!-- SEGURIDAD -->
+  <form [formGroup]="passwordForm" (ngSubmit)="cambiarPassword()"
+    class="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+    <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-5 lg:gap-8 p-5 sm:p-6">
+      <div class="flex lg:flex-col items-start gap-3">
+        <span class="w-9 h-9 shrink-0 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center">
+          <i class="pi pi-key text-sm"></i>
+        </span>
+        <div>
+          <h3 class="m-0 text-base font-semibold text-gray-900">Contraseña</h3>
+          <p class="m-0 mt-1 text-[13px] leading-relaxed text-gray-500">Usa una contraseña única que no utilices en otros sitios.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-5 content-start">
+        <div class="flex flex-col gap-1.5 sm:col-span-2 sm:max-w-[calc(50%-0.5rem)] xl:col-span-1 xl:max-w-none">
+          <label for="pwActual" class="text-sm font-medium text-gray-700">Contraseña actual <span class="text-rose-500">*</span></label>
+          <p-password inputId="pwActual" formControlName="actual" [toggleMask]="true" [feedback]="false"
+            [fluid]="true" autocomplete="current-password" />
+          @if (pw.actual.touched && pw.actual.invalid) {
+            <span class="text-xs text-rose-500">Escribe tu contraseña actual.</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="pwNueva" class="text-sm font-medium text-gray-700">Contraseña nueva <span class="text-rose-500">*</span></label>
+          <p-password inputId="pwNueva" formControlName="nueva" [toggleMask]="true" [feedback]="false"
+            [fluid]="true" autocomplete="new-password" />
+          @if (passwordForm.hasError('igualAActual')) {
+            <span class="text-xs text-rose-500">Debe ser distinta de la actual.</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="pwConfirmar" class="text-sm font-medium text-gray-700">Confirmar contraseña <span class="text-rose-500">*</span></label>
+          <p-password inputId="pwConfirmar" formControlName="confirmar" [toggleMask]="true" [feedback]="false"
+            [fluid]="true" autocomplete="new-password" />
+          @if (pw.confirmar.touched && (pw.confirmar.invalid || passwordForm.hasError('noCoinciden'))) {
+            <span class="text-xs text-rose-500">Las contraseñas no coinciden.</span>
+          }
+        </div>
+
+        <!-- FUERZA Y REQUISITOS -->
+        <div class="sm:col-span-2 xl:col-span-3 flex flex-col gap-3 rounded-xl border border-gray-100 bg-gray-50/70 px-4 py-3">
+          <div class="flex items-center gap-3">
+            <div class="flex flex-1 gap-1.5">
+              @for (seg of [1, 2, 3]; track seg) {
+                <span class="h-1.5 flex-1 rounded-full transition-colors duration-300"
+                  [ngClass]="nivel >= seg ? (nivel === 1 ? 'bg-rose-400' : nivel === 2 ? 'bg-amber-400' : 'bg-emerald-500') : 'bg-gray-200'"></span>
+              }
+            </div>
+            <span class="text-xs font-semibold w-16 text-right"
+              [ngClass]="nivel === 0 ? 'text-gray-400' : nivel === 1 ? 'text-rose-500' : nivel === 2 ? 'text-amber-600' : 'text-emerald-600'">
+              {{ etiquetaFuerza[nivel] }}
+            </span>
+          </div>
+          <ul class="m-0 p-0 list-none grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-x-4 gap-y-1.5">
+            @for (r of req; track r.texto) {
+              <li class="flex items-center gap-2 text-xs transition-colors"
+                [ngClass]="r.ok ? 'text-emerald-700' : 'text-gray-500'">
+                <i class="pi text-[11px]" [ngClass]="r.ok ? 'pi-check-circle text-emerald-500' : 'pi-circle text-gray-300'"></i>
+                {{ r.texto }}
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col-reverse sm:flex-row sm:items-center gap-3 px-5 sm:px-6 py-3 bg-gray-50/70 border-t border-gray-100">
+      <span class="text-xs text-gray-400 sm:mr-auto inline-flex items-center gap-2">
+        <i class="pi pi-shield text-[11px]"></i>Te pediremos tu contraseña actual para confirmar.
+      </span>
+      <button pButton type="submit" size="small" [loading]="guardandoPassword()" [disabled]="passwordForm.pristine">
+        <i class="pi pi-lock"></i>
+        <span>Actualizar contraseña</span>
+      </button>
+    </div>
+  </form>
+
 </div>
