@@ -2,7 +2,7 @@ import { Component, computed, HostListener, inject, OnDestroy, OnInit, signal } 
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { EventService } from '../../core/services/event.service';
-import { Evento } from '../../core/models/event.model';
+import { ColorSugerido, Evento } from '../../core/models/event.model';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PaginatorModule } from 'primeng/paginator';
@@ -14,6 +14,7 @@ import { RevelarDirective } from '../../shared/directives/revelar.directive';
 import { copiarAlPortapapeles } from '../../core/utils/clipboard.util';
 import { ordenarItinerario } from '../../core/data/plantillas-itinerario';
 import { agruparDigitos } from '../../core/data/mesa-regalos';
+import { esColorClaro, iconoEstiloVestimenta } from '../../core/data/dress-code';
 
 @Component({
   selector: 'app-invitation',
@@ -173,6 +174,20 @@ export class InvitationComponent implements OnInit, OnDestroy {
   });
 
   readonly agruparDigitos = agruparDigitos;
+
+  // Código de vestimenta
+  readonly vestimenta = computed(() => {
+    const dc = this.evento()?.dressCode;
+    if (!dc?.activo || !dc.titulo?.trim()) return null;
+    const conTono = (lista: ColorSugerido[] | undefined) =>
+      (lista || []).map((c) => ({ ...c, claro: esColorClaro(c.hex) }));
+    return {
+      ...dc,
+      icono: iconoEstiloVestimenta(dc.tipo),
+      colores: conTono(dc.colores),
+      coloresEvitar: conTono(dc.coloresEvitar),
+    };
+  });
 
   copiarDatosBancarios(): void {
     const t = this.regalos()?.transferencia;

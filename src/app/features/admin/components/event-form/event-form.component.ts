@@ -21,7 +21,14 @@ import { ClienteModel } from '../../../../core/models/cliente.model';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { UsuarioService } from '../../../../core/services/usuario.service';
 import { firstValueFrom } from 'rxjs';
-import { ItemItinerario, MesaRegalos } from '../../../../core/models/event.model';
+import { ColorSugerido, DressCode, ItemItinerario, MesaRegalos } from '../../../../core/models/event.model';
+import {
+  COLORES_EVITAR_RAPIDOS,
+  ESTILOS_VESTIMENTA,
+  PALETAS_COLORES,
+  PaletaColores,
+  dressCodeVacio,
+} from '../../../../core/data/dress-code';
 import {
   TIENDAS_REGALOS,
   bancoDesdeClabe,
@@ -111,6 +118,14 @@ export class EventFormComponent implements OnInit {
   // Mesa de regalos (opcional)
   mesaRegalos: MesaRegalos = mesaRegalosVacia();
   readonly tiendasCatalogo = TIENDAS_REGALOS;
+
+  // Código de vestimenta (opcional)
+  dressCode: DressCode = dressCodeVacio();
+  readonly estilosVestimenta = ESTILOS_VESTIMENTA;
+  readonly paletasColores = PALETAS_COLORES;
+  readonly coloresEvitarRapidos = COLORES_EVITAR_RAPIDOS;
+  nuevoColorHex = '#c9a227';
+  nuevoColorNombre = '';
 
   opcionesControlInvitados = [
     { label: 'Inactivo', value: 'inactivo', icono: 'pi pi-ban', descripcion: 'Sin lista de invitados' },
@@ -217,6 +232,15 @@ export class EventFormComponent implements OnInit {
           tiendas: (guardada.tiendas || []).map((t) => ({ ...t })),
           sobres: { ...base.sobres, ...guardada.sobres },
           transferencia: { ...base.transferencia, ...guardada.transferencia },
+        };
+      }
+      if (this.config.data.dressCode) {
+        const guardado: DressCode = this.config.data.dressCode;
+        this.dressCode = {
+          ...dressCodeVacio(),
+          ...guardado,
+          colores: (guardado.colores || []).map((c) => ({ ...c })),
+          coloresEvitar: (guardado.coloresEvitar || []).map((c) => ({ ...c })),
         };
       }
 
@@ -477,6 +501,7 @@ export class EventFormComponent implements OnInit {
         mostrarItinerario: this.mostrarItinerario && this.itinerarioLimpio().length > 0,
         itinerario: this.itinerarioLimpio(),
         mesaRegalos: this.mesaRegalosLimpia(),
+        dressCode: this.dressCodeLimpio(),
       };
 
       // 5. Guardar en Firestore (el PIN va aparte, en privado/acceso)
@@ -762,6 +787,64 @@ export class EventFormComponent implements OnInit {
       tiendas,
       sobres: { activo: m.sobres.activo, texto: m.sobres.texto?.trim() || '' },
       transferencia,
+    };
+  }
+
+  // ─── Código de vestimenta ─────────────────────────────────────────────────
+
+  /** Cambia el estilo y rellena los textos sugeridos; en "personalizado" conserva lo escrito. */
+  elegirEstiloVestimenta(id: string): void {
+    const estilo = this.estilosVestimenta.find((e) => e.id === id);
+    if (!estilo) return;
+    this.dressCode.tipo = id;
+    if (id === 'personalizado') return;
+    this.dressCode.titulo = estilo.titulo;
+    this.dressCode.descripcion = estilo.descripcion;
+    this.dressCode.ellas = estilo.ellas;
+    this.dressCode.ellos = estilo.ellos;
+  }
+
+  aplicarPaleta(paleta: PaletaColores): void {
+    this.dressCode.colores = paleta.colores.map((c) => ({ ...c }));
+  }
+
+  agregarColorSugerido(): void {
+    const hex = this.nuevoColorHex.toLowerCase();
+    if (this.dressCode.colores.some((c) => c.hex.toLowerCase() === hex)) return;
+    this.dressCode.colores = [...this.dressCode.colores, { hex, nombre: this.nuevoColorNombre.trim() }];
+    this.nuevoColorNombre = '';
+  }
+
+  quitarColor(lista: 'colores' | 'coloresEvitar', hex: string): void {
+    this.dressCode[lista] = this.dressCode[lista].filter((c) => c.hex !== hex);
+  }
+
+  alternarColorEvitar(color: ColorSugerido): void {
+    const existe = this.dressCode.coloresEvitar.some((c) => c.hex === color.hex);
+    this.dressCode.coloresEvitar = existe
+      ? this.dressCode.coloresEvitar.filter((c) => c.hex !== color.hex)
+      : [...this.dressCode.coloresEvitar, { ...color }];
+  }
+
+  colorEvitarActivo(hex: string): boolean {
+    return this.dressCode.coloresEvitar.some((c) => c.hex === hex);
+  }
+
+  private dressCodeLimpio(): DressCode {
+    const d = this.dressCode;
+    const limpiarColores = (lista: ColorSugerido[]) =>
+      lista.filter((c) => /^#[0-9a-f]{6}$/i.test(c.hex)).map((c) => ({ hex: c.hex.toLowerCase(), nombre: c.nombre?.trim() || '' }));
+    const titulo = d.titulo?.trim() || '';
+    return {
+      activo: d.activo && !!titulo,
+      tipo: d.tipo,
+      titulo,
+      descripcion: d.descripcion?.trim() || '',
+      ellas: d.ellas?.trim() || '',
+      ellos: d.ellos?.trim() || '',
+      colores: limpiarColores(d.colores),
+      coloresEvitar: limpiarColores(d.coloresEvitar),
+      nota: d.nota?.trim() || '',
     };
   }
 

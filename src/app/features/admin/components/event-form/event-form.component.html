@@ -20,6 +20,14 @@
             }
           </span>
         </p-tab>
+        <p-tab value="vestimenta">
+          <span class="inline-flex items-center gap-2">
+            <i class="pi pi-palette text-xs"></i> Vestimenta
+            @if (dressCode.activo) {
+              <span class="w-1.5 h-1.5 rounded-full bg-gold-500"></span>
+            }
+          </span>
+        </p-tab>
         <p-tab value="regalos">
           <span class="inline-flex items-center gap-2">
             <i class="pi pi-gift text-xs"></i> Regalos
@@ -593,6 +601,167 @@
                 <span class="text-[11px] text-gray-400">
                   Los momentos sin nombre no se guardan. Al guardar se ordenan automáticamente por hora.
                 </span>
+              </section>
+            }
+          </div>
+        </p-tabpanel>
+
+        <!-- ═════════════ PESTAÑA: CÓDIGO DE VESTIMENTA (OPCIONAL) ═════════════ -->
+        <p-tabpanel value="vestimenta">
+          @let dc = dressCode;
+          <div class="flex flex-col gap-5 pt-5 pb-8">
+
+            <label for="dressCodeActivo"
+              class="flex items-center gap-3 rounded-xl border p-4 cursor-pointer transition-colors"
+              [ngClass]="dc.activo ? 'border-gold-200 bg-gold-50/50' : 'border-gray-100 bg-white'">
+              <span class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+                [ngClass]="dc.activo ? 'bg-gold-100 text-gold-700' : 'bg-gray-100 text-gray-400'">
+                <i class="pi pi-palette text-sm"></i>
+              </span>
+              <div class="flex-1 min-w-0">
+                <span class="block text-sm font-semibold text-gray-900">Mostrar código de vestimenta en la invitación</span>
+                <span class="block text-xs text-gray-500">Opcional · estilo sugerido, ideas para ellas y ellos, y paleta de colores.</span>
+              </div>
+              <p-toggleswitch inputId="dressCodeActivo" [(ngModel)]="dc.activo" [ngModelOptions]="{ standalone: true }" />
+            </label>
+
+            @if (dc.activo) {
+              <!-- ESTILO -->
+              <section class="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+                    <i class="pi pi-star text-[11px]"></i>
+                  </span>
+                  <h3 class="text-sm font-semibold text-gray-900 m-0">Estilo</h3>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                  @for (e of estilosVestimenta; track e.id) {
+                    @let elegido = dc.tipo === e.id;
+                    <button type="button" (click)="elegirEstiloVestimenta(e.id)" [attr.aria-pressed]="elegido"
+                      class="flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center cursor-pointer transition-all"
+                      [ngClass]="elegido ? 'border-gold-400 bg-gold-50 shadow-sm' : 'border-gray-100 bg-white hover:border-gold-200'">
+                      <i class="pi {{ e.icono }} text-base" [ngClass]="elegido ? 'text-gold-600' : 'text-gray-400'"></i>
+                      <span class="text-xs font-semibold leading-tight" [ngClass]="elegido ? 'text-gold-800' : 'text-gray-700'">{{ e.titulo }}</span>
+                    </button>
+                  }
+                </div>
+
+                <div class="grid grid-cols-12 gap-x-4 gap-y-5 pt-2">
+                  <div class="col-span-12 sm:col-span-5">
+                    <p-floatlabel variant="on" class="w-full block">
+                      <input id="dcTitulo" pInputText class="w-full" maxlength="40"
+                        [(ngModel)]="dc.titulo" [ngModelOptions]="{ standalone: true }" />
+                      <label for="dcTitulo">Nombre del estilo *</label>
+                    </p-floatlabel>
+                  </div>
+                  <div class="col-span-12 sm:col-span-7">
+                    <p-floatlabel variant="on" class="w-full block">
+                      <input id="dcDescripcion" pInputText class="w-full" maxlength="140"
+                        [(ngModel)]="dc.descripcion" [ngModelOptions]="{ standalone: true }" />
+                      <label for="dcDescripcion">Descripción</label>
+                    </p-floatlabel>
+                  </div>
+                  <div class="col-span-12 sm:col-span-6">
+                    <p-floatlabel variant="on" class="w-full block">
+                      <input id="dcEllas" pInputText class="w-full" maxlength="120"
+                        [(ngModel)]="dc.ellas" [ngModelOptions]="{ standalone: true }" />
+                      <label for="dcEllas">Sugerencia para ellas (opcional)</label>
+                    </p-floatlabel>
+                  </div>
+                  <div class="col-span-12 sm:col-span-6">
+                    <p-floatlabel variant="on" class="w-full block">
+                      <input id="dcEllos" pInputText class="w-full" maxlength="120"
+                        [(ngModel)]="dc.ellos" [ngModelOptions]="{ standalone: true }" />
+                      <label for="dcEllos">Sugerencia para ellos (opcional)</label>
+                    </p-floatlabel>
+                  </div>
+                </div>
+              </section>
+
+              <!-- COLORES SUGERIDOS -->
+              <section class="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-gold-50 text-gold-600 flex items-center justify-center">
+                    <i class="pi pi-palette text-[11px]"></i>
+                  </span>
+                  <h3 class="text-sm font-semibold text-gray-900 m-0">Colores sugeridos</h3>
+                  <span class="text-xs text-gray-400">Opcional</span>
+                </div>
+
+                <span class="text-[11px] font-medium text-gray-500">Paletas rápidas</span>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  @for (p of paletasColores; track p.id) {
+                    <button type="button" (click)="aplicarPaleta(p)"
+                      class="flex flex-col gap-2 rounded-xl border border-gray-100 bg-white p-2.5 text-left cursor-pointer transition-colors hover:border-gold-300">
+                      <span class="flex h-6 overflow-hidden rounded-md">
+                        @for (c of p.colores; track c.hex) {
+                          <span class="flex-1" [style.background-color]="c.hex"></span>
+                        }
+                      </span>
+                      <span class="text-xs font-medium text-gray-700">{{ p.nombre }}</span>
+                    </button>
+                  }
+                </div>
+
+                <span class="text-[11px] font-medium text-gray-500 pt-1">Colores elegidos</span>
+                @if (dc.colores.length) {
+                  <div class="flex flex-wrap gap-2">
+                    @for (c of dc.colores; track c.hex; let i = $index) {
+                      <div class="flex items-center gap-2 rounded-full border border-gray-200 bg-white py-1 pl-1 pr-1.5">
+                        <span class="w-6 h-6 rounded-full border border-black/10 shrink-0" [style.background-color]="c.hex"></span>
+                        <input pInputText class="!w-28 !py-1 !px-2 !text-xs" placeholder="Nombre" maxlength="24"
+                          [attr.aria-label]="'Nombre del color ' + (i + 1)"
+                          [(ngModel)]="c.nombre" [ngModelOptions]="{ standalone: true }" />
+                        <button type="button" class="w-6 h-6 rounded-full border-0 bg-transparent text-gray-400 hover:text-rose-500 cursor-pointer flex items-center justify-center"
+                          [attr.aria-label]="'Quitar color ' + (c.nombre || c.hex)" (click)="quitarColor('colores', c.hex)">
+                          <i class="pi pi-times text-[10px]"></i>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <span class="text-xs text-gray-400">Elige una paleta o agrega colores uno por uno.</span>
+                }
+
+                <div class="flex flex-wrap items-center gap-2">
+                  <input type="color" class="w-10 h-10 rounded-lg border border-gray-200 bg-white p-1 cursor-pointer"
+                    aria-label="Elegir color" [(ngModel)]="nuevoColorHex" [ngModelOptions]="{ standalone: true }" />
+                  <input pInputText class="w-40" placeholder="Nombre (opcional)" maxlength="24" aria-label="Nombre del nuevo color"
+                    [(ngModel)]="nuevoColorNombre" [ngModelOptions]="{ standalone: true }" (keydown.enter)="$event.preventDefault(); agregarColorSugerido()" />
+                  <button pButton type="button" size="small" severity="secondary" [outlined]="true" (click)="agregarColorSugerido()">
+                    <i class="pi pi-plus"></i>
+                    <span>Agregar color</span>
+                  </button>
+                </div>
+              </section>
+
+              <!-- COLORES A EVITAR -->
+              <section class="flex flex-col gap-3 rounded-xl border border-gray-100 bg-white p-4">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-md bg-rose-50 text-rose-500 flex items-center justify-center">
+                    <i class="pi pi-ban text-[11px]"></i>
+                  </span>
+                  <h3 class="text-sm font-semibold text-gray-900 m-0">Colores a evitar</h3>
+                  <span class="text-xs text-gray-400">Opcional · ej. reservados para la novia</span>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  @for (c of coloresEvitarRapidos; track c.hex) {
+                    @let marcado = colorEvitarActivo(c.hex);
+                    <button type="button" (click)="alternarColorEvitar(c)" [attr.aria-pressed]="marcado"
+                      class="inline-flex items-center gap-2 rounded-full border py-1 pl-1 pr-3 text-xs font-medium cursor-pointer transition-colors"
+                      [ngClass]="marcado ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'">
+                      <span class="w-6 h-6 rounded-full border border-black/10" [style.background-color]="c.hex"></span>
+                      {{ c.nombre }}
+                      @if (marcado) { <i class="pi pi-check text-[10px]"></i> }
+                    </button>
+                  }
+                </div>
+
+                <p-floatlabel variant="on" class="w-full block">
+                  <input id="dcNota" pInputText class="w-full" maxlength="140"
+                    [(ngModel)]="dc.nota" [ngModelOptions]="{ standalone: true }" />
+                  <label for="dcNota">Nota adicional (ej. Evitar tenis, habrá pasto)</label>
+                </p-floatlabel>
               </section>
             }
           </div>

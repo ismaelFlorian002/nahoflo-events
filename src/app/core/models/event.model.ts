@@ -76,6 +76,9 @@ export interface Evento {
   // Mesa de regalos (opcional)
   mesaRegalos?: MesaRegalos;
 
+  // Código de vestimenta y colores sugeridos (opcional)
+  dressCode?: DressCode;
+
   /** @deprecated El PIN vive en eventos/{id}/privado/acceso; solo lo traen eventos sin migrar. */
   pinAnfitrion?: string;
   /** Cantidad de dígitos del PIN, para dibujar las casillas sin exponerlo. */
@@ -128,6 +131,23 @@ export interface PlantillaWhatsapp {
   mensaje: string;
 }
 
+
+export interface ColorSugerido {
+  hex: string; // "#c9a227"
+  nombre?: string; // "Dorado"
+}
+
+export interface DressCode {
+  activo: boolean;
+  tipo: string; // Clave del catálogo (formal, etiqueta, cocktail...) o "personalizado"
+  titulo: string; // Nombre visible, ej. "Formal"
+  descripcion?: string;
+  ellas?: string; // Sugerencia para mujeres
+  ellos?: string; // Sugerencia para hombres
+  colores: ColorSugerido[];
+  coloresEvitar: ColorSugerido[]; // ej. blanco reservado para la novia
+  nota?: string;
+}
 
 export interface MesaRegalos {
   activa: boolean;

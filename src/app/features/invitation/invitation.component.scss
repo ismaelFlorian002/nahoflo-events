@@ -81,6 +81,21 @@ $easing: cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
 
+/* Las secciones son opcionales: si dos con el mismo fondo quedan juntas, las separa una línea fina */
+.seccion:not(.seccion--crema):not(.seccion--oscura) + .seccion:not(.seccion--crema):not(.seccion--oscura),
+.seccion--crema + .seccion--crema {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: min(70%, 560px);
+    height: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(to right, transparent, $linea 20%, $linea 80%, transparent);
+  }
+}
+
 .encabezado {
   position: relative;
   display: flex;
@@ -835,6 +850,217 @@ $easing: cubic-bezier(0.16, 1, 0.3, 1);
   .itinerario-item--der .itinerario-tarjeta {
     grid-column: 3;
     text-align: left;
+  }
+}
+
+/* =========================================================
+   CÓDIGO DE VESTIMENTA
+   ========================================================= */
+.vestimenta-estilo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.vestimenta-icono {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $oro-oscuro;
+  background: radial-gradient(circle at 30% 25%, #ffffff, #f6eedb);
+  border: 1px solid $oro-claro;
+  box-shadow: 0 0 0 8px rgba(204, 166, 51, 0.08), 0 18px 34px -20px rgba(168, 133, 31, 0.6);
+
+  i {
+    font-size: 1.35rem;
+  }
+}
+
+.vestimenta-titulo {
+  margin: 1.25rem 0 0;
+  font-family: $serif;
+  font-size: clamp(2rem, 7vw, 2.6rem);
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.1;
+  color: $tinta;
+}
+
+.vestimenta-desc {
+  margin: 0.6rem 0 0;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: $tinta-suave;
+}
+
+.vestimenta-sugerencias {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 720px;
+  margin: 2.5rem auto 0;
+
+  @media (min-width: 640px) {
+    grid-template-columns: 1fr 1fr;
+
+    &--una {
+      grid-template-columns: minmax(0, 360px);
+      justify-content: center;
+    }
+  }
+}
+
+.vestimenta-tarjeta {
+  position: relative;
+  padding: 1.5rem 1.4rem 1.4rem;
+  border-radius: 20px;
+  background: $crema;
+  border: 1px solid $linea;
+  text-align: center;
+
+  p {
+    margin: 0.6rem 0 0;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: $tinta;
+  }
+}
+
+.vestimenta-genero {
+  display: inline-block;
+  font-family: $serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  font-style: italic;
+  color: $oro-oscuro;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1px;
+    margin: 0.4rem auto 0;
+    background: $oro-claro;
+  }
+}
+
+.vestimenta-paleta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+
+  &--evitar {
+    margin-top: 2.25rem;
+
+    .vestimenta-muestra {
+      width: 46px;
+      height: 46px;
+      opacity: 0.85;
+    }
+
+    .vestimenta-nombre {
+      color: $tinta-suave;
+    }
+  }
+}
+
+.vestimenta-subtitulo {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  padding-left: 0.3em;
+  text-transform: uppercase;
+  color: $tinta-suave;
+}
+
+.vestimenta-colores {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.1rem 1.4rem;
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  max-width: 640px;
+}
+
+.vestimenta-color {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  width: 72px;
+}
+
+.vestimenta-muestra {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px #ffffff, 0 0 0 5px $linea, 0 14px 24px -14px rgba(28, 25, 23, 0.45);
+  transition: transform 0.4s $easing;
+
+  &--clara {
+    box-shadow: inset 0 0 0 1px rgba(28, 25, 23, 0.12), 0 0 0 4px #ffffff, 0 0 0 5px $linea,
+      0 14px 24px -14px rgba(28, 25, 23, 0.3);
+  }
+
+  &--tachada::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 80%;
+    height: 2px;
+    border-radius: 2px;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgba(190, 18, 60, 0.75);
+    transform: rotate(-45deg);
+  }
+
+  &--tachada.vestimenta-muestra--clara::after {
+    background: #be123c;
+    box-shadow: none;
+  }
+}
+
+.vestimenta-color:hover .vestimenta-muestra {
+  transform: translateY(-3px) scale(1.06);
+}
+
+.vestimenta-nombre {
+  font-size: 0.74rem;
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  color: $tinta;
+}
+
+.vestimenta-nota {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
+  max-width: 520px;
+  margin: 2.5rem auto 0;
+  font-size: 0.88rem;
+  font-style: italic;
+  line-height: 1.55;
+  color: $tinta-suave;
+  text-align: center;
+
+  i {
+    margin-top: 0.2rem;
+    font-size: 0.85rem;
+    font-style: normal;
+    color: $oro;
   }
 }
 

@@ -337,6 +337,78 @@
       </section>
     }
 
+    <!-- CÓDIGO DE VESTIMENTA -->
+    @if (vestimenta(); as dc) {
+      <section class="seccion vestimenta">
+        <div class="encabezado" appRevelar>
+          <span class="eyebrow">Dress code</span>
+          <h2 class="titulo-seccion">Código de vestimenta</h2>
+          <div class="ornamento" aria-hidden="true"><span></span><i class="pi pi-star-fill"></i><span></span></div>
+        </div>
+
+        <div class="vestimenta-estilo" appRevelar="zoom">
+          <span class="vestimenta-icono" aria-hidden="true"><i class="pi {{ dc.icono }}"></i></span>
+          <h3 class="vestimenta-titulo">{{ dc.titulo }}</h3>
+          @if (dc.descripcion) {
+            <p class="vestimenta-desc">{{ dc.descripcion }}</p>
+          }
+        </div>
+
+        @if (dc.ellas || dc.ellos) {
+          <div class="vestimenta-sugerencias" [class.vestimenta-sugerencias--una]="!dc.ellas || !dc.ellos">
+            @if (dc.ellas) {
+              <div class="vestimenta-tarjeta" appRevelar="izquierda">
+                <span class="vestimenta-genero">Ellas</span>
+                <p>{{ dc.ellas }}</p>
+              </div>
+            }
+            @if (dc.ellos) {
+              <div class="vestimenta-tarjeta" appRevelar="derecha">
+                <span class="vestimenta-genero">Ellos</span>
+                <p>{{ dc.ellos }}</p>
+              </div>
+            }
+          </div>
+        }
+
+        @if (dc.colores.length) {
+          <div class="vestimenta-paleta" appRevelar>
+            <span class="vestimenta-subtitulo">Colores sugeridos</span>
+            <ul class="vestimenta-colores">
+              @for (c of dc.colores; track c.hex; let i = $index) {
+                <li class="vestimenta-color" appRevelar="zoom" [revelarRetraso]="i * 80">
+                  <span class="vestimenta-muestra" [class.vestimenta-muestra--clara]="c.claro"
+                    [style.background-color]="c.hex" aria-hidden="true"></span>
+                  @if (c.nombre) {
+                    <span class="vestimenta-nombre">{{ c.nombre }}</span>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (dc.coloresEvitar.length) {
+          <div class="vestimenta-paleta vestimenta-paleta--evitar" appRevelar>
+            <span class="vestimenta-subtitulo">Con cariño, te pedimos evitar</span>
+            <ul class="vestimenta-colores">
+              @for (c of dc.coloresEvitar; track c.hex) {
+                <li class="vestimenta-color">
+                  <span class="vestimenta-muestra vestimenta-muestra--tachada" [class.vestimenta-muestra--clara]="c.claro"
+                    [style.background-color]="c.hex" aria-hidden="true"></span>
+                  <span class="vestimenta-nombre">{{ c.nombre || c.hex }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        @if (dc.nota) {
+          <p class="vestimenta-nota" appRevelar><i class="pi pi-info-circle" aria-hidden="true"></i>{{ dc.nota }}</p>
+        }
+      </section>
+    }
+
     <!-- GALERÍA -->
     @if (ev.galeriaUrls && ev.galeriaUrls.length > 0) {
       <section class="seccion galeria">
